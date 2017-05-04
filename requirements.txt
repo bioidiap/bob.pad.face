@@ -1,1 +1,5 @@
+bob.extension
+bob.io.base
+bob.bio.face
+bob.bio.video
 bob.pad.base

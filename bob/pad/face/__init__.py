@@ -1,11 +1,12 @@
-from . import script
+from . import algorithm, extractor, preprocessor
+
 
 def get_config():
-  """Returns a string containing the configuration information.
-  """
+    """Returns a string containing the configuration information.
+    """
 
-  import bob.extension
-  return bob.extension.get_config(__name__)
+    import bob.extension
+    return bob.extension.get_config(__name__)
 
 
 # gets sphinx autodoc done right - don't remove it
