@@ -15,6 +15,7 @@ Package Documentation
    :maxdepth: 2
 
    guide
+   refrences
    py_api
 
 

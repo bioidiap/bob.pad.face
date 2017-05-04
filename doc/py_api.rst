@@ -19,9 +19,6 @@ Video Preprocessors
 Image Extractors
 ~~~~~~~~~~~~~~~~
 
-Image Extractors
-~~~~~~~~~~~~~~~~
-
 .. autosummary::
 
 	bob.pad.face.extractor.LBPHistogram
@@ -37,4 +34,5 @@ Image Extractors
 ----------------
 
 .. automodule:: bob.pad.face.extractor
-
+	:special-members: __call__
+	:no-inherited-members:

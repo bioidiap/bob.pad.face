@@ -7,7 +7,7 @@ import numpy
 
 class LBPHistogram(Extractor):
     """Calculates a normalized LBP histogram over an image.
-    These features are implemented based on the chingovska_effectiveness_2012_.
+    These features are implemented based on [ChingovskaEffectivnes12]_.
 
     Parameters
     ----------
@@ -32,13 +32,6 @@ class LBPHistogram(Extractor):
         resulting features have that dtype.
     lbp : bob.ip.base.LBP
         The LPB extractor object.
-
-
-    .. _chingovska_effectiveness_2012:
-        I. Chingovska, A. Anjos, and S. Marcel, ``On the effectiveness of
-        local binary patterns in face anti-spoofing,'' in Biometrics Special
-        Interest Group (BIOSIG), 2012 BIOSIG-Proceedings of the International
-        Conference of the, 2012, pp. 1-7.
     """
 
     def __init__(self,
@@ -130,10 +123,3 @@ class LBPHistogram(Extractor):
         if self.dtype is not None:
             hist = hist.astype(self.dtype)
         return hist
-
-    # re-define unused functions, just so that they do not get documented
-    def train(*args, **kwargs):
-        raise NotImplementedError()
-
-    def load(*args, **kwargs):
-        pass
