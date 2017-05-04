@@ -48,7 +48,7 @@ setup(
     # information before releasing code publicly.
     name = 'bob.pad.face',
     version = open("version.txt").read().rstrip(),
-    description = 'Implements tools for spoofing or presentation attack detection in face',
+    description = 'Implements tools for spoofing or presentation attack detection in face biometrics',
 
     url = 'https://gitlab.idiap.ch/bob/bob.pad.face',
     license = 'GPLv3',
