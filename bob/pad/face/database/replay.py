@@ -1,38 +1,99 @@
-#!/usr/bin/env python
-# vim: set fileencoding=utf-8 :
-# Amir Mohammadi <amir.mohammadi@idiap.ch>
-# Fri 10 Jun 2016 16:48:44 CEST
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Thu May  4 12:03:36 2017
 
-"""Replay attack database implementation as bob.bio.db.Database"""
+High level implementation for the REPLAY-ATTACK database
 
-from bob.pad.voice.database import PadVoiceFile
+@author: Olegs Nikisins <olegs.nikisins@idiap.ch>
+"""
+
+#==============================================================================
+
 from bob.pad.base.database import PadDatabase
 
+import bob.bio.video # Used in ReplayPadFile class
 
-class ReplayPadFile(PadVoiceFile):
+from bob.pad.base.database import PadFile # Used in ReplayPadFile class
 
-  def __init__(self, f):
+#==============================================================================
+
+class ReplayPadFile(PadFile):
     """
-    Initializes this File object with our own File equivalent
+    A high level implementation of the File class for the REPLAY-ATTACK database.
     """
 
-    self.__f = f
-    # this f is actually an instance of the File class that is defined in
-    # bob.db.replay.models and the PadFile class here needs
-    # client_id, path, attack_type, file_id for initialization. We have to
-    # convert information here and provide them to PadFile. attack_type is a
-    # little tricky to get here. Based on the documentation of PadFile:
-    # In cased of a spoofed data, this parameter should indicate what kind of spoofed attack it is.
-    # The default None value is interpreted that the PadFile is a genuine or real sample.
-    if f.is_real():
-      attack_type = None
-    else:
-      attack_type = 'attack'
-      # attack_type is a string and I decided to make it like this for this
-      # particular database. You can do whatever you want for your own database.
+    def __init__(self, f):
+        """
 
-    super(ReplayPadFile, self).__init__(client_id=f.client, path=f.path,
-                                        attack_type=attack_type, file_id=f.id)
+        **Parameters:**
+
+        ``f`` : :py:class:`object`
+            An instance of the File class defined in the low level implementation
+            of the Replay database, in the bob.db.replay.models.py file.
+        """
+
+        self.f = f
+        # this f is actually an instance of the File class that is defined in
+        # bob.db.replay.models and the PadFile class here needs
+        # client_id, path, attack_type, file_id for initialization. We have to
+        # convert information here and provide them to PadFile. attack_type is a
+        # little tricky to get here. Based on the documentation of PadFile:
+        # In cased of a spoofed data, this parameter should indicate what kind of spoofed attack it is.
+        # The default None value is interpreted that the PadFile is a genuine or real sample.
+        if f.is_real():
+            attack_type = None
+        else:
+            attack_type = 'attack'
+        # attack_type is a string and I decided to make it like this for this
+        # particular database. You can do whatever you want for your own database.
+
+        super(ReplayPadFile, self).__init__(client_id=f.client, path=f.path,
+                                            attack_type=attack_type, file_id=f.id)
+
+
+    def load(self, directory=None, extension='.mov'):
+        """
+        Overridden version of the load method defined in the ``bob.db.base.File``.
+
+        **Parameters:**
+
+        ``directory`` : :py:class:`str`
+            String containing the path to the Replay database.
+
+        ``extension`` : :py:class:`str`
+            Extension of the video files in the Replay database.
+
+        **Returns:**
+
+        ``filtered_image`` : :py:class:`dict`
+            A dictionary containing the key-value pairs: "video" key containing the frames data,
+            and "bbx" containing the coordinates of the face bounding boxes for each frame.
+        """
+
+        path = self.f.make_path(directory=directory, extension=extension) # path to the video file
+
+        frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
+
+        video_data = frame_selector(path) # video data
+
+        bbx_data = self.f.bbx(directory=directory) # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
+
+        return_dictionary = {}
+        return_dictionary["video"] = video_data
+        return_dictionary["bbx"] = bbx_data
+
+        return return_dictionary # dictionary containing the face bounding box annotations and video data
+
+#==============================================================================
+
+
+
+
+
+
+
+
 
 
 class ReplayPadDatabase(PadDatabase):
