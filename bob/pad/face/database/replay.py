@@ -10,11 +10,13 @@ High level implementation for the REPLAY-ATTACK database
 
 #==============================================================================
 
-from bob.pad.base.database import PadDatabase
-
 import bob.bio.video # Used in ReplayPadFile class
 
 from bob.pad.base.database import PadFile # Used in ReplayPadFile class
+
+from bob.pad.base.database import PadDatabase
+
+from bob.db.replay import Database as LowLevelDatabase
 
 #==============================================================================
 
@@ -25,7 +27,6 @@ class ReplayPadFile(PadFile):
 
     def __init__(self, f):
         """
-
         **Parameters:**
 
         ``f`` : :py:class:`object`
@@ -80,59 +81,101 @@ class ReplayPadFile(PadFile):
         bbx_data = self.f.bbx(directory=directory) # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
 
         return_dictionary = {}
-        return_dictionary["video"] = video_data
-        return_dictionary["bbx"] = bbx_data
+        return_dictionary["data"] = video_data
+        return_dictionary["annotations"] = bbx_data
 
         return return_dictionary # dictionary containing the face bounding box annotations and video data
 
 #==============================================================================
 
-
-
-
-
-
-
-
-
-
 class ReplayPadDatabase(PadDatabase):
+    """
+    A high level implementation of the Database class for the REPLAY-ATTACK database.
+    """
 
-  def __init__(
-     self,
-     all_files_options={},
-     check_original_files_for_existence=False,
-     original_directory=None,
-     original_extension=None,
-     # here I have said grandtest because this is the name of the default
-     # protocol for this database
-     protocol='grandtest',
-     **kwargs):
+    def __init__(
+        self,
+        all_files_options={},
+        check_original_files_for_existence=False,
+        original_directory=None,
+        original_extension=None,
+        # here I have said grandtest because this is the name of the default
+        # protocol for this database
+        protocol='grandtest',
+        **kwargs):
+        """
+        **Parameters:**
 
-    from bob.db.replay import Database as LowLevelDatabase
-    self.__db = LowLevelDatabase()
+        ``all_files_options`` : :py:class:`dict`
+            Dictionary of options passed to the second-level database query when retrieving all data.
 
-    # Since the high level API expects different group names than what the low
-    # level API offers, you need to convert them when necessary
-    self.low_level_group_names = ('train', 'devel', 'test')
-    self.high_level_group_names = ('train', 'dev', 'eval')
+        ``check_original_files_for_existence`` : :py:class:`bool`
+            Enables to test for the original data files when querying the database.
 
-    # Always use super to call parent class methods.
-    super(ReplayPadDatabase, self).__init__(
-       'replay',
-       all_files_options,
-       check_original_files_for_existence,
-       original_directory,
-       original_extension,
-       protocol,
-       **kwargs)
+        ``original_directory`` : :py:class:`str`
+            The directory where the original data of the database are stored.
 
-  def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
-    # Convert group names to low-level group names here.
-    groups = self.convert_names_to_lowlevel(
-       groups, self.low_level_group_names, self.high_level_group_names)
-    # Since this database was designed for PAD experiments, nothing special
-    # needs to be done here.
-    files = self.__db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
-    files = [ReplayPadFile(f) for f in files]
-    return files
+        ``original_extension`` : :py:class:`str`
+            The file name extension of the original data.
+
+        ``protocol`` : :py:class:`str` or ``None``
+            The name of the protocol that defines the default experimental setup for this database.
+
+        ``kwargs``
+            The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
+        """
+
+        self.db = LowLevelDatabase()
+
+        # Since the high level API expects different group names than what the low
+        # level API offers, you need to convert them when necessary
+        self.low_level_group_names = ('train', 'devel', 'test') # group names in the low-level database interface
+        self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
+
+        # Always use super to call parent class methods.
+        super(ReplayPadDatabase, self).__init__(
+            'replay',
+            all_files_options,
+            check_original_files_for_existence,
+            original_directory,
+            original_extension,
+            protocol,
+            **kwargs)
+
+    def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+        """
+        This function returns lists of ReplayPadFile objects, which fulfill the given restrictions.
+
+        Keyword parameters:
+
+        ``groups`` : :py:class:`str`
+            OR a list of strings.
+            The groups of which the clients should be returned.
+            Usually, groups are one or more elements of ('train', 'dev', 'eval')
+
+        ``protocol`` : :py:class:`str`
+            The protocol for which the clients should be retrieved.
+            The protocol is dependent on your database.
+            If you do not have protocols defined, just ignore this field.
+
+        ``purposes`` : :py:class:`str`
+            OR a list of strings.
+            The purposes for which File objects should be retrieved.
+            Usually it is either 'real' or 'attack'.
+
+        ``model_ids``
+            This parameter is not supported in PAD databases yet
+        """
+        # Convert group names to low-level group names here.
+        groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
+        # Since this database was designed for PAD experiments, nothing special
+        # needs to be done here.
+        files = self.db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+        files = [ReplayPadFile(f) for f in files]
+        return files
+
+    def annotations(self, file):
+        """
+        Do nothing. In this particular implementation the annotations are returned in the *File class above.
+        """
+        return None
