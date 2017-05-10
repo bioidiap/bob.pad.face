@@ -93,31 +93,21 @@ class ReplayPadDatabase(PadDatabase):
 
     def __init__(
         self,
-        all_files_options={},
-        check_original_files_for_existence=False,
+        protocol='grandtest', # grandtest is the default protocol for this database
         original_directory=None,
         original_extension=None,
-        # here I have said grandtest because this is the name of the default
-        # protocol for this database
-        protocol='grandtest',
         **kwargs):
         """
         **Parameters:**
 
-        ``all_files_options`` : :py:class:`dict`
-            Dictionary of options passed to the second-level database query when retrieving all data.
-
-        ``check_original_files_for_existence`` : :py:class:`bool`
-            Enables to test for the original data files when querying the database.
+        ``protocol`` : :py:class:`str` or ``None``
+            The name of the protocol that defines the default experimental setup for this database.
 
         ``original_directory`` : :py:class:`str`
             The directory where the original data of the database are stored.
 
         ``original_extension`` : :py:class:`str`
             The file name extension of the original data.
-
-        ``protocol`` : :py:class:`str` or ``None``
-            The name of the protocol that defines the default experimental setup for this database.
 
         ``kwargs``
             The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
@@ -134,12 +124,10 @@ class ReplayPadDatabase(PadDatabase):
 
         # Always use super to call parent class methods.
         super(ReplayPadDatabase, self).__init__(
-            'replay',
-            all_files_options,
-            check_original_files_for_existence,
-            original_directory,
-            original_extension,
-            protocol,
+            name = 'replay',
+            protocol = protocol,
+            original_directory = original_directory,
+            original_extension = original_extension,
             **kwargs)
 
     def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
