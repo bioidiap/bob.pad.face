@@ -16,8 +16,6 @@ from bob.pad.base.database import PadFile # Used in ReplayPadFile class
 
 from bob.pad.base.database import PadDatabase
 
-from bob.db.replay import Database as LowLevelDatabase
-
 #==============================================================================
 
 class ReplayPadFile(PadFile):
@@ -124,6 +122,8 @@ class ReplayPadDatabase(PadDatabase):
         ``kwargs``
             The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
         """
+
+        from bob.db.replay import Database as LowLevelDatabase
 
         self.db = LowLevelDatabase()
 
