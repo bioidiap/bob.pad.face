@@ -11,11 +11,16 @@ from bob.bio.base.test.test_database_implementations import check_database
 
 @db_available('replay')
 def test_replay():
-    module = bob.bio.base.load_resource('replay', 'config',
-        preferred_package='bob.pad.face')
+    replay_database_instance = bob.bio.base.load_resource('replay', 'database', preferred_package='bob.pad.face', package_prefix='bob.pad.')
     try:
-        check_database(module.database, protocol=module.protocol,
-            groups=('train', 'dev', 'eval'))
+
+        assert len( replay_database_instance.objects(groups=['train', 'dev', 'eval']) )==  1200
+        assert len( replay_database_instance.objects(groups=['train', 'dev']) ) ==  720
+        assert len( replay_database_instance.objects(groups=['train']) ) ==  360
+        assert len( replay_database_instance.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest') )==  1200
+        assert len( replay_database_instance.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest', purposes='real') ) ==  200
+        assert len( replay_database_instance.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest', purposes='attack') ) == 1000
+
     except IOError as e:
         raise SkipTest(
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)
