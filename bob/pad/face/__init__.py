@@ -1,4 +1,4 @@
-from . import algorithm, extractor, preprocessor
+from . import algorithm, extractor, preprocessor, database
 
 
 def get_config():

@@ -6,8 +6,6 @@ from nose.plugins.skip import SkipTest
 
 import bob.bio.base
 from bob.bio.base.test.utils import db_available
-from bob.bio.base.test.test_database_implementations import check_database
-
 
 @db_available('replay')
 def test_replay():

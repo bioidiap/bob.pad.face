@@ -28,7 +28,7 @@ class ReplayPadFile(PadFile):
         **Parameters:**
 
         ``f`` : :py:class:`object`
-            An instance of the File class defined in the low level implementation
+            An instance of the File class defined in the low level db interface
             of the Replay database, in the bob.db.replay.models.py file.
         """
 
@@ -50,6 +50,7 @@ class ReplayPadFile(PadFile):
         super(ReplayPadFile, self).__init__(client_id=f.client, path=f.path,
                                             attack_type=attack_type, file_id=f.id)
 
+    #==========================================================================
 
     def load(self, directory=None, extension='.mov'):
         """
@@ -76,13 +77,7 @@ class ReplayPadFile(PadFile):
 
         video_data = frame_selector(path) # video data
 
-        bbx_data = self.f.bbx(directory=directory) # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
-
-        return_dictionary = {}
-        return_dictionary["data"] = video_data
-        return_dictionary["annotations"] = bbx_data
-
-        return return_dictionary # dictionary containing the face bounding box annotations and video data
+        return video_data # video data
 
 #==============================================================================
 
@@ -130,6 +125,8 @@ class ReplayPadDatabase(PadDatabase):
             original_extension = original_extension,
             **kwargs)
 
+    #==========================================================================
+
     def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
         """
         This function returns lists of ReplayPadFile objects, which fulfill the given restrictions.
@@ -162,8 +159,40 @@ class ReplayPadDatabase(PadDatabase):
         files = [ReplayPadFile(f) for f in files]
         return files
 
-    def annotations(self, file):
+    #==========================================================================
+
+    def annotations(self, f):
         """
-        Do nothing. In this particular implementation the annotations are returned in the *File class above.
+        Return annotations for a given file object ``f``, which is an instance
+        of ``ReplayPadFile`` defined in the HLDI of the Replay-Attack DB.
+        The ``load()`` method of ``ReplayPadFile`` class (see above)
+        returns a video, therefore this method returns bounding-box annotations
+        for each video frame. The annotations are returned as dictionary of dictionaries.
+
+        **Parameters:**
+
+        ``f`` : :py:class:`object`
+            An instance of ``ReplayPadFile`` defined above.
+
+        **Returns:**
+
+        ``annotations`` : :py:class:`dict`
+            A dictionary containing the annotations for each frame in the video.
+            Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
+            Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
+            is the dictionary defining the coordinates of the face bounding box in frame N.
         """
-        return None
+
+        annots = f.f.bbx(directory=self.original_directory) # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
+
+        annotations = {} # dictionary to return
+
+        for fn, frame_annots in enumerate(annots):
+
+            topleft = (frame_annots[2], frame_annots[1])
+            bottomright = (frame_annots[2] + frame_annots[4], frame_annots[1] + frame_annots[3])
+
+            annotations[str(fn)] = {'topleft': topleft, 'bottomright': bottomright}
+
+        return annotations
+
