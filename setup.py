@@ -88,10 +88,15 @@ setup(
     # the version of bob.
     entry_points = {
 
-      # scripts should be declared using this entry:
-      'console_scripts' : [
-        'version.py = bob.pad.face.script.version:main',
-      ],
+        # scripts should be declared using this entry:
+        'console_scripts' : [
+            'version.py = bob.pad.face.script.version:main',
+            ],
+
+        'bob.pad.database': [
+            'replay = bob.pad.face.config.database.replay:database',
+            ],
+
     },
 
     # Classifiers are important if you plan to distribute this package through

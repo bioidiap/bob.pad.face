@@ -1,4 +1,4 @@
-from . import algorithm, extractor, preprocessor
+from . import algorithm, extractor, preprocessor, database
 
 
 def get_config():
@@ -11,3 +11,4 @@ def get_config():
 
 # gets sphinx autodoc done right - don't remove it
 __all__ = [_ for _ in dir() if not _.startswith('_')]
+
