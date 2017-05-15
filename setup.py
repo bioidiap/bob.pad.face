@@ -93,8 +93,20 @@ setup(
             'version.py = bob.pad.face.script.version:main',
             ],
 
+        # registered databases:
         'bob.pad.database': [
             'replay = bob.pad.face.config.database.replay:database',
+            ],
+
+        # registered preprocessors:
+        'bob.pad.preprocessor': [
+            'video-face-crop-preproc-100 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_100_100',
+            ],
+
+        # registered grid configurations:
+        'bob.pad.grid': [
+            'idiap = bob.pad.face.config.grid:idiap',
+            'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
             ],
 
     },
