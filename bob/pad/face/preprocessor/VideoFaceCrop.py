@@ -88,13 +88,16 @@ class VideoFaceCrop(Preprocessor, object):
         for (k, v) in kwargs.items():
             setattr(self, k, v)
 
-        self.preprocessor = FaceCrop(cropped_image_size = cropped_image_size,
-                                     cropped_positions = cropped_positions,
-                                     fixed_positions = fixed_positions,
-                                     mask_sigma = mask_sigma,
-                                     mask_neighbors = mask_neighbors,
-                                     mask_seed = mask_seed,
-                                     **kwargs)
+        preprocessor = FaceCrop(cropped_image_size = cropped_image_size,
+                                cropped_positions = cropped_positions,
+                                fixed_positions = fixed_positions,
+                                mask_sigma = mask_sigma,
+                                mask_neighbors = mask_neighbors,
+                                mask_seed = mask_seed,
+                                **kwargs)
+
+        self.video_preprocessor = bob.bio.video.preprocessor.Wrapper(preprocessor)
+
 
     #==========================================================================
     def __call__(self, frames, annotations):
@@ -119,11 +122,10 @@ class VideoFaceCrop(Preprocessor, object):
             Cropped faces stored in the FrameContainer.
         """
 
-        video_preprocessor = bob.bio.video.preprocessor.Wrapper(self.preprocessor)
-
-        preprocessed_video = video_preprocessor(frames = frames, annotations = annotations)
+        preprocessed_video = self.video_preprocessor(frames = frames, annotations = annotations)
 
         return preprocessed_video
+
 
     #==========================================================================
     def write_data( self, frames, file_name ):
@@ -140,7 +142,8 @@ class VideoFaceCrop(Preprocessor, object):
             name of the file.
         """
 
-        bob.bio.video.preprocessor.Wrapper.write_data(frames, file_name)
+        self.video_preprocessor.write_data(frames, file_name)
+
 
     #==========================================================================
     def read_data( self, file_name ):
@@ -159,7 +162,7 @@ class VideoFaceCrop(Preprocessor, object):
             Frames stored in the frame container.
         """
 
-        frames = bob.bio.video.preprocessor.Wrapper.read_data(file_name)
+        frames = self.video_preprocessor.read_data(file_name)
 
         return frames
 
