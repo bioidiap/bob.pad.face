@@ -103,6 +103,11 @@ setup(
             'video-face-crop-preproc-100 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_100_100',
             ],
 
+        # registered preprocessors:
+        'bob.pad.extractor': [
+            'video-lbp-histogram-extractor-n8r3 = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r3',
+            ],
+
         # registered grid configurations:
         'bob.pad.grid': [
             'idiap = bob.pad.face.config.grid:idiap',

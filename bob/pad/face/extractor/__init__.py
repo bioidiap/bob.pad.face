@@ -1,4 +1,5 @@
 from .LBPHistogram import LBPHistogram
+from .VideoLBPHistogram import VideoLBPHistogram
 
 
 def __appropriate__(*args):
@@ -21,5 +22,6 @@ def __appropriate__(*args):
 
 __appropriate__(
     LBPHistogram,
+    VideoLBPHistogram,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

@@ -3,7 +3,7 @@
 """
 Created on Fri May 12 14:14:23 2017
 
-@author: onikisins
+@author: Olegs Nikisins
 """
 #==============================================================================
 # Import what is needed here:
@@ -106,7 +106,7 @@ class VideoFaceCrop(Preprocessor, object):
 
         **Parameters:**
 
-        ``image`` : FrameContainer
+        ``frames`` : FrameContainer
             Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
             for further details.
 
@@ -149,7 +149,7 @@ class VideoFaceCrop(Preprocessor, object):
     def read_data( self, file_name ):
         """
         Reads the preprocessed data from file.
-        his method overwrites the read_data() method of the Preprocessor class.
+        This method overwrites the read_data() method of the Preprocessor class.
 
         **Parameters:**
 
