@@ -47,7 +47,7 @@ class ReplayPadFile(PadFile):
         # attack_type is a string and I decided to make it like this for this
         # particular database. You can do whatever you want for your own database.
 
-        super(ReplayPadFile, self).__init__(client_id=f.client, path=f.path,
+        super(ReplayPadFile, self).__init__(client_id=f.client_id, path=f.path,
                                             attack_type=attack_type, file_id=f.id)
 
     #==========================================================================

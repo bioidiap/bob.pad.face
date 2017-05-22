@@ -20,3 +20,11 @@ video_lbp_histogram_extractor_n8r3 = VideoLBPHistogram(lbptype=lbptype,
                                                        circ=circ,
                                                        dtype=dtype)
 
+lbptype='uniform'
+
+video_lbp_histogram_extractor_n8r3_uniform = VideoLBPHistogram(lbptype=lbptype,
+                                                       elbptype=elbptype,
+                                                       rad=rad,
+                                                       neighbors=neighbors,
+                                                       circ=circ,
+                                                       dtype=dtype)

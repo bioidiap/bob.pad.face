@@ -106,6 +106,13 @@ setup(
         # registered preprocessors:
         'bob.pad.extractor': [
             'video-lbp-histogram-extractor-n8r3 = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r3',
+            'video-lbp-histogram-extractor-n8r3-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r3_uniform',
+            ],
+
+        # registered algorithms:
+        'bob.pad.algorithm': [
+            'video-svm-pad-algorithm-10k-grid = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid',
+            'video-svm-pad-algorithm-10k-grid-mean-std = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid_mean_std',
             ],
 
         # registered grid configurations:
