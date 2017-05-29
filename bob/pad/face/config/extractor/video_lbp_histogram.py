@@ -6,25 +6,16 @@ from bob.pad.face.extractor import VideoLBPHistogram
 #=======================================================================================
 # Define instances here:
 
-lbptype='regular'
+lbptype='uniform'
 elbptype='regular'
-rad=3
+rad=1
 neighbors=8
 circ=False
 dtype=None
 
-video_lbp_histogram_extractor_n8r3 = VideoLBPHistogram(lbptype=lbptype,
-                                                       elbptype=elbptype,
-                                                       rad=rad,
-                                                       neighbors=neighbors,
-                                                       circ=circ,
-                                                       dtype=dtype)
-
-lbptype='uniform'
-
-video_lbp_histogram_extractor_n8r3_uniform = VideoLBPHistogram(lbptype=lbptype,
-                                                       elbptype=elbptype,
-                                                       rad=rad,
-                                                       neighbors=neighbors,
-                                                       circ=circ,
-                                                       dtype=dtype)
+video_lbp_histogram_extractor_n8r1_uniform = VideoLBPHistogram(lbptype=lbptype,
+                                                               elbptype=elbptype,
+                                                               rad=rad,
+                                                               neighbors=neighbors,
+                                                               circ=circ,
+                                                               dtype=dtype)

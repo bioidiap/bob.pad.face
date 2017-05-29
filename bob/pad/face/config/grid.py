@@ -19,7 +19,7 @@ idiap = Grid(
     number_of_enrollment_jobs=32,
     enrollment_queue='8G-io-big',
 
-    number_of_scoring_jobs=50,
+    number_of_scoring_jobs=1,
     scoring_queue='8G-io-big',
     )
 
@@ -39,6 +39,6 @@ idiap_user_machines = Grid(
     number_of_enrollment_jobs=32,
     enrollment_queue='8G',
 
-    number_of_scoring_jobs=50,
+    number_of_scoring_jobs=1,
     scoring_queue='8G',
     )

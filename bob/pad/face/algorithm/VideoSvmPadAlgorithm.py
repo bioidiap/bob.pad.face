@@ -17,6 +17,10 @@ import numpy as np
 
 import bob.learn.libsvm
 
+import bob.io.base
+
+import os
+
 #==============================================================================
 # Main body :
 
@@ -52,6 +56,10 @@ class VideoSvmPadAlgorithm(Algorithm):
 
     ``mean_std_norm_flag`` : :py:class:`bool`
         Perform mean-std normalization of data if set to True. Default: False.
+
+    ``frame_level_scores`` : :py:class:`bool`
+        Return scores for each frame individually if True. Otherwise, return a
+        single score per video. Default: False.
     """
 
     def __init__(self,
@@ -59,7 +67,8 @@ class VideoSvmPadAlgorithm(Algorithm):
                  kernel_type = 'RBF',
                  n_samples = 10000,
                  trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
-                 mean_std_norm_flag = False):
+                 mean_std_norm_flag = False,
+                 frame_level_scores = False):
 
 
         Algorithm.__init__(self,
@@ -68,6 +77,7 @@ class VideoSvmPadAlgorithm(Algorithm):
                            n_samples = n_samples,
                            trainer_grid_search_params = trainer_grid_search_params,
                            mean_std_norm_flag = mean_std_norm_flag,
+                           frame_level_scores = frame_level_scores,
                            performs_projection=True,
                            requires_projector_training=True)
 
@@ -76,6 +86,7 @@ class VideoSvmPadAlgorithm(Algorithm):
         self.n_samples = n_samples
         self.trainer_grid_search_params = trainer_grid_search_params
         self.mean_std_norm_flag = mean_std_norm_flag
+        self.frame_level_scores = frame_level_scores
         self.machine = None
 
 
@@ -434,7 +445,8 @@ class VideoSvmPadAlgorithm(Algorithm):
     def train_svm(self, training_features, n_samples = 10000,
                   machine_type = 'C_SVC', kernel_type = 'RBF',
                   trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
-                  mean_std_norm_flag = False):
+                  mean_std_norm_flag = False,
+                  projector_file = ""):
         """
         First, this function tunes the hyper-parameters of the SVM classifier using
         grid search on the sub-sets of training data. Train and cross-validation
@@ -468,6 +480,12 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         ``mean_std_norm_flag`` : :py:class:`bool`
             Perform mean-std normalization of data if set to True. Default: False.
+
+        ``projector_file`` : :py:class:`str`
+            The name of the file to save the trained projector to. Only the path
+            of this file is used in this function. The file debug_data.hdf5 will
+            be save in this path. This file contains information, which might be
+            usefull for debugging.
 
         **Returns:**
 
@@ -525,6 +543,18 @@ class VideoSvmPadAlgorithm(Algorithm):
 
             setattr(trainer, key, selected_params[key]) # set the params of trainer
 
+        # Save the data, which is usefull for debugging.
+        debug_file = os.path.join( os.path.split(projector_file)[0], "debug_data.hdf5" )
+        debug_dict = {}
+        debug_dict['precisions_train'] = precisions_train
+        debug_dict['precisions_cv'] = precisions_cv
+        debug_dict['cost'] = selected_params['cost']
+        debug_dict['gamma'] = selected_params['gamma']
+        f = bob.io.base.HDF5File(debug_file, 'w') # open hdf5 file to save the debug data
+        for key in debug_dict.keys():
+            f.set(key, debug_dict[key])
+        del f
+
         # training_features[0] - training features for the REAL class.
         real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
         # training_features[1] - training features for the ATTACK class.
@@ -574,10 +604,14 @@ class VideoSvmPadAlgorithm(Algorithm):
                                  machine_type = self.machine_type,
                                  kernel_type = self.kernel_type,
                                  trainer_grid_search_params = self.trainer_grid_search_params,
-                                 mean_std_norm_flag = self.mean_std_norm_flag)
+                                 mean_std_norm_flag = self.mean_std_norm_flag,
+                                 projector_file = projector_file)
 
+        f = bob.io.base.HDF5File(projector_file, 'w') # open hdf5 file to save to
 
-        machine.save(projector_file)
+        machine.save(f) # save the machine and normalization parameters
+
+        del f
 
 
     #==========================================================================
@@ -596,7 +630,11 @@ class VideoSvmPadAlgorithm(Algorithm):
             The file to read the projector from.
         """
 
-        self.machine = bob.learn.libsvm.Machine(projector_file)
+        f = bob.io.base.HDF5File(projector_file, 'a')
+
+        self.machine = bob.learn.libsvm.Machine(f)
+
+        del f
 
 
     #==========================================================================
@@ -648,22 +686,49 @@ class VideoSvmPadAlgorithm(Algorithm):
         **Returns:**
 
         ``score`` : :py:class:`float`
+            or a list of scores containing individual score for each frame.
             A score value for the object ``toscore``.
             A probability of a sample being a real class.
         """
 
-        score = np.mean(toscore, axis=0)[0]
+        if self.frame_level_scores:
+
+            score = toscore[:,0] # here score is a list containing scores for each frame
+
+        else:
+
+            score = np.mean(toscore, axis=0)[0] # compute a single score per video
 
         return score
 
 
     #==========================================================================
     def score_for_multiple_projections(self, toscore):
-        """Returns the difference between log likelihoods of being real or attack"""
+        """
+        Returns a list of scores computed by the score method of this class.
+
+        **Parameters:**
+
+        ``toscore`` : 2D :py:class:`numpy.ndarray`
+            An array containing scores computed by score() method of this class.
+
+        **Returns:**
+
+        ``list_of_scores`` : list
+            A list containing the scores.
+        """
 
 #        import ipdb; ipdb.set_trace()
 
-        return [self.score(toscore)]
+        if self.frame_level_scores:
+
+            list_of_scores = self.score(toscore)
+
+        else:
+
+            list_of_scores = [self.score(toscore)]
+
+        return list_of_scores
 
 
 

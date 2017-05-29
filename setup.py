@@ -100,13 +100,12 @@ setup(
 
         # registered preprocessors:
         'bob.pad.preprocessor': [
-            'video-face-crop-preproc-100 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_100_100',
+            'video-face-crop-preproc-64 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64',
             ],
 
         # registered preprocessors:
         'bob.pad.extractor': [
-            'video-lbp-histogram-extractor-n8r3 = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r3',
-            'video-lbp-histogram-extractor-n8r3-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r3_uniform',
+            'video-lbp-histogram-extractor-n8r1-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r1_uniform',
             ],
 
         # registered algorithms:
