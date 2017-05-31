@@ -57,7 +57,7 @@ class VideoSvmPadAlgorithm(Algorithm):
     ``mean_std_norm_flag`` : :py:class:`bool`
         Perform mean-std normalization of data if set to True. Default: False.
 
-    ``frame_level_scores`` : :py:class:`bool`
+    ``frame_level_scores_flag`` : :py:class:`bool`
         Return scores for each frame individually if True. Otherwise, return a
         single score per video. Default: False.
     """
@@ -68,7 +68,7 @@ class VideoSvmPadAlgorithm(Algorithm):
                  n_samples = 10000,
                  trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
                  mean_std_norm_flag = False,
-                 frame_level_scores = False):
+                 frame_level_scores_flag = False):
 
 
         Algorithm.__init__(self,
@@ -77,7 +77,7 @@ class VideoSvmPadAlgorithm(Algorithm):
                            n_samples = n_samples,
                            trainer_grid_search_params = trainer_grid_search_params,
                            mean_std_norm_flag = mean_std_norm_flag,
-                           frame_level_scores = frame_level_scores,
+                           frame_level_scores_flag = frame_level_scores_flag,
                            performs_projection=True,
                            requires_projector_training=True)
 
@@ -86,7 +86,7 @@ class VideoSvmPadAlgorithm(Algorithm):
         self.n_samples = n_samples
         self.trainer_grid_search_params = trainer_grid_search_params
         self.mean_std_norm_flag = mean_std_norm_flag
-        self.frame_level_scores = frame_level_scores
+        self.frame_level_scores_flag = frame_level_scores_flag
         self.machine = None
 
 
@@ -668,6 +668,8 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         probabilities = self.machine.predict_class_and_probabilities(features_array)[1]
 
+#        probabilities = self.machine.predict_class_and_scores(features_array)[1]
+
         return probabilities
 
 
@@ -691,7 +693,7 @@ class VideoSvmPadAlgorithm(Algorithm):
             A probability of a sample being a real class.
         """
 
-        if self.frame_level_scores:
+        if self.frame_level_scores_flag:
 
             score = toscore[:,0] # here score is a list containing scores for each frame
 
@@ -720,7 +722,7 @@ class VideoSvmPadAlgorithm(Algorithm):
 
 #        import ipdb; ipdb.set_trace()
 
-        if self.frame_level_scores:
+        if self.frame_level_scores_flag:
 
             list_of_scores = self.score(toscore)
 

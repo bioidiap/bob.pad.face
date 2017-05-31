@@ -101,6 +101,8 @@ setup(
         # registered preprocessors:
         'bob.pad.preprocessor': [
             'video-face-crop-preproc-64 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64',
+            'video-face-crop-preproc-64-face-50 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50',
+            'video-face-crop-preproc-64-face-50-local-cropper = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50_local_cropper',
             ],
 
         # registered preprocessors:
@@ -112,6 +114,8 @@ setup(
         'bob.pad.algorithm': [
             'video-svm-pad-algorithm-10k-grid = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid',
             'video-svm-pad-algorithm-10k-grid-mean-std = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid_mean_std',
+            'video-svm-pad-algorithm-10k-grid-mean-std-frame-level = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid_mean_std_frame_level',
+            'video-svm-pad-algorithm-default-svm-param-mean-std-frame-level = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_default_svm_param_mean_std_frame_level',
             ],
 
         # registered grid configurations:

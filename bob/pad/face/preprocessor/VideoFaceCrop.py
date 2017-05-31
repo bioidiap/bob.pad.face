@@ -14,6 +14,10 @@ from bob.bio.face.preprocessor import FaceCrop
 
 import bob.bio.video
 
+import numpy as np
+
+from bob.pad.face.preprocessor.ImageFaceCrop import ImageFaceCrop
+
 #==============================================================================
 # Main body:
 
@@ -54,9 +58,21 @@ class VideoFaceCrop(Preprocessor, object):
           When run in parallel, the same random seed will be applied to all parallel processes.
           Hence, results of parallel execution will differ from the results in serial execution.
 
+    ``check_face_size_flag`` : :py:class:`bool`
+        If True, only return the frames containing faces of the size above the
+        specified threshold ``min_face_size``. Default: False.
+
+    ``min_face_size`` : :py:class:`int`
+        The minimal size of the face in pixels. Only valid when ``check_face_size_flag``
+        is set to True. Default: 50.
+
+    ``use_local_cropper_flag`` : :py:class:`bool`
+        If True, use the local ImageFaceCrop class to crop faces in the frames.
+        Otherwise, the FaceCrop preprocessor from bob.bio.face is used.
+        Default: False.
+
     ``kwargs``
         Remaining keyword parameters passed to the :py:class:`Base` constructor, such as ``color_channel`` or ``dtype``.
-
     """
 
     #==========================================================================
@@ -67,15 +83,21 @@ class VideoFaceCrop(Preprocessor, object):
                  mask_sigma = None,
                  mask_neighbors = 5,
                  mask_seed = None,
+                 check_face_size_flag = False,
+                 min_face_size = 50,
+                 use_local_cropper_flag = False,
                  **kwargs):
 
         super(VideoFaceCrop, self).__init__(cropped_image_size = cropped_image_size,
-                                             cropped_positions = cropped_positions,
-                                             fixed_positions = fixed_positions,
-                                             mask_sigma = mask_sigma,
-                                             mask_neighbors = mask_neighbors,
-                                             mask_seed = mask_seed,
-                                             **kwargs)
+                                            cropped_positions = cropped_positions,
+                                            fixed_positions = fixed_positions,
+                                            mask_sigma = mask_sigma,
+                                            mask_neighbors = mask_neighbors,
+                                            mask_seed = mask_seed,
+                                            check_face_size_flag = check_face_size_flag,
+                                            min_face_size = min_face_size,
+                                            use_local_cropper_flag = use_local_cropper_flag,
+                                            **kwargs)
 
         self.cropped_image_size = cropped_image_size
         self.cropped_positions = cropped_positions
@@ -83,20 +105,73 @@ class VideoFaceCrop(Preprocessor, object):
         self.mask_sigma = mask_sigma
         self.mask_neighbors = mask_neighbors
         self.mask_seed = mask_seed
+        self.check_face_size_flag = check_face_size_flag
+        self.min_face_size = min_face_size
+        self.use_local_cropper_flag = use_local_cropper_flag
 
         # Save also the data stored in the kwargs:
         for (k, v) in kwargs.items():
             setattr(self, k, v)
 
-        preprocessor = FaceCrop(cropped_image_size = cropped_image_size,
-                                cropped_positions = cropped_positions,
-                                fixed_positions = fixed_positions,
-                                mask_sigma = mask_sigma,
-                                mask_neighbors = mask_neighbors,
-                                mask_seed = mask_seed,
-                                **kwargs)
+        if self.use_local_cropper_flag:
+
+            preprocessor = ImageFaceCrop(face_size = self.cropped_image_size[0])
+
+        else:
+
+            preprocessor = FaceCrop(cropped_image_size = self.cropped_image_size,
+                                    cropped_positions = self.cropped_positions,
+                                    fixed_positions = self.fixed_positions,
+                                    mask_sigma = self.mask_sigma,
+                                    mask_neighbors = self.mask_neighbors,
+                                    mask_seed = self.mask_seed,
+                                    **kwargs)
 
         self.video_preprocessor = bob.bio.video.preprocessor.Wrapper(preprocessor)
+
+
+    #==========================================================================
+    def check_face_size(self, frame_container, annotations, min_face_size):
+        """
+        Return the FrameContainer containing the frames with faces of the
+        size overcoming the specified threshold.
+
+        **Parameters:**
+
+        ``frame_container`` : FrameContainer
+            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            for further details.
+
+        ``annotations`` : :py:class:`dict`
+            A dictionary containing the annotations for each frame in the video.
+            Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
+            Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
+            is the dictionary defining the coordinates of the face bounding box in frame N.
+
+        ``min_face_size`` : :py:class:`int`
+            The minimal size of the face in pixels.
+        """
+
+        cleaned_frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+
+        selected_frame_idx = 0
+
+        for idx in range(0, len(annotations)): # idx - frame index
+
+            frame_annotations = annotations[str(idx)] # annotations for particular frame
+
+            # size of current face
+            face_size = np.min(np.array(frame_annotations['bottomright']) - np.array(frame_annotations['topleft']))
+
+            if face_size >= min_face_size: # check if face size is above the threshold
+
+                selected_frame = frame_container[idx][1] # get current frame
+
+                cleaned_frame_container.add(selected_frame_idx, selected_frame) # add current frame to FrameContainer
+
+                selected_frame_idx = selected_frame_idx + 1
+
+        return cleaned_frame_container
 
 
     #==========================================================================
@@ -123,6 +198,10 @@ class VideoFaceCrop(Preprocessor, object):
         """
 
         preprocessed_video = self.video_preprocessor(frames = frames, annotations = annotations)
+
+        if self.check_face_size_flag:
+
+            preprocessed_video = self.check_face_size(preprocessed_video, annotations, self.min_face_size)
 
         return preprocessed_video
 
