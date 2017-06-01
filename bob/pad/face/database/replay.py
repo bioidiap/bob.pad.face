@@ -66,9 +66,9 @@ class ReplayPadFile(PadFile):
 
         **Returns:**
 
-        ``filtered_image`` : :py:class:`dict`
-            A dictionary containing the key-value pairs: "video" key containing the frames data,
-            and "bbx" containing the coordinates of the face bounding boxes for each frame.
+        ``video_data`` : FrameContainer
+            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            for further details.
         """
 
         path = self.f.make_path(directory=directory, extension=extension) # path to the video file
@@ -150,6 +150,11 @@ class ReplayPadDatabase(PadDatabase):
 
         ``model_ids``
             This parameter is not supported in PAD databases yet
+
+        **Returns:**
+
+        ``files`` : :py:class:`str`
+            A list of ReplayPadFile objects.
         """
         # Convert group names to low-level group names here.
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)

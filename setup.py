@@ -103,11 +103,13 @@ setup(
             'video-face-crop-preproc-64 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64',
             'video-face-crop-preproc-64-face-50 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50',
             'video-face-crop-preproc-64-face-50-local-cropper = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50_local_cropper',
+            'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor', # no preprocessing
             ],
 
         # registered preprocessors:
         'bob.pad.extractor': [
             'video-lbp-histogram-extractor-n8r1-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r1_uniform',
+            'video-quality-measure-galbally-msu = bob.pad.face.config.extractor.video_quality_measure:video_quality_measure_galbally_msu',
             ],
 
         # registered algorithms:

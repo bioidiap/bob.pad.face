@@ -94,7 +94,7 @@ class VideoLBPHistogram(Extractor, object):
 
         **Parameters:**
 
-        ``image`` : FrameContainer
+        ``frames`` : FrameContainer
             Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
             for further details.
 
