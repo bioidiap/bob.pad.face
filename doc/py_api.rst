@@ -1,38 +1,29 @@
 .. vim: set fileencoding=utf-8 :
 
+.. _bob.pad.face.py_api:
+
 ===================================
  Tools implemented in bob.pad.face
 ===================================
 
-Summary
--------
+This section listst all the functionality available in this library allowing to run face PAD experiments.
 
 Databases
-~~~~~~~~~
+===================================
 
 Image Preprocessors
-~~~~~~~~~~~~~~~~~~~
+===================================
 
 Video Preprocessors
-~~~~~~~~~~~~~~~~~~~
+===================================
 
 Image Extractors
-~~~~~~~~~~~~~~~~
-
-.. autosummary::
-
-	bob.pad.face.extractor.LBPHistogram
+===================================
 
 Video Extractors
-~~~~~~~~~~~~~~~~
-
-
-
-.. automodule:: bob.pad.face
+===================================
 
 Image Extractors
-----------------
+===================================
 
-.. automodule:: bob.pad.face.extractor
-	:special-members: __call__
-	:no-inherited-members:
+
