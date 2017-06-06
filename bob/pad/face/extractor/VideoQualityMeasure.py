@@ -26,7 +26,7 @@ class VideoQualityMeasure(Extractor, object):
     """
     This class is designed to extract Quality Measures for each frame in the
     input color video. For further documentation and description of features,
-    see :ref:`bob.ip.qualitymeasure`.
+    see "bob.ip.qualitymeasure".
 
     **Parameters:**
 

@@ -20,7 +20,7 @@ class ImageQualityMeasure(Extractor):
     """
     This class is designed to extract Image Quality Measures given input RGB
     image. For further documentation and description of features,
-    see :ref:`bob.ip.qualitymeasure`.
+    see "bob.ip.qualitymeasure".
 
     **Parameters:**
 
