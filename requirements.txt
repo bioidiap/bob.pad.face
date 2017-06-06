@@ -3,3 +3,7 @@ bob.io.base
 bob.bio.face
 bob.bio.video
 bob.pad.base
+bob.learn.libsvm
+bob.ip.base
+bob.ip.color
+bob.ip.qualitymeasure
