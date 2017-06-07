@@ -55,3 +55,16 @@ video_face_crop_preproc_64_64_face_50_local_cropper = VideoFaceCrop(cropped_imag
                                                                     min_face_size = min_face_size,
                                                                     use_local_cropper_flag = use_local_cropper_flag,
                                                                     color_channel = color_channel)
+
+rgb_output_flag = True # Return RGB cropped face using local cropper
+
+video_face_crop_preproc_64_64_face_50_local_cropper_rgb = VideoFaceCrop(cropped_image_size = cropped_image_size,
+                                                                    cropped_positions = cropped_positions,
+                                                                    fixed_positions = fixed_positions,
+                                                                    mask_sigma = mask_sigma,
+                                                                    mask_neighbors = mask_neighbors,
+                                                                    mask_seed = None,
+                                                                    check_face_size_flag = check_face_size_flag,
+                                                                    min_face_size = min_face_size,
+                                                                    use_local_cropper_flag = use_local_cropper_flag,
+                                                                    rgb_output_flag = rgb_output_flag)

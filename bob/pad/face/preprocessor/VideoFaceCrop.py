@@ -71,6 +71,11 @@ class VideoFaceCrop(Preprocessor, object):
         Otherwise, the FaceCrop preprocessor from bob.bio.face is used.
         Default: False.
 
+    ``rgb_output_flag`` : :py:class:`bool`
+        Return RGB cropped face if ``True``, otherwise a gray-scale image is
+        returned. This flag is only valid when ``use_local_cropper_flag = True``.
+        Default: ``False``.
+
     ``kwargs``
         Remaining keyword parameters passed to the :py:class:`Base` constructor, such as ``color_channel`` or ``dtype``.
     """
@@ -86,6 +91,7 @@ class VideoFaceCrop(Preprocessor, object):
                  check_face_size_flag = False,
                  min_face_size = 50,
                  use_local_cropper_flag = False,
+                 rgb_output_flag = False,
                  **kwargs):
 
         super(VideoFaceCrop, self).__init__(cropped_image_size = cropped_image_size,
@@ -97,6 +103,7 @@ class VideoFaceCrop(Preprocessor, object):
                                             check_face_size_flag = check_face_size_flag,
                                             min_face_size = min_face_size,
                                             use_local_cropper_flag = use_local_cropper_flag,
+                                            rgb_output_flag = rgb_output_flag,
                                             **kwargs)
 
         self.cropped_image_size = cropped_image_size
@@ -108,6 +115,7 @@ class VideoFaceCrop(Preprocessor, object):
         self.check_face_size_flag = check_face_size_flag
         self.min_face_size = min_face_size
         self.use_local_cropper_flag = use_local_cropper_flag
+        self.rgb_output_flag = rgb_output_flag
 
         # Save also the data stored in the kwargs:
         for (k, v) in kwargs.items():
@@ -115,7 +123,8 @@ class VideoFaceCrop(Preprocessor, object):
 
         if self.use_local_cropper_flag:
 
-            preprocessor = ImageFaceCrop(face_size = self.cropped_image_size[0])
+            preprocessor = ImageFaceCrop(face_size = self.cropped_image_size[0],
+                                         rgb_output_flag = self.rgb_output_flag)
 
         else:
 

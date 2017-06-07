@@ -103,6 +103,7 @@ setup(
             'video-face-crop-preproc-64 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64',
             'video-face-crop-preproc-64-face-50 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50',
             'video-face-crop-preproc-64-face-50-local-cropper = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50_local_cropper',
+            'video-face-crop-preproc-64-face-50-local-cropper-rgb = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50_local_cropper_rgb',
             'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor', # no preprocessing
             ],
 
