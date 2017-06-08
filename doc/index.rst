@@ -2,20 +2,32 @@
 
 .. _bob.pad.face:
 
-==================================================
- Presentation Attack Detection in Face Biometrics
-==================================================
+========================================================
+Library for Facial Presentation Attack Detection (PAD)
+========================================================
 
-.. todolist::
+The Facial Presentation Attack Detection Library is an open source tool consisting of a
+series of plugins for bob.pad.base_, our open-source biometric recognition
+platform. As a result, it is fully extensible using bob.pad.base_ documented
+types and techniques. Please refer to the manual of that package for a thorough
+introduction. In this guide, we focus on details concerning
+face PAD experiments using our plugins.
 
-Package Documentation
----------------------
+=============
+Users Guide
+=============
 
 .. toctree::
    :maxdepth: 2
 
-   guide
-   refrences
+   installation
+   baselines
+   references
+   resources
    py_api
+
+.. todolist::
+
+.. include:: links.rst
 
 
