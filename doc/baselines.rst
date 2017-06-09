@@ -93,7 +93,7 @@ LBP features of facial region + SVM classifier
 
 Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.lbp_svm_replayattack`.
 
-To run this baseline on the `replayattack`_ database, using the ``grandtest`` protocol, do the following:
+To run this baseline on the `replayattack`_ database, using the ``grandtest`` protocol, execute the following:
 
 .. code-block:: sh
 
@@ -148,18 +148,49 @@ The ROC curves for the particular experiment can be downloaded from here:
 Image Quality Measures as features of facial region + SVM classifier
 ========================================================================
 
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.qm_svm_replayattack`.
 
+To run this baseline on the `replayattack`_ database, using the ``grandtest`` protocol, execute the following:
 
+.. code-block:: sh
 
+    $ ./bin/spoof.py qm-svm \
+    --database replay --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
+.. tip::
 
+    Similarly to the tip above you can run this baseline in parallel.
 
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/qm_svm.py``
 
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
 
+.. code-block:: sh
 
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "IQM features of facial region + SVM classifier + REPLAY-ATTACK database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
+The EER/HTER errors for `replayattack`_ database are summarized in the Table below:
 
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  4.321   |  4.570   |
++-------------------+----------+----------+
 
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_iqm_svm_replay_attack.pdf>`
+
+------------
 
 
 .. include:: links.rst

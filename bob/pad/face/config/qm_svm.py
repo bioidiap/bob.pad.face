@@ -4,15 +4,14 @@
 """
 @author: Olegs Nikisins
 
-This file contains configurations to run LBP and SVM based face PAD baseline.
+This file contains configurations to run Image Quality Measures (IQM) and SVM based face PAD baseline.
 The settings are tuned for the Replay-attack database.
-The idea of the algorithm is introduced in the following paper: [CAM12]_.
-However some settings are different from the ones introduced in the paper.
+The IQM features used in this algorithm/resource are introduced in the following papers: [WHJ15]_ and [CBVM16]_.
 """
 
 
 #=======================================================================================
-sub_directory = 'lbp_svm'
+sub_directory = 'qm_svm'
 """
 Sub-directory where results will be placed.
 
@@ -34,9 +33,9 @@ MASK_SIGMA = None             # The sigma for random values areas outside image
 MASK_NEIGHBORS = 5            # The number of neighbors to consider while extrapolating
 MASK_SEED = None              # The seed for generating random values during extrapolation
 CHECK_FACE_SIZE_FLAG = True   # Check the size of the face
-MIN_FACE_SIZE = 50            # Minimal possible size of the face
+MIN_FACE_SIZE = 50
 USE_LOCAL_CROPPER_FLAG = True # Use the local face cropping class (identical to Ivana's paper)
-COLOR_CHANNEL = 'gray'        # Convert image to gray-scale format
+RGB_OUTPUT_FLAG = True        # Return RGB cropped face using local cropper
 
 preprocessor = VideoFaceCrop(cropped_image_size = CROPPED_IMAGE_SIZE,
                              cropped_positions = CROPPED_POSITIONS,
@@ -47,37 +46,31 @@ preprocessor = VideoFaceCrop(cropped_image_size = CROPPED_IMAGE_SIZE,
                              check_face_size_flag = CHECK_FACE_SIZE_FLAG,
                              min_face_size = MIN_FACE_SIZE,
                              use_local_cropper_flag = USE_LOCAL_CROPPER_FLAG,
-                             color_channel = COLOR_CHANNEL)
+                             rgb_output_flag = RGB_OUTPUT_FLAG)
 """
 In the preprocessing stage the face is cropped in each frame of the input video given facial annotations.
-The size of the face is normalized to ``cropped_image_size`` dimensions. The faces with the size
+The size of the face is normalized to ``cropped_image_size`` dimensions. The faces of the size
 below ``min_face_size`` threshold are discarded. The preprocessor is similar to the one introduced in
-[CAM12]_, which is defined by ``use_local_cropper_flag = True``.
+[CAM12]_, which is defined by ``use_local_cropper_flag = True``. The preprocessed frame is the RGB
+facial image, which is defined by ``RGB_OUTPUT_FLAG = True``.
 """
 
 
 #=======================================================================================
 # define extractor:
 
-from ..extractor import VideoLBPHistogram
+from ..extractor import VideoQualityMeasure
 
-LBPTYPE='uniform'
-ELBPTYPE='regular'
-RAD=1
-NEIGHBORS=8
-CIRC=False
+GALBALLY=True
+MSU=True
 DTYPE=None
 
-extractor = VideoLBPHistogram(lbptype=LBPTYPE,
-                              elbptype=ELBPTYPE,
-                              rad=RAD,
-                              neighbors=NEIGHBORS,
-                              circ=CIRC,
-                              dtype=DTYPE)
+extractor = VideoQualityMeasure(galbally=GALBALLY,
+                                msu=MSU,
+                                dtype=DTYPE)
 """
-In the feature extraction stage the LBP histograms are extracted from each frame of the preprocessed video.
-
-The parameters are similar to the ones introduced in [CAM12]_.
+In the feature extraction stage the Image Quality Measures are extracted from each frame of the preprocessed RGB video.
+The features to be computed are introduced in the following papers: [WHJ15]_ and [CBVM16]_.
 """
 
 
@@ -102,10 +95,10 @@ algorithm = VideoSvmPadAlgorithm(machine_type = MACHINE_TYPE,
 """
 The SVM algorithm with RBF kernel is used to classify the data into *real* and *attack* classes.
 One score is produced for each frame of the input video, ``frame_level_scores_flag = True``.
-
-In contrast to [CAM12]_, the grid search of SVM parameters is used to select the
-successful settings. The grid search is done on the subset of training data. The size
-of this subset is defined by ``n_samples`` parameter.
+The grid search of SVM parameters is used to select the successful settings.
+The grid search is done on the subset of training data.
+The size of this subset is defined by ``n_samples`` parameter.
 
 The data is also mean-std normalized, ``mean_std_norm_flag = True``.
 """
+

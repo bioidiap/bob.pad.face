@@ -46,3 +46,12 @@ LBP features of facial region + SVM for REPLAY-ATTACK
 
 .. automodule:: bob.pad.face.config.lbp_svm
    :members:
+
+
+.. _bob.pad.face.resources.face_pad.qm_svm_replayattack:
+
+Image Quality Measures as features of facial region + SVM for REPLAY-ATTACK
+================================================================================
+
+.. automodule:: bob.pad.face.config.qm_svm
+   :members:

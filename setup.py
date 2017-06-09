@@ -103,6 +103,7 @@ setup(
 
             # baselines:
             'lbp-svm = bob.pad.face.config.lbp_svm',
+            'qm-svm = bob.pad.face.config.qm_svm',
             ],
 
         # registered preprocessors:
