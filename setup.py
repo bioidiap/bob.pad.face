@@ -98,6 +98,13 @@ setup(
             'replay = bob.pad.face.config.database.replay:database',
             ],
 
+        # registered configurations:
+        'bob.bio.config': [
+
+            # baselines:
+            'lbp-svm = bob.pad.face.config.lbp_svm',
+            ],
+
         # registered preprocessors:
         'bob.pad.preprocessor': [
             'video-face-crop-preproc-64 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64',

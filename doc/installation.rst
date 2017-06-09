@@ -1,5 +1,7 @@
 
 
+.. _bob.pad.face.installation:
+
 ==============
  Installation
 ==============
