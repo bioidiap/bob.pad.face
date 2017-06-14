@@ -87,7 +87,7 @@ class LBPHistogram(Extractor):
                     elbp_type=elbps[elbptype])
             else:  # we assume neighbors==8 in this case
                 lbp = bob.ip.base.LBP(
-                    neighbors=16, circular=circ, radius=rad, to_average=mct,
+                    neighbors=8, circular=circ, radius=rad, to_average=mct,
                     elbp_type=elbps[elbptype])
 
         self.dtype = dtype

@@ -93,8 +93,47 @@ setup(
             'version.py = bob.pad.face.script.version:main',
             ],
 
+        # registered databases:
         'bob.pad.database': [
             'replay = bob.pad.face.config.database.replay:database',
+            ],
+
+        # registered configurations:
+        'bob.bio.config': [
+
+            # baselines:
+            'lbp-svm = bob.pad.face.config.lbp_svm',
+            'qm-svm = bob.pad.face.config.qm_svm',
+            ],
+
+        # registered preprocessors:
+        'bob.pad.preprocessor': [
+            'video-face-crop-preproc-64 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64',
+            'video-face-crop-preproc-64-face-50 = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50',
+            'video-face-crop-preproc-64-face-50-local-cropper = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50_local_cropper',
+            'video-face-crop-preproc-64-face-50-local-cropper-rgb = bob.pad.face.config.preprocessor.video_face_crop:video_face_crop_preproc_64_64_face_50_local_cropper_rgb',
+            'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor', # no preprocessing
+            'frame-diff-min-size-50-200-frames = bob.pad.face.config.preprocessor.frame_difference:frame_diff_min_size_50_200_frames',
+            ],
+
+        # registered preprocessors:
+        'bob.pad.extractor': [
+            'video-lbp-histogram-extractor-n8r1-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r1_uniform',
+            'video-quality-measure-galbally-msu = bob.pad.face.config.extractor.video_quality_measure:video_quality_measure_galbally_msu',
+            ],
+
+        # registered algorithms:
+        'bob.pad.algorithm': [
+            'video-svm-pad-algorithm-10k-grid = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid',
+            'video-svm-pad-algorithm-10k-grid-mean-std = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid_mean_std',
+            'video-svm-pad-algorithm-10k-grid-mean-std-frame-level = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid_mean_std_frame_level',
+            'video-svm-pad-algorithm-default-svm-param-mean-std-frame-level = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_default_svm_param_mean_std_frame_level',
+            ],
+
+        # registered grid configurations:
+        'bob.pad.grid': [
+            'idiap = bob.pad.face.config.grid:idiap',
+            'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
             ],
 
     },

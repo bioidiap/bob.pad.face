@@ -1,5 +1,16 @@
+setuptools
+six
+sphinx
+nose
+numpy
 bob.extension
+bob.bio.base
 bob.io.base
+bob.ip.base
+bob.pad.base
 bob.bio.face
 bob.bio.video
-bob.pad.base
+bob.io.image
+bob.ip.color
+bob.ip.qualitymeasure
+bob.learn.libsvm

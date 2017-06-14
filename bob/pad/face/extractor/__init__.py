@@ -1,5 +1,8 @@
 from .LBPHistogram import LBPHistogram
-
+from .VideoLBPHistogram import VideoLBPHistogram
+from .ImageQualityMeasure import ImageQualityMeasure
+from .VideoDataLoader import VideoDataLoader
+from .VideoQualityMeasure import VideoQualityMeasure
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
@@ -21,5 +24,9 @@ def __appropriate__(*args):
 
 __appropriate__(
     LBPHistogram,
+    VideoLBPHistogram,
+    ImageQualityMeasure,
+    VideoQualityMeasure,
+    VideoDataLoader,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]
