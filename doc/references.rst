@@ -12,3 +12,6 @@ References
 
 .. [CBVM16] *A. Costa-Pazo, S. Bhattacharjee, E. Vazquez-Fernandez and S. Marcel*, **The Replay-Mobile Face Presentation-Attack Database**,
             in: Biometrics Special Interest Group (BIOSIG), 2016 BIOSIG - Proceedings of the International Conference of the, 2016, pp. 1-7.
+
+.. [AM11] *A. Anjos and S. Marcel*, **Counter-measures to photo attacks in face recognition: A public database and a baseline**,
+          in: 2011 International Joint Conference on Biometrics (IJCB), Washington, DC, 2011, pp. 1-7.
