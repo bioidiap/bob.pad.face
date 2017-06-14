@@ -1,5 +1,6 @@
 from .VideoFaceCrop import VideoFaceCrop
 from .ImageFaceCrop import ImageFaceCrop
+from .FrameDifference import FrameDifference
 
 
 def __appropriate__(*args):
@@ -23,5 +24,6 @@ def __appropriate__(*args):
 __appropriate__(
     VideoFaceCrop,
     ImageFaceCrop,
+    FrameDifference,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]
