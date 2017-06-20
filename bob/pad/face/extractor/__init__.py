@@ -3,6 +3,7 @@ from .VideoLBPHistogram import VideoLBPHistogram
 from .ImageQualityMeasure import ImageQualityMeasure
 from .VideoDataLoader import VideoDataLoader
 from .VideoQualityMeasure import VideoQualityMeasure
+from .FrameDiffFeatures import FrameDiffFeatures
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
@@ -28,5 +29,6 @@ __appropriate__(
     ImageQualityMeasure,
     VideoQualityMeasure,
     VideoDataLoader,
+    FrameDiffFeatures,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

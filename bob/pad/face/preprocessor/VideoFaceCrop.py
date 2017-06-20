@@ -77,7 +77,7 @@ class VideoFaceCrop(Preprocessor, object):
         Default: ``False``.
 
     ``kwargs``
-        Remaining keyword parameters passed to the :py:class:`Base` constructor, such as ``color_channel`` or ``dtype``.
+        Remaining keyword parameters passed to the Base constructor, such as ``color_channel`` or ``dtype``.
     """
 
     #==========================================================================

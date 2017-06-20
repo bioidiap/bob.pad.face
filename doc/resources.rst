@@ -10,19 +10,27 @@ This section contains a listing of all ready-to-use resources you can find in
 this package.
 
 
+---------------------------------
+
 
 .. _bob.pad.face.resources.databases:
 
 Databases
 ------------
 
+These configuration files/resources contain entry points for the ``--database`` command line argument of the
+``spoof.py`` script.
 
 
+.. _bob.pad.face.resources.databases.replay:
 
+Replay-attack Database
+================================================================================
 
+.. automodule:: bob.pad.face.config.database.replay
+   :members:
 
-
-
+---------------------------------
 
 
 .. _bob.pad.face.resources.face_pad:
@@ -42,7 +50,7 @@ The configuration files contain at least the following arguments of the ``spoof.
 .. _bob.pad.face.resources.face_pad.lbp_svm_replayattack:
 
 LBP features of facial region + SVM for REPLAY-ATTACK
-======================================================
+================================================================================
 
 .. automodule:: bob.pad.face.config.lbp_svm
    :members:
@@ -54,4 +62,13 @@ Image Quality Measures as features of facial region + SVM for REPLAY-ATTACK
 ================================================================================
 
 .. automodule:: bob.pad.face.config.qm_svm
+   :members:
+
+
+.. _bob.pad.face.resources.face_pad.frame_diff_svm_replayattack:
+
+Frame differences based features (motion analysis) + SVM for REPLAY-ATTACK
+================================================================================
+
+.. automodule:: bob.pad.face.config.frame_diff_svm
    :members:

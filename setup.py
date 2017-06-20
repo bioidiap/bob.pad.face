@@ -104,6 +104,7 @@ setup(
             # baselines:
             'lbp-svm = bob.pad.face.config.lbp_svm',
             'qm-svm = bob.pad.face.config.qm_svm',
+            'frame-diff-svm = bob.pad.face.config.frame_diff_svm',
             ],
 
         # registered preprocessors:
@@ -120,6 +121,8 @@ setup(
         'bob.pad.extractor': [
             'video-lbp-histogram-extractor-n8r1-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r1_uniform',
             'video-quality-measure-galbally-msu = bob.pad.face.config.extractor.video_quality_measure:video_quality_measure_galbally_msu',
+            'frame-diff-feat-extr-w20-over0 = bob.pad.face.config.extractor.frame_diff_features:frame_diff_feat_extr_w20_over0',
+            'frame-diff-feat-extr-w100-over0 = bob.pad.face.config.extractor.frame_diff_features:frame_diff_feat_extr_w100_over0',
             ],
 
         # registered algorithms:
