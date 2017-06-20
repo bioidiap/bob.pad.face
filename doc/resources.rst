@@ -10,19 +10,27 @@ This section contains a listing of all ready-to-use resources you can find in
 this package.
 
 
+---------------------------------
+
 
 .. _bob.pad.face.resources.databases:
 
 Databases
 ------------
 
+These configuration files/resources contain entry points for the ``--database`` command line argument of the
+``spoof.py`` script.
 
 
+.. _bob.pad.face.resources.databases.replay:
 
+Replay-attack Database
+================================================================================
 
+.. automodule:: bob.pad.face.config.database.replay
+   :members:
 
-
-
+---------------------------------
 
 
 .. _bob.pad.face.resources.face_pad:
