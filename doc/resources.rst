@@ -42,7 +42,7 @@ The configuration files contain at least the following arguments of the ``spoof.
 .. _bob.pad.face.resources.face_pad.lbp_svm_replayattack:
 
 LBP features of facial region + SVM for REPLAY-ATTACK
-======================================================
+================================================================================
 
 .. automodule:: bob.pad.face.config.lbp_svm
    :members:
@@ -54,4 +54,13 @@ Image Quality Measures as features of facial region + SVM for REPLAY-ATTACK
 ================================================================================
 
 .. automodule:: bob.pad.face.config.qm_svm
+   :members:
+
+
+.. _bob.pad.face.resources.face_pad.frame_diff_svm_replayattack:
+
+Frame differences based features (motion analysis) + SVM for REPLAY-ATTACK
+================================================================================
+
+.. automodule:: bob.pad.face.config.frame_diff_svm
    :members:
