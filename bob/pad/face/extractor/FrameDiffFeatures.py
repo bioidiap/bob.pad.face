@@ -35,7 +35,7 @@ class FrameDiffFeatures(Extractor):
 
     .. math::
 
-        D(N) = \frac{\sum_{i=1}^N{|FFT_i|}}{|FFT_0|}
+        D(N) = (\sum_{i=1}^N{|FFT_i|}) / (|FFT_0|)
 
     **Parameters:**
 
@@ -66,7 +66,7 @@ class FrameDiffFeatures(Extractor):
 
         .. math::
 
-            D(N) = \frac{\sum_{i=1}^N{|FFT_i|}}{|FFT_0|}
+            D(N) = (\sum_{i=1}^N{|FFT_i|}) / (|FFT_0|)
 
         **Parameters:**
 
@@ -146,7 +146,7 @@ class FrameDiffFeatures(Extractor):
 
         .. math::
 
-            D(N) = \frac{\sum_{i=1}^N{|FFT_i|}}{|FFT_0|}
+            D(N) = (\sum_{i=1}^N{|FFT_i|}) / (|FFT_0|)
 
         .. note::
 

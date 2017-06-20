@@ -137,9 +137,9 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Parameters:**
 
-        ``frame_containers`` : :py:class:`list`
-            Each element in the list is a Frame Container, , see ``bob.bio.video.utils.FrameContainer``.
-            Each frame Container conteins feature vectors for the particular individual/person.
+        ``frame_containers`` : [FrameContainer]
+            A list of Frame Containers, , see ``bob.bio.video.utils.FrameContainer``.
+            Each frame Container contains feature vectors for the particular individual/person.
 
         **Returns:**
 
@@ -173,8 +173,8 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Returns:**
 
-        ``combinations`` : :py:class:`list`
-            List of dictionaries containing the combinations.
+        ``combinations`` : [:py:class:`dict`]
+            A list of dictionaries containing the combinations.
         """
 
         varNames = sorted(input_dict)
@@ -257,10 +257,10 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Parameters:**
 
-        ``training_features`` : :py:class:`list`
+        ``training_features`` : [[FrameContainer], [FrameContainer]]
             A list containing two elements: [0] - a list of Frame Containers with
-            feature vectors fot the real class; [1] - a list of Frame Containers with
-            feature vectors fot the attack class.
+            feature vectors for the real class; [1] - a list of Frame Containers with
+            feature vectors for the attack class.
 
         ``n_samples`` : :py:class:`int`
             Number of uniformly selected feature vectors per class.
@@ -457,10 +457,10 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Parameters:**
 
-        ``training_features`` : :py:class:`list`
+        ``training_features`` : [[FrameContainer], [FrameContainer]]
             A list containing two elements: [0] - a list of Frame Containers with
-            feature vectors fot the real class; [1] - a list of Frame Containers with
-            feature vectors fot the attack class.
+            feature vectors for the real class; [1] - a list of Frame Containers with
+            feature vectors for the attack class.
 
         ``n_samples`` : :py:class:`int`
             Number of uniformly selected feature vectors per class defining the
@@ -589,10 +589,10 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Parameters:**
 
-        ``training_features`` : :py:class:`list`
+        ``training_features`` : [[FrameContainer], [FrameContainer]]
             A list containing two elements: [0] - a list of Frame Containers with
-            feature vectors fot the real class; [1] - a list of Frame Containers with
-            feature vectors fot the attack class.
+            feature vectors for the real class; [1] - a list of Frame Containers with
+            feature vectors for the attack class.
 
         ``projector_file`` : :py:class:`str`
             The file to save the trained projector to.
@@ -660,15 +660,13 @@ class VideoSvmPadAlgorithm(Algorithm):
             An array containing class probabilities for each frame.
             First column contains probabilities for each frame being a real class.
             Second column contains probabilities for each frame being an attack class.
-            Must be writable with the :py:meth:`write_feature` function and
-            readable with the :py:meth:`read_feature` function.
+            Must be writable with the ``write_feature`` function and
+            readable with the ``read_feature`` function.
         """
 
         features_array = self.convert_frame_cont_to_array(feature)
 
         probabilities = self.machine.predict_class_and_probabilities(features_array)[1]
-
-#        probabilities = self.machine.predict_class_and_scores(features_array)[1]
 
         return probabilities
 
@@ -716,11 +714,9 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Returns:**
 
-        ``list_of_scores`` : list
+        ``list_of_scores`` : [:py:class:`float`]
             A list containing the scores.
         """
-
-#        import ipdb; ipdb.set_trace()
 
         if self.frame_level_scores_flag:
 
@@ -731,55 +727,5 @@ class VideoSvmPadAlgorithm(Algorithm):
             list_of_scores = [self.score(toscore)]
 
         return list_of_scores
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

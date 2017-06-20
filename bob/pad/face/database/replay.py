@@ -1,12 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-"""
-Created on Thu May  4 12:03:36 2017
 
-High level implementation for the REPLAY-ATTACK database
-
-@author: Olegs Nikisins <olegs.nikisins@idiap.ch>
-"""
 
 #==============================================================================
 

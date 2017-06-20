@@ -24,7 +24,7 @@ Users Guide
    baselines
    references
    resources
-   py_api
+   api
 
 .. todolist::
 

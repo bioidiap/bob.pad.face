@@ -7,7 +7,7 @@ import numpy
 
 class LBPHistogram(Extractor):
     """Calculates a normalized LBP histogram over an image.
-    These features are implemented based on [ChingovskaEffectivnes12]_.
+    These features are implemented based on [CAM12]_.
 
     Parameters
     ----------
