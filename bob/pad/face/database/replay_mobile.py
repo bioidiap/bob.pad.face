@@ -3,19 +3,17 @@
 
 
 #==============================================================================
+import bob.bio.video # Used in ReplayMobilePadFile class
 
-import bob.bio.video # Used in ReplayPadFile class
-
-from bob.pad.base.database import PadFile # Used in ReplayPadFile class
+from bob.pad.base.database import PadFile # Used in ReplayMobilePadFile class
 
 from bob.pad.base.database import PadDatabase
 
 
 #==============================================================================
-
-class ReplayPadFile(PadFile):
+class ReplayMobilePadFile(PadFile):
     """
-    A high level implementation of the File class for the REPLAY-ATTACK database.
+    A high level implementation of the File class for the Replay-Mobile database.
     """
 
     def __init__(self, f):
@@ -24,12 +22,12 @@ class ReplayPadFile(PadFile):
 
         ``f`` : :py:class:`object`
             An instance of the File class defined in the low level db interface
-            of the Replay database, in the bob.db.replay.models.py file.
+            of the Replay-Mobile database, in the bob.db.replaymobile.models.py file.
         """
 
         self.f = f
         # this f is actually an instance of the File class that is defined in
-        # bob.db.replay.models and the PadFile class here needs
+        # bob.db.replaymobile.models and the PadFile class here needs
         # client_id, path, attack_type, file_id for initialization. We have to
         # convert information here and provide them to PadFile. attack_type is a
         # little tricky to get here. Based on the documentation of PadFile:
@@ -42,8 +40,36 @@ class ReplayPadFile(PadFile):
         # attack_type is a string and I decided to make it like this for this
         # particular database. You can do whatever you want for your own database.
 
-        super(ReplayPadFile, self).__init__(client_id=f.client_id, path=f.path,
+        super(ReplayMobilePadFile, self).__init__(client_id=f.client_id, path=f.path,
                                             attack_type=attack_type, file_id=f.id)
+
+
+    #==========================================================================
+    def convert_arr_to_frame_cont(self, data):
+        """
+        This function converts an input 4D array with frames into FrameContainer,
+        where each frame is an RGB image. The dimensionality of the input array
+        is [N_frames, 3, N_rows, N_cols].
+
+        **Parameters:**
+
+        ``data`` : 4D :py:class:`numpy.ndarray`
+            An input 4D array with frames of the dimensionality:
+            [N_frames, 3, N_rows, N_cols].
+
+        **Returns:**
+
+        ``frames`` : FrameContainer
+            Resulting FrameContainer containing RGB frames.
+        """
+
+        frames = bob.bio.video.FrameContainer() # initialize the FrameContainer
+
+        for idx, sample in enumerate(data):
+
+            frames.add(idx, sample)
+
+        return frames
 
 
     #==========================================================================
@@ -54,10 +80,10 @@ class ReplayPadFile(PadFile):
         **Parameters:**
 
         ``directory`` : :py:class:`str`
-            String containing the path to the Replay database.
+            String containing the path to the Replay-Mobile database.
 
         ``extension`` : :py:class:`str`
-            Extension of the video files in the Replay database.
+            Extension of the video files in the Replay-Mobile database.
 
         **Returns:**
 
@@ -66,19 +92,18 @@ class ReplayPadFile(PadFile):
             for further details.
         """
 
-        path = self.f.make_path(directory=directory, extension=extension) # path to the video file
+        video_data_array = self.f.load(directory = directory,
+                                       extension = extension)
 
-        frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
+        video_data = self.convert_arr_to_frame_cont(video_data_array) # the result is now a FrameContainer
 
-        video_data = frame_selector(path) # video data
-
-        return video_data # video data
+        return video_data
 
 
 #==============================================================================
-class ReplayPadDatabase(PadDatabase):
+class ReplayMobilePadDatabase(PadDatabase):
     """
-    A high level implementation of the Database class for the REPLAY-ATTACK database.
+    A high level implementation of the Database class for the Replay-Mobile database.
     """
 
     def __init__(
@@ -103,7 +128,7 @@ class ReplayPadDatabase(PadDatabase):
             The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
         """
 
-        from bob.db.replay import Database as LowLevelDatabase
+        from bob.db.replaymobile import Database as LowLevelDatabase
 
         self.db = LowLevelDatabase()
 
@@ -113,8 +138,8 @@ class ReplayPadDatabase(PadDatabase):
         self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
 
         # Always use super to call parent class methods.
-        super(ReplayPadDatabase, self).__init__(
-            name = 'replay',
+        super(ReplayMobilePadDatabase, self).__init__(
+            name = 'replay-mobile',
             protocol = protocol,
             original_directory = original_directory,
             original_extension = original_extension,
@@ -124,7 +149,7 @@ class ReplayPadDatabase(PadDatabase):
     #==========================================================================
     def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
         """
-        This function returns lists of ReplayPadFile objects, which fulfill the given restrictions.
+        This function returns lists of ReplayMobilePadFile objects, which fulfill the given restrictions.
 
         Keyword parameters:
 
@@ -149,14 +174,17 @@ class ReplayPadDatabase(PadDatabase):
         **Returns:**
 
         ``files`` : :py:class:`str`
-            A list of ReplayPadFile objects.
+            A list of ReplayMobilePadFile objects.
         """
+
         # Convert group names to low-level group names here.
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
         files = self.db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
-        files = [ReplayPadFile(f) for f in files]
+
+        files = [ReplayMobilePadFile(f) for f in files]
+
         return files
 
 
@@ -164,15 +192,15 @@ class ReplayPadDatabase(PadDatabase):
     def annotations(self, f):
         """
         Return annotations for a given file object ``f``, which is an instance
-        of ``ReplayPadFile`` defined in the HLDI of the Replay-Attack DB.
-        The ``load()`` method of ``ReplayPadFile`` class (see above)
+        of ``ReplayMobilePadFile`` defined in the HLDI of the Replay-Mobile DB.
+        The ``load()`` method of ``ReplayMobilePadFile`` class (see above)
         returns a video, therefore this method returns bounding-box annotations
         for each video frame. The annotations are returned as dictionary of dictionaries.
 
         **Parameters:**
 
         ``f`` : :py:class:`object`
-            An instance of ``ReplayPadFile`` defined above.
+            An instance of ``ReplayMobilePadFile`` defined above.
 
         **Returns:**
 
@@ -189,8 +217,8 @@ class ReplayPadDatabase(PadDatabase):
 
         for fn, frame_annots in enumerate(annots):
 
-            topleft = (frame_annots[2], frame_annots[1])
-            bottomright = (frame_annots[2] + frame_annots[4], frame_annots[1] + frame_annots[3])
+            topleft = (frame_annots[1], frame_annots[0])
+            bottomright = (frame_annots[1] + frame_annots[3], frame_annots[0] + frame_annots[2])
 
             annotations[str(fn)] = {'topleft': topleft, 'bottomright': bottomright}
 

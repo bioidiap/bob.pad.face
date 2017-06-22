@@ -24,11 +24,21 @@ These configuration files/resources contain entry points for the ``--database`` 
 
 .. _bob.pad.face.resources.databases.replay:
 
-Replay-attack Database
+Replay-Attack Database
 ================================================================================
 
 .. automodule:: bob.pad.face.config.database.replay
    :members:
+
+
+.. _bob.pad.face.resources.databases.replay_mobile:
+
+Replay-Mobile Database
+================================================================================
+
+.. automodule:: bob.pad.face.config.database.replay_mobile
+   :members:
+
 
 ---------------------------------
 
