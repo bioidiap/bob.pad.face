@@ -96,6 +96,7 @@ setup(
         # registered databases:
         'bob.pad.database': [
             'replay = bob.pad.face.config.database.replay:database',
+            'replay-mobile = bob.pad.face.config.database.replay_mobile:database',
             ],
 
         # registered configurations:

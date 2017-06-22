@@ -22,3 +22,20 @@ def test_replay():
     except IOError as e:
         raise SkipTest(
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)
+
+
+@db_available('replay-mobile')
+def test_replaymobile():
+    replaymobile = bob.bio.base.load_resource('replay-mobile', 'database', preferred_package='bob.pad.face', package_prefix='bob.pad.')
+    try:
+
+        assert len( replaymobile.objects(groups=['train', 'dev', 'eval']) )==  1030
+        assert len( replaymobile.objects(groups=['train', 'dev']) ) ==  728
+        assert len( replaymobile.objects(groups=['train']) ) ==  312
+        assert len( replaymobile.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest') )==  1030
+        assert len( replaymobile.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest', purposes='real') ) ==  390
+        assert len( replaymobile.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest', purposes='attack') ) == 640
+
+    except IOError as e:
+        raise SkipTest(
+            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)

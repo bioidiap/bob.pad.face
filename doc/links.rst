@@ -10,5 +10,6 @@
 .. _installation: https://www.idiap.ch/software/bob/install
 .. _bob.pad.base: https://pypi.python.org/pypi/bob.pad.base
 .. _replayattack: https://www.idiap.ch/dataset/replayattack
+.. _replay-mobile: https://www.idiap.ch/dataset/replay-mobile
 .. _dependencies: https://gitlab.idiap.ch/bob/bob/wikis/Dependencies
 
