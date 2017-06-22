@@ -77,10 +77,9 @@ is available on the section :ref:`bob.pad.face.resources`.
    Once this step is done, you can proceed with the instructions below.
 
 
-.. _bob.pad.face.baselines.replay_attack:
-
-
 ------------
+
+.. _bob.pad.face.baselines.replay_attack:
 
 Baselines on REPLAY-ATTACK database
 --------------------------------------
@@ -237,6 +236,64 @@ The EER/HTER errors for `replayattack`_ database are summarized in the Table bel
 The ROC curves for the particular experiment can be downloaded from here:
 
 :download:`ROC curve <img/ROC_frame_diff_svm_replay_attack.pdf>`
+
+------------
+
+.. _bob.pad.face.baselines.replay_mobile:
+
+Baselines on REPLAY-MOBILE database
+--------------------------------------
+
+This section summarizes the results of baseline face PAD experiments on the `Replay-Mobile`_ database.
+The description of the database instance, which can be used to run face PAD experiments on the Replay-Mobile is given
+here :ref:`bob.pad.face.resources.databases.replay_mobile`.
+
+
+Image Quality Measures as features of facial region + SVM classifier
+========================================================================
+
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.qm_svm_replayattack`.
+Note, that the same PAD pipe-line was used to run experiments on the Replay-Attack database.
+
+To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ ./bin/spoof.py qm-svm \
+    --database replay-mobile --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+.. tip::
+
+    Similarly to the tip above you can run this baseline in parallel.
+
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/qm_svm.py``
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "IQM features of facial region + SVM classifier + Replay-Mobile database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  2.772   |  5.886   |
++-------------------+----------+----------+
+
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_iqm_svm_replay_mobile.pdf>`
 
 ------------
 
