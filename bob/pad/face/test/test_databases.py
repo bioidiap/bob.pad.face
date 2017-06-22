@@ -24,7 +24,7 @@ def test_replay():
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)
 
 
-@db_available('replay-mobile')
+@db_available('replaymobile')
 def test_replaymobile():
     replaymobile = bob.bio.base.load_resource('replay-mobile', 'database', preferred_package='bob.pad.face', package_prefix='bob.pad.')
     try:
