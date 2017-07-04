@@ -13,8 +13,6 @@
    :target: https://gitlab.idiap.ch/bob/bob.pad.face
 .. image:: http://img.shields.io/pypi/v/bob.pad.face.svg
    :target: https://pypi.python.org/pypi/bob.pad.face
-.. image:: http://img.shields.io/pypi/dm/bob.pad.face.svg
-   :target: https://pypi.python.org/pypi/bob.pad.face
 
 
 ====================================================
