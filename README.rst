@@ -27,7 +27,7 @@ presentation attacks.
 Installation
 ------------
 
-Follow our `installation`_ instructions. Then, to install this pacakge, run::
+Follow our `installation`_ instructions. Then, to install this package, run::
 
   $ conda install bob.pad.face
 
