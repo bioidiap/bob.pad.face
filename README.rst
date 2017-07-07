@@ -2,9 +2,9 @@
 .. Thu May  4 16:29:23 CEST 2017
 
 .. image:: http://img.shields.io/badge/docs-stable-yellow.svg
-   :target: http://pythonhosted.org/bob.pad.face/index.html
+   :target: http://beatubulatest.lab.idiap.ch/private/docs/bob/bob.pad.face/stable/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
-   :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.pad.face/master/index.html
+   :target: http://beatubulatest.lab.idiap.ch/private/docs/bob/bob.pad.face/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.pad.face/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.pad.face/commits/master
 .. image:: https://gitlab.idiap.ch/bob/bob.pad.face/badges/master/coverage.svg
@@ -12,8 +12,6 @@
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.pad.face
 .. image:: http://img.shields.io/pypi/v/bob.pad.face.svg
-   :target: https://pypi.python.org/pypi/bob.pad.face
-.. image:: http://img.shields.io/pypi/dm/bob.pad.face.svg
    :target: https://pypi.python.org/pypi/bob.pad.face
 
 
@@ -29,7 +27,7 @@ presentation attacks.
 Installation
 ------------
 
-Follow our `installation`_ instructions. Then, to install this pacakge, run::
+Follow our `installation`_ instructions. Then, to install this package, run::
 
   $ conda install bob.pad.face
 
