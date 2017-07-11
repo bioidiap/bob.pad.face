@@ -165,7 +165,7 @@ class VideoFaceCrop(Preprocessor, object):
 
         selected_frame_idx = 0
 
-        for idx in range(0, len(annotations)): # idx - frame index
+        for idx in range(0, np.min( [len(annotations), len(frame_container)] )): # idx - frame index
 
             frame_annotations = annotations[str(idx)] # annotations for particular frame
 

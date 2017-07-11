@@ -97,6 +97,7 @@ setup(
         'bob.pad.database': [
             'replay = bob.pad.face.config.database.replay:database',
             'replay-mobile = bob.pad.face.config.database.replay_mobile:database',
+            'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
             ],
 
         # registered configurations:
