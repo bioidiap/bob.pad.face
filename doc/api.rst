@@ -16,7 +16,20 @@ Database Interfaces
 REPLAY-ATTACK Database
 ========================
 
-.. automodule:: bob.pad.face.database.replay
+.. autoclass:: bob.pad.face.database.replay.ReplayPadFile
+.. autoclass:: bob.pad.face.database.replay.ReplayPadDatabase
+
+REPLAY-MOBILE Database
+========================
+
+.. autoclass:: bob.pad.face.database.replay_mobile.ReplayMobilePadFile
+.. autoclass:: bob.pad.face.database.replay_mobile.ReplayMobilePadDatabase
+
+MSU MFSD Database
+========================
+
+.. autoclass:: bob.pad.face.database.msu_mfsd.MsuMfsdPadFile
+.. autoclass:: bob.pad.face.database.msu_mfsd.MsuMfsdPadDatabase
 
 
 Pre-processors
