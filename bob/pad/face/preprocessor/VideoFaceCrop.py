@@ -159,6 +159,12 @@ class VideoFaceCrop(Preprocessor, object):
 
         ``min_face_size`` : :py:class:`int`
             The minimal size of the face in pixels.
+
+        **Returns:**
+
+        ``cleaned_frame_container`` : FrameContainer
+            FrameContainer containing the frames with faces of the size
+            overcoming the specified threshold.
         """
 
         cleaned_frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
@@ -184,6 +190,57 @@ class VideoFaceCrop(Preprocessor, object):
 
 
     #==========================================================================
+    def select_annotated_frames(self, frames, annotations):
+        """
+        Select only annotated frames in the input FrameContainer ``frames``.
+
+        **Parameters:**
+
+        ``frames`` : FrameContainer
+            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            for further details.
+
+        ``annotations`` : :py:class:`dict`
+            A dictionary containing the annotations for each frame in the video.
+            Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
+            Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
+            is the dictionary defining the coordinates of the face bounding box in frame N.
+
+        **Returns:**
+
+        ``cleaned_frame_container`` : FrameContainer
+            FrameContainer containing the annotated frames only.
+
+        ``cleaned_annotations`` : :py:class:`dict`
+            A dictionary containing the annotations for each frame in the output video.
+            Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
+            Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
+            is the dictionary defining the coordinates of the face bounding box in frame N.
+        """
+
+        annotated_frames = np.sort( [np.int(item) for item in annotations.keys()] ) # annotated frame numbers
+
+        available_frames = range(0,len(frames)) # frame numbers in the input video
+
+        valid_frames = list(set(annotated_frames).intersection(available_frames)) # valid and annotated frames
+
+        cleaned_frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+
+        cleaned_annotations = {}
+
+        for idx, valid_frame_num in enumerate(valid_frames):
+            ## valid_frame_num - is the number of the original frame having annotations
+
+            cleaned_annotations[str(idx)] = annotations[str(valid_frame_num)] # correct the frame numbers
+
+            selected_frame = frames[valid_frame_num][1] # get current frame
+
+            cleaned_frame_container.add(idx, selected_frame) # add current frame to FrameContainer
+
+        return cleaned_frame_container, cleaned_annotations
+
+
+    #==========================================================================
     def __call__(self, frames, annotations):
         """
         Crop the face in the input video frames given annotations for each frame.
@@ -205,6 +262,11 @@ class VideoFaceCrop(Preprocessor, object):
         ``preprocessed_video`` : FrameContainer
             Cropped faces stored in the FrameContainer.
         """
+
+        if len(frames) != len(annotations): # if some annotations are missing
+
+            ## Select only annotated frames:
+            frames, annotations = self.select_annotated_frames(frames, annotations)
 
         preprocessed_video = self.video_preprocessor(frames = frames, annotations = annotations)
 
