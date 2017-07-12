@@ -39,3 +39,22 @@ def test_replaymobile():
     except IOError as e:
         raise SkipTest(
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)
+
+
+@db_available('msu_mfsd_mod') # the name of the package defining low-level interface of MSU MFSD
+def test_msu_mfsd():
+    msu_mfsd = bob.bio.base.load_resource('msu-mfsd', 'database', preferred_package='bob.pad.face', package_prefix='bob.pad.')
+    try:
+
+        assert len( msu_mfsd.objects(groups=['train', 'dev', 'eval']) )==  280
+        assert len( msu_mfsd.objects(groups=['train', 'dev']) ) ==  160
+        assert len( msu_mfsd.objects(groups=['train']) ) ==  80
+        assert len( msu_mfsd.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest') )==  280
+        assert len( msu_mfsd.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest', purposes='real') ) ==  70
+        assert len( msu_mfsd.objects(groups=['train', 'dev', 'eval'], protocol = 'grandtest', purposes='attack') ) == 210
+
+    except IOError as e:
+        raise SkipTest(
+            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)
+
+

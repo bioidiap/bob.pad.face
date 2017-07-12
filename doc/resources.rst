@@ -40,6 +40,15 @@ Replay-Mobile Database
    :members:
 
 
+.. _bob.pad.face.resources.databases.msu_mfsd:
+
+MSU MFSD Database
+================================================================================
+
+.. automodule:: bob.pad.face.config.database.msu_mfsd
+   :members:
+
+
 ---------------------------------
 
 
