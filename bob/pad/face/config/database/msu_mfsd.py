@@ -2,13 +2,13 @@
 
 """`MSU MFSD`_ is a database for face PAD experiments.
 
-Database created at MSU, for face-PAD experiments. The public version of the database (available here) contains
+Database created at MSU, for face-PAD experiments. The public version of the database contains
 280 videos corresponding to 35 clients. The videos are grouped as 'genuine' and 'attack'.
 The attack videos have been constructed from the genuine ones,
 and consist of three kinds: print, iPad (video-replay), and iPhone (video-replay).
 Face-locations are also provided for each frame of each video, but some (6 videos) face-locations are not reliable,
 because the videos are not correctly oriented.
-The reference citation is [XXX]_.
+The reference citation is [WHJ15]_.
 
 You can download the raw data of the `MSU MFSD`_ database by following
 the link.
