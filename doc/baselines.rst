@@ -395,6 +395,162 @@ The ROC curves for the particular experiment can be downloaded from here:
 
 ------------
 
+.. _bob.pad.face.baselines.msu_mfsd:
+
+Baselines on MSU MFSD database
+--------------------------------------
+
+This section summarizes the results of baseline face PAD experiments on the `MSU MFSD`_ database.
+The description of the database instance, which can be used to run face PAD experiments on the MSU MFSD is given
+here :ref:`bob.pad.face.resources.databases.msu_mfsd`.
+
+
+LBP features of facial region + SVM classifier
+========================================================================
+
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.lbp_svm_replayattack`.
+Note, that the same PAD pipe-line was used to run experiments on the Replay-Attack database.
+
+To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ ./bin/spoof.py lbp-svm \
+    --database msu-mfsd --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+.. tip::
+
+    Similarly to the tip above you can run this baseline in parallel.
+
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/lbp_svm.py``
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "LBP features of facial region + SVM classifier + MSU MFSD database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  27.402  |  21.399  |
++-------------------+----------+----------+
+
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_lbp_svm_msu_mfsd.pdf>`
+
+------------
+
+
+Image Quality Measures as features of facial region + SVM classifier
+========================================================================
+
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.qm_svm_replayattack`.
+Note, that the same PAD pipe-line was used to run experiments on the Replay-Attack database.
+
+To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ ./bin/spoof.py qm-svm \
+    --database msu-mfsd --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+.. tip::
+
+    Similarly to the tip above you can run this baseline in parallel.
+
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/qm_svm.py``
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "IQM features of facial region + SVM classifier + MSU MFSD database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  4.115   |  5.564   |
++-------------------+----------+----------+
+
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_iqm_svm_msu_mfsd.pdf>`
+
+------------
+
+
+Frame differences based features (motion analysis) + SVM classifier
+========================================================================
+
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.frame_diff_svm_replayattack`.
+Note, that the same PAD pipe-line was used to run experiments on the Replay-Attack database.
+
+To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ ./bin/spoof.py frame-diff-svm \
+    --database msu-mfsd --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+.. tip::
+
+    Similarly to the tip above you can run this baseline in parallel.
+
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/frame_diff_svm.py``
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "10 features for each window in Frame Differences + SVM classifier + MSU MFSD database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  25.839  |  17.050  |
++-------------------+----------+----------+
+
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_frame_diff_svm_msu_mfsd.pdf>`
+
+------------
+
 
 .. include:: links.rst
 
