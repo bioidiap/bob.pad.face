@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Olegs Nikisins
-
 This file contains configurations to run Image Quality Measures (IQM) and SVM based face PAD baseline.
 The settings are tuned for the Replay-attack database.
 The IQM features used in this algorithm/resource are introduced in the following papers: [WHJ15]_ and [CBVM16]_.

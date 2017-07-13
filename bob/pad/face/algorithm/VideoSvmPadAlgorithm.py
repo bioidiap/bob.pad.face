@@ -210,9 +210,9 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         else:
 
-            uniform_step = features.shape[0]/n_samples
+            uniform_step = np.int(features.shape[0]/n_samples)
 
-            features_subset = features[0 : uniform_step*n_samples : uniform_step, :]
+            features_subset = features[0 : np.int(uniform_step*n_samples) : uniform_step, :]
 
         return features_subset
 
@@ -240,7 +240,7 @@ class VideoSvmPadAlgorithm(Algorithm):
             Selected subset of cross-validation features.
         """
 
-        half_samples_num = features.shape[0]/2
+        half_samples_num = np.int(features.shape[0]/2)
 
         features_train = features[ 0 : half_samples_num, : ]
         features_cv = features[ half_samples_num : 2 * half_samples_num + 1, : ]

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Olegs Nikisins
-
 This file contains configurations to run LBP and SVM based face PAD baseline.
 The settings are tuned for the Replay-attack database.
 The idea of the algorithm is introduced in the following paper: [CAM12]_.
