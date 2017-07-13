@@ -25,6 +25,10 @@ from ..preprocessor import VideoFaceCrop
 
 from ..preprocessor import FrameDifference
 
+from ..extractor import FrameDiffFeatures
+
+from ..extractor import VideoLBPHistogram
+
 #==============================================================================
 def test_lbp_histogram():
     lbp = LBPHistogram()
@@ -168,6 +172,93 @@ def test_frame_difference():
 
     assert diff.shape == (n_frames-1, 2)
     assert (diff==0).all()
+
+
+#==============================================================================
+def test_frame_diff_features():
+    """
+    Test FrameDiffFeatures extractor computing 10 features given frame differences.
+    """
+
+    WINDOW_SIZE=20
+    OVERLAP=0
+
+    extractor = FrameDiffFeatures(window_size=WINDOW_SIZE,
+                                  overlap=OVERLAP)
+
+    data = np.transpose( np.vstack( [range(0,100), range(0,100)] ) )
+
+    features = extractor(data)
+
+    assert len(features) == 5
+    assert len(features[0][1]) == 10
+    assert len(features[-1][1]) == 10
+    assert (features[0][1][0:5]==features[0][1][5:]).all()
+    assert (np.sum(features[0][1]) - 73.015116873109207) < 0.000001
+
+
+#==============================================================================
+def test_video_lbp_histogram():
+    """
+    Test VideoLBPHistogram extractor.
+    """
+
+    image = load(datafile('test_image.png', 'bob.pad.face.test'))
+    annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
+
+    CROPPED_IMAGE_SIZE = (64, 64) # The size of the resulting face
+    CROPPED_POSITIONS = {'topleft' : (0,0) , 'bottomright' : CROPPED_IMAGE_SIZE}
+    FIXED_POSITIONS = None
+    MASK_SIGMA = None             # The sigma for random values areas outside image
+    MASK_NEIGHBORS = 5            # The number of neighbors to consider while extrapolating
+    MASK_SEED = None              # The seed for generating random values during extrapolation
+    CHECK_FACE_SIZE_FLAG = True   # Check the size of the face
+    MIN_FACE_SIZE = 50            # Minimal possible size of the face
+    USE_LOCAL_CROPPER_FLAG = True # Use the local face cropping class (identical to Ivana's paper)
+    RGB_OUTPUT_FLAG = False       # The output is gray-scale
+    COLOR_CHANNEL = 'gray'        # Convert image to gray-scale format
+
+    preprocessor = VideoFaceCrop(cropped_image_size = CROPPED_IMAGE_SIZE,
+                                 cropped_positions = CROPPED_POSITIONS,
+                                 fixed_positions = FIXED_POSITIONS,
+                                 mask_sigma = MASK_SIGMA,
+                                 mask_neighbors = MASK_NEIGHBORS,
+                                 mask_seed = MASK_SEED,
+                                 check_face_size_flag = CHECK_FACE_SIZE_FLAG,
+                                 min_face_size = MIN_FACE_SIZE,
+                                 use_local_cropper_flag = USE_LOCAL_CROPPER_FLAG,
+                                 rgb_output_flag = RGB_OUTPUT_FLAG,
+                                 color_channel = COLOR_CHANNEL)
+
+    video, annotations = convert_image_to_video_data(image, annotations, 20)
+
+    faces = preprocessor(frames = video, annotations = annotations)
+
+    LBPTYPE='uniform'
+    ELBPTYPE='regular'
+    RAD=1
+    NEIGHBORS=8
+    CIRC=False
+    DTYPE=None
+
+    extractor = VideoLBPHistogram(lbptype=LBPTYPE,
+                                  elbptype=ELBPTYPE,
+                                  rad=RAD,
+                                  neighbors=NEIGHBORS,
+                                  circ=CIRC,
+                                  dtype=DTYPE)
+
+    lbp_histograms = extractor(faces)
+
+    assert len(lbp_histograms) == 20
+    assert len(lbp_histograms[0][1]) == 59
+    assert (lbp_histograms[0][1]==lbp_histograms[-1][1]).all()
+    assert (lbp_histograms[0][1][0] - 0.12695109261186263) < 0.000001
+    assert (lbp_histograms[0][1][-1] - 0.031737773152965658) < 0.000001
+
+
+
+
 
 
 
