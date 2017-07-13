@@ -210,9 +210,9 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         else:
 
-            uniform_step = features.shape[0]/n_samples
+            uniform_step = np.int(features.shape[0]/n_samples)
 
-            features_subset = features[0 : uniform_step*n_samples : uniform_step, :]
+            features_subset = features[0 : np.int(uniform_step*n_samples) : uniform_step, :]
 
         return features_subset
 
@@ -240,7 +240,7 @@ class VideoSvmPadAlgorithm(Algorithm):
             Selected subset of cross-validation features.
         """
 
-        half_samples_num = features.shape[0]/2
+        half_samples_num = np.int(features.shape[0]/2)
 
         features_train = features[ 0 : half_samples_num, : ]
         features_cv = features[ half_samples_num : 2 * half_samples_num + 1, : ]
@@ -446,7 +446,8 @@ class VideoSvmPadAlgorithm(Algorithm):
                   machine_type = 'C_SVC', kernel_type = 'RBF',
                   trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
                   mean_std_norm_flag = False,
-                  projector_file = ""):
+                  projector_file = "",
+                  save_debug_data_flag = True):
         """
         First, this function tunes the hyper-parameters of the SVM classifier using
         grid search on the sub-sets of training data. Train and cross-validation
@@ -486,6 +487,10 @@ class VideoSvmPadAlgorithm(Algorithm):
             of this file is used in this function. The file debug_data.hdf5 will
             be save in this path. This file contains information, which might be
             usefull for debugging.
+
+        ``save_debug_data_flag`` : :py:class:`bool`
+            Save the data, which might be usefull for debugging if ``True``.
+            Default: ``True``.
 
         **Returns:**
 
@@ -544,16 +549,18 @@ class VideoSvmPadAlgorithm(Algorithm):
             setattr(trainer, key, selected_params[key]) # set the params of trainer
 
         # Save the data, which is usefull for debugging.
-        debug_file = os.path.join( os.path.split(projector_file)[0], "debug_data.hdf5" )
-        debug_dict = {}
-        debug_dict['precisions_train'] = precisions_train
-        debug_dict['precisions_cv'] = precisions_cv
-        debug_dict['cost'] = selected_params['cost']
-        debug_dict['gamma'] = selected_params['gamma']
-        f = bob.io.base.HDF5File(debug_file, 'w') # open hdf5 file to save the debug data
-        for key in debug_dict.keys():
-            f.set(key, debug_dict[key])
-        del f
+        if save_debug_data_flag:
+
+            debug_file = os.path.join( os.path.split(projector_file)[0], "debug_data.hdf5" )
+            debug_dict = {}
+            debug_dict['precisions_train'] = precisions_train
+            debug_dict['precisions_cv'] = precisions_cv
+            debug_dict['cost'] = selected_params['cost']
+            debug_dict['gamma'] = selected_params['gamma']
+            f = bob.io.base.HDF5File(debug_file, 'w') # open hdf5 file to save the debug data
+            for key in debug_dict.keys():
+                f.set(key, debug_dict[key])
+            del f
 
         # training_features[0] - training features for the REAL class.
         real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array

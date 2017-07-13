@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Olegs Nikisins
-
 This file contains configurations to run Frame Differences and SVM based face PAD baseline.
 The settings are tuned for the Replay-attack database.
 The idea of the algorithms is inherited from the following paper: [AM11]_.
