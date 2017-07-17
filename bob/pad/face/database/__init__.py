@@ -1,6 +1,8 @@
 from .replay import ReplayPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .msu_mfsd import MsuMfsdPadDatabase
+from .aggregated_db import AggregatedDbPadDatabase
+
 
 # gets sphinx autodoc done right - don't remove it
 def __appropriate__(*args):
@@ -20,6 +22,7 @@ __appropriate__(
     ReplayPadDatabase,
     ReplayMobilePadDatabase,
     MsuMfsdPadDatabase,
+    AggregatedDbPadDatabase,
     )
 
 __all__ = [_ for _ in dir() if not _.startswith('_')]

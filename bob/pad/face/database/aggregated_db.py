@@ -1,21 +1,23 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-
 #==============================================================================
-
-import bob.bio.video # Used in ReplayPadFile class
-
 from bob.pad.base.database import PadFile # Used in ReplayPadFile class
 
 from bob.pad.base.database import PadDatabase
 
+# Import HLDI for the databases to aggregate:
+from bob.pad.face.database import replay as replay_hldi
+
+from bob.pad.face.database import replay_mobile as replay_mobile_hldi
+
+from bob.pad.face.database import msu_mfsd as msu_mfsd_hldi
 
 #==============================================================================
-
-class ReplayPadFile(PadFile):
+class AggregatedDbPadFile(PadFile):
     """
-    A high level implementation of the File class for the REPLAY-ATTACK database.
+    A high level implementation of the File class for the Aggregated Database
+    uniting 3 databases: REPLAY-ATTACK, REPLAY-MOBILE and MSU MFSD.
     """
 
     def __init__(self, f):
@@ -24,12 +26,15 @@ class ReplayPadFile(PadFile):
 
         ``f`` : :py:class:`object`
             An instance of the File class defined in the low level db interface
-            of the Replay database, in the bob.db.replay.models.py file.
+            of the Replay-Attack or Replay-Mobile or MSU MFSD database,
+            in the bob.db.replay.models.py       file or
+            in the bob.db.replaymobile.models.py file or
+            in the bob.db.msu_mfsd_mod.models.py file.
         """
 
         self.f = f
         # this f is actually an instance of the File class that is defined in
-        # bob.db.replay.models and the PadFile class here needs
+        # bob.db.<database_name>.models and the PadFile class here needs
         # client_id, path, attack_type, file_id for initialization. We have to
         # convert information here and provide them to PadFile. attack_type is a
         # little tricky to get here. Based on the documentation of PadFile:
@@ -42,7 +47,7 @@ class ReplayPadFile(PadFile):
         # attack_type is a string and I decided to make it like this for this
         # particular database. You can do whatever you want for your own database.
 
-        super(ReplayPadFile, self).__init__(client_id=f.client_id, path=f.path,
+        super(AggregatedDbPadFile, self).__init__(client_id=f.client_id, path=f.path,
                                             attack_type=attack_type, file_id=f.id)
 
 
@@ -54,10 +59,13 @@ class ReplayPadFile(PadFile):
         **Parameters:**
 
         ``directory`` : :py:class:`str`
-            String containing the path to the Replay database.
+            String containing the paths to all databases used in this aggregated
+            database. The paths are separated with a space.
 
         ``extension`` : :py:class:`str`
-            Extension of the video files in the Replay database.
+            Extension of the video files in the REPLAY-ATTACK and REPLAY-MOBILE
+            databases. The extension of files in MSU MFSD is not taken into account
+            in the HighLevel DB Interface of MSU MFSD. Default: '.mov'.
 
         **Returns:**
 
@@ -66,19 +74,40 @@ class ReplayPadFile(PadFile):
             for further details.
         """
 
-        path = self.f.make_path(directory=directory, extension=extension) # path to the video file
+        import bob.db.replay
+        import bob.db.replaymobile
+        import bob.db.msu_mfsd_mod
 
-        frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
+        directories = directory.split(" ")
 
-        video_data = frame_selector(path) # video data
+        if isinstance(self.f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
+
+            db_pad_file = replay_hldi.ReplayPadFile(self.f) # replay_hldi is HLDI of Replay-Attack
+
+            directory = directories[0]
+
+        if isinstance(self.f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+
+            db_pad_file = replay_mobile_hldi.ReplayMobilePadFile(self.f) # replay_mobile_hldi is HLDI of Replay-Mobile
+
+            directory = directories[1]
+
+        if isinstance(self.f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+
+            db_pad_file = msu_mfsd_hldi.MsuMfsdPadFile(self.f) # msu_mfsd_hldi is HLDI of MSU MFSD
+
+            directory = directories[2]
+
+        video_data = db_pad_file.load(directory = directory, extension = extension)
 
         return video_data # video data
 
 
 #==============================================================================
-class ReplayPadDatabase(PadDatabase):
+class AggregatedDbPadDatabase(PadDatabase):
     """
-    A high level implementation of the Database class for the REPLAY-ATTACK database.
+    A high level implementation of the Database class for the Aggregated Database
+    uniting 3 databases: REPLAY-ATTACK, REPLAY-MOBILE and MSU MFSD.
     """
 
     def __init__(
@@ -91,21 +120,30 @@ class ReplayPadDatabase(PadDatabase):
         **Parameters:**
 
         ``protocol`` : :py:class:`str` or ``None``
-            The name of the protocol that defines the default experimental setup for this database.
+            The name of the protocol that defines the default experimental setup
+            for this database. Default: 'grandtest'.
 
         ``original_directory`` : :py:class:`str`
-            The directory where the original data of the database are stored.
+            String containing the paths to all databases used in this aggregated
+            database. The paths are separated with a space. Default: None.
 
         ``original_extension`` : :py:class:`str`
-            The file name extension of the original data.
+            Extension of the video files in the REPLAY-ATTACK and REPLAY-MOBILE
+            databases. The extension of files in MSU MFSD is not taken into account
+            in the HighLevel DB Interface of MSU MFSD. Default: None.
 
         ``kwargs``
             The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
         """
 
-        from bob.db.replay import Database as LowLevelDatabase
+        # Import LLDI for all databases:
+        import bob.db.replay
+        import bob.db.replaymobile
+        import bob.db.msu_mfsd_mod
 
-        self.db = LowLevelDatabase()
+        self.replay_db = bob.db.replay.Database()
+        self.replaymobile_db = bob.db.replaymobile.Database()
+        self.msu_mfsd_db = bob.db.msu_mfsd_mod.Database()
 
         # Since the high level API expects different group names than what the low
         # level API offers, you need to convert them when necessary
@@ -113,8 +151,8 @@ class ReplayPadDatabase(PadDatabase):
         self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
 
         # Always use super to call parent class methods.
-        super(ReplayPadDatabase, self).__init__(
-            name = 'replay',
+        super(AggregatedDbPadDatabase, self).__init__(
+            name = 'aggregated_db',
             protocol = protocol,
             original_directory = original_directory,
             original_extension = original_extension,
@@ -148,16 +186,23 @@ class ReplayPadDatabase(PadDatabase):
 
         **Returns:**
 
-        ``files`` : [ReplayPadFile]
-            A list of ReplayPadFile objects.
+        ``files`` : [AggregatedDbPadFile]
+            A list of AggregatedDbPadFile objects.
         """
 
         # Convert group names to low-level group names here.
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
-        files = self.db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
-        files = [ReplayPadFile(f) for f in files]
+        replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+
+        replaymobile_files = self.replaymobile_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+
+        msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
+
+        files = replay_files + replaymobile_files + msu_mfsd_files # append all files to a single list
+
+        files = [AggregatedDbPadFile(f) for f in files]
         return files
 
 
@@ -165,15 +210,15 @@ class ReplayPadDatabase(PadDatabase):
     def annotations(self, f):
         """
         Return annotations for a given file object ``f``, which is an instance
-        of ``ReplayPadFile`` defined in the HLDI of the Replay-Attack DB.
-        The ``load()`` method of ``ReplayPadFile`` class (see above)
+        of ``AggregatedDbPadFile`` defined in the HLDI of the Aggregated DB.
+        The ``load()`` method of ``AggregatedDbPadFile`` class (see above)
         returns a video, therefore this method returns bounding-box annotations
         for each video frame. The annotations are returned as dictionary of dictionaries.
 
         **Parameters:**
 
         ``f`` : :py:class:`object`
-            An instance of ``ReplayPadFile`` defined above.
+            An instance of ``AggregatedDbPadFile`` defined above.
 
         **Returns:**
 
@@ -184,16 +229,38 @@ class ReplayPadDatabase(PadDatabase):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        annots = f.f.bbx(directory=self.original_directory) # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
+        import bob.db.replay
+        import bob.db.replaymobile
+        import bob.db.msu_mfsd_mod
 
-        annotations = {} # dictionary to return
+        directories = self.original_directory.split(" ")
 
-        for fn, frame_annots in enumerate(annots):
+        if isinstance(f.f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
 
-            topleft = (frame_annots[2], frame_annots[1])
-            bottomright = (frame_annots[2] + frame_annots[4], frame_annots[1] + frame_annots[3])
+            hldi_db = replay_hldi.ReplayPadDatabase(original_directory = directories[0])
 
-            annotations[str(fn)] = {'topleft': topleft, 'bottomright': bottomright}
+        if isinstance(f.f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+
+            hldi_db = replay_mobile_hldi.ReplayMobilePadDatabase(original_directory = directories[1])
+
+        if isinstance(f.f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+
+            hldi_db = msu_mfsd_hldi.MsuMfsdPadDatabase(original_directory = directories[2])
+
+        annotations = hldi_db.annotations(f)
 
         return annotations
+
+
+
+
+
+
+
+
+
+
+
+
+
 
