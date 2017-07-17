@@ -66,6 +66,7 @@ setup(
             'replay = bob.pad.face.config.database.replay:database',
             'replay-mobile = bob.pad.face.config.database.replay_mobile:database',
             'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
+            'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
             ],
 
         # registered configurations:
