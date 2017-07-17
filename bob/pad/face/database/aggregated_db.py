@@ -162,7 +162,7 @@ class AggregatedDbPadDatabase(PadDatabase):
     #==========================================================================
     def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
         """
-        This function returns lists of ReplayPadFile objects, which fulfill the given restrictions.
+        This function returns a list of AggregatedDbPadFile objects, which fulfill the given restrictions.
 
         Keyword parameters:
 

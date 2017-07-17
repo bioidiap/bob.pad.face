@@ -9,7 +9,6 @@
 This section contains a listing of all ready-to-use resources you can find in
 this package.
 
-
 ---------------------------------
 
 
@@ -48,6 +47,14 @@ MSU MFSD Database
 .. automodule:: bob.pad.face.config.database.msu_mfsd
    :members:
 
+
+.. _bob.pad.face.resources.databases.aggregated_db:
+
+Aggregated Database
+================================================================================
+
+.. automodule:: bob.pad.face.config.database.aggregated_db
+   :members:
 
 ---------------------------------
 

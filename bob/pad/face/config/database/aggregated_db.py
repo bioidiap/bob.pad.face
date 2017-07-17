@@ -43,7 +43,10 @@ Notice that ``original_directory`` is set to ``[YOUR_AGGREGATED_DB_DIRECTORIES]`
 You must make sure to create ``${HOME}/.bob_bio_databases.txt`` file setting this
 value to the places where you actually installed the Replay-Attack, Replay-Mobile
 and MSU MFSD Databases. In particular, the paths pointing to these 3 databases
-must be saparated with a space. For example:
-[YOUR_AGGREGATED_DB_DIRECTORIES] = <PATH_TO_REPLAY_ATTACK> <PATH_TO_REPLAY_MOBILE>
- <PATH_TO_MSU_MFSD>
+must be separated with a space. See the following note with an example of
+``[YOUR_AGGREGATED_DB_DIRECTORIES]`` entry in the ``${HOME}/.bob_bio_databases.txt`` file.
+
+.. note::
+
+    [YOUR_AGGREGATED_DB_DIRECTORIES] = <PATH_TO_REPLAY_ATTACK> <PATH_TO_REPLAY_MOBILE> <PATH_TO_MSU_MFSD>
 """
