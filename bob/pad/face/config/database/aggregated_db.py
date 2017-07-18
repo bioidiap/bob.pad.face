@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 """Aggregated Db is a database for face PAD experiments.
-
 This database aggregates the data from 3 publicly available data-sets:
 `REPLAYATTACK`_, `REPLAY-MOBILE`_ and `MSU MFSD`_.
-
 You can download the data for the above databases by following the corresponding
 links.
 

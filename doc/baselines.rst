@@ -552,5 +552,20 @@ The ROC curves for the particular experiment can be downloaded from here:
 ------------
 
 
+.. _bob.pad.face.baselines.aggregated_db:
+
+Baselines on Aggregated Database
+--------------------------------------
+
+This section summarizes the results of baseline face PAD experiments on the Aggregated Database.
+The description of the database instance, which can be used to run face PAD experiments on the Aggregated Database is given
+here :ref:`bob.pad.face.resources.databases.aggregated_db`.
+To understand the settings of this database instance in more details you can check the
+corresponding configuration file: ``bob/pad/face/config/database/aggregated_db.py``.
+
+------------
+
+
 .. include:: links.rst
+
 

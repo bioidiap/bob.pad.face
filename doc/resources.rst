@@ -98,3 +98,19 @@ Frame differences based features (motion analysis) + SVM for REPLAY-ATTACK
 
 .. automodule:: bob.pad.face.config.frame_diff_svm
    :members:
+
+
+.. _bob.pad.face.resources.face_pad.qm_svm_aggregated_db:
+
+Image Quality Measures as features of facial region + SVM for Aggregated Database
+===================================================================================
+
+.. automodule:: bob.pad.face.config.qm_svm_aggregated_db
+   :members:
+
+
+
+
+
+
+
