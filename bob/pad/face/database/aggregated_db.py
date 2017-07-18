@@ -13,6 +13,8 @@ from bob.pad.face.database import replay_mobile as replay_mobile_hldi
 
 from bob.pad.face.database import msu_mfsd as msu_mfsd_hldi
 
+import numpy as np
+
 #==============================================================================
 class AggregatedDbPadFile(PadFile):
     """
@@ -26,7 +28,7 @@ class AggregatedDbPadFile(PadFile):
 
         ``f`` : :py:class:`object`
             An instance of the File class defined in the low level db interface
-            of the Replay-Attack or Replay-Mobile or MSU MFSD database,
+            of the Replay-Attack or Replay-Mobile or MSU MFSD database, respectively
             in the bob.db.replay.models.py       file or
             in the bob.db.replaymobile.models.py file or
             in the bob.db.msu_mfsd_mod.models.py file.
@@ -47,8 +49,99 @@ class AggregatedDbPadFile(PadFile):
         # attack_type is a string and I decided to make it like this for this
         # particular database. You can do whatever you want for your own database.
 
-        super(AggregatedDbPadFile, self).__init__(client_id=f.client_id, path=f.path,
-                                            attack_type=attack_type, file_id=f.id)
+        file_path = self.encode_file_path(f)
+
+        file_id = self.encode_file_id(f)
+
+        super(AggregatedDbPadFile, self).__init__(client_id = f.client_id, path = file_path,
+                                                  attack_type = attack_type, file_id = file_id)
+
+
+    #==========================================================================
+    def encode_file_id(self, f, n = 2000):
+        """
+        Return a modified version of the ``f.id`` ensuring uniqueness of the ids
+        across all databases.
+
+        **Parameters:**
+
+        ``f`` : :py:class:`object`
+            An instance of the File class defined in the low level db interface
+            of the Replay-Attack or Replay-Mobile or MSU MFSD database, respectively
+            in the bob.db.replay.models.py       file or
+            in the bob.db.replaymobile.models.py file or
+            in the bob.db.msu_mfsd_mod.models.py file.
+
+        ``n`` : :py:class:`int`
+            An offset to be added to the file id for different databases is defined
+            as follows: offset = k*n, where k is the database number,
+            k = 0,1,2 in our case. Default: 2000.
+
+        **Returns:**
+
+        ``file_id`` : :py:class:`int`
+            A modified version of the file id, which is now unigue accross
+            all databases.
+        """
+
+        import bob.db.replay
+        import bob.db.replaymobile
+        import bob.db.msu_mfsd_mod
+
+        if isinstance(f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
+
+            file_id = f.id
+
+        if isinstance(f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+
+            file_id = np.int(f.id + n)
+
+        if isinstance(f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+
+            file_id = np.int(f.id + 2*n)
+
+        return file_id
+
+
+    #==========================================================================
+    def encode_file_path(self, f):
+        """
+        Append the name of the database to the end of the file path separated
+        with "_".
+
+        **Parameters:**
+
+        ``f`` : :py:class:`object`
+            An instance of the File class defined in the low level db interface
+            of the Replay-Attack or Replay-Mobile or MSU MFSD database, respectively
+            in the bob.db.replay.models.py       file or
+            in the bob.db.replaymobile.models.py file or
+            in the bob.db.msu_mfsd_mod.models.py file.
+
+        **Returns:**
+
+        ``file_path`` : :py:class:`str`
+            Modified path to the file, with database name appended to the end
+            separated with "_".
+        """
+
+        import bob.db.replay
+        import bob.db.replaymobile
+        import bob.db.msu_mfsd_mod
+
+        if isinstance(f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
+
+            file_path = '_'.join([f.path, 'replay'])
+
+        if isinstance(f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+
+            file_path = '_'.join([f.path, 'replaymobile'])
+
+        if isinstance(f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+
+            file_path = '_'.join([f.path, 'msu_mfsd_mod'])
+
+        return file_path
 
 
     #==========================================================================
