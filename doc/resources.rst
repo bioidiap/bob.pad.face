@@ -100,6 +100,15 @@ Frame differences based features (motion analysis) + SVM for REPLAY-ATTACK
    :members:
 
 
+.. _bob.pad.face.resources.face_pad.lbp_svm_aggregated_db:
+
+LBP features of facial region + SVM for Aggregated Database
+===================================================================================
+
+.. automodule:: bob.pad.face.config.lbp_svm_aggregated_db
+   :members:
+
+
 .. _bob.pad.face.resources.face_pad.qm_svm_aggregated_db:
 
 Image Quality Measures as features of facial region + SVM for Aggregated Database
@@ -109,8 +118,13 @@ Image Quality Measures as features of facial region + SVM for Aggregated Databas
    :members:
 
 
+.. _bob.pad.face.resources.face_pad.frame_diff_svm_aggregated_db:
 
+Frame differences based features (motion analysis) + SVM for Aggregated Database
+===================================================================================
 
+.. automodule:: bob.pad.face.config.frame_diff_svm_aggregated_db
+   :members:
 
 
 
