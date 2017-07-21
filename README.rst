@@ -20,8 +20,7 @@
 ====================================================
 
 This package is part of the signal-processing and machine learning toolbox
-Bob_. It implementes several different algorithms that are useful to detect
-presentation attacks.
+Bob_. It implements tools for spoofing or presentation attack detection in face biometrics.
 
 
 Installation

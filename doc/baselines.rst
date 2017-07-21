@@ -182,7 +182,7 @@ The EER/HTER errors for `replayattack`_ database are summarized in the Table bel
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
 +===================+==========+==========+
-|   ``grandtest``   |  4.321   |  4.570   |
+|   ``grandtest``   |  3.987   |  4.571   |
 +-------------------+----------+----------+
 
 The ROC curves for the particular experiment can be downloaded from here:
@@ -337,7 +337,7 @@ The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Tabl
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
 +===================+==========+==========+
-|   ``grandtest``   |  2.772   |  5.886   |
+|   ``grandtest``   |  1.747   |  4.074   |
 +-------------------+----------+----------+
 
 The ROC curves for the particular experiment can be downloaded from here:
@@ -493,7 +493,7 @@ The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table bel
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
 +===================+==========+==========+
-|   ``grandtest``   |  4.115   |  5.564   |
+|   ``grandtest``   |  3.665   |  4.944   |
 +-------------------+----------+----------+
 
 The ROC curves for the particular experiment can be downloaded from here:
@@ -552,5 +552,20 @@ The ROC curves for the particular experiment can be downloaded from here:
 ------------
 
 
+.. _bob.pad.face.baselines.aggregated_db:
+
+Baselines on Aggregated Database
+--------------------------------------
+
+This section summarizes the results of baseline face PAD experiments on the Aggregated Database.
+The description of the database instance, which can be used to run face PAD experiments on the Aggregated Database is given
+here :ref:`bob.pad.face.resources.databases.aggregated_db`.
+To understand the settings of this database instance in more details you can check the
+corresponding configuration file: ``bob/pad/face/config/database/aggregated_db.py``.
+
+------------
+
+
 .. include:: links.rst
+
 

@@ -173,7 +173,7 @@ class ReplayMobilePadDatabase(PadDatabase):
 
         **Returns:**
 
-        ``files`` : :py:class:`str`
+        ``files`` : [ReplayMobilePadFile]
             A list of ReplayMobilePadFile objects.
         """
 

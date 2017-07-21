@@ -60,6 +60,19 @@ class VideoSvmPadAlgorithm(Algorithm):
     ``frame_level_scores_flag`` : :py:class:`bool`
         Return scores for each frame individually if True. Otherwise, return a
         single score per video. Default: False.
+
+    ``save_debug_data_flag`` : :py:class:`bool`
+        Save the data, which might be usefull for debugging if ``True``.
+        Default: ``True``.
+
+    ``reduced_train_data_flag`` : :py:class:`bool`
+        Reduce the amount of final training samples if set to ``True``.
+        Default: ``False``.
+
+    ``n_train_samples`` : :py:class:`int`
+        Number of uniformly selected feature vectors per class defining the
+        sizes of sub-sets used in the final traing of the SVM.
+        Default: 50000.
     """
 
     def __init__(self,
@@ -68,7 +81,10 @@ class VideoSvmPadAlgorithm(Algorithm):
                  n_samples = 10000,
                  trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
                  mean_std_norm_flag = False,
-                 frame_level_scores_flag = False):
+                 frame_level_scores_flag = False,
+                 save_debug_data_flag = True,
+                 reduced_train_data_flag = False,
+                 n_train_samples = 50000):
 
 
         Algorithm.__init__(self,
@@ -78,6 +94,9 @@ class VideoSvmPadAlgorithm(Algorithm):
                            trainer_grid_search_params = trainer_grid_search_params,
                            mean_std_norm_flag = mean_std_norm_flag,
                            frame_level_scores_flag = frame_level_scores_flag,
+                           save_debug_data_flag = save_debug_data_flag,
+                           reduced_train_data_flag = reduced_train_data_flag,
+                           n_train_samples = n_train_samples,
                            performs_projection=True,
                            requires_projector_training=True)
 
@@ -87,6 +106,9 @@ class VideoSvmPadAlgorithm(Algorithm):
         self.trainer_grid_search_params = trainer_grid_search_params
         self.mean_std_norm_flag = mean_std_norm_flag
         self.frame_level_scores_flag = frame_level_scores_flag
+        self.save_debug_data_flag = save_debug_data_flag
+        self.reduced_train_data_flag = reduced_train_data_flag
+        self.n_train_samples = n_train_samples
         self.machine = None
 
 
@@ -213,6 +235,44 @@ class VideoSvmPadAlgorithm(Algorithm):
             uniform_step = np.int(features.shape[0]/n_samples)
 
             features_subset = features[0 : np.int(uniform_step*n_samples) : uniform_step, :]
+
+        return features_subset
+
+
+    #==========================================================================
+    def select_quasi_uniform_data_subset(self, features, n_samples):
+        """
+        Select quasi uniformly N samples/feature vectors from the input array of samples.
+        The rows in the input array are samples. The columns are features.
+        Use this function if n_samples is close to the number of samples.
+
+        **Parameters:**
+
+        ``features`` : 2D :py:class:`numpy.ndarray`
+            Input array with feature vectors. The rows are samples, columns are features.
+
+        ``n_samples`` : :py:class:`int`
+            The number of samples to be selected uniformly from the input array of features.
+
+        **Returns:**
+
+        ``features_subset`` : 2D :py:class:`numpy.ndarray`
+            Selected subset of features.
+        """
+
+        if features.shape[0] <= n_samples:
+
+            features_subset = features
+
+        else:
+
+            uniform_step = (1.0 * features.shape[0]) / n_samples
+
+            element_num_list = range(0,n_samples)
+
+            idx = [np.int(uniform_step*item) for item in element_num_list]
+
+            features_subset = features[idx, :]
 
         return features_subset
 
@@ -447,7 +507,9 @@ class VideoSvmPadAlgorithm(Algorithm):
                   trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
                   mean_std_norm_flag = False,
                   projector_file = "",
-                  save_debug_data_flag = True):
+                  save_debug_data_flag = True,
+                  reduced_train_data_flag = False,
+                  n_train_samples = 50000):
         """
         First, this function tunes the hyper-parameters of the SVM classifier using
         grid search on the sub-sets of training data. Train and cross-validation
@@ -491,6 +553,15 @@ class VideoSvmPadAlgorithm(Algorithm):
         ``save_debug_data_flag`` : :py:class:`bool`
             Save the data, which might be usefull for debugging if ``True``.
             Default: ``True``.
+
+        ``reduced_train_data_flag`` : :py:class:`bool`
+            Reduce the amount of final training samples if set to ``True``.
+            Default: ``False``.
+
+        ``n_train_samples`` : :py:class:`int`
+            Number of uniformly selected feature vectors per class defining the
+            sizes of sub-sets used in the final traing of the SVM.
+            Default: 50000.
 
         **Returns:**
 
@@ -574,6 +645,12 @@ class VideoSvmPadAlgorithm(Algorithm):
             real =   features_norm[0:real.shape[0], :] # The array is now normalized
             attack = features_norm[real.shape[0]:, :] # The array is now normalized
 
+        if reduced_train_data_flag:
+
+            # uniformly select subsets of features:
+            real = self.select_quasi_uniform_data_subset(real, n_train_samples)
+            attack = self.select_quasi_uniform_data_subset(attack, n_train_samples)
+
         data = [np.copy(real), np.copy(attack)] # data for final training
 
         machine = trainer.train(data) # train the machine
@@ -612,7 +689,10 @@ class VideoSvmPadAlgorithm(Algorithm):
                                  kernel_type = self.kernel_type,
                                  trainer_grid_search_params = self.trainer_grid_search_params,
                                  mean_std_norm_flag = self.mean_std_norm_flag,
-                                 projector_file = projector_file)
+                                 projector_file = projector_file,
+                                 save_debug_data_flag = self.save_debug_data_flag,
+                                 reduced_train_data_flag = self.reduced_train_data_flag,
+                                 n_train_samples = self.n_train_samples)
 
         f = bob.io.base.HDF5File(projector_file, 'w') # open hdf5 file to save to
 

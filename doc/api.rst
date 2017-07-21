@@ -31,6 +31,12 @@ MSU MFSD Database
 .. autoclass:: bob.pad.face.database.msu_mfsd.MsuMfsdPadFile
 .. autoclass:: bob.pad.face.database.msu_mfsd.MsuMfsdPadDatabase
 
+Aggregated Database
+========================
+
+.. autoclass:: bob.pad.face.database.aggregated_db.AggregatedDbPadFile
+.. autoclass:: bob.pad.face.database.aggregated_db.AggregatedDbPadDatabase
+
 
 Pre-processors
 ------------------------------

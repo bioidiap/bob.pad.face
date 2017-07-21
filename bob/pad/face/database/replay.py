@@ -148,9 +148,10 @@ class ReplayPadDatabase(PadDatabase):
 
         **Returns:**
 
-        ``files`` : :py:class:`str`
+        ``files`` : [ReplayPadFile]
             A list of ReplayPadFile objects.
         """
+
         # Convert group names to low-level group names here.
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special

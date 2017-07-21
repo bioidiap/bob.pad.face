@@ -181,7 +181,7 @@ class MsuMfsdPadDatabase(PadDatabase):
 
         **Returns:**
 
-        ``files`` : :py:class:`str`
+        ``files`` : [MsuMfsdPadFile]
             A list of MsuMfsdPadFile objects.
         """
 
