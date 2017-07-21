@@ -566,6 +566,150 @@ corresponding configuration file: ``bob/pad/face/config/database/aggregated_db.p
 ------------
 
 
+LBP features of facial region + SVM classifier
+========================================================================
+
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.lbp_svm_aggregated_db`.
+
+To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db` database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ ./bin/spoof.py lbp-svm-aggregated-db \
+    --database aggregated-db --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+.. tip::
+
+    Similarly to the tip above you can run this baseline in parallel.
+
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/lbp_svm_aggregated_db.py``
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "LBP features of facial region + SVM classifier + Aggregated database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  17.490  |  19.705  |
++-------------------+----------+----------+
+
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_lbp_svm_aggregated_db.pdf>`
+
+------------
+
+
+Image Quality Measures as features of facial region + SVM classifier
+========================================================================
+
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.qm_svm_aggregated_db`.
+
+To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db` database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ ./bin/spoof.py qm-svm-aggregated-db \
+    --database aggregated-db --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+.. tip::
+
+    Similarly to the tip above you can run this baseline in parallel.
+
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/qm_svm_aggregated_db.py``
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "IQM features of facial region + SVM classifier + Aggregated database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  12.710  |  15.253  |
++-------------------+----------+----------+
+
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_qm_svm_aggregated_db.pdf>`
+
+------------
+
+
+Frame differences based features (motion analysis) + SVM classifier
+========================================================================
+
+Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.frame_diff_svm_aggregated_db`.
+
+To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db` database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ ./bin/spoof.py frame-diff-svm-aggregated-db \
+    --database aggregated-db --protocol grandtest --groups train dev eval \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+.. tip::
+
+    Similarly to the tip above you can run this baseline in parallel.
+
+To understand the settings of this baseline PAD experiment you can check the
+corresponding configuration file: ``bob/pad/face/config/frame_diff_svm_aggregated_db.py``
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    ./bin/evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "10 features for each window in Frame Differences + SVM classifier + Aggregated Db" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  35.219  |  43.029  |
++-------------------+----------+----------+
+
+The ROC curves for the particular experiment can be downloaded from here:
+
+:download:`ROC curve <img/ROC_frame_diff_svm_aggregated_db.pdf>`
+
+------------
+
+
 .. include:: links.rst
 
 
