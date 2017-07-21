@@ -182,7 +182,7 @@ The EER/HTER errors for `replayattack`_ database are summarized in the Table bel
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
 +===================+==========+==========+
-|   ``grandtest``   |  4.321   |  4.570   |
+|   ``grandtest``   |  3.987   |  4.571   |
 +-------------------+----------+----------+
 
 The ROC curves for the particular experiment can be downloaded from here:
@@ -337,7 +337,7 @@ The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Tabl
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
 +===================+==========+==========+
-|   ``grandtest``   |  2.772   |  5.886   |
+|   ``grandtest``   |  1.747   |  4.074   |
 +-------------------+----------+----------+
 
 The ROC curves for the particular experiment can be downloaded from here:
@@ -493,7 +493,7 @@ The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table bel
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
 +===================+==========+==========+
-|   ``grandtest``   |  4.115   |  5.564   |
+|   ``grandtest``   |  3.665   |  4.944   |
 +-------------------+----------+----------+
 
 The ROC curves for the particular experiment can be downloaded from here:
