@@ -11,17 +11,8 @@ kernel_type = 'RBF'
 n_samples = 10000
 # trainer_grid_search_params = {'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]}
 trainer_grid_search_params = {'cost': [2**p for p in range(-3, 14, 2)], 'gamma': [2**p for p in range(-15, 0, 2)]}
-mean_std_norm_flag = False
+mean_std_norm_flag = True
 frame_level_scores_flag = False # one score per video(!) in this case
-
-video_svm_pad_algorithm_10k_grid = VideoSvmPadAlgorithm(machine_type = machine_type,
-                                                        kernel_type = kernel_type,
-                                                        n_samples = n_samples,
-                                                        trainer_grid_search_params = trainer_grid_search_params,
-                                                        mean_std_norm_flag = mean_std_norm_flag,
-                                                        frame_level_scores_flag = frame_level_scores_flag)
-
-mean_std_norm_flag = True # enable mean-std normalization
 
 video_svm_pad_algorithm_10k_grid_mean_std = VideoSvmPadAlgorithm(machine_type = machine_type,
                                                                  kernel_type = kernel_type,
