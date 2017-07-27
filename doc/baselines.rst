@@ -19,7 +19,7 @@ To see the description of the script you can type in the console:
 
 .. code-block:: sh
 
-   $ ./bin/spoof.py --help
+   $ spoof.py --help
 
 This script is explained in more detail in :ref:`bob.pad.base.experiments`.
 
@@ -97,7 +97,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py replay-attack lbp-svm \
+    $ spoof.py replay-attack lbp-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -107,7 +107,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
     .. code-block:: sh
 
-        $ ./bin/spoof.py replay-attack lbp-svm \
+        $ spoof.py replay-attack lbp-svm \
         --sub-directory <PATH_TO_STORE_THE_RESULTS> \
         --grid idiap
 
@@ -119,7 +119,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + REPLAY-ATTACK database" \
@@ -152,7 +152,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py replay-attack qm-svm \
+    $ spoof.py replay-attack qm-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -167,7 +167,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + REPLAY-ATTACK database" \
@@ -199,7 +199,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py replay-attack frame-diff-svm \
+    $ spoof.py replay-attack frame-diff-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -214,7 +214,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + REPLAY-ATTACK database" \
@@ -255,7 +255,7 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py replay-mobile lbp-svm \
+    $ spoof.py replay-mobile lbp-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -270,7 +270,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + Replay-Mobile database" \
@@ -303,7 +303,7 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py replay-mobile qm-svm \
+    $ spoof.py replay-mobile qm-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -318,7 +318,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + Replay-Mobile database" \
@@ -351,7 +351,7 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py replay-mobile frame-diff-svm \
+    $ spoof.py replay-mobile frame-diff-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -366,7 +366,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + Replay-Mobile database" \
@@ -407,7 +407,7 @@ To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protoc
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py msu-mfsd lbp-svm \
+    $ spoof.py msu-mfsd lbp-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -422,7 +422,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + MSU MFSD database" \
@@ -455,7 +455,7 @@ To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protoc
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py msu-mfsd qm-svm \
+    $ spoof.py msu-mfsd qm-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -470,7 +470,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + MSU MFSD database" \
@@ -503,7 +503,7 @@ To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protoc
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py msu-mfsd frame-diff-svm \
+    $ spoof.py msu-mfsd frame-diff-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -518,7 +518,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + MSU MFSD database" \
@@ -561,7 +561,7 @@ To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py aggregated-db lbp-svm-aggregated-db \
+    $ spoof.py aggregated-db lbp-svm-aggregated-db \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -576,7 +576,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + Aggregated database" \
@@ -608,7 +608,7 @@ To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py aggregated-db qm-svm-aggregated-db \
+    $ spoof.py aggregated-db qm-svm-aggregated-db \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -623,7 +623,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + Aggregated database" \
@@ -655,7 +655,7 @@ To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py aggregated-db frame-diff-svm-aggregated-db \
+    $ spoof.py aggregated-db frame-diff-svm-aggregated-db \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -670,7 +670,7 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
+    evaluate.py \
     --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
     --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + Aggregated Db" \
