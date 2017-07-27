@@ -12,8 +12,5 @@ overlap=0
 frame_diff_feat_extr_w20_over0 = FrameDiffFeatures(window_size=window_size,
                                                   overlap=overlap)
 
-window_size=100
 
-frame_diff_feat_extr_w100_over0 = FrameDiffFeatures(window_size=window_size,
-                                                  overlap=overlap)
 

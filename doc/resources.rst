@@ -17,8 +17,12 @@ this package.
 Databases
 ------------
 
-These configuration files/resources contain entry points for the ``--database`` command line argument of the
-``spoof.py`` script.
+These configuration files/resources contain parameters of available databases.
+The configuration files contain at least the following arguments of the ``spoof.py`` script:
+
+    * ``database``
+    * ``protocol``
+    * ``groups``
 
 
 .. _bob.pad.face.resources.databases.replay:
@@ -26,7 +30,7 @@ These configuration files/resources contain entry points for the ``--database`` 
 Replay-Attack Database
 ================================================================================
 
-.. automodule:: bob.pad.face.config.database.replay
+.. automodule:: bob.pad.face.config.replay_attack
    :members:
 
 
@@ -35,7 +39,7 @@ Replay-Attack Database
 Replay-Mobile Database
 ================================================================================
 
-.. automodule:: bob.pad.face.config.database.replay_mobile
+.. automodule:: bob.pad.face.config.replay_mobile
    :members:
 
 
@@ -44,7 +48,7 @@ Replay-Mobile Database
 MSU MFSD Database
 ================================================================================
 
-.. automodule:: bob.pad.face.config.database.msu_mfsd
+.. automodule:: bob.pad.face.config.msu_mfsd
    :members:
 
 
@@ -53,7 +57,7 @@ MSU MFSD Database
 Aggregated Database
 ================================================================================
 
-.. automodule:: bob.pad.face.config.database.aggregated_db
+.. automodule:: bob.pad.face.config.aggregated_db
    :members:
 
 ---------------------------------

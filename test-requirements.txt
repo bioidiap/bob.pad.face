@@ -1,3 +1,4 @@
+nose
 bob.db.replay
 bob.db.replaymobile
 bob.db.msu_mfsd_mod
