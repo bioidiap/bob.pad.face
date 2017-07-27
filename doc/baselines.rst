@@ -19,7 +19,7 @@ To see the description of the script you can type in the console:
 
 .. code-block:: sh
 
-   $ ./bin/verify.py --help
+   $ ./bin/spoof.py --help
 
 This script is explained in more detail in :ref:`bob.pad.base.experiments`.
 
@@ -85,6 +85,7 @@ Baselines on REPLAY-ATTACK database
 --------------------------------------
 
 This section summarizes the results of baseline face PAD experiments on the REPLAY-ATTACK (`replayattack`_) database.
+The description of the database-related settings, which are used to run face PAD baselines on the Replay-Attack is given here :ref:`bob.pad.face.resources.databases.replay`. To understand the settings in more details you can check the corresponding configuration file : ``bob/pad/face/config/replay_attack.py``.
 
 
 LBP features of facial region + SVM classifier
@@ -96,8 +97,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py lbp-svm \
-    --database replay --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py replay-attack lbp-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -107,8 +107,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
     .. code-block:: sh
 
-        $ ./bin/spoof.py lbp-svm \
-        --database replay --protocol grandtest --groups train dev eval \
+        $ ./bin/spoof.py replay-attack lbp-svm \
         --sub-directory <PATH_TO_STORE_THE_RESULTS> \
         --grid idiap
 
@@ -153,8 +152,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py qm-svm \
-    --database replay --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py replay-attack qm-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -201,8 +199,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py frame-diff-svm \
-    --database replay --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py replay-attack frame-diff-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -245,8 +242,7 @@ Baselines on REPLAY-MOBILE database
 --------------------------------------
 
 This section summarizes the results of baseline face PAD experiments on the `Replay-Mobile`_ database.
-The description of the database instance, which can be used to run face PAD experiments on the Replay-Mobile is given
-here :ref:`bob.pad.face.resources.databases.replay_mobile`.
+The description of the database-related settings, which are used to run face PAD baselines on the Replay-Mobile is given here :ref:`bob.pad.face.resources.databases.replay_mobile`. To understand the settings in more details you can check the corresponding configuration file : ``bob/pad/face/config/replay_mobile.py``.
 
 
 LBP features of facial region + SVM classifier
@@ -259,8 +255,7 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py lbp-svm \
-    --database replay-mobile --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py replay-mobile lbp-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -308,8 +303,7 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py qm-svm \
-    --database replay-mobile --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py replay-mobile qm-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -357,8 +351,7 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py frame-diff-svm \
-    --database replay-mobile --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py replay-mobile frame-diff-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -401,8 +394,7 @@ Baselines on MSU MFSD database
 --------------------------------------
 
 This section summarizes the results of baseline face PAD experiments on the `MSU MFSD`_ database.
-The description of the database instance, which can be used to run face PAD experiments on the MSU MFSD is given
-here :ref:`bob.pad.face.resources.databases.msu_mfsd`.
+The description of the database-related settings, which are used to run face PAD baselines on the MSU MFSD is given here :ref:`bob.pad.face.resources.databases.msu_mfsd`. To understand the settings in more details you can check the corresponding configuration file : ``bob/pad/face/config/msu_mfsd.py``.
 
 
 LBP features of facial region + SVM classifier
@@ -415,8 +407,7 @@ To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protoc
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py lbp-svm \
-    --database msu-mfsd --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py msu-mfsd lbp-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -464,8 +455,7 @@ To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protoc
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py qm-svm \
-    --database msu-mfsd --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py msu-mfsd qm-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -513,8 +503,7 @@ To run this baseline on the `MSU MFSD`_ database, using the ``grandtest`` protoc
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py frame-diff-svm \
-    --database msu-mfsd --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py msu-mfsd frame-diff-svm \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -558,10 +547,7 @@ Baselines on Aggregated Database
 --------------------------------------
 
 This section summarizes the results of baseline face PAD experiments on the Aggregated Database.
-The description of the database instance, which can be used to run face PAD experiments on the Aggregated Database is given
-here :ref:`bob.pad.face.resources.databases.aggregated_db`.
-To understand the settings of this database instance in more details you can check the
-corresponding configuration file: ``bob/pad/face/config/database/aggregated_db.py``.
+The description of the database-related settings, which are used to run face PAD baselines on the Aggregated Db is given here :ref:`bob.pad.face.resources.databases.aggregated_db`. To understand the settings in more details you can check the corresponding configuration file : ``bob/pad/face/config/aggregated_db.py``.
 
 ------------
 
@@ -575,8 +561,7 @@ To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py lbp-svm-aggregated-db \
-    --database aggregated-db --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py aggregated-db lbp-svm-aggregated-db \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -623,8 +608,7 @@ To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py qm-svm-aggregated-db \
-    --database aggregated-db --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py aggregated-db qm-svm-aggregated-db \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
@@ -671,8 +655,7 @@ To run this baseline on the :ref:`bob.pad.face.resources.databases.aggregated_db
 
 .. code-block:: sh
 
-    $ ./bin/spoof.py frame-diff-svm-aggregated-db \
-    --database aggregated-db --protocol grandtest --groups train dev eval \
+    $ ./bin/spoof.py aggregated-db frame-diff-svm-aggregated-db \
     --sub-directory <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
