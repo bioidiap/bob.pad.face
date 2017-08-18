@@ -39,12 +39,14 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
     3. The features are next projected given trained PCA machine.
 
-    4. Next SVM machine is trained for each N projected features. First, preojected
+    4. Prior to SVM training the features are again mean-std normalized.
+
+    5. Next SVM machine is trained for each N projected features. First, preojected
        features corresponding to highest eigenvalues are selected. N is usually small
        N = (2, 3). So, if N = 2, the first SVM is trained for projected features 1 and 2,
        second SVM is trained for projected features 3 and 4, and so on.
 
-    5. These SVMs then form a cascade of classifiers. The input feature vector is then
+    6. These SVMs then form a cascade of classifiers. The input feature vector is then
        projected using PCA machine and passed through all classifiers in the cascade.
        The decision is then made by majority voting.
 
@@ -69,6 +71,10 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         The number of features to be used for training a single SVM machine
         in the cascade. Default: 2.
 
+    ``pos_scores_slope`` : :py:class:`float`
+        The positive scores returned by SVM cascade will be multiplied by this
+        constant prior to majority voting. Default: 0.01 .
+
     ``frame_level_scores_flag`` : :py:class:`bool`
         Return scores for each frame individually if True. Otherwise, return a
         single score per video. Default: False.
@@ -79,6 +85,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
                  kernel_type = 'RBF',
                  svm_kwargs = {'cost': 1, 'gamma': 0},
                  N = 2,
+                 pos_scores_slope = 0.01,
                  frame_level_scores_flag = False):
 
 
@@ -87,6 +94,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
                            kernel_type = kernel_type,
                            svm_kwargs = svm_kwargs,
                            N = N,
+                           pos_scores_slope = pos_scores_slope,
                            frame_level_scores_flag = frame_level_scores_flag,
                            performs_projection=True,
                            requires_projector_training=True)
@@ -95,6 +103,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         self.kernel_type = kernel_type
         self.svm_kwargs = svm_kwargs
         self.N = N
+        self.pos_scores_slope = pos_scores_slope
         self.frame_level_scores_flag = frame_level_scores_flag
 
         self.pca_projector_file_name = "pca_projector" # pca machine will be saved to .hdf5 file with this name
@@ -316,7 +325,8 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
     #==========================================================================
     def train_pca(self, data):
         """
-        Train PCA given input array of feature vectors.
+        Train PCA given input array of feature vectors. The data is mean-std
+        normalized prior to PCA training.
 
         **Parameters:**
 
@@ -327,15 +337,23 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         **Returns:**
 
         ``machine`` : :py:class:`bob.learn.linear.Machine`
-            The PCA machine that has been trained.
+            The PCA machine that has been trained. The mean-std normalizers are
+            also set in the machine.
 
         ``eig_vals`` : 1D :py:class:`numpy.ndarray`
             The eigen-values of the PCA projection.
         """
 
+        # 1. Normalize the training data:
+        data_norm, features_mean, features_std = self.mean_std_normalize(data)
+
         trainer = bob.learn.linear.PCATrainer() # Creates a PCA trainer
 
-        [machine, eig_vals] = trainer.train(data)  # Trains the machine with the given data
+        [machine, eig_vals] = trainer.train(data_norm)  # Trains the machine with the given data
+
+        # Set the normalizers for the PCA machine, needed to normalize the test samples.
+        machine.input_subtract = features_mean # subtract the mean of train data
+        machine.input_divide   = features_std  # divide by std of train data
 
         return machine, eig_vals
 
@@ -345,6 +363,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         """
         One-class or two class-SVM is trained in this method given input features.
         The value of ``attack`` argument is not important in the case of one-class SVM.
+        Prior to training the data is mean-std normalized.
 
         **Parameters:**
 
@@ -369,10 +388,15 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         **Returns:**
 
         ``machine`` : object
-            A trained SVM machine.
+            A trained SVM machine. The mean-std normalizers are also set in the
+            machine.
         """
 
         one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
+
+        # Mean-std normalize the data before training
+        real, attack, features_mean, features_std = self.norm_train_data(real, attack, one_class_flag)
+        # real and attack - are now mean-std normalized
 
         trainer = bob.learn.libsvm.Trainer(machine_type = machine_type,
                                            kernel_type = kernel_type,
@@ -392,6 +416,10 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         machine = trainer.train(data) # train the machine
 
+        # add the normalizers to the trained SVM machine
+        machine.input_subtract = features_mean # subtract the mean of train data
+        machine.input_divide   = features_std  # divide by std of train data
+
         return machine
 
 
@@ -404,6 +432,8 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         Both one-class and two-class SVM cascades can be trained. The value of
         ``attack`` argument is not important in the case of one-class SVM.
+
+        The data is mean-std normalized prior to SVM cascade training.
 
         **Parameters:**
 
@@ -455,7 +485,6 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
                 real_subset = real[:, machine_num*N : (machine_num + 1)*N ] # only the real class is used
                 attack_subset = []
 
-
             machine = self.train_svm(real_subset, attack_subset, machine_type, kernel_type, svm_kwargs)
 
             machines[ str(machine_num) ] = machine
@@ -471,15 +500,14 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         This function is designed to train the **cascede** of SVMs given
         features of real and attack classes. The procedure is the following:
 
-        1. First, the input data is mean-std normalized.
+        1. First, the PCA machine is trained also incorporating mean-std
+           feature normalization. Only the features of the **real** class are
+           used in PCA training, both for one-class and two-class SVMs.
 
-        2. Second, the PCA is trained on normalized input features. Only the
-           features of the **real** class are used in PCA training, both
-           for one-class and two-class SVMs.
+        2. The features are next projected given trained PCA machine.
 
-        3. The features are next projected given trained PCA machine.
-
-        4. Next SVM machine is trained for each N projected features. First, preojected
+        3. Next, SVM machine is trained for each N projected features. Prior to
+           SVM training the features are again mean-std normalized. First, preojected
            features corresponding to highest eigenvalues are selected. N is usually small
            N = (2, 3). So, if N = 2, the first SVM is trained for projected features 1 and 2,
            second SVM is trained for projected features 3 and 4, and so on.
@@ -522,17 +550,10 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
 
-        # 1. Normalize the training data:
-        real_norm, attack_norm, features_mean, features_std = self.norm_train_data(real, attack, one_class_flag)
+        # 1. Train PCA using normalized features of the real class:
+        pca_machine, _ = self.train_pca(real) # the mean-std normalizers are already set in this machine
 
-        # 2. Train PCA using normalized features of the real class:
-        pca_machine, _ = self.train_pca(real_norm)
-
-        # Set the normalizers for the PCA machine, needed to normalize the test samples.
-        pca_machine.input_subtract = features_mean # subtract the mean of train data
-        pca_machine.input_divide   = features_std  # divide by std of train data
-
-        # 3. Project the features given PCA machine:
+        # 2. Project the features given PCA machine:
         if not(one_class_flag):
             projected_real = pca_machine(real) # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
             projected_attack = pca_machine(attack) # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
@@ -541,7 +562,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             projected_real = pca_machine(real) # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
             projected_attack = []
 
-        # 4. Train a cascade of SVM machines using **projected** data
+        # 3. Train a cascade of SVM machines using **projected** data
         svm_machines = self.train_svm_cascade(projected_real, projected_attack, machine_type, kernel_type, svm_kwargs, N)
 
         return pca_machine, svm_machines
@@ -807,6 +828,48 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
 
     #==========================================================================
+    def combine_scores_of_svm_cascade(self, scores_array, pos_scores_slope):
+        """
+        First, multiply positive scores by constant ``pos_scores_slope`` in the
+        input 2D array. The constant is usually small, making the impact of negative
+        scores more significant.
+        Second, the a single score per sample is obtained by avaraging the
+        **pre-modified** scores of the cascade.
+
+        **Parameters:**
+
+        ``scores_array`` : 2D :py:class:`numpy.ndarray`
+            2D score array of the size (N_samples x N_scores).
+
+        ``pos_scores_slope`` : :py:class:`float`
+            The positive scores returned by SVM cascade will be multiplied by this
+            constant prior to majority voting. Default: 0.01 .
+
+        **Returns:**
+
+        ``scores`` : 1D :py:class:`numpy.ndarray`
+            Vector of scores. Scores for the real class are expected to be
+            higher, than the scores of the negative / attack class.
+        """
+
+        cols = []
+
+        for col in scores_array.T:
+
+            idx_vec = np.where(col>=0)
+
+            col[idx_vec] *= pos_scores_slope # multiply positive scores by the constant
+
+            cols.append(col)
+
+        scores_array_modified = np.stack(cols, axis=1)
+
+        scores = np.mean(scores_array_modified, axis = 1)
+
+        return scores
+
+
+    #==========================================================================
     def project(self, feature):
         """
         This function computes a vector of scores for each sample in the input
@@ -818,8 +881,9 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         3. Apply the cascade of SVMs to the preojected features.
 
-        4. Compute a single score per sample by avaraging the scores produced
-           by the cascade of SVMs.
+        4. Compute a single score per sample by combining the scores produced
+           by the cascade of SVMs. The combination is done using
+           ``combine_scores_of_svm_cascade`` method of this class.
 
         Set ``performs_projection = True`` in the constructor to enable this function.
         It is assured that the :py:meth:`load_projector` was **called before** the
@@ -864,23 +928,18 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             # subset of PCA projected features to be passed to SVM machine
             pca_projected_features_subset = pca_projected_features[:, machine_num*self.N : (machine_num + 1)*self.N ]
 
-            # for two-class SVM select the scores corresponding to the real class only, done by [:,0]. Index [0] selects the class.
-            single_machine_scores = svm_machine.predict_class_and_scores( pca_projected_features_subset )[0]#[:,0]
+            # for two-class SVM select the scores corresponding to the real class only, done by [:,0]. Index [0] selects the class Index [1] selects the score..
+            single_machine_scores = svm_machine.predict_class_and_scores( pca_projected_features_subset )[1][:,0]
 
             all_scores.append(single_machine_scores)
 
 
+        all_scores_array   = np.stack(all_scores, axis = 1).astype(np.float)
 
+        # 4. Combine the scores:
+        scores =self.combine_scores_of_svm_cascade(all_scores_array, self.pos_scores_slope)
 
-
-        return all_scores
-
-
-
-
-
-
-
+        return scores
 
 
     #==========================================================================
@@ -915,7 +974,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         else:
 
-            score = np.mean(toscore, axis=0)[0] # compute a single score per video
+            score = np.mean( toscore[:,0] ) # compute a single score per video
 
         return score
 

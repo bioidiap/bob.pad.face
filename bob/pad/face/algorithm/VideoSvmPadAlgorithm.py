@@ -841,7 +841,7 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         else:
 
-            score = np.mean(toscore, axis=0)[0] # compute a single score per video
+            score = np.mean( toscore[:,0] ) # compute a single score per video
 
         return score
 
