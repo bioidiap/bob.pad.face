@@ -80,11 +80,16 @@ setup(
             # baselines:
             'lbp-svm = bob.pad.face.config.lbp_svm',
             'lbp-svm-aggregated-db = bob.pad.face.config.lbp_svm_aggregated_db',
+
             'qm-svm = bob.pad.face.config.qm_svm',
             'qm-svm-aggregated-db = bob.pad.face.config.qm_svm_aggregated_db',
+
             'qm-one-class-svm-aggregated-db = bob.pad.face.config.qm_one_class_svm_aggregated_db',
+            'qm-one-class-svm-cascade-aggregated-db = bob.pad.face.config.qm_one_class_svm_cascade_aggregated_db',
+
             'frame-diff-svm = bob.pad.face.config.frame_diff_svm',
             'frame-diff-svm-aggregated-db = bob.pad.face.config.frame_diff_svm_aggregated_db',
+
             'frame-diff-one-class-svm = bob.pad.face.config.frame_diff_one_class_svm',
             ],
 

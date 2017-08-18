@@ -1,5 +1,5 @@
 from .VideoSvmPadAlgorithm import VideoSvmPadAlgorithm
-
+from .VideoCascadeSvmPadAlgorithm import VideoCascadeSvmPadAlgorithm
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
@@ -9,7 +9,7 @@ def __appropriate__(*args):
     Parameters
     ----------
     *args
-        The objects that you want sphinx to beleive that are defined here.
+        The objects that you want sphinx to believe that are defined here.
 
     Resolves `Sphinx referencing issues <https//github.com/sphinx-
     doc/sphinx/issues/3048>`
@@ -21,5 +21,6 @@ def __appropriate__(*args):
 
 __appropriate__(
     VideoSvmPadAlgorithm,
+    VideoCascadeSvmPadAlgorithm,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]
