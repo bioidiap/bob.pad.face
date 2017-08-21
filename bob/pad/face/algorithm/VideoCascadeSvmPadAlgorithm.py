@@ -970,11 +970,11 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         if self.frame_level_scores_flag:
 
-            score = toscore[:,0] # here score is a 1D array containing scores for each frame
+            score = toscore # here score is a 1D array containing scores for each frame
 
         else:
 
-            score = np.mean( toscore[:,0] ) # compute a single score per video
+            score = np.mean( toscore ) # compute a single score per video
 
         return score
 
