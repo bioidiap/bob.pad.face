@@ -81,7 +81,7 @@ from ..algorithm import VideoCascadeSvmPadAlgorithm
 
 MACHINE_TYPE = 'ONE_CLASS'
 KERNEL_TYPE = 'RBF'
-SVM_KWARGS = {'nu': 0.001, 'gamma': 0.1}
+SVM_KWARGS = {'nu': 0.001, 'gamma': 0.5}
 N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True

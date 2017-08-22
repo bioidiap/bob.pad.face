@@ -424,6 +424,64 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
 
     #==========================================================================
+    def get_data_start_end_idx(self, data, N):
+        """
+        Get indexes to select the subsets of data related to the cascades.
+        First (n_machines - 1) SVMs will be trained using N features.
+        Last SVM will be trained using remaining features, which is less or
+        equal to N.
+
+        **Parameters:**
+
+        ``data`` : 2D :py:class:`numpy.ndarray`
+            Data array containing the training features. The dimensionality is
+            (N_samples x N_features).
+
+        ``N`` : :py:class:`int`
+            Number of features per single SVM.
+
+        **Returns:**
+
+        ``idx_start`` : [int]
+            Starting indexes for data subsets.
+
+        ``idx_end`` : [int]
+            End indexes for data subsets.
+
+        ``n_machines`` : :py:class:`int`
+            Number of SVMs to be trained.
+        """
+
+        n_features = data.shape[1]
+
+        n_machines = np.int(n_features/N)
+
+        if (n_features - n_machines*N) > 1: # if more than one feature remains
+
+            machines_num = range(0, n_machines, 1)
+
+            idx_start = [item*N for item in machines_num]
+
+            idx_end = [(item+1)*N for item in machines_num]
+
+            idx_start.append( n_machines*N )
+
+            idx_end.append( n_features )
+
+            n_machines = n_machines + 1
+
+        else:
+
+            machines_num = range(0, n_machines, 1)
+
+            idx_start = [item*N for item in machines_num]
+
+            idx_end = [(item+1)*N for item in machines_num]
+
+        return idx_start, idx_end, n_machines
+
+
+    #==========================================================================
     def train_svm_cascade(self, real, attack, machine_type, kernel_type, svm_kwargs, N):
         """
         Train a cascade of SVMs, one SVM machine per N features. N is usually small
@@ -467,9 +525,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
 
-        n_features = real.shape[1]
-
-        n_machines = np.int(n_features/N)
+        idx_start, idx_end, n_machines = self.get_data_start_end_idx(real, N)
 
         machines = {}
 
@@ -477,12 +533,12 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
             if not(one_class_flag): # two-class SVM
 
-                real_subset = real[:, machine_num*N : (machine_num + 1)*N ] # both real and attack classes are used
-                attack_subset = attack[:, machine_num*N : (machine_num + 1)*N ]
+                real_subset     = real[:, idx_start[machine_num] : idx_end[machine_num] ] # both real and attack classes are used
+                attack_subset = attack[:, idx_start[machine_num] : idx_end[machine_num] ]
 
             else: # one-class SVM case
 
-                real_subset = real[:, machine_num*N : (machine_num + 1)*N ] # only the real class is used
+                real_subset     = real[:, idx_start[machine_num] : idx_end[machine_num] ] # only the real class is used
                 attack_subset = []
 
             machine = self.train_svm(real_subset, attack_subset, machine_type, kernel_type, svm_kwargs)
@@ -917,22 +973,21 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         pca_projected_features = self.pca_machine(features_array)
 
         # 3. Apply the cascade of SVMs to the preojected features.
-        n_machines = len(self.svm_machines) # number of SVM machines in the cascade
-
         all_scores = []
+
+        idx_start, idx_end, n_machines = self.get_data_start_end_idx(pca_projected_features, self.N)
 
         for machine_num in range(0, n_machines, 1): # iterate over SVM machines
 
             svm_machine = self.svm_machines[ str(machine_num) ] # select a machine
 
             # subset of PCA projected features to be passed to SVM machine
-            pca_projected_features_subset = pca_projected_features[:, machine_num*self.N : (machine_num + 1)*self.N ]
+            pca_projected_features_subset = pca_projected_features[:, idx_start[machine_num] : idx_end[machine_num] ]
 
             # for two-class SVM select the scores corresponding to the real class only, done by [:,0]. Index [0] selects the class Index [1] selects the score..
             single_machine_scores = svm_machine.predict_class_and_scores( pca_projected_features_subset )[1][:,0]
 
             all_scores.append(single_machine_scores)
-
 
         all_scores_array   = np.stack(all_scores, axis = 1).astype(np.float)
 
