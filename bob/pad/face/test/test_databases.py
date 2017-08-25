@@ -7,9 +7,9 @@ from nose.plugins.skip import SkipTest
 import bob.bio.base
 from bob.bio.base.test.utils import db_available
 
-@db_available('replay')
+@db_available('replay') # the name of the package
 def test_replay():
-    replay_database_instance = bob.bio.base.load_resource('replay', 'database', preferred_package='bob.pad.face', package_prefix='bob.pad.')
+    replay_database_instance = bob.bio.base.load_resource('replay-attack', 'database', preferred_package='bob.pad.face', package_prefix='bob.pad.') # replay-attack is the name of the configuration file
     try:
 
         assert len( replay_database_instance.objects(groups=['train', 'dev', 'eval']) )==  1200
@@ -41,7 +41,7 @@ def test_replaymobile():
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)
 
 
-@db_available('msu_mfsd_mod') # the name of the package defining low-level interface of MSU MFSD
+@db_available('msu_mfsd_mod')
 def test_msu_mfsd():
     msu_mfsd = bob.bio.base.load_resource('msu-mfsd', 'database', preferred_package='bob.pad.face', package_prefix='bob.pad.')
     try:
