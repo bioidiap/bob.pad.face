@@ -77,7 +77,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'aggregated-db = bob.pad.face.config.aggregated_db',
 
-            # baselines:
+            # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
             'lbp-svm-aggregated-db = bob.pad.face.config.lbp_svm_aggregated_db',
 
@@ -91,6 +91,9 @@ setup(
             'frame-diff-svm-aggregated-db = bob.pad.face.config.frame_diff_svm_aggregated_db',
 
             'frame-diff-one-class-svm = bob.pad.face.config.frame_diff_one_class_svm',
+
+            # baselines using LR:
+            'qm-lr-aggregated-db = bob.pad.face.config.qm_lr_aggregated_db',
             ],
 
         # registered preprocessors:
@@ -110,6 +113,28 @@ setup(
             'video-svm-pad-algorithm-10k-grid-mean-std = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid_mean_std',
             'video-svm-pad-algorithm-10k-grid-mean-std-frame-level = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_10k_grid_mean_std_frame_level',
             'video-svm-pad-algorithm-default-svm-param-mean-std-frame-level = bob.pad.face.config.algorithm.video_svm_pad_algorithm:video_svm_pad_algorithm_default_svm_param_mean_std_frame_level',
+
+            # for grid search experiments with cascade of SVMs N = 2
+            'algorithm-n2-gamma-02 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n2_gamma_02',
+            'algorithm-n2-gamma-01 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n2_gamma_01',
+            'algorithm-n2-gamma-005 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n2_gamma_005',
+            'algorithm-n2-gamma-001 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n2_gamma_001',
+            'algorithm-n2-gamma-01-video-level = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n2_gamma_01_video_level',
+
+            # for grid search experiments with cascade of SVMs N = 10
+            'algorithm-n10-gamma-01 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n10_gamma_01',
+            'algorithm-n10-gamma-005 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n10_gamma_005',
+            'algorithm-n10-gamma-001 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n10_gamma_001',
+            'algorithm-n10-gamma-0005 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n10_gamma_0005',
+
+            # for grid search experiments with cascade of SVMs N = 20
+            'algorithm-n20-gamma-05 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n20_gamma_05',
+            'algorithm-n20-gamma-02 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n20_gamma_02',
+            'algorithm-n20-gamma-01 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n20_gamma_01',
+            'algorithm-n20-gamma-005 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n20_gamma_005',
+            'algorithm-n20-gamma-001 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n20_gamma_001',
+            'algorithm-n20-gamma-0005 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n20_gamma_0005',
+            'algorithm-n20-gamma-0001 = bob.pad.face.config.algorithm.video_cascade_svm_pad_algorithm:algorithm_n20_gamma_0001',
             ],
 
         # registered grid configurations:

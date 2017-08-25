@@ -1,5 +1,6 @@
 from .VideoSvmPadAlgorithm import VideoSvmPadAlgorithm
 from .VideoCascadeSvmPadAlgorithm import VideoCascadeSvmPadAlgorithm
+from .VideoLRPadAlgorithm import VideoLRPadAlgorithm
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
@@ -22,5 +23,6 @@ def __appropriate__(*args):
 __appropriate__(
     VideoSvmPadAlgorithm,
     VideoCascadeSvmPadAlgorithm,
+    VideoLRPadAlgorithm,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

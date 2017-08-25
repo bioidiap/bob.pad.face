@@ -15,6 +15,8 @@ import numpy as np
 
 import bob.learn.libsvm
 
+import bob.learn.linear
+
 import bob.io.base
 
 import os
@@ -759,13 +761,13 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         resulting_file_name = os.path.join( os.path.split(projector_file)[0], projector_file_name + extension ) # name of the file
 
-        f = bob.io.base.HDF5File(resulting_file_name, 'a') # file to read the machine from
+        f = bob.io.base.HDF5File(resulting_file_name, 'r') # file to read the machine from
 
-        if "pca_" in resulting_file_name:
+        if "pca_" in projector_file_name:
 
             machine = bob.learn.linear.Machine(f)
 
-        if "svm_" in resulting_file_name:
+        if "svm_" in projector_file_name:
 
             machine = bob.learn.libsvm.Machine(f)
 
@@ -1014,57 +1016,26 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         **Returns:**
 
-        ``score`` : :py:class:`float` or a 1D :py:class:`numpy.ndarray`
+        ``score`` : [:py:class:`float`]
             If ``frame_level_scores_flag = False`` a single score is returned.
-            One score per video.
+            One score per video. This score is placed into a list, because
+            the ``score`` must be an iterable.
             Score is a probability of a sample being a real class.
-            If ``frame_level_scores_flag = True`` a 1D array of scores is returned.
-            One score per frame.
-            Score is a probability of a sample being a real class.
+            If ``frame_level_scores_flag = True`` a list of scores is returned.
+            One score per frame/sample.
         """
 
         if self.frame_level_scores_flag:
 
-            score = toscore # here score is a 1D array containing scores for each frame
+            score = list(toscore)
 
         else:
 
-            score = np.mean( toscore ) # compute a single score per video
+            score = [np.mean( toscore )] # compute a single score per video
 
         return score
 
 
-    #==========================================================================
-    def score_for_multiple_projections(self, toscore):
-        """
-        Returns a list of scores computed by the score method of this class.
 
-        **Parameters:**
-
-        ``toscore`` : 1D or 2D :py:class:`numpy.ndarray`
-            2D in the case of two-class SVM.
-            An array containing class probabilities for each frame.
-            First column contains probabilities for each frame being a real class.
-            Second column contains probabilities for each frame being an attack class.
-            1D in the case of one-class SVM.
-            Vector with scores for each frame defining belonging to the real class.
-
-        **Returns:**
-
-        ``list_of_scores`` : [:py:class:`float`]
-            A list containing the scores.
-        """
-
-        scores = self.score(toscore) # returns float score or 1D array of scores
-
-        if isinstance(scores, np.float): # if a single score
-
-            list_of_scores = [scores]
-
-        else:
-
-            list_of_scores = list(scores)
-
-        return list_of_scores
 
 
