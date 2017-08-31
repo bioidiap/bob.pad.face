@@ -14,5 +14,5 @@ bob.ip.color
 bob.ip.qualitymeasure
 bob.learn.libsvm
 bob.learn.linear
-sklearn
+scikit-learn
 
