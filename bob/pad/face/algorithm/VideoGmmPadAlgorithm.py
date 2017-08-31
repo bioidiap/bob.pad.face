@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug 25 09:29:02 2017
+Created on Mon Aug 28 16:47:47 2017
 
 @author: Olegs Nikisins
 """
@@ -15,33 +15,35 @@ from bob.bio.video.utils import FrameContainer
 
 import numpy as np
 
-from sklearn import linear_model
-
 import bob.io.base
+
+from sklearn import mixture
 
 
 #==============================================================================
 # Main body :
 
-class VideoLRPadAlgorithm(Algorithm):
+class VideoGmmPadAlgorithm(Algorithm):
     """
-    This class is designed to train Logistic Regression classifier given Frame Containers
-    with features of real and attack classes. The procedure is the following:
+    This class is designed to train a GMM based PAD system. The GMM is trained
+    using data of one class (real class) only. The procedure is the following:
 
-    1. First, the input data is mean-std normalized using mean and std of the
+    1. First, the training data is mean-std normalized using mean and std of the
        real class only.
 
-    2. Second, the Logistic Regression classifier is trained on normalized
-       input features.
+    2. Second, the GMM with ``n_components`` Gaussians is trained using samples
+       of the real class.
 
-    3. The input features are next classified using pre-trained LR machine.
+    3. The input features are next classified using pre-trained GMM machine.
 
     **Parameters:**
 
-    ``C`` : :py:class:`float`
-        Inverse of regularization strength in LR classifier; must be a positive.
-        Like in support vector machines, smaller values specify stronger
-        regularization. Default: 1.0 .
+    ``n_components`` : :py:class:`int`
+        Number of Gaussians in the GMM. Default: 1 .
+
+    ``random_state`` : :py:class:`int`
+        A seed for the random number generator used in the initialization of
+        the GMM. Default: 7 .
 
     ``frame_level_scores_flag`` : :py:class:`bool`
         Return scores for each frame individually if True. Otherwise, return a
@@ -49,27 +51,32 @@ class VideoLRPadAlgorithm(Algorithm):
     """
 
     def __init__(self,
-                 C = 1,
+                 n_components = 1,
+                 random_state = 7,
                  frame_level_scores_flag = False):
 
 
         Algorithm.__init__(self,
-                           C = C,
+                           n_components = n_components,
+                           random_state = random_state,
                            frame_level_scores_flag = frame_level_scores_flag,
                            performs_projection=True,
                            requires_projector_training=True)
 
-        self.C = C
+        self.n_components = n_components
+
+        self.random_state = random_state
 
         self.frame_level_scores_flag = frame_level_scores_flag
 
-        self.lr_machine = None # this argument will be updated with pretrained LR machine
+        self.machine = None # this argument will be updated with pretrained GMM machine
 
         self.features_mean = None # this argument will be updated with features mean
+
         self.features_std = None # this argument will be updated with features std
 
-        # names of the arguments of the pretrained LR machine to be saved/loaded to/from HDF5 file:
-        self.lr_param_keys = ["C", "classes_", "coef_", "intercept_"]
+        # names of the arguments of the pretrained GMM machine to be saved/loaded to/from HDF5 file:
+        self.gmm_param_keys = ["covariance_type", "covariances_", "lower_bound_", "means_", "n_components", "weights_", "converged_", "precisions_", "precisions_cholesky_" ]
 
 
     #==========================================================================
@@ -197,65 +204,27 @@ class VideoLRPadAlgorithm(Algorithm):
 
 
     #==========================================================================
-    def norm_train_data(self, real, attack):
+    def train_gmm(self, real, n_components, random_state):
         """
-        Mean-std normalization of input data arrays. The mean and std normalizers
-        are computed using real class only.
+        Train GMM classifier given real class. Prior to the training the data is
+        mean-std normalized.
 
         **Parameters:**
 
         ``real`` : 2D :py:class:`numpy.ndarray`
             Training features for the real class.
 
-        ``attack`` : 2D :py:class:`numpy.ndarray`
-            Training features for the attack class.
+        ``n_components`` : :py:class:`int`
+            Number of Gaussians in the GMM. Default: 1 .
 
-        **Returns:**
-
-        ``real_norm`` : 2D :py:class:`numpy.ndarray`
-            Mean-std normalized training features for the real class.
-
-        ``attack_norm`` : 2D :py:class:`numpy.ndarray`
-            Mean-std normalized training features for the attack class.
-            Or an empty list if ``one_class_flag = True``.
-
-        ``features_mean`` : 1D :py:class:`numpy.ndarray`
-            Mean of the features.
-
-        ``features_std`` : 1D :py:class:`numpy.ndarray`
-            Standart deviation of the features.
-        """
-
-        real_norm, features_mean, features_std = self.mean_std_normalize(real)
-
-        attack_norm, _, _ = self.mean_std_normalize(attack, features_mean, features_std)
-
-        return real_norm, attack_norm, features_mean, features_std
-
-
-    #==========================================================================
-    def train_lr(self, real, attack, C):
-        """
-        Train LR classifier given real and attack classes. Prior to training
-        the data is mean-std normalized.
-
-        **Parameters:**
-
-        ``real`` : 2D :py:class:`numpy.ndarray`
-            Training features for the real class.
-
-        ``attack`` : 2D :py:class:`numpy.ndarray`
-            Training features for the attack class.
-
-        ``C`` : :py:class:`float`
-            Inverse of regularization strength in LR classifier; must be a positive.
-            Like in support vector machines, smaller values specify stronger
-            regularization. Default: 1.0 .
+        ``random_state`` : :py:class:`int`
+            A seed for the random number generator used in the initialization of
+            the GMM. Default: 7 .
 
         **Returns:**
 
         ``machine`` : object
-            A trained LR machine.
+            A trained GMM machine.
 
         ``features_mean`` : 1D :py:class:`numpy.ndarray`
             Mean of the features.
@@ -264,24 +233,22 @@ class VideoLRPadAlgorithm(Algorithm):
             Standart deviation of the features.
         """
 
-        real, attack, features_mean, features_std = self.norm_train_data(real, attack)
-        # real and attack - are now mean-std normalized
+        features_norm, features_mean, features_std = self.mean_std_normalize(real)
+        # real is now mean-std normalized
 
-        X = np.vstack([real, attack])
+        machine = mixture.GaussianMixture(n_components = n_components,
+                                          random_state = random_state,
+                                          covariance_type = 'full')
 
-        Y = np.hstack( [ np.zeros(len(real) ), np.ones(len(attack) ) ] )
-
-        machine = linear_model.LogisticRegression( C = C )
-
-        machine.fit(X, Y)
+        machine.fit( features_norm )
 
         return machine, features_mean, features_std
 
 
     #==========================================================================
-    def save_lr_machine_and_mean_std(self, projector_file, machine, features_mean, features_std):
+    def save_gmm_machine_and_mean_std(self, projector_file, machine, features_mean, features_std):
         """
-        Saves the LR machine, features mean and std to the hdf5 file.
+        Saves the GMM machine, features mean and std to the hdf5 file.
         The absolute name of the file is specified in ``projector_file`` string.
 
         **Parameters:**
@@ -291,7 +258,7 @@ class VideoLRPadAlgorithm(Algorithm):
             ``bob.pad.base`` framework.
 
         ``machine`` : object
-            The LR machine to be saved. As returned by sklearn.linear_model
+            The GMM machine to be saved. As returned by sklearn.linear_model
             module.
 
         ``features_mean`` : 1D :py:class:`numpy.ndarray`
@@ -303,7 +270,7 @@ class VideoLRPadAlgorithm(Algorithm):
 
         f = bob.io.base.HDF5File(projector_file, 'w') # open hdf5 file to save to
 
-        for key in self.lr_param_keys: # ["C", "classes_", "coef_", "intercept_"]
+        for key in self.gmm_param_keys:
 
             data = getattr( machine, key )
 
@@ -319,7 +286,7 @@ class VideoLRPadAlgorithm(Algorithm):
     #==========================================================================
     def train_projector(self, training_features, projector_file):
         """
-        Train LR for feature projection and save them to files.
+        Train GMM for feature projection and save it to file.
         The ``requires_projector_training = True`` flag must be set to True
         to enable this function.
 
@@ -337,20 +304,21 @@ class VideoLRPadAlgorithm(Algorithm):
 
         # training_features[0] - training features for the REAL class.
         real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
+
         # training_features[1] - training features for the ATTACK class.
-        attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+#        attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
 
-        # Train the LR machine and get normalizers:
-        machine, features_mean, features_std = self.train_lr(real = real,
-                                                             attack = attack,
-                                                             C = self.C)
+        # Train the GMM machine and get normalizers:
+        machine, features_mean, features_std = self.train_gmm(real = real,
+                                                              n_components = self.n_components,
+                                                              random_state = self.random_state)
 
-        # Save the LR machine and normalizers:
-        self.save_lr_machine_and_mean_std(projector_file, machine, features_mean, features_std)
+        # Save the GNN machine and normalizers:
+        self.save_gmm_machine_and_mean_std(projector_file, machine, features_mean, features_std)
 
 
     #==========================================================================
-    def load_lr_machine_and_mean_std(self, projector_file):
+    def load_gmm_machine_and_mean_std(self, projector_file):
         """
         Loads the machine, features mean and std from the hdf5 file.
         The absolute name of the file is specified in ``projector_file`` string.
@@ -364,7 +332,7 @@ class VideoLRPadAlgorithm(Algorithm):
         **Returns:**
 
         ``machine`` : object
-            The loaded LR machine. As returned by sklearn.linear_model module.
+            The loaded GMM machine. As returned by sklearn.mixture module.
 
         ``features_mean`` : 1D :py:class:`numpy.ndarray`
             Mean of the features.
@@ -376,10 +344,10 @@ class VideoLRPadAlgorithm(Algorithm):
         f = bob.io.base.HDF5File(projector_file, 'r') # file to read the machine from
 
         # initialize the machine:
-        machine = linear_model.LogisticRegression()
+        machine = mixture.GaussianMixture()
 
         # set the params of the machine:
-        for key in self.lr_param_keys: # ["C", "classes_", "coef_", "intercept_"]
+        for key in self.gmm_param_keys:
 
             data = f.read(key)
 
@@ -400,7 +368,7 @@ class VideoLRPadAlgorithm(Algorithm):
         Loads the machine, features mean and std from the hdf5 file.
         The absolute name of the file is specified in ``projector_file`` string.
 
-        This function sets the arguments ``self.lr_machine``, ``self.features_mean``
+        This function sets the arguments ``self.machine``, ``self.features_mean``
         and ``self.features_std`` of this class with loaded machines.
 
         The function must be capable of reading the data saved with the
@@ -418,9 +386,9 @@ class VideoLRPadAlgorithm(Algorithm):
             ``load_cascade_of_machines`` methods of this class for more details.
         """
 
-        lr_machine, features_mean, features_std = self.load_lr_machine_and_mean_std(projector_file)
+        machine, features_mean, features_std = self.load_gmm_machine_and_mean_std(projector_file)
 
-        self.lr_machine = lr_machine
+        self.machine = machine
 
         self.features_mean = features_mean
 
@@ -431,12 +399,12 @@ class VideoLRPadAlgorithm(Algorithm):
     def project(self, feature):
         """
         This function computes a vector of scores for each sample in the input
-        array of features. The following steps are apllied:
+        array of features. The following steps are applied:
 
         1. First, the input data is mean-std normalized using mean and std of the
            real class only.
 
-        2. The input features are next classified using pre-trained LR machine.
+        2. The input features are next classified using pre-trained GMM machine.
 
         Set ``performs_projection = True`` in the constructor to enable this function.
         It is assured that the :py:meth:`load_projector` was **called before** the
@@ -455,7 +423,7 @@ class VideoLRPadAlgorithm(Algorithm):
         ``scores`` : 1D :py:class:`numpy.ndarray`
             Vector of scores. Scores for the real class are expected to be
             higher, than the scores of the negative / attack class.
-            In this case scores are probabilities.
+            In this case scores are the weighted log probabilities.
         """
 
         # 1. Convert input array to numpy array if necessary.
@@ -469,7 +437,7 @@ class VideoLRPadAlgorithm(Algorithm):
 
         features_array_norm, _, _ = self.mean_std_normalize(features_array, self.features_mean, self.features_std)
 
-        scores = self.lr_machine.predict_proba( features_array_norm )[:,0]
+        scores = self.machine.score_samples( features_array_norm )
 
         return scores
 
@@ -505,7 +473,4 @@ class VideoLRPadAlgorithm(Algorithm):
             score = [np.mean( toscore )] # compute a single score per video
 
         return score
-
-
-
 

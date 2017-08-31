@@ -241,3 +241,26 @@ algorithm_n2_gamma_01_video_level = VideoCascadeSvmPadAlgorithm(machine_type = M
                                         frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG)
 
 
+#=======================================================================================
+
+# Test the cascade of two-class SVMs.
+
+MACHINE_TYPE = 'C_SVC'
+KERNEL_TYPE = 'RBF'
+TRAINER_GRID_SEARCH_PARAMS = {'cost': 1, 'gamma': 0.01}
+N = 2
+POS_SCORES_SLOPE = 0.01
+FRAME_LEVEL_SCORES_FLAG = True
+
+algorithm_n2_two_class_svm_c1_gamma_001 = VideoCascadeSvmPadAlgorithm(machine_type = MACHINE_TYPE,
+                                                                      kernel_type = KERNEL_TYPE,
+                                                                      svm_kwargs = TRAINER_GRID_SEARCH_PARAMS,
+                                                                      N = N,
+                                                                      pos_scores_slope = POS_SCORES_SLOPE,
+                                                                      frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG)
+
+
+
+
+
+

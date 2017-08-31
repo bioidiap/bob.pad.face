@@ -994,7 +994,16 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         all_scores_array   = np.stack(all_scores, axis = 1).astype(np.float)
 
         # 4. Combine the scores:
-        scores =self.combine_scores_of_svm_cascade(all_scores_array, self.pos_scores_slope)
+
+        one_class_flag = (svm_machine.machine_type == 'ONE_CLASS') # True if one-class SVM is used
+
+        if not(one_class_flag):
+
+            scores = np.mean(all_scores_array, axis = 1) # compute mean for two-class SVM
+
+        else: # one class SVM case
+
+            scores = self.combine_scores_of_svm_cascade(all_scores_array, self.pos_scores_slope)
 
         return scores
 
