@@ -45,23 +45,53 @@ class VideoLRPadAlgorithm(Algorithm):
 
     ``frame_level_scores_flag`` : :py:class:`bool`
         Return scores for each frame individually if True. Otherwise, return a
-        single score per video. Default: False.
+        single score per video. Default: ``False``.
+
+    ``subsample_train_data_flag`` : :py:class:`bool`
+        Uniformly subsample the training data if ``True``. Default: ``False``.
+
+    ``subsampling_step`` : :py:class:`int`
+        Training data subsampling step, only valid is
+        ``subsample_train_data_flag = True``. Default: 10 .
+
+    ``subsample_videos_flag`` : :py:class:`bool`
+        Uniformly subsample the training videos if ``True``. Default: ``False``.
+
+    ``video_subsampling_step`` : :py:class:`int`
+        Training videos subsampling step, only valid is
+        ``subsample_videos_flag = True``. Default: 3 .
     """
 
     def __init__(self,
                  C = 1,
-                 frame_level_scores_flag = False):
+                 frame_level_scores_flag = False,
+                 subsample_train_data_flag = False,
+                 subsampling_step = 10,
+                 subsample_videos_flag = False,
+                 video_subsampling_step = 3):
 
 
         Algorithm.__init__(self,
                            C = C,
                            frame_level_scores_flag = frame_level_scores_flag,
+                           subsample_train_data_flag = subsample_train_data_flag,
+                           subsampling_step = subsampling_step,
+                           subsample_videos_flag = subsample_videos_flag,
+                           video_subsampling_step = video_subsampling_step,
                            performs_projection=True,
                            requires_projector_training=True)
 
         self.C = C
 
         self.frame_level_scores_flag = frame_level_scores_flag
+
+        self.subsample_train_data_flag = subsample_train_data_flag
+
+        self.subsampling_step = subsampling_step
+
+        self.subsample_videos_flag = subsample_videos_flag
+
+        self.video_subsampling_step = video_subsampling_step
 
         self.lr_machine = None # this argument will be updated with pretrained LR machine
 
@@ -317,6 +347,32 @@ class VideoLRPadAlgorithm(Algorithm):
 
 
     #==========================================================================
+    def subsample_train_videos(self, training_features, step):
+        """
+        Uniformly select subset of frmae containes from the input list
+
+        **Parameters:**
+
+        ``training_features`` : [FrameContainer]
+            A list of FrameContainers
+
+        ``step`` : :py:class:`int`
+            Data selection step.
+
+        **Returns:**
+
+        ``training_features_subset`` : [FrameContainer]
+            A list with selected FrameContainers
+        """
+
+        indexes = range(0, len(training_features), step)
+
+        training_features_subset = [training_features[x] for x in indexes]
+
+        return training_features_subset
+
+
+    #==========================================================================
     def train_projector(self, training_features, projector_file):
         """
         Train LR for feature projection and save them to files.
@@ -336,9 +392,31 @@ class VideoLRPadAlgorithm(Algorithm):
         """
 
         # training_features[0] - training features for the REAL class.
-        real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
         # training_features[1] - training features for the ATTACK class.
-        attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+
+        if self.subsample_videos_flag: # subsample videos of the real class
+
+            real = self.convert_list_of_frame_cont_to_array( self.subsample_train_videos(training_features[0], self.video_subsampling_step) ) # output is array
+
+        else:
+
+            real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
+
+        if self.subsample_train_data_flag:
+
+            real = real[range(0,len(real), self.subsampling_step), :]
+
+        if self.subsample_videos_flag: # subsample videos of the real class
+
+            attack = self.convert_list_of_frame_cont_to_array( self.subsample_train_videos(training_features[1], self.video_subsampling_step) ) # output is array
+
+        else:
+
+            attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+
+        if self.subsample_train_data_flag:
+
+            attack = attack[range(0,len(attack), self.subsampling_step), :]
 
         # Train the LR machine and get normalizers:
         machine, features_mean, features_std = self.train_lr(real = real,
