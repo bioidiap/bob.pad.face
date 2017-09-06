@@ -52,7 +52,7 @@ class VideoGmmPadAlgorithm(Algorithm):
 
     def __init__(self,
                  n_components = 1,
-                 random_state = 7,
+                 random_state = 3,
                  frame_level_scores_flag = False):
 
 

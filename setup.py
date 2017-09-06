@@ -84,16 +84,18 @@ setup(
             'qm-svm = bob.pad.face.config.qm_svm',
             'qm-svm-aggregated-db = bob.pad.face.config.qm_svm_aggregated_db',
 
-            'qm-one-class-svm-aggregated-db = bob.pad.face.config.qm_one_class_svm_aggregated_db',
-            'qm-one-class-svm-cascade-aggregated-db = bob.pad.face.config.qm_one_class_svm_cascade_aggregated_db',
-
             'frame-diff-svm = bob.pad.face.config.frame_diff_svm',
             'frame-diff-svm-aggregated-db = bob.pad.face.config.frame_diff_svm_aggregated_db',
 
-            'frame-diff-one-class-svm = bob.pad.face.config.frame_diff_one_class_svm',
+            # baselines using one-class SVM
+            'qm-one-class-svm-aggregated-db = bob.pad.face.config.qm_one_class_svm_aggregated_db',
+            'qm-one-class-svm-cascade-aggregated-db = bob.pad.face.config.qm_one_class_svm_cascade_aggregated_db',
 
             # baselines using LR:
-            'qm-lr-aggregated-db = bob.pad.face.config.qm_lr_aggregated_db',
+            'qm-lr = bob.pad.face.config.qm_lr', # this pipe-line can be used both for individual and Aggregated databases.
+
+            # baselines using GMM:
+            'qm-one-class-gmm = bob.pad.face.config.qm_one_class_gmm', # this pipe-line can be used both for individual and Aggregated databases.
             ],
 
         # registered preprocessors:

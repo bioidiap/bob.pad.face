@@ -2,16 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-This file contains configurations to run Image Quality Measures (IQM) and SVM based face PAD baseline.
+This file contains configurations to run Image Quality Measures (IQM) and LR based face PAD algorithm.
 The settings of the preprocessor and extractor are tuned for the Replay-attack database.
-In the SVM algorithm the amount of training data is reduced speeding-up the training for
-large data sets, such as Aggregated PAD database.
 The IQM features used in this algorithm/resource are introduced in the following papers: [WHJ15]_ and [CBVM16]_.
 """
 
 
 #=======================================================================================
-sub_directory = 'qm_svm_aggregated_db'
+sub_directory = 'qm_lr'
 """
 Sub-directory where results will be placed.
 
@@ -88,6 +86,8 @@ algorithm = VideoLRPadAlgorithm(C = C,
 """
 The Logistic Regression is used to classify the data into *real* and *attack* classes.
 One score is produced for each frame of the input video, ``frame_level_scores_flag = True``.
+The sub-sampling of training data is not used here, sub-sampling flags have default ``False``
+values.
 """
 
 
