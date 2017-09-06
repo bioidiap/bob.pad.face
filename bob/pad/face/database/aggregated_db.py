@@ -200,7 +200,32 @@ class AggregatedDbPadFile(PadFile):
 class AggregatedDbPadDatabase(PadDatabase):
     """
     A high level implementation of the Database class for the Aggregated Database
-    uniting 3 databases: REPLAY-ATTACK, REPLAY-MOBILE and MSU MFSD.
+    uniting 3 databases: REPLAY-ATTACK, REPLAY-MOBILE and MSU MFSD. Currently this
+    database supports 3 protocols, which are listed in the ``available_protocols``
+    argument of this class.
+
+    Available protocols are:
+
+    1. "grandtest" - this protocol is using all the data available in the
+       databases Replay-Attack, Replay-Mobile, MSU MFSD.
+
+    2. "photo-photo-video" - this protocol is used to test the system on
+       unseen types of attacks. In this case the attacks are splitted
+       as follows:
+       'train' set - only **photo** attacks are used for training,
+       'dev' set   - only **photo** attacks are used for threshold tuning,
+       'eval' set  - only **video** attacks are used in final evaluation.
+       In this case the final performance is estimated on previously
+       unseen **video** attacks.
+
+    3. "video-video-photo" - this protocol is used to test the system on
+       unseen types of attacks. In this case the attacks are splitted
+       as follows:
+       'train' set - only **video** attacks are used for training,
+       'dev' set   - only **video** attacks are used for threshold tuning,
+       'eval' set  - only **photo** attacks are used in final evaluation.
+       In this case the final performance is estimated on previously
+       unseen **photo** attacks.
     """
 
     def __init__(
@@ -243,6 +268,9 @@ class AggregatedDbPadDatabase(PadDatabase):
         self.low_level_group_names = ('train', 'devel', 'test') # group names in the low-level database interface
         self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
 
+        # A list of available protocols:
+        self.available_protocols = ['grandtest', 'photo-photo-video', 'video-video-photo']
+
         # Always use super to call parent class methods.
         super(AggregatedDbPadDatabase, self).__init__(
             name = 'aggregated_db',
@@ -250,6 +278,200 @@ class AggregatedDbPadDatabase(PadDatabase):
             original_directory = original_directory,
             original_extension = original_extension,
             **kwargs)
+
+
+    #==========================================================================
+    def get_files_given_single_group(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+        """
+        This function returns 3 lists of files for Raplay-Attack, Replay-Mobile
+        and MSU MFSD databases, which fulfill the given restrictions. This
+        function for the groups parameter accepts a single string ONLY, which
+        determines the low level name of the group, see ``low_level_group_names``
+        argument of this class for available options.
+
+        Keyword parameters:
+
+        ``groups`` : :py:class:`str`
+            The group of which the clients should be returned.
+            One element of ('train', 'devel', 'test').
+
+        ``protocol`` : :py:class:`str`
+            The protocol for which the clients should be retrieved.
+            Available options are defined in the ``available_protocols`` argument
+            of the class. So far the following protocols are available:
+
+            1. "grandtest" - this protocol is using all the data available in the
+               databases Replay-Attack, Replay-Mobile, MSU MFSD.
+
+            2. "photo-photo-video" - this protocol is used to test the system on
+               unseen types of attacks. In this case the attacks are splitted
+               as follows:
+               'train' set - only **photo** attacks are used for training,
+               'dev' set   - only **photo** attacks are used for threshold tuning,
+               'eval' set  - only **video** attacks are used in final evaluation.
+               In this case the final performance is estimated on previously
+               unseen **video** attacks.
+
+           3. "video-video-photo" - this protocol is used to test the system on
+               unseen types of attacks. In this case the attacks are splitted
+               as follows:
+               'train' set - only **video** attacks are used for training,
+               'dev' set   - only **video** attacks are used for threshold tuning,
+               'eval' set  - only **photo** attacks are used in final evaluation.
+               In this case the final performance is estimated on previously
+               unseen **photo** attacks.
+
+        ``purposes`` : :py:class:`str`
+            OR a list of strings.
+            The purposes for which File objects should be retrieved.
+            Usually it is either 'real' or 'attack'.
+
+        ``model_ids``
+            This parameter is not supported in PAD databases yet
+
+        **Returns:**
+
+        ``replay_files`` : [File]
+            A list of files corresponding to Replay-Attack database.
+
+        ``replaymobile_files`` : [File]
+            A list of files corresponding to Replay-Mobile database.
+
+        ``msu_mfsd_files`` : [File]
+            A list of files corresponding to MSU MFSD database.
+        """
+
+        # with grandtest protocol
+        if protocol == 'grandtest' or protocol is None or groups is None:
+
+            replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+
+            replaymobile_files = self.replaymobile_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+
+            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
+
+        if protocol == 'photo-photo-video':
+
+            if groups == 'train' or groups ==  'devel': # the group names are low-level here: ('train', 'devel', 'test')
+
+                replay_files = self.replay_db.objects(protocol='photo', groups=groups, cls=purposes, **kwargs)
+
+                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='photo', **kwargs)
+
+                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('print', ''), **kwargs)
+
+            if groups == 'test':
+
+                replay_files = self.replay_db.objects(protocol='video', groups=groups, cls=purposes, **kwargs)
+
+                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='video', **kwargs)
+
+                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('video_hd', 'video_mobile', ''), **kwargs)
+
+        if protocol == 'video-video-photo':
+
+            if groups == 'train' or groups ==  'devel': # the group names are low-level here: ('train', 'devel', 'test')
+
+                replay_files = self.replay_db.objects(protocol='video', groups=groups, cls=purposes, **kwargs)
+
+                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='video', **kwargs)
+
+                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('video_hd', 'video_mobile', ''), **kwargs)
+
+            if groups == 'test':
+
+                replay_files = self.replay_db.objects(protocol='photo', groups=groups, cls=purposes, **kwargs)
+
+                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='photo', **kwargs)
+
+                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('print', ''), **kwargs)
+
+        return replay_files, replaymobile_files, msu_mfsd_files
+
+
+    #==========================================================================
+    def get_files_given_groups(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+        """
+        This function returns 3 lists of files for Raplay-Attack, Replay-Mobile
+        and MSU MFSD databases, which fulfill the given restrictions. This
+        function for the groups parameter accepts a single string OR a list
+        of strings with multiple groups. Group names are low level, see
+        ``low_level_group_names`` argument of the class for available options.
+
+        Keyword parameters:
+
+        ``groups`` : :py:class:`str`
+            OR a list of strings.
+            The groups of which the clients should be returned.
+            Usually, groups are one or more elements of ('train', 'devel', 'test').
+
+        ``protocol`` : :py:class:`str`
+            The protocol for which the clients should be retrieved.
+            Available options are defined in the ``available_protocols`` argument
+            of the class. So far the following protocols are available:
+
+            1. "grandtest" - this protocol is using all the data available in the
+               databases Replay-Attack, Replay-Mobile, MSU MFSD.
+
+            2. "photo-photo-video" - this protocol is used to test the system on
+               unseen types of attacks. In this case the attacks are splitted
+               as follows:
+               'train' set - only **photo** attacks are used for training,
+               'dev' set   - only **photo** attacks are used for threshold tuning,
+               'eval' set  - only **video** attacks are used in final evaluation.
+               In this case the final performance is estimated on previously
+               unseen **video** attacks.
+
+           3. "video-video-photo" - this protocol is used to test the system on
+               unseen types of attacks. In this case the attacks are splitted
+               as follows:
+               'train' set - only **video** attacks are used for training,
+               'dev' set   - only **video** attacks are used for threshold tuning,
+               'eval' set  - only **photo** attacks are used in final evaluation.
+               In this case the final performance is estimated on previously
+               unseen **photo** attacks.
+
+        ``purposes`` : :py:class:`str`
+            OR a list of strings.
+            The purposes for which File objects should be retrieved.
+            Usually it is either 'real' or 'attack'.
+
+        ``model_ids``
+            This parameter is not supported in PAD databases yet
+
+        **Returns:**
+
+        ``replay_files`` : [File]
+            A list of files corresponding to Replay-Attack database.
+
+        ``replaymobile_files`` : [File]
+            A list of files corresponding to Replay-Mobile database.
+
+        ``msu_mfsd_files`` : [File]
+            A list of files corresponding to MSU MFSD database.
+        """
+
+        if isinstance(groups, str) or groups is None: # if a single group is given
+
+            groups = [groups]
+
+        replay_files = []
+
+        replaymobile_files = []
+
+        msu_mfsd_files = []
+
+        for group in groups:
+
+            files = self.get_files_given_single_group(groups = group, protocol = protocol, purposes = purposes, model_ids = model_ids, **kwargs)
+
+            replay_files += files[0]
+
+            replaymobile_files += files[1]
+
+            msu_mfsd_files += files[2]
+
+        return replay_files, replaymobile_files, msu_mfsd_files
 
 
     #==========================================================================
@@ -266,8 +488,29 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         ``protocol`` : :py:class:`str`
             The protocol for which the clients should be retrieved.
-            The protocol is dependent on your database.
-            If you do not have protocols defined, just ignore this field.
+            Available options are defined in the ``available_protocols`` argument
+            of the class. So far the following protocols are available:
+
+            1. "grandtest" - this protocol is using all the data available in the
+               databases Replay-Attack, Replay-Mobile, MSU MFSD.
+
+            2. "photo-photo-video" - this protocol is used to test the system on
+               unseen types of attacks. In this case the attacks are splitted
+               as follows:
+               'train' set - only **photo** attacks are used for training,
+               'dev' set   - only **photo** attacks are used for threshold tuning,
+               'eval' set  - only **video** attacks are used in final evaluation.
+               In this case the final performance is estimated on previously
+               unseen **video** attacks.
+
+           3. "video-video-photo" - this protocol is used to test the system on
+               unseen types of attacks. In this case the attacks are splitted
+               as follows:
+               'train' set - only **video** attacks are used for training,
+               'dev' set   - only **video** attacks are used for threshold tuning,
+               'eval' set  - only **photo** attacks are used in final evaluation.
+               In this case the final performance is estimated on previously
+               unseen **photo** attacks.
 
         ``purposes`` : :py:class:`str`
             OR a list of strings.
@@ -287,15 +530,23 @@ class AggregatedDbPadDatabase(PadDatabase):
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
-        replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
 
-        replaymobile_files = self.replaymobile_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+        replay_files, replaymobile_files, msu_mfsd_files = self.get_files_given_groups(groups = groups,
+                                                                                       protocol = protocol,
+                                                                                       purposes = purposes,
+                                                                                       model_ids = model_ids,
+                                                                                       **kwargs)
 
-        msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
+#            replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+#
+#            replaymobile_files = self.replaymobile_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+#
+#            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
 
         files = replay_files + replaymobile_files + msu_mfsd_files # append all files to a single list
 
         files = [AggregatedDbPadFile(f) for f in files]
+
         return files
 
 
@@ -343,17 +594,3 @@ class AggregatedDbPadDatabase(PadDatabase):
         annotations = hldi_db.annotations(f)
 
         return annotations
-
-
-
-
-
-
-
-
-
-
-
-
-
-
