@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file contains configurations to run Image Quality Measures (IQM) and SVM based face PAD baseline.
+This file contains configurations to run Image Quality Measures (IQM) and one-class SVM based face PAD algorithm.
 The settings of the preprocessor and extractor are tuned for the Replay-attack database.
 In the SVM algorithm the amount of training data is reduced speeding-up the training for
 large data sets, such as Aggregated PAD database.
@@ -11,7 +11,7 @@ The IQM features used in this algorithm/resource are introduced in the following
 
 
 #=======================================================================================
-sub_directory = 'qm_svm_aggregated_db'
+sub_directory = 'qm_one_class_svm_aggregated_db'
 """
 Sub-directory where results will be placed.
 
