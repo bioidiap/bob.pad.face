@@ -105,8 +105,10 @@ class MIFSPadDatabase(FileListPadDatabase):
 
         annotations = {} # dictionary to return
 
-        topleft = (bbox[1], bbox[0])
-        bottomright = (bbox[1] + bbox[3], bbox[0] + bbox[2])
+        topleft = (bbox[0], bbox[1])
+        bottomright = (bbox[0] + bbox[2], bbox[1] + bbox[3])
+        #topleft = (bbox[1], bbox[0])
+        #bottomright = (bbox[1] + bbox[3], bbox[0] + bbox[2])
 
         annotations['0'] = {'topleft': topleft, 'bottomright': bottomright}
 
