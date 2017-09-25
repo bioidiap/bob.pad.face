@@ -2,16 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-This file contains configurations to run Image Quality Measures (IQM) and SVM based face PAD baseline.
+This file contains configurations to run Image Quality Measures (IQM) and LR based face PAD algorithm.
 The settings of the preprocessor and extractor are tuned for the Replay-attack database.
-In the SVM algorithm the amount of training data is reduced speeding-up the training for
-large data sets, such as Aggregated PAD database.
 The IQM features used in this algorithm/resource are introduced in the following papers: [WHJ15]_ and [CBVM16]_.
 """
 
 
 #=======================================================================================
-sub_directory = 'qm_svm_aggregated_db'
+sub_directory = 'qm_lr'
 """
 Sub-directory where results will be placed.
 
@@ -77,40 +75,19 @@ The features to be computed are introduced in the following papers: [WHJ15]_ and
 #=======================================================================================
 # define algorithm:
 
-from ..algorithm import VideoSvmPadAlgorithm
+from ..algorithm import VideoLRPadAlgorithm
 
-MACHINE_TYPE = 'C_SVC'
-KERNEL_TYPE = 'RBF'
-N_SAMPLES = 10000
-TRAINER_GRID_SEARCH_PARAMS = {'cost': [2**P for P in range(-3, 14, 2)], 'gamma': [2**P for P in range(-15, 0, 2)]}
-MEAN_STD_NORM_FLAG = True      # enable mean-std normalization
-FRAME_LEVEL_SCORES_FLAG = True # one score per frame(!) in this case
-SAVE_DEBUG_DATA_FLAG = True    # save the data, which might be useful for debugging
-REDUCED_TRAIN_DATA_FLAG = True # reduce the amount of training data in the final training stage
-N_TRAIN_SAMPLES = 50000       # number of training samples per class in the final SVM training stage
+C = 1. # The regularization parameter for the LR classifier
+FRAME_LEVEL_SCORES_FLAG = True # Return one score per frame
 
-algorithm = VideoSvmPadAlgorithm(machine_type = MACHINE_TYPE,
-                                 kernel_type = KERNEL_TYPE,
-                                 n_samples = N_SAMPLES,
-                                 trainer_grid_search_params = TRAINER_GRID_SEARCH_PARAMS,
-                                 mean_std_norm_flag = MEAN_STD_NORM_FLAG,
-                                 frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG,
-                                 save_debug_data_flag = SAVE_DEBUG_DATA_FLAG,
-                                 reduced_train_data_flag = REDUCED_TRAIN_DATA_FLAG,
-                                 n_train_samples = N_TRAIN_SAMPLES)
+algorithm = VideoLRPadAlgorithm(C = C,
+                                frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG)
+
 """
-The SVM algorithm with RBF kernel is used to classify the data into *real* and *attack* classes.
+The Logistic Regression is used to classify the data into *real* and *attack* classes.
 One score is produced for each frame of the input video, ``frame_level_scores_flag = True``.
-The grid search of SVM parameters is used to select the successful settings.
-The grid search is done on the subset of training data.
-The size of this subset is defined by ``n_samples`` parameter.
-The final training of the SVM is done on the subset of training data ``reduced_train_data_flag = True``.
-The size of the subset for the final training stage is defined by the ``n_train_samples`` argument.
-The data is also mean-std normalized, ``mean_std_norm_flag = True``.
+The sub-sampling of training data is not used here, sub-sampling flags have default ``False``
+values.
 """
-
-
-
-
 
 

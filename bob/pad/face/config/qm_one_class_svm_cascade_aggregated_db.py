@@ -77,40 +77,26 @@ The features to be computed are introduced in the following papers: [WHJ15]_ and
 #=======================================================================================
 # define algorithm:
 
-from ..algorithm import VideoSvmPadAlgorithm
+from ..algorithm import VideoCascadeSvmPadAlgorithm
 
-MACHINE_TYPE = 'C_SVC'
+MACHINE_TYPE = 'ONE_CLASS'
 KERNEL_TYPE = 'RBF'
-N_SAMPLES = 10000
-TRAINER_GRID_SEARCH_PARAMS = {'cost': [2**P for P in range(-3, 14, 2)], 'gamma': [2**P for P in range(-15, 0, 2)]}
-MEAN_STD_NORM_FLAG = True      # enable mean-std normalization
-FRAME_LEVEL_SCORES_FLAG = True # one score per frame(!) in this case
-SAVE_DEBUG_DATA_FLAG = True    # save the data, which might be useful for debugging
-REDUCED_TRAIN_DATA_FLAG = True # reduce the amount of training data in the final training stage
-N_TRAIN_SAMPLES = 50000       # number of training samples per class in the final SVM training stage
+SVM_KWARGS = {'nu': 0.001, 'gamma': 0.5}
+N = 2
+POS_SCORES_SLOPE = 0.01
+FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm = VideoSvmPadAlgorithm(machine_type = MACHINE_TYPE,
-                                 kernel_type = KERNEL_TYPE,
-                                 n_samples = N_SAMPLES,
-                                 trainer_grid_search_params = TRAINER_GRID_SEARCH_PARAMS,
-                                 mean_std_norm_flag = MEAN_STD_NORM_FLAG,
-                                 frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG,
-                                 save_debug_data_flag = SAVE_DEBUG_DATA_FLAG,
-                                 reduced_train_data_flag = REDUCED_TRAIN_DATA_FLAG,
-                                 n_train_samples = N_TRAIN_SAMPLES)
+algorithm = VideoCascadeSvmPadAlgorithm(machine_type = MACHINE_TYPE,
+                                        kernel_type = KERNEL_TYPE,
+                                        svm_kwargs = SVM_KWARGS,
+                                        N = N,
+                                        pos_scores_slope = POS_SCORES_SLOPE,
+                                        frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG)
 """
-The SVM algorithm with RBF kernel is used to classify the data into *real* and *attack* classes.
+The cascade of one-class SVMs with RBF kernel is used to classify the data into *real* and *attack* classes.
 One score is produced for each frame of the input video, ``frame_level_scores_flag = True``.
-The grid search of SVM parameters is used to select the successful settings.
-The grid search is done on the subset of training data.
-The size of this subset is defined by ``n_samples`` parameter.
-The final training of the SVM is done on the subset of training data ``reduced_train_data_flag = True``.
-The size of the subset for the final training stage is defined by the ``n_train_samples`` argument.
-The data is also mean-std normalized, ``mean_std_norm_flag = True``.
+A single SVM in the cascade is trained using two features ``N = 2``.
+The positive scores produced by the cascade are reduced by multiplying them with a constant
+``pos_scores_slope = 0.01``.
 """
-
-
-
-
-
 

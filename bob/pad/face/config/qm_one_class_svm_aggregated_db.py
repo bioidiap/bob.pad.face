@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file contains configurations to run Image Quality Measures (IQM) and SVM based face PAD baseline.
+This file contains configurations to run Image Quality Measures (IQM) and one-class SVM based face PAD algorithm.
 The settings of the preprocessor and extractor are tuned for the Replay-attack database.
 In the SVM algorithm the amount of training data is reduced speeding-up the training for
 large data sets, such as Aggregated PAD database.
@@ -11,7 +11,7 @@ The IQM features used in this algorithm/resource are introduced in the following
 
 
 #=======================================================================================
-sub_directory = 'qm_svm_aggregated_db'
+sub_directory = 'qm_one_class_svm_aggregated_db'
 """
 Sub-directory where results will be placed.
 
@@ -79,15 +79,15 @@ The features to be computed are introduced in the following papers: [WHJ15]_ and
 
 from ..algorithm import VideoSvmPadAlgorithm
 
-MACHINE_TYPE = 'C_SVC'
+MACHINE_TYPE = 'ONE_CLASS'
 KERNEL_TYPE = 'RBF'
-N_SAMPLES = 10000
-TRAINER_GRID_SEARCH_PARAMS = {'cost': [2**P for P in range(-3, 14, 2)], 'gamma': [2**P for P in range(-15, 0, 2)]}
-MEAN_STD_NORM_FLAG = True      # enable mean-std normalization
-FRAME_LEVEL_SCORES_FLAG = True # one score per frame(!) in this case
-SAVE_DEBUG_DATA_FLAG = True    # save the data, which might be useful for debugging
-REDUCED_TRAIN_DATA_FLAG = True # reduce the amount of training data in the final training stage
-N_TRAIN_SAMPLES = 50000       # number of training samples per class in the final SVM training stage
+N_SAMPLES = 50000
+TRAINER_GRID_SEARCH_PARAMS = {'nu': [0.001, 0.01, 0.05, 0.1], 'gamma': [0.01, 0.1, 1, 10]}
+MEAN_STD_NORM_FLAG = True       # enable mean-std normalization
+FRAME_LEVEL_SCORES_FLAG = True  # one score per frame(!) in this case
+SAVE_DEBUG_DATA_FLAG = True     # save the data, which might be useful for debugging
+REDUCED_TRAIN_DATA_FLAG = False # DO NOT reduce the amount of training data in the final training stage
+N_TRAIN_SAMPLES = 50000         # number of training samples per class in the final SVM training stage (NOT considered, because REDUCED_TRAIN_DATA_FLAG = False)
 
 algorithm = VideoSvmPadAlgorithm(machine_type = MACHINE_TYPE,
                                  kernel_type = KERNEL_TYPE,
@@ -99,18 +99,13 @@ algorithm = VideoSvmPadAlgorithm(machine_type = MACHINE_TYPE,
                                  reduced_train_data_flag = REDUCED_TRAIN_DATA_FLAG,
                                  n_train_samples = N_TRAIN_SAMPLES)
 """
-The SVM algorithm with RBF kernel is used to classify the data into *real* and *attack* classes.
+The one-class SVM algorithm with RBF kernel is used to classify the data into *real* and *attack* classes.
 One score is produced for each frame of the input video, ``frame_level_scores_flag = True``.
 The grid search of SVM parameters is used to select the successful settings.
 The grid search is done on the subset of training data.
 The size of this subset is defined by ``n_samples`` parameter.
-The final training of the SVM is done on the subset of training data ``reduced_train_data_flag = True``.
-The size of the subset for the final training stage is defined by the ``n_train_samples`` argument.
+The final training of the SVM is done on all training data ``reduced_train_data_flag = False``.
 The data is also mean-std normalized, ``mean_std_norm_flag = True``.
 """
-
-
-
-
 
 

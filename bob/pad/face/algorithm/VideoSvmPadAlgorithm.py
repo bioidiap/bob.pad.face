@@ -453,7 +453,7 @@ class VideoSvmPadAlgorithm(Algorithm):
 
 
     #==========================================================================
-    def norm_train_cv_data(self, real_train, real_cv, attack_train, attack_cv):
+    def norm_train_cv_data(self, real_train, real_cv, attack_train, attack_cv, one_class_flag = False):
         """
         Mean-std normalization of train and cross-validation data arrays.
 
@@ -471,6 +471,11 @@ class VideoSvmPadAlgorithm(Algorithm):
         ``attack_cv`` : 2D :py:class:`numpy.ndarray`
             Subset of cross-validation features for the attack class.
 
+        ``one_class_flag`` : :py:class:`bool`
+            If set to ``True``, only positive/real samples will be used to
+            compute the mean and std normalization vectors. Set to ``True`` if
+            using one-class SVM. Default: False.
+
         **Returns:**
 
         ``real_train_norm`` : 2D :py:class:`numpy.ndarray`
@@ -485,18 +490,30 @@ class VideoSvmPadAlgorithm(Algorithm):
         ``attack_cv_norm`` : 2D :py:class:`numpy.ndarray`
             Normalized subset of cross-validation features for the attack class.
         """
+        if not(one_class_flag):
 
-        features_train = np.vstack([real_train, attack_train])
+            features_train = np.vstack([real_train, attack_train])
 
-        features_train_norm, features_mean, features_std = self.mean_std_normalize(features_train)
+            features_train_norm, features_mean, features_std = self.mean_std_normalize(features_train)
 
-        real_train_norm = features_train_norm[0:real_train.shape[0], :]
+            real_train_norm = features_train_norm[0:real_train.shape[0], :]
 
-        attack_train_norm = features_train_norm[real_train.shape[0]:, :]
+            attack_train_norm = features_train_norm[real_train.shape[0]:, :]
 
-        real_cv_norm, _, _ = self.mean_std_normalize(real_cv, features_mean, features_std)
+            real_cv_norm, _, _ = self.mean_std_normalize(real_cv, features_mean, features_std)
 
-        attack_cv_norm, _, _ = self.mean_std_normalize(attack_cv, features_mean, features_std)
+            attack_cv_norm, _, _ = self.mean_std_normalize(attack_cv, features_mean, features_std)
+
+        else: # one-class SVM case
+
+            #only real class used for training in one class SVM:
+            real_train_norm, features_mean, features_std = self.mean_std_normalize(real_train)
+
+            attack_train_norm, _, _ = self.mean_std_normalize(attack_train, features_mean, features_std)
+
+            real_cv_norm, _, _ = self.mean_std_normalize(real_cv, features_mean, features_std)
+
+            attack_cv_norm, _, _ = self.mean_std_normalize(attack_cv, features_mean, features_std)
 
         return real_train_norm, real_cv_norm, attack_train_norm, attack_cv_norm
 
@@ -569,12 +586,15 @@ class VideoSvmPadAlgorithm(Algorithm):
             A trained SVM machine.
         """
 
+        one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
+
         # get the data for the hyper-parameter grid-search:
         real_train, real_cv, attack_train, attack_cv = self.prepare_data_for_hyper_param_grid_search(training_features, n_samples)
 
         if mean_std_norm_flag:
             # normalize the data:
-            real_train, real_cv, attack_train, attack_cv = self.norm_train_cv_data(real_train, real_cv, attack_train, attack_cv)
+            real_train, real_cv, attack_train, attack_cv = self.norm_train_cv_data(real_train, real_cv, attack_train, attack_cv,
+                                                                                   one_class_flag)
 
         precisions_cv = [] # for saving the precision on the cross-validation set
 
@@ -593,7 +613,13 @@ class VideoSvmPadAlgorithm(Algorithm):
 
                 setattr(trainer, key, trainer_grid_search_param[key]) # set the params of trainer
 
-            data  = [np.copy(real_train), np.copy(attack_train)] # data used for training the machine in the grid-search
+            if not( one_class_flag ): # two-class SVM case
+
+                data  = [np.copy(real_train), np.copy(attack_train)] # data used for training the machine in the grid-search
+
+            else: # one class SVM case
+
+                data = [np.copy(real_train)] # only real class is used for training
 
             machine = trainer.train(data) # train the machine
 
@@ -626,8 +652,10 @@ class VideoSvmPadAlgorithm(Algorithm):
             debug_dict = {}
             debug_dict['precisions_train'] = precisions_train
             debug_dict['precisions_cv'] = precisions_cv
-            debug_dict['cost'] = selected_params['cost']
-            debug_dict['gamma'] = selected_params['gamma']
+
+            for key in selected_params.keys():
+                debug_dict[key] = selected_params[key]
+
             f = bob.io.base.HDF5File(debug_file, 'w') # open hdf5 file to save the debug data
             for key in debug_dict.keys():
                 f.set(key, debug_dict[key])
@@ -640,10 +668,18 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         if mean_std_norm_flag:
             # Normalize the data:
-            features = np.vstack([real, attack])
-            features_norm, features_mean, features_std = self.mean_std_normalize(features)
-            real =   features_norm[0:real.shape[0], :] # The array is now normalized
-            attack = features_norm[real.shape[0]:, :] # The array is now normalized
+            if not( one_class_flag ): # two-class SVM case
+
+                features = np.vstack([real, attack])
+                features_norm, features_mean, features_std = self.mean_std_normalize(features)
+                real =   features_norm[0:real.shape[0], :] # The array is now normalized
+                attack = features_norm[real.shape[0]:, :] # The array is now normalized
+
+            else: # one-class SVM case
+
+                real, features_mean, features_std = self.mean_std_normalize(real) # use only real class to compute normalizers
+                attack = self.mean_std_normalize(attack, features_mean, features_std)
+                # ``real`` and ``attack`` arrays are now normalizaed
 
         if reduced_train_data_flag:
 
@@ -651,7 +687,13 @@ class VideoSvmPadAlgorithm(Algorithm):
             real = self.select_quasi_uniform_data_subset(real, n_train_samples)
             attack = self.select_quasi_uniform_data_subset(attack, n_train_samples)
 
-        data = [np.copy(real), np.copy(attack)] # data for final training
+        if not( one_class_flag ): # two-class SVM case
+
+            data = [np.copy(real), np.copy(attack)] # data for final training
+
+        else: # one-class SVM case
+
+            data = [np.copy(real)] # only real class used for training
 
         machine = trainer.train(data) # train the machine
 
@@ -743,17 +785,26 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Returns:**
 
-        ``probabilities`` : 2D :py:class:`numpy.ndarray`
+        ``probabilities`` : 1D or 2D :py:class:`numpy.ndarray`
+            2D in the case of two-class SVM.
             An array containing class probabilities for each frame.
             First column contains probabilities for each frame being a real class.
             Second column contains probabilities for each frame being an attack class.
+            1D in the case of one-class SVM.
+            Vector with scores for each frame defining belonging to the real class.
             Must be writable with the ``write_feature`` function and
             readable with the ``read_feature`` function.
         """
 
         features_array = self.convert_frame_cont_to_array(feature)
 
-        probabilities = self.machine.predict_class_and_probabilities(features_array)[1]
+        if not( self.machine_type == 'ONE_CLASS' ): # two-class SVM case
+
+            probabilities = self.machine.predict_class_and_probabilities(features_array)[1]
+
+        else:
+
+            probabilities = self.machine.predict_class_and_scores(features_array)[1]
 
         return probabilities
 
@@ -765,26 +816,32 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Parameters:**
 
-        ``toscore`` : 2D :py:class:`numpy.ndarray`
+        ``toscore`` : 1D or 2D :py:class:`numpy.ndarray`
+            2D in the case of two-class SVM.
             An array containing class probabilities for each frame.
             First column contains probabilities for each frame being a real class.
             Second column contains probabilities for each frame being an attack class.
+            1D in the case of one-class SVM.
+            Vector with scores for each frame defining belonging to the real class.
 
         **Returns:**
 
-        ``score`` : :py:class:`float`
-            or a list of scores containing individual score for each frame.
-            A score value for the object ``toscore``.
-            A probability of a sample being a real class.
+        ``score`` : :py:class:`float` or a 1D :py:class:`numpy.ndarray`
+            If ``frame_level_scores_flag = False`` a single score is returned.
+            One score per video.
+            Score is a probability of a sample being a real class.
+            If ``frame_level_scores_flag = True`` a 1D array of scores is returned.
+            One score per frame.
+            Score is a probability of a sample being a real class.
         """
 
         if self.frame_level_scores_flag:
 
-            score = toscore[:,0] # here score is a list containing scores for each frame
+            score = toscore[:,0] # here score is a 1D array containing scores for each frame
 
         else:
 
-            score = np.mean(toscore, axis=0)[0] # compute a single score per video
+            score = np.mean( toscore[:,0] ) # compute a single score per video
 
         return score
 
@@ -796,8 +853,13 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         **Parameters:**
 
-        ``toscore`` : 2D :py:class:`numpy.ndarray`
-            An array containing scores computed by score() method of this class.
+        ``toscore`` : 1D or 2D :py:class:`numpy.ndarray`
+            2D in the case of two-class SVM.
+            An array containing class probabilities for each frame.
+            First column contains probabilities for each frame being a real class.
+            Second column contains probabilities for each frame being an attack class.
+            1D in the case of one-class SVM.
+            Vector with scores for each frame defining belonging to the real class.
 
         **Returns:**
 
@@ -805,13 +867,15 @@ class VideoSvmPadAlgorithm(Algorithm):
             A list containing the scores.
         """
 
-        if self.frame_level_scores_flag:
+        scores = self.score(toscore) # returns float score or 1D array of scores
 
-            list_of_scores = self.score(toscore)
+        if isinstance(scores, np.float): # if a single score
+
+            list_of_scores = [scores]
 
         else:
 
-            list_of_scores = [self.score(toscore)]
+            list_of_scores = list(scores)
 
         return list_of_scores
 

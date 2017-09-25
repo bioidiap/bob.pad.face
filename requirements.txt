@@ -13,3 +13,6 @@ bob.io.image
 bob.ip.color
 bob.ip.qualitymeasure
 bob.learn.libsvm
+bob.learn.linear
+scikit-learn
+
