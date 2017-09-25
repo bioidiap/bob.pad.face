@@ -67,6 +67,7 @@ setup(
             'replay-mobile = bob.pad.face.config.database.replay_mobile:database',
             'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
             'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
+            'mifs = bob.pad.face.config.database.mifs:database',
             ],
 
         # registered configurations:
@@ -76,6 +77,7 @@ setup(
             'replay-mobile = bob.pad.face.config.replay_mobile',
             'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'aggregated-db = bob.pad.face.config.aggregated_db',
+            'mifs = bob.pad.face.config.mifs',
 
             # baselines:
             'lbp-svm = bob.pad.face.config.lbp_svm',

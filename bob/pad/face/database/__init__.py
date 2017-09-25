@@ -2,6 +2,7 @@ from .replay import ReplayPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .msu_mfsd import MsuMfsdPadDatabase
 from .aggregated_db import AggregatedDbPadDatabase
+from .mifs import MIFSPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -23,6 +24,7 @@ __appropriate__(
     ReplayMobilePadDatabase,
     MsuMfsdPadDatabase,
     AggregatedDbPadDatabase,
+    MIFSPadDatabase,
     )
 
 __all__ = [_ for _ in dir() if not _.startswith('_')]

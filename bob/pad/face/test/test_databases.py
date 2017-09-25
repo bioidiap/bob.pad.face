@@ -56,5 +56,3 @@ def test_msu_mfsd():
     except IOError as e:
         raise SkipTest(
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'" % e)
-
-
