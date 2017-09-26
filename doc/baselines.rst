@@ -693,6 +693,82 @@ The ROC curves for the particular experiment can be downloaded from here:
 ------------
 
 
+.. _bob.pad.face.baselines.other_db:
+
+Baselines on other databases
+--------------------------------------
+
+This section summarizes the results of baseline face PAD experiments on other databases.
+
+------------
+
+
+MIFS database + LBP features of facial region + SVM classifier
+========================================================================
+
+To run this baseline on the :ref:`bob.pad.face.resources.databases.mifs` database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ spoof.py mifs lbp-svm \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "LBP features of facial region + SVM classifier + MIFS database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.mifs` database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  27.143  |  32.353  |
++-------------------+----------+----------+
+
+------------
+
+
+MIFS database + Image Quality Measures as features of facial region + SVM classifier
+========================================================================
+
+To run this baseline on the :ref:`bob.pad.face.resources.databases.mifs` database, using the ``grandtest`` protocol, execute the following:
+
+.. code-block:: sh
+
+    $ spoof.py mifs qm-svm \
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+
+To evaluate the results computing EER, HTER and plotting ROC you can use the
+following command:
+
+.. code-block:: sh
+
+    evaluate.py \
+    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    --legends "IQM features of facial region + SVM classifier + MIFS database" \
+    -F 7 \
+    --criterion EER \
+    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+
+The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.mifs` database are summarized in the Table below:
+
++-------------------+----------+----------+
+|      Protocol     |  EER,\%  |  HTER,\% |
++===================+==========+==========+
+|   ``grandtest``   |  34.286  |  28.676  |
++-------------------+----------+----------+
+
+------------
+
+
 .. include:: links.rst
-
-
