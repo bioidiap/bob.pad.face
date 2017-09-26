@@ -706,7 +706,7 @@ This section summarizes the results of baseline face PAD experiments on other da
 MIFS database + LBP features of facial region + SVM classifier
 ========================================================================
 
-To run this baseline on the :ref:`bob.pad.face.resources.databases.mifs` database, using the ``grandtest`` protocol, execute the following:
+To run this baseline on the MIFS database, using the ``grandtest`` protocol, execute the following:
 
 .. code-block:: sh
 
@@ -726,7 +726,7 @@ following command:
     --criterion EER \
     --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
-The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.mifs` database are summarized in the Table below:
+The EER/HTER errors for the MIFS database are summarized in the Table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
@@ -740,7 +740,7 @@ The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.mifs` databas
 MIFS database + Image Quality Measures as features of facial region + SVM classifier
 ========================================================================================
 
-To run this baseline on the :ref:`bob.pad.face.resources.databases.mifs` database, using the ``grandtest`` protocol, execute the following:
+To run this baseline on the MIFS database, using the ``grandtest`` protocol, execute the following:
 
 .. code-block:: sh
 
@@ -760,7 +760,7 @@ following command:
     --criterion EER \
     --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
-The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.mifs` database are summarized in the Table below:
+The EER/HTER errors for the MIFS database are summarized in the Table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
