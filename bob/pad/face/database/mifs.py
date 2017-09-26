@@ -78,8 +78,8 @@ class MIFSPadDatabase(FileListPadDatabase):
     def annotations(self, f):
         """
         Return annotations for a given file object ``f``, which is an instance
-        of ``ReplayPadFile`` defined in the HLDI of the Replay-Attack DB.
-        The ``load()`` method of ``ReplayPadFile`` class (see above)
+        of ``MIFSPadFile`` defined in the HLDI of the MIFS DB.
+        The ``load()`` method of ``MIFSPadFile`` class (see above)
         returns a video, therefore this method returns bounding-box annotations
         for each video frame. The annotations are returned as dictionary of dictionaries.
 
@@ -106,8 +106,6 @@ class MIFSPadDatabase(FileListPadDatabase):
 
         topleft = (bbox[0], bbox[1])
         bottomright = (bbox[0] + bbox[2], bbox[1] + bbox[3])
-        #topleft = (bbox[1], bbox[0])
-        #bottomright = (bbox[1] + bbox[3], bbox[0] + bbox[2])
 
         annotations['0'] = {'topleft': topleft, 'bottomright': bottomright}
 

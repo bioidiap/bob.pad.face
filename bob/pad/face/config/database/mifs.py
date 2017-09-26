@@ -17,7 +17,7 @@ database = MIFSPadDatabase(
     original_extension=original_extension,
     training_depends_on_protocol=True,
 )
-"""The :py:class:`bob.pad.base.database.PadDatabase` derivative with Replay-Mobile
+"""The :py:class:`bob.pad.base.database.PadDatabase` derivative with MIFS
 database settings.
 
 .. warning::
@@ -26,8 +26,8 @@ database settings.
    manner, respecting usage protocols. It does **not** contain the raw
    data files. You should procure those yourself.
 
-Notice that ``original_directory`` is set to ``[YOUR_REPLAY_MOBILE_DIRECTORY]``.
+Notice that ``original_directory`` is set to ``[YOUR_MIFS_DATABASE_DIRECTORY]``.
 You must make sure to create ``${HOME}/.bob_bio_databases.txt`` setting this
-value to the place where you actually installed the Replay-Mobile Database, as
+value to the place where you actually installed the MIFS Database, as
 explained in the section :ref:`bob.pad.face.baselines`.
 """

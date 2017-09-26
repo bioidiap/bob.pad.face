@@ -27,7 +27,7 @@ database settings
    manner, respecting usage protocols. It does **not** contain the raw
    data files. You should procure those yourself.
 
-Notice that ``original_directory`` is set to ``[YOUR_REPLAY_ATTACK_DIRECTORY]``.
+Notice that ``original_directory`` is set to ``[YOUR_MIFS_DATABASE_DIRECTORY]``.
 You must make sure to create ``${HOME}/.bob_bio_databases.txt`` setting this
 value to the place where you actually installed the Replayattack Database, as
 explained in the section :ref:`bob.pad.face.baselines`.
