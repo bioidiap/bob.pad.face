@@ -18,6 +18,10 @@ import numpy as np
 import random
 random.seed(7)
 
+from sklearn.decomposition import SparseCoder
+
+import bob.io.base
+
 
 #==============================================================================
 class VideoSparseCoding(Preprocessor, object):
@@ -48,8 +52,19 @@ class VideoSparseCoding(Preprocessor, object):
 
     ``norm_face_size`` : :py:class:`int`
         The size of the face after normalization. Default: 64 .
-    """
 
+    ``dictionary_file_names`` : [:py:class:`str`]
+        A list of filenames containing the dictionary. The filenames must be
+        listed in the following order:
+        [file_name_pointing_to_frontal_dictionary,
+         file_name_pointing_to_horizontal_dictionary,
+         file_name_pointing_to_vertical_dictionary]
+
+    ``frame_step`` : :py:class:`int`
+        Selected frames for processing with this step. If set to 1, all frames
+        will be processes. Used to speed up the experiments.
+        Default: 1.
+    """
 
     #==========================================================================
     def __init__(self,
@@ -57,17 +72,23 @@ class VideoSparseCoding(Preprocessor, object):
                  block_length = 10,
                  min_face_size = 50,
                  norm_face_size = 64,
+                 dictionary_file_names = [],
+                 frame_step = 1,
                  **kwargs):
 
         super(VideoSparseCoding, self).__init__(block_size = block_size,
                                                 block_length = block_length,
                                                 min_face_size = min_face_size,
-                                                norm_face_size = norm_face_size)
+                                                norm_face_size = norm_face_size,
+                                                dictionary_file_names = dictionary_file_names,
+                                                frame_step = frame_step)
 
         self.block_size = block_size
         self.block_length = block_length
         self.min_face_size = min_face_size
         self.norm_face_size = norm_face_size
+        self.dictionary_file_names = dictionary_file_names
+        self.frame_step = frame_step
 
         self.video_preprocessor = bob.bio.video.preprocessor.Wrapper()
 
@@ -456,6 +477,23 @@ class VideoSparseCoding(Preprocessor, object):
 
         ``n_patches`` : :py:class:`int`
             Number of randomly selected patches.
+
+        **Returns:**
+
+        ``selected_frontal_patches`` : [2D :py:class:`numpy.ndarray`]
+            An array of selected frontal patches.
+            The dimensionality of the array:
+            (``n_patches`` x ``number_of_features``).
+
+        ``selected_horizontal_patches`` : [2D :py:class:`numpy.ndarray`]
+            An array of selected horizontal patches.
+            The dimensionality of the array:
+            (``n_patches`` x ``number_of_features``).
+
+        ``selected_vertical_patches`` : [2D :py:class:`numpy.ndarray`]
+            An array of vertical selected patches.
+            The dimensionality of the array:
+            (``n_patches`` x ``number_of_features``).
         """
 
         selected_frontal_patches = self.__select_random_patches_single_list(frontal_patches, n_patches)
@@ -465,6 +503,156 @@ class VideoSparseCoding(Preprocessor, object):
         selected_vertical_patches = self.__select_random_patches_single_list(vertical_patches, n_patches)
 
         return selected_frontal_patches, selected_horizontal_patches, selected_vertical_patches
+
+
+    #==========================================================================
+    def get_sparse_codes_for_patches(self, patches, dictionary):
+        """
+        This function computes a reconstruction sparse codes for a set of patches
+        given dictionary to reconstruct the patches from. The OMP sparse coding
+        algorithm is used for that.
+        The maximum amount of non-zero entries in the sparse code is:
+        ``num_of_features/5.``
+
+        **Parameters:**
+
+        ``patches`` : 2D :py:class:`numpy.ndarray`
+            A vectorized patches to be reconstructed. The dimensionality is:
+            (``n_samples`` x ``n_features``).
+
+        ``dictionary`` : 2D :py:class:`numpy.ndarray`
+            A dictionary to use for patch reconstruction. The dimensions are:
+            (n_words_in_dictionary x n_features)
+
+        **Returns:**
+
+        ``codes`` : 2D :py:class:`numpy.ndarray`
+            An array of reconstruction sparse codes for each patch.
+            The dimensionality is:
+            (``n_samples`` x ``n_words_in_the_dictionary``).
+        """
+
+        algo = 'omp'
+
+        n_nonzero = np.int(dictionary.shape[1]/5.)
+
+        alpha = n_nonzero
+
+        coder = SparseCoder(dictionary=dictionary, transform_n_nonzero_coefs=n_nonzero,
+                            transform_alpha=alpha, transform_algorithm=algo)
+
+        # if a single patch is given of the shape (n_features,) convert it to the shape (1, n_features):
+
+        if len(patches.shape) == 1:
+
+            patches = patches.reshape(1, -1)
+
+        codes = coder.transform(patches)
+
+        return codes
+
+
+    #==========================================================================
+    def get_sparse_codes_for_list_of_patches(self, list_of_patches, dictionary):
+        """
+        Compute sparse codes for each array of vectorized patches in the list.
+        This function just calls ``get_sparse_codes_for_patches`` method
+        for each element of the input list.
+
+        **Parameters:**
+
+        ``patches`` : [2D :py:class:`numpy.ndarray`]
+            A list of vectorized patches to be reconstructed.
+            The dimensionality of each array in the list:
+            (``n_samples`` x ``n_features``).
+
+        ``dictionary`` : 2D :py:class:`numpy.ndarray`
+            A dictionary to use for patch reconstruction. The dimensions are:
+            (n_words_in_dictionary x n_features)
+
+        **Returns:**
+
+        ``video_codes`` : [2D :py:class:`numpy.ndarray`]
+            A list of arrays of reconstruction sparse codes for each patch.
+            The dimensionality of each array in the list is:
+            (``n_samples`` x ``n_words_in_the_dictionary``).
+        """
+
+        video_codes = []
+
+        for idx, patches in enumerate(list_of_patches):
+
+#            print idx
+
+            codes = self.get_sparse_codes_for_patches(patches, dictionary)
+
+            video_codes.append(codes)
+
+        return video_codes
+
+
+    #==========================================================================
+    def load_array_from_hdf5(self, file_name):
+        """
+        Load an array from the hdf5 file given name of the file.
+
+        **Parameters:**
+
+        ``file_name`` : :py:class:`str`
+            Name of the file.
+
+        **Returns:**
+
+        ``data`` : :py:class:`numpy.ndarray`
+            Downloaded array.
+        """
+
+        f = bob.io.base.HDF5File(file_name) #read only
+
+        data = f.read('data') #reads integer
+
+        del f
+
+        return data
+
+
+    #==========================================================================
+    def load_the_dictionaries(self, dictionary_file_names):
+        """
+        Download dictionaries, given names of the files containing them. The
+        dictionaries are precomputed.
+
+        **Parameters:**
+
+        ``dictionary_file_names`` : [:py:class:`str`]
+            A list of filenames containing the dictionary. The filenames must be
+            listed in the following order:
+            [file_name_pointing_to_frontal_dictionary,
+             file_name_pointing_to_horizontal_dictionary,
+             file_name_pointing_to_vertical_dictionary]
+
+        **Returns:**
+
+        ``dictionary_frontal`` : 2D :py:class:`numpy.ndarray`
+            A dictionary to use for reconstruction of frontal patches.
+            The dimensions are: (n_words_in_dictionary x n_features_front)
+
+        ``dictionary_horizontal`` : 2D :py:class:`numpy.ndarray`
+            A dictionary to use for reconstruction of horizontal patches.
+            The dimensions are: (n_words_in_dictionary x n_features_horizont)
+
+        ``dictionary_vertical`` : 2D :py:class:`numpy.ndarray`
+            A dictionary to use for reconstruction of vertical patches.
+            The dimensions are: (n_words_in_dictionary x n_features_vert)
+        """
+
+        dictionary_frontal = self.load_array_from_hdf5(dictionary_file_names[0])
+
+        dictionary_horizontal = self.load_array_from_hdf5(dictionary_file_names[1])
+
+        dictionary_vertical = self.load_array_from_hdf5(dictionary_file_names[2])
+
+        return dictionary_frontal, dictionary_horizontal, dictionary_vertical
 
 
     #==========================================================================
@@ -496,14 +684,23 @@ class VideoSparseCoding(Preprocessor, object):
         # Convert frame container to 3D array:
         video = self.convert_frame_cont_to_grayscale_array(frames)
 
-        # get all blocks from all possible facial stacks:
+        # Get all blocks from all possible facial stacks:
         all_blocks = self.get_all_blocks_from_color_channel(video, annotations,
                                                             self.block_size, self.block_length,
                                                             self.min_face_size, self.norm_face_size)
 
+        # Extract three sets of patches per each stack of facial images:
         frontal_patches, horizontal_patches, vertical_patches = self.extract_patches_from_blocks(all_blocks)
 
-        return frontal_patches, horizontal_patches, vertical_patches
+        # Download the dictionaries:
+        dictionary_frontal, dictionary_horizontal, dictionary_vertical = self.load_the_dictionaries(self.dictionary_file_names)
+
+        # Compute sparse codes for all patches of all types:
+        frontal_video_codes = self.get_sparse_codes_for_list_of_patches(frontal_patches[::self.frame_step], dictionary_frontal)
+        horizontal_video_codes = self.get_sparse_codes_for_list_of_patches(horizontal_patches[::self.frame_step], dictionary_horizontal)
+        vertical_video_codes = self.get_sparse_codes_for_list_of_patches(vertical_patches[::self.frame_step], dictionary_vertical)
+
+        return frontal_video_codes, horizontal_video_codes, vertical_video_codes
 
 
     #==========================================================================
