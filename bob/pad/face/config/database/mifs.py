@@ -5,7 +5,7 @@ from bob.pad.face.database.mifs import MIFSPadDatabase
 
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
-original_directory = "[MIFS_DATABASE_DIRECTORY]"
+original_directory = "[YOUR_MIFS_DATABASE_DIRECTORY]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
 original_extension = ".jpg" # extension of the data files
