@@ -45,7 +45,7 @@ class MIFSPadDatabase(FileListPadDatabase):
     def __init__(
         self,
         protocol='grandtest', # grandtest is the default protocol for this database
-        original_directory='[MIFS_DATABASE_DIRECTORY]',
+        original_directory='[YOUR_MIFS_DATABASE_DIRECTORY]',
         original_extension='.jpg',
         **kwargs):
 
@@ -67,7 +67,7 @@ class MIFSPadDatabase(FileListPadDatabase):
         #    **kwargs)
 
         from pkg_resources import resource_filename
-        folder = resource_filename(__name__, '../lists/mifs')
+        folder = resource_filename(__name__, '../lists/mifs/')
         super(MIFSPadDatabase, self).__init__(folder, 'mifs',
                                             pad_file_class=MIFSPadFile,
                                             protocol = protocol,
@@ -97,9 +97,8 @@ class MIFSPadDatabase(FileListPadDatabase):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        path_to_file    = self.original_directory + f.path
-        face_path       = path_to_file[:-4] + '.face'
-        file_handle     = open(face_path, 'r')
+        path_to_file    = self.m_base_dir + '/annotations/' + f.path[:-4] + '.face'
+        file_handle     = open(path_to_file, 'r')
         line            = file_handle.readline()
         bbox            = [int(x) for x in line.split()]
 

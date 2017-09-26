@@ -16,7 +16,11 @@ from bob.pad.face.database import ReplayPadDatabase
 
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
+<<<<<<< HEAD:bob/pad/face/config/replay_attack.py
 ORIGINAL_DIRECTORY = "[YOUR_REPLAY_ATTACK_DIRECTORY]"
+=======
+ORIGINAL_DIRECTORY = "[YOUR_MIFS_DATABASE_DIRECTORY]"
+>>>>>>> Added face bounding boxes to tree and cleaned database path:bob/pad/face/config/mifs.py
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
 ORIGINAL_EXTENSION = ".mov" # extension of the data files
