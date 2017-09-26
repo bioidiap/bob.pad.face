@@ -738,7 +738,7 @@ The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.mifs` databas
 
 
 MIFS database + Image Quality Measures as features of facial region + SVM classifier
-========================================================================
+========================================================================================
 
 To run this baseline on the :ref:`bob.pad.face.resources.databases.mifs` database, using the ``grandtest`` protocol, execute the following:
 
