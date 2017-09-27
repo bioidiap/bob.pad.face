@@ -26,16 +26,13 @@ import bob.io.base
 #==============================================================================
 class VideoSparseCoding(Preprocessor, object):
     """
-    This class is designed to compute "feature vectors" for all stacks of facial
-    images using sparse coding. The feature vector is computed for each stack
-    containing ``block_length`` images.
-
-    The maximum number of facial stacks per video is:
+    This class is designed to compute sparse codes for spatial frontal,
+    spatio-temporal horizontal, and spatio-temporal vertical patches.
+    The codes are computed for all possible stacks of facial images.
+    The maximum possible number of stacks is:
     (``num_of_frames_in_video`` - ``block_length``).
-    However, the number of facial volumes might be less than above, because
-    frames with small faces ( < min_face_size ) are discarded.
-
-    The feature vector is computed as follows............
+    However, this number can be smaller, and is controlled by two arguments
+    of this class: ``min_face_size`` and ``frame_step``.
 
     **Parameters:**
 
@@ -573,7 +570,7 @@ class VideoSparseCoding(Preprocessor, object):
         **Returns:**
 
         ``video_codes`` : [2D :py:class:`numpy.ndarray`]
-            A list of arrays of reconstruction sparse codes for each patch.
+            A list of arrays with reconstruction sparse codes for each patch.
             The dimensionality of each array in the list is:
             (``n_samples`` x ``n_words_in_the_dictionary``).
         """
@@ -656,9 +653,54 @@ class VideoSparseCoding(Preprocessor, object):
 
 
     #==========================================================================
+    def convert_sparse_codes_to_frame_container(self, sparse_codes):
+        """
+        Convert an input list of lists of 2D arrays / sparse codes into Frame
+        Container. Each frame in the output Frame Container is a 3D array which
+        stacks 3 2D arrays representing particular frame / stack of facial images.
+
+        **Parameters:**
+
+        ``sparse_codes`` : [[2D :py:class:`numpy.ndarray`]]
+            A list of lists of 2D arrays. Each 2D array contains sparse codes
+            of a particular stack of facial images. The length of internal lists
+            is equal to the number of processed frames. The outer list contains
+            the codes for frontal, horizontal and vertical patches, thus the
+            length of an outer list in the context of this class is 3.
+
+        **Returns:**
+
+        ``frame_container`` : FrameContainer
+            FrameContainer containing the frames with sparse codes for the
+            frontal, horizontal and vertical patches. Each frame is a 3D array.
+            The dimensionality of array is:
+            (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
+        """
+
+        frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+
+        idx = 0
+
+        for frontal_codes, horizontal_codes, vertical_codes in zip(sparse_codes[0], sparse_codes[1], sparse_codes[2]):
+
+            frame_3d = np.stack([frontal_codes, horizontal_codes, vertical_codes])
+
+            frame_container.add(idx, frame_3d) # add frame to FrameContainer
+
+            idx = idx + 1
+
+        return frame_container
+
+
+    #==========================================================================
     def __call__(self, frames, annotations):
         """
-        Do something....
+        Compute sparse codes for spatial frontal, spatio-temporal horizontal,
+        and spatio-temporal vertical patches. The codes are computed for all
+        possible stacks of facial images. The maximum possible number of stacks
+        is: (``num_of_frames_in_video`` - ``block_length``).
+        However, this number can be smaller, and is controlled by two arguments
+        of this class: ``min_face_size`` and ``frame_step``.
 
         **Parameters:**
 
@@ -677,8 +719,13 @@ class VideoSparseCoding(Preprocessor, object):
 
         **Returns:**
 
-        ``preprocessed_video`` : FrameContainer
-            ????????????????
+        ``frame_container`` : FrameContainer
+            FrameContainer containing the frames with sparse codes for the
+            frontal, horizontal and vertical patches. Each frame is a 3D array.
+            The dimensionality of array is:
+            (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
+            The first slice in the 3D arrays corresponds to frontal sparse codes,
+            second slice to horizontal, and third to vertical codes.
         """
 
         # Convert frame container to 3D array:
@@ -700,7 +747,9 @@ class VideoSparseCoding(Preprocessor, object):
         horizontal_video_codes = self.get_sparse_codes_for_list_of_patches(horizontal_patches[::self.frame_step], dictionary_horizontal)
         vertical_video_codes = self.get_sparse_codes_for_list_of_patches(vertical_patches[::self.frame_step], dictionary_vertical)
 
-        return frontal_video_codes, horizontal_video_codes, vertical_video_codes
+        frame_container = self.convert_sparse_codes_to_frame_container([frontal_video_codes, horizontal_video_codes, vertical_video_codes])
+
+        return frame_container
 
 
     #==========================================================================
@@ -742,5 +791,11 @@ class VideoSparseCoding(Preprocessor, object):
         frames = self.video_preprocessor.read_data(file_name)
 
         return frames
+
+
+
+
+
+
 
 
