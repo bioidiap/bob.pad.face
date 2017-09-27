@@ -103,6 +103,9 @@ setup(
         # registered preprocessors:
         'bob.pad.preprocessor': [
             'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor', # no preprocessing
+
+            # The sparse coding based preprocessors
+            'sparse-coding-preprocessor = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor',
             ],
 
         # registered preprocessors:
