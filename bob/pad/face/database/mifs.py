@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
+#!/usr/bin/env python
 
 #==============================================================================
 
@@ -25,7 +26,26 @@ class MIFSPadFile(PadFile):
 
     #==========================================================================
     def load(self, directory=None, extension=None):
-        #path = self.make_path(directory, extension)
+        """
+        Overridden version of the load method defined in the ``PadFile``.
+
+        **Parameters:**
+
+        ``directory`` : :py:class:`str`
+            String containing the path to the MIFS database.
+            Default: None
+
+        ``extension`` : :py:class:`str`
+            Extension of the video files in the MIFS database.
+            Default: None
+
+        **Returns:**
+
+        ``video_data`` : FrameContainer
+            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            for further details.
+        """
+
         path = self.make_path(directory=directory, extension=extension) # path to the file
         frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
 

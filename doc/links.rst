@@ -13,3 +13,4 @@
 .. _replay-mobile: https://www.idiap.ch/dataset/replay-mobile
 .. _dependencies: https://gitlab.idiap.ch/bob/bob/wikis/Dependencies
 .. _MSU MFSD: http://biometrics.cse.msu.edu/Publications/Databases/MSUMobileFaceSpoofing/index.htm
+.. _MIFS: http://www.antitza.com/makeup-datasets.html
