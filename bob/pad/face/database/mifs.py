@@ -25,6 +25,7 @@ class MIFSPadFile(PadFile):
 
     #==========================================================================
     def load(self, directory=None, extension=None):
+        #path = self.make_path(directory, extension)
         path = self.make_path(directory=directory, extension=extension) # path to the file
         frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
 
