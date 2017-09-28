@@ -20,11 +20,7 @@ from bob.pad.face.database import ReplayMobilePadDatabase
 
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
-<<<<<<< HEAD:bob/pad/face/config/database/replay_mobile.py
 original_directory = "[YOUR_REPLAY_MOBILE_DIRECTORY]"
-=======
-original_directory = "[YOUR_MIFS_DATABASE_DIRECTORY]"
->>>>>>> Added face bounding boxes to tree and cleaned database path:bob/pad/face/config/database/mifs.py
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
 original_extension = ".mov" # extension of the data files
