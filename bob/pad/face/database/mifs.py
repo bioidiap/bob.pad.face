@@ -25,12 +25,11 @@ class MIFSPadFile(PadFile):
 
     #==========================================================================
     def load(self, directory=None, extension=None):
-        #path = self.make_path(directory, extension)
         path = self.make_path(directory=directory, extension=extension) # path to the file
         frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
 
         data = bob.io.base.load(path)
-        data = np.expand_dims(data, axis=0) # upgade to 4D (video)
+        data = np.expand_dims(data, axis=0) # upgrade to 4D (video)
         video_data = frame_selector(data) # video data
 
         return video_data # video data
@@ -49,23 +48,6 @@ class MIFSPadDatabase(FileListPadDatabase):
         original_extension='.jpg',
         **kwargs):
 
-        #from bob.db.replay import Database as LowLevelDatabase
-
-        #self.db = LowLevelDatabase()
-
-        # Since the high level API expects different group names than what the low
-        # level API offers, you need to convert them when necessary
-        #self.low_level_group_names = ('train', 'devel', 'test') # group names in the low-level database interface
-        #self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
-
-        # Always use super to call parent class methods.
-        #super(ReplayPadDatabase, self).__init__(
-        #    name = 'replay',
-        #    protocol = protocol,
-        #    original_directory = original_directory,
-        #    original_extension = original_extension,
-        #    **kwargs)
-
         from pkg_resources import resource_filename
         folder = resource_filename(__name__, '../lists/mifs/')
         super(MIFSPadDatabase, self).__init__(folder, 'mifs',
@@ -78,15 +60,12 @@ class MIFSPadDatabase(FileListPadDatabase):
     def annotations(self, f):
         """
         Return annotations for a given file object ``f``, which is an instance
-        of ``MIFSPadFile`` defined in the HLDI of the MIFS DB.
-        The ``load()`` method of ``MIFSPadFile`` class (see above)
-        returns a video, therefore this method returns bounding-box annotations
-        for each video frame. The annotations are returned as dictionary of dictionaries.
+        of ``MIFSPadFile``.
 
         **Parameters:**
 
         ``f`` : :py:class:`object`
-            An instance of ``ReplayPadFile`` defined above.
+            An instance of ``MIFSPadFile`` defined above.
 
         **Returns:**
 
