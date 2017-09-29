@@ -51,7 +51,7 @@ class VideoSparseCoding(Preprocessor, object):
         The size of the face after normalization. Default: 64 .
 
     ``dictionary_file_names`` : [:py:class:`str`]
-        A list of filenames containing the dictionary. The filenames must be
+        A list of filenames containing the dictionaries. The filenames must be
         listed in the following order:
         [file_name_pointing_to_frontal_dictionary,
          file_name_pointing_to_horizontal_dictionary,
@@ -61,6 +61,22 @@ class VideoSparseCoding(Preprocessor, object):
         Selected frames for processing with this step. If set to 1, all frames
         will be processes. Used to speed up the experiments.
         Default: 1.
+
+    ``extract_histograms_flag`` : :py:class:`bool`
+        If this flag is set to ``True`` the histograms of sparse codes will be
+        computed for all stacks of facial images / samples. In this case an
+        empty feature extractor must be used, because feature vectors (histograms)
+        are already extracted in the preprocessing step.
+
+        NOTE: set this flag to``True`` if you want to reduce the amount of
+        memory required to store temporary files.
+        Default: ``False``.
+
+    ``method`` : :py:class:`str`
+        A method to use in the histogram computation. Two options are available:
+        "mean" and "hist". This argument is valid only if ``extract_histograms_flag``
+        is set to ``True``.
+        Default: "hist".
     """
 
     #==========================================================================
@@ -71,6 +87,8 @@ class VideoSparseCoding(Preprocessor, object):
                  norm_face_size = 64,
                  dictionary_file_names = [],
                  frame_step = 1,
+                 extract_histograms_flag = False,
+                 method = "hist",
                  **kwargs):
 
         super(VideoSparseCoding, self).__init__(block_size = block_size,
@@ -78,7 +96,9 @@ class VideoSparseCoding(Preprocessor, object):
                                                 min_face_size = min_face_size,
                                                 norm_face_size = norm_face_size,
                                                 dictionary_file_names = dictionary_file_names,
-                                                frame_step = frame_step)
+                                                frame_step = frame_step,
+                                                extract_histograms_flag = extract_histograms_flag,
+                                                method = method)
 
         self.block_size = block_size
         self.block_length = block_length
@@ -86,6 +106,8 @@ class VideoSparseCoding(Preprocessor, object):
         self.norm_face_size = norm_face_size
         self.dictionary_file_names = dictionary_file_names
         self.frame_step = frame_step
+        self.extract_histograms_flag = extract_histograms_flag
+        self.method = method
 
         self.video_preprocessor = bob.bio.video.preprocessor.Wrapper()
 
@@ -693,6 +715,62 @@ class VideoSparseCoding(Preprocessor, object):
 
 
     #==========================================================================
+    def comp_hist_of_sparse_codes(self, frames, method):
+        """
+        Compute the histograms of sparse codes.
+        """
+
+        histograms = []
+
+        for frame_data in frames:
+
+            frame = frame_data[1]
+
+            if method == "mean":
+
+                frame_codes = np.mean(frame, axis=1)
+
+            if method == "hist":
+
+                frame_codes = np.mean(frame!=0, axis=1)
+
+            for idx, row in enumerate(frame_codes):
+
+                frame_codes[idx,:] = row/np.sum(row)
+
+            hist = frame_codes.flatten()
+
+            histograms.append(hist)
+
+        return histograms
+
+
+    #==========================================================================
+    def convert_arrays_to_frame_container(self, list_of_arrays):
+        """
+        Convert an input list of arrays into Frame Container.
+
+        **Parameters:**
+
+        ``list_of_arrays`` : [:py:class:`numpy.ndarray`]
+            A list of arrays.
+
+        **Returns:**
+
+        ``frame_container`` : FrameContainer
+            FrameContainer containing the feature vectors.
+        """
+
+        frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+
+        for idx, item in enumerate(list_of_arrays):
+
+            frame_container.add(idx, item) # add frame to FrameContainer
+
+        return frame_container
+
+
+    #==========================================================================
     def __call__(self, frames, annotations):
         """
         Compute sparse codes for spatial frontal, spatio-temporal horizontal,
@@ -701,6 +779,10 @@ class VideoSparseCoding(Preprocessor, object):
         is: (``num_of_frames_in_video`` - ``block_length``).
         However, this number can be smaller, and is controlled by two arguments
         of this class: ``min_face_size`` and ``frame_step``.
+
+        If ``self.extract_histograms_flag`` flag is set to ``True`` the
+        histograms of sparse codes will be computed for all possible stacks of
+        facial images.
 
         **Parameters:**
 
@@ -720,12 +802,18 @@ class VideoSparseCoding(Preprocessor, object):
         **Returns:**
 
         ``frame_container`` : FrameContainer
+            If ``self.extract_histograms_flag`` flag is set to ``False`:
             FrameContainer containing the frames with sparse codes for the
             frontal, horizontal and vertical patches. Each frame is a 3D array.
-            The dimensionality of array is:
+            The dimensionality of each array is:
             (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
             The first slice in the 3D arrays corresponds to frontal sparse codes,
             second slice to horizontal, and third to vertical codes.
+
+            If ``self.extract_histograms_flag`` flag is set to ``True`` the
+            histograms of sparse codes will be computed. In this case each
+            frame is a 1D array with dimensionality:
+            (3*``n_words_in_the_dictionary``, )
         """
 
         # Convert frame container to 3D array:
@@ -748,6 +836,12 @@ class VideoSparseCoding(Preprocessor, object):
         vertical_video_codes = self.get_sparse_codes_for_list_of_patches(vertical_patches[::self.frame_step], dictionary_vertical)
 
         frame_container = self.convert_sparse_codes_to_frame_container([frontal_video_codes, horizontal_video_codes, vertical_video_codes])
+
+        if self.extract_histograms_flag: # in this case histograms will be extracted in the preprocessor , no feature extraction is needed then
+
+            histograms = self.comp_hist_of_sparse_codes(frame_container, self.method)
+
+            frame_container = self.convert_arrays_to_frame_container(histograms)
 
         return frame_container
 

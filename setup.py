@@ -106,6 +106,10 @@ setup(
 
             # The sparse coding based preprocessors
             'sparse-coding-preprocessor = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor',
+            'sparse-coding-preprocessor-10-5-16 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_16',
+            'sparse-coding-preprocessor-10-5-32 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_32',
+            'sparse-coding-preprocessor-10-5-64 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_64',
+            'sparse-coding-preprocessor-10-5-128 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_128',
             ],
 
         # registered extractors:
