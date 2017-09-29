@@ -60,6 +60,12 @@ Aggregated Database
 .. automodule:: bob.pad.face.config.aggregated_db
    :members:
 
+MIFS Database
+================================================================================
+
+.. automodule:: bob.pad.face.config.mifs
+  :members:
+
 ---------------------------------
 
 
@@ -129,6 +135,3 @@ Frame differences based features (motion analysis) + SVM for Aggregated Database
 
 .. automodule:: bob.pad.face.config.frame_diff_svm_aggregated_db
    :members:
-
-
-

@@ -37,6 +37,12 @@ Aggregated Database
 .. autoclass:: bob.pad.face.database.aggregated_db.AggregatedDbPadFile
 .. autoclass:: bob.pad.face.database.aggregated_db.AggregatedDbPadDatabase
 
+MIFS Database
+========================
+
+.. autoclass:: bob.pad.face.database.mifs.MIFSPadFile
+.. autoclass:: bob.pad.face.database.mifs.MIFSPadDatabase
+
 
 Pre-processors
 ------------------------------
