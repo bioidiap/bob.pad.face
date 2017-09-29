@@ -54,8 +54,8 @@ class VideoSparseCoding(Preprocessor, object):
         A list of filenames containing the dictionaries. The filenames must be
         listed in the following order:
         [file_name_pointing_to_frontal_dictionary,
-         file_name_pointing_to_horizontal_dictionary,
-         file_name_pointing_to_vertical_dictionary]
+        file_name_pointing_to_horizontal_dictionary,
+        file_name_pointing_to_vertical_dictionary]
 
     ``frame_step`` : :py:class:`int`
         Selected frames for processing with this step. If set to 1, all frames
@@ -647,8 +647,8 @@ class VideoSparseCoding(Preprocessor, object):
             A list of filenames containing the dictionary. The filenames must be
             listed in the following order:
             [file_name_pointing_to_frontal_dictionary,
-             file_name_pointing_to_horizontal_dictionary,
-             file_name_pointing_to_vertical_dictionary]
+            file_name_pointing_to_horizontal_dictionary,
+            file_name_pointing_to_vertical_dictionary]
 
         **Returns:**
 
