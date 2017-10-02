@@ -718,6 +718,35 @@ class VideoSparseCoding(Preprocessor, object):
     def comp_hist_of_sparse_codes(self, frames, method):
         """
         Compute the histograms of sparse codes.
+
+        **Parameters:**
+
+        ``frame_container`` : FrameContainer
+            FrameContainer containing the frames with sparse codes for the
+            frontal, horizontal and vertical patches. Each frame is a 3D array.
+            The dimensionality of array is:
+            (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
+            First array [0,:,:] contains frontal sparse codes.
+            Second array [1,:,:] contains horizontal sparse codes.
+            Third array [2,:,:] contains vertical sparse codes.
+
+        ``method`` : :py:class:`str`
+            Name of the method to be used for combining the sparse codes into
+            a single feature vector. Two options are possible: "mean" and
+            "hist". If "mean" is selected the mean for ``n_samples`` dimension
+            is first computed. The resulting vectors for various types of
+            patches are then concatenated into a single feature vector.
+            If "hist" is selected, the values in the input array are first
+            binarized setting all non-zero elements to one. The rest of the
+            process is similar to the "mean" combination method.
+
+        **Returns:**
+
+        ``frame_container`` : FrameContainer
+            FrameContainer containing the frames with sparse codes for the
+            frontal, horizontal and vertical patches. Each frame is a 3D array.
+            The dimensionality of array is:
+            (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
         """
 
         histograms = []

@@ -135,3 +135,32 @@ Frame differences based features (motion analysis) + SVM for Aggregated Database
 
 .. automodule:: bob.pad.face.config.frame_diff_svm_aggregated_db
    :members:
+
+
+.. _bob.pad.face.resources.face_pad.qm_lr:
+
+Image Quality Measures as features of facial region + Logistic Regression
+============================================================================================================================
+
+.. automodule:: bob.pad.face.config.qm_lr
+   :members:
+
+
+.. _bob.pad.face.resources.face_pad.qm_one_class_gmm:
+
+Image Quality Measures as features of facial region + GMM-based one-class classifier (anomaly detector)
+============================================================================================================================
+
+.. automodule:: bob.pad.face.config.qm_one_class_gmm
+   :members:
+
+
+.. _bob.pad.face.resources.face_pad.qm_one_class_svm_aggregated_db:
+
+Image Quality Measures as features of facial region + one-class SVM classifier (anomaly detector) for Aggregated Database
+============================================================================================================================
+
+.. automodule:: bob.pad.face.config.qm_one_class_svm_aggregated_db
+   :members:
+
+
