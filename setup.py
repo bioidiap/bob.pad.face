@@ -103,13 +103,24 @@ setup(
         # registered preprocessors:
         'bob.pad.preprocessor': [
             'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor', # no preprocessing
+
+            # The sparse coding based preprocessors
+            'sparse-coding-preprocessor = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor',
+            'sparse-coding-preprocessor-10-5-16 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_16',
+            'sparse-coding-preprocessor-10-5-32 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_32',
+            'sparse-coding-preprocessor-10-5-64 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_64',
+            'sparse-coding-preprocessor-10-5-128 = bob.pad.face.config.preprocessor.video_sparse_coding:preprocessor_10_5_128',
             ],
 
-        # registered preprocessors:
+        # registered extractors:
         'bob.pad.extractor': [
             'video-lbp-histogram-extractor-n8r1-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r1_uniform',
             'video-quality-measure-galbally-msu = bob.pad.face.config.extractor.video_quality_measure:video_quality_measure_galbally_msu',
             'frame-diff-feat-extr-w20-over0 = bob.pad.face.config.extractor.frame_diff_features:frame_diff_feat_extr_w20_over0',
+
+            # extractors for sparse coding:
+            'hist-of-sparse-codes-mean = bob.pad.face.config.extractor.video_hist_of_sparse_codes:extractor_mean',
+            'hist-of-sparse-codes-hist = bob.pad.face.config.extractor.video_hist_of_sparse_codes:extractor_hist',
             ],
 
         # registered algorithms:
