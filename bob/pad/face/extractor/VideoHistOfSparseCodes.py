@@ -103,6 +103,21 @@ class VideoHistOfSparseCodes(Extractor, object):
 
 
     #==========================================================================
+    def reduce_features_number(self, list_of_arrays):
+        """
+        Reduce the number of features.
+        """
+
+        return_list = []
+
+        for item in list_of_arrays:
+
+            return_list.append( item[1][32:] )
+
+        return return_list
+
+
+    #==========================================================================
     def __call__(self, frames):
         """
         Extract feature vectors.
@@ -119,7 +134,9 @@ class VideoHistOfSparseCodes(Extractor, object):
             Histograms of sparse codes stored in the FrameContainer.
         """
 
-        histograms = self.comp_hist_of_sparse_codes(frames, self.method)
+#        histograms = self.comp_hist_of_sparse_codes(frames, self.method)
+
+        histograms = self.reduce_features_number(frames)
 
         frame_container = self.convert_sparse_codes_to_frame_container(histograms)
 
