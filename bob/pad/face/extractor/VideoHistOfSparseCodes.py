@@ -103,6 +103,50 @@ class VideoHistOfSparseCodes(Extractor, object):
 
 
     #==========================================================================
+    def reduce_features_number(self, list_of_arrays):
+        """
+        Reduce the number of features.
+        """
+
+        return_list = []
+
+        for item in list_of_arrays:
+
+            return_list.append( item[1][32:] )
+
+        return return_list
+
+
+    #==========================================================================
+    def select_reconstruction_vector(self, frames, sorted_flag):
+        """
+        Select either sorted or non-sorted reconstruction errors.
+        """
+
+        return_list = []
+
+        if sorted_flag:
+
+            for item in frames:
+
+                return_list.append( item[1][1,:] )
+
+        else:
+
+            for item in frames:
+
+                return_list.append( item[1][0,:] )
+
+#        return_list = []
+#
+#        for item in frames:
+#
+#            return_list.append( np.max(item[1], axis=1) )
+
+        return return_list
+
+
+    #==========================================================================
     def __call__(self, frames):
         """
         Extract feature vectors.
@@ -119,9 +163,15 @@ class VideoHistOfSparseCodes(Extractor, object):
             Histograms of sparse codes stored in the FrameContainer.
         """
 
-        histograms = self.comp_hist_of_sparse_codes(frames, self.method)
+#        histograms = self.comp_hist_of_sparse_codes(frames, self.method)
 
-        frame_container = self.convert_sparse_codes_to_frame_container(histograms)
+#        histograms = self.reduce_features_number(frames)
+
+        sorted_flag = False
+
+        list_of_error_vecs = self.select_reconstruction_vector(frames, sorted_flag)
+
+        frame_container = self.convert_sparse_codes_to_frame_container(list_of_error_vecs)
 
         return frame_container
 
