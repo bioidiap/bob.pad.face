@@ -118,6 +118,35 @@ class VideoHistOfSparseCodes(Extractor, object):
 
 
     #==========================================================================
+    def select_reconstruction_vector(self, frames, sorted_flag):
+        """
+        Select either sorted or non-sorted reconstruction errors.
+        """
+
+        return_list = []
+
+        if sorted_flag:
+
+            for item in frames:
+
+                return_list.append( item[1][1,:] )
+
+        else:
+
+            for item in frames:
+
+                return_list.append( item[1][0,:] )
+
+#        return_list = []
+#
+#        for item in frames:
+#
+#            return_list.append( np.max(item[1], axis=1) )
+
+        return return_list
+
+
+    #==========================================================================
     def __call__(self, frames):
         """
         Extract feature vectors.
@@ -136,9 +165,13 @@ class VideoHistOfSparseCodes(Extractor, object):
 
 #        histograms = self.comp_hist_of_sparse_codes(frames, self.method)
 
-        histograms = self.reduce_features_number(frames)
+#        histograms = self.reduce_features_number(frames)
 
-        frame_container = self.convert_sparse_codes_to_frame_container(histograms)
+        sorted_flag = False
+
+        list_of_error_vecs = self.select_reconstruction_vector(frames, sorted_flag)
+
+        frame_container = self.convert_sparse_codes_to_frame_container(list_of_error_vecs)
 
         return frame_container
 

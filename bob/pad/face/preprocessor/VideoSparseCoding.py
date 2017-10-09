@@ -723,20 +723,18 @@ class VideoSparseCoding(Preprocessor, object):
 
 
     #==========================================================================
-    def comp_hist_of_sparse_codes(self, frames, method):
+    def comp_hist_of_sparse_codes(self, sparse_codes, method):
         """
         Compute the histograms of sparse codes.
 
         **Parameters:**
 
-        ``frame_container`` : FrameContainer
-            FrameContainer containing the frames with sparse codes for the
-            frontal, horizontal and vertical patches. Each frame is a 3D array.
-            The dimensionality of array is:
-            (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
-            First array [0,:,:] contains frontal sparse codes.
-            Second array [1,:,:] contains horizontal sparse codes.
-            Third array [2,:,:] contains vertical sparse codes.
+        ``sparse_codes`` : [[2D :py:class:`numpy.ndarray`]]
+            A list of lists of 2D arrays. Each 2D array contains sparse codes
+            of a particular stack of facial images. The length of internal lists
+            is equal to the number of processed frames. The outer list contains
+            the codes for frontal, horizontal and vertical patches, thus the
+            length of an outer list in the context of this class is 3.
 
         ``method`` : :py:class:`str`
             Name of the method to be used for combining the sparse codes into
@@ -759,9 +757,9 @@ class VideoSparseCoding(Preprocessor, object):
 
         histograms = []
 
-        for frame_data in frames:
+        for frontal_codes, horizontal_codes, vertical_codes in zip(sparse_codes[0], sparse_codes[1], sparse_codes[2]):
 
-            frame = frame_data[1]
+            frame = np.stack([frontal_codes, horizontal_codes, vertical_codes])
 
             if method == "mean":
 
@@ -808,11 +806,65 @@ class VideoSparseCoding(Preprocessor, object):
 
 
     #==========================================================================
+    def mean_std_normalize(self, features, features_mean= None, features_std = None):
+        """
+        The features in the input 2D array are mean-std normalized.
+        The rows are samples, the columns are features. If ``features_mean``
+        and ``features_std`` are provided, then these vectors will be used for
+        normalization. Otherwise, the mean and std of the features is
+        computed on the fly.
+
+        **Parameters:**
+
+        ``features`` : 2D :py:class:`numpy.ndarray`
+            Array of features to be normalized.
+
+        ``features_mean`` : 1D :py:class:`numpy.ndarray`
+            Mean of the features. Default: None.
+
+        ``features_std`` : 2D :py:class:`numpy.ndarray`
+            Standart deviation of the features. Default: None.
+
+        **Returns:**
+
+        ``features_norm`` : 2D :py:class:`numpy.ndarray`
+            Normalized array of features.
+
+        ``features_mean`` : 1D :py:class:`numpy.ndarray`
+            Mean of the features.
+
+        ``features_std`` : 1D :py:class:`numpy.ndarray`
+            Standart deviation of the features.
+        """
+
+        features = np.copy(features)
+
+        # Compute mean and std if not given:
+        if features_mean is None:
+
+            features_mean = np.mean(features, axis=0)
+
+            features_std = np.std(features, axis=0)
+
+        row_norm_list = []
+
+        for row in features: # row is a sample
+
+            row_norm = (row - features_mean) / features_std
+
+            row_norm_list.append(row_norm)
+
+        features_norm = np.vstack(row_norm_list)
+
+        return features_norm, features_mean, features_std
+
+
+    #==========================================================================
     def compute_patches_mean_squared_errors(self, sparse_codes, original_data, dictionary):
         """
-        This function computes mean squared errors (MSE) for each feature (column)
-        in the reconstructed array of vectorized patches. The patches are reconstructed
-        given array of sparse codes and a dictionary.
+        This function computes normalized mean squared errors (MSE) for each
+        feature (column) in the reconstructed array of vectorized patches.
+        The patches are reconstructed given array of sparse codes and a dictionary.
 
         **Parameters:**
 
@@ -834,16 +886,14 @@ class VideoSparseCoding(Preprocessor, object):
         **Returns:**
 
         ``squared_errors`` : 1D :py:class:`numpy.ndarray`
-            MSE for each feature across all patches/samples.
+            Normalzied MSE for each feature across all patches/samples.
             The dimensionality of the array:
             (``n_features_in_patch``, ).
         """
 
         recovered_data = np.dot(sparse_codes, dictionary)
 
-        n_samples = recovered_data.shape[0]
-
-        squared_error = 1.0 / n_samples * np.sum((recovered_data - original_data) ** 2, axis=0)
+        squared_error = 1.*np.sum((original_data - recovered_data) ** 2, axis=0) / np.sum(original_data**2, axis=0)
 
         return squared_error
 
@@ -1049,13 +1099,15 @@ class VideoSparseCoding(Preprocessor, object):
 
         else:
 
-            frame_container = self.convert_sparse_codes_to_frame_container([frontal_video_codes, horizontal_video_codes, vertical_video_codes])
-
             if self.extract_histograms_flag: # in this case histograms will be extracted in the preprocessor , no feature extraction is needed then
 
-                histograms = self.comp_hist_of_sparse_codes(frame_container, self.method)
+                histograms = self.comp_hist_of_sparse_codes([frontal_video_codes, horizontal_video_codes, vertical_video_codes], self.method)
 
                 frame_container = self.convert_arrays_to_frame_container(histograms)
+
+            else:
+
+                frame_container = self.convert_sparse_codes_to_frame_container([frontal_video_codes, horizontal_video_codes, vertical_video_codes])
 
         return frame_container
 
