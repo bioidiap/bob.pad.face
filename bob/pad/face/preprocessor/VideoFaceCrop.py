@@ -18,6 +18,8 @@ import numpy as np
 
 from bob.pad.face.preprocessor.ImageFaceCrop import ImageFaceCrop
 
+from ..utils.face_detection_utils import detect_faces_in_video
+
 #==============================================================================
 # Main body:
 
@@ -76,6 +78,12 @@ class VideoFaceCrop(Preprocessor, object):
         returned. This flag is only valid when ``use_local_cropper_flag = True``.
         Default: ``False``.
 
+    ``detect_faces_flag`` : :py:class:`bool`
+        If set to ``True`` the facial annotations will be generated using
+        face detection. Otherwise, annotations of the database are used for
+        cropping.
+        Default: ``False``.
+
     ``kwargs``
         Remaining keyword parameters passed to the Base constructor, such as ``color_channel`` or ``dtype``.
     """
@@ -92,6 +100,7 @@ class VideoFaceCrop(Preprocessor, object):
                  min_face_size = 50,
                  use_local_cropper_flag = False,
                  rgb_output_flag = False,
+                 detect_faces_flag = False,
                  **kwargs):
 
         super(VideoFaceCrop, self).__init__(cropped_image_size = cropped_image_size,
@@ -104,6 +113,7 @@ class VideoFaceCrop(Preprocessor, object):
                                             min_face_size = min_face_size,
                                             use_local_cropper_flag = use_local_cropper_flag,
                                             rgb_output_flag = rgb_output_flag,
+                                            detect_faces_flag = detect_faces_flag,
                                             **kwargs)
 
         self.cropped_image_size = cropped_image_size
@@ -116,6 +126,7 @@ class VideoFaceCrop(Preprocessor, object):
         self.min_face_size = min_face_size
         self.use_local_cropper_flag = use_local_cropper_flag
         self.rgb_output_flag = rgb_output_flag
+        self.detect_faces_flag = detect_faces_flag
 
         # Save also the data stored in the kwargs:
         for (k, v) in kwargs.items():
@@ -262,6 +273,10 @@ class VideoFaceCrop(Preprocessor, object):
         ``preprocessed_video`` : FrameContainer
             Cropped faces stored in the FrameContainer.
         """
+
+        if self.detect_faces_flag:
+
+            annotations = detect_faces_in_video(frames)
 
         if len(frames) != len(annotations): # if some annotations are missing
 
