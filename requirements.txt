@@ -12,6 +12,7 @@ bob.bio.video
 bob.io.image
 bob.ip.color
 bob.ip.qualitymeasure
+bob.ip.dlib
 bob.learn.libsvm
 bob.learn.linear
 scikit-learn
