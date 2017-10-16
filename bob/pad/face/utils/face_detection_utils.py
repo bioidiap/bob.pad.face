@@ -27,21 +27,23 @@ def detect_face_in_image(image):
         Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col)}``.
     """
 
-    bounding_box, _ = bob.ip.dlib.FaceDetector().detect_single_face(image)
+    data = bob.ip.dlib.FaceDetector().detect_single_face(image)
 
     annotations = {}
 
-    if bounding_box is not None:
-
-        annotations['topleft'] = bounding_box.topleft
-
-        annotations['bottomright'] = bounding_box.bottomright
-
-    else:
+    if data is None:
 
         annotations['topleft'] = (0, 0)
 
         annotations['bottomright'] = (0, 0)
+
+    else:
+
+        bounding_box = data[0]
+
+        annotations['topleft'] = bounding_box.topleft
+
+        annotations['bottomright'] = bounding_box.bottomright
 
     return annotations
 
