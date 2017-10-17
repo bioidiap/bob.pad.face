@@ -276,7 +276,15 @@ class VideoFaceCrop(Preprocessor, object):
 
         if self.detect_faces_flag:
 
-            annotations = detect_faces_in_video(frames)
+            annotations_detected = detect_faces_in_video(frames)
+
+            if not annotations_detected:
+
+                annotations = annotations # if now annotations detected use DB annotations
+
+            else:
+
+                annotations = annotations_detected # if face was detected overwrite DB annotations
 
         if len(frames) != len(annotations): # if some annotations are missing
 
