@@ -9,9 +9,10 @@ This file contains face detection utils.
 
 import bob.ip.dlib # for face detection functionality
 
+import bob.ip.mtcnn
 
 #==============================================================================
-def detect_face_in_image(image):
+def detect_face_in_image(image, method):
     """
     This function detects a face in the input image.
 
@@ -19,6 +20,10 @@ def detect_face_in_image(image):
 
     ``image`` : 3D :py:class:`numpy.ndarray`
         A color image to detect the face in.
+
+    ``method`` : :py:class:`str`
+        A package to be used for face detection. Available options: "dlib" and
+        "mtcnn".
 
     **Returns:**
 
@@ -28,11 +33,17 @@ def detect_face_in_image(image):
         If no annotations found an empty dictionary is returned.
     """
 
-    data = bob.ip.dlib.FaceDetector().detect_single_face(image)
+    if method == "dlib":
+
+        data = bob.ip.dlib.FaceDetector().detect_single_face(image)
+
+    if method == "mtcnn":
+
+        data = bob.ip.mtcnn.FaceDetector().detect_single_face(image)
 
     annotations = {}
 
-    if data is not None:
+    if ( data is not None ) and ( not all([x is None for x in data]) ):
 
         bounding_box = data[0]
 
@@ -44,7 +55,7 @@ def detect_face_in_image(image):
 
 
 #==============================================================================
-def detect_faces_in_video(frame_container):
+def detect_faces_in_video(frame_container, method):
     """
     This function detects a face in each farme of the input video.
 
@@ -52,6 +63,10 @@ def detect_faces_in_video(frame_container):
 
     ``frame_container`` : FrameContainer
         FrameContainer containing the frames data.
+
+    ``method`` : :py:class:`str`
+        A package to be used for face detection. Available options: "dlib" and
+        "mtcnn".
 
     **Returns:**
 
@@ -69,7 +84,7 @@ def detect_faces_in_video(frame_container):
 
         image = frame[1]
 
-        frame_annotations = detect_face_in_image(image)
+        frame_annotations = detect_face_in_image(image, method)
 
         if frame_annotations:
 
