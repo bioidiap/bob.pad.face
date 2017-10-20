@@ -12,7 +12,7 @@ import bob.ip.dlib # for face detection functionality
 import bob.ip.mtcnn
 
 #==============================================================================
-def detect_face_in_image(image, method):
+def detect_face_in_image(image, method = "dlib"):
     """
     This function detects a face in the input image.
 
@@ -55,7 +55,7 @@ def detect_face_in_image(image, method):
 
 
 #==============================================================================
-def detect_faces_in_video(frame_container, method):
+def detect_faces_in_video(frame_container, method = "dlib"):
     """
     This function detects a face in each farme of the input video.
 
