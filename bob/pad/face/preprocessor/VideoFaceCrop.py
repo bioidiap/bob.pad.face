@@ -85,8 +85,10 @@ class VideoFaceCrop(Preprocessor, object):
         Default: ``False``.
 
     ``face_detection_method`` : :py:class:`str`
-        A package to be used for face detection. Available options: "dlib" and
-        "mtcnn".
+        A package to be used for face detection. Options supported by this
+        package: "dlib" (dlib is a dependency of this package). If  bob.ip.mtcnn
+        is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
+        a dependency of this package).
 
     ``kwargs``
         Remaining keyword parameters passed to the Base constructor, such as ``color_channel`` or ``dtype``.

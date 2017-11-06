@@ -7,9 +7,8 @@ This file contains face detection utils.
 #==============================================================================
 # Import here:
 
-import bob.ip.dlib # for face detection functionality
+import importlib
 
-import bob.ip.mtcnn
 
 #==============================================================================
 def detect_face_in_image(image, method = "dlib"):
@@ -22,8 +21,10 @@ def detect_face_in_image(image, method = "dlib"):
         A color image to detect the face in.
 
     ``method`` : :py:class:`str`
-        A package to be used for face detection. Available options: "dlib" and
-        "mtcnn".
+        A package to be used for face detection. Options supported by this
+        package: "dlib" (dlib is a dependency of this package). If  bob.ip.mtcnn
+        is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
+        a dependency of this package).
 
     **Returns:**
 
@@ -33,13 +34,15 @@ def detect_face_in_image(image, method = "dlib"):
         If no annotations found an empty dictionary is returned.
     """
 
-    if method == "dlib":
+    try:
+        face_detection_module = importlib.import_module("bob.ip." + method)
+    except ImportError:
+        raise ImportError("No module named bob.ip." + method)
 
-        data = bob.ip.dlib.FaceDetector().detect_single_face(image)
+    if not hasattr(face_detection_module, 'FaceDetector'):
+        raise AttributeError("bob.ip." + method + " module has no attribute FaceDetector")
 
-    if method == "mtcnn":
-
-        data = bob.ip.mtcnn.FaceDetector().detect_single_face(image)
+    data = face_detection_module.FaceDetector().detect_single_face(image)
 
     annotations = {}
 
@@ -65,8 +68,10 @@ def detect_faces_in_video(frame_container, method = "dlib"):
         FrameContainer containing the frames data.
 
     ``method`` : :py:class:`str`
-        A package to be used for face detection. Available options: "dlib" and
-        "mtcnn".
+        A package to be used for face detection. Options supported by this
+        package: "dlib" (dlib is a dependency of this package). If  bob.ip.mtcnn
+        is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
+        a dependency of this package).
 
     **Returns:**
 
