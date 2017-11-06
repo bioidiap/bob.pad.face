@@ -167,6 +167,7 @@ def test_video_face_crop():
     USE_LOCAL_CROPPER_FLAG = True # Use the local face cropping class (identical to Ivana's paper)
     RGB_OUTPUT_FLAG = True        # Return RGB cropped face using local cropper
     DETECT_FACES_FLAG = True      # find annotations locally replacing the database annotations
+    FACE_DETECTION_METHOD = "dlib"
 
     preprocessor = VideoFaceCrop(cropped_image_size = CROPPED_IMAGE_SIZE,
                                  cropped_positions = CROPPED_POSITIONS,
@@ -178,7 +179,8 @@ def test_video_face_crop():
                                  min_face_size = MIN_FACE_SIZE,
                                  use_local_cropper_flag = USE_LOCAL_CROPPER_FLAG,
                                  rgb_output_flag = RGB_OUTPUT_FLAG,
-                                 detect_faces_flag = DETECT_FACES_FLAG)
+                                 detect_faces_flag = DETECT_FACES_FLAG,
+                                 face_detection_method = FACE_DETECTION_METHOD)
 
     video, _ = convert_image_to_video_data(image, annotations, 3)
 

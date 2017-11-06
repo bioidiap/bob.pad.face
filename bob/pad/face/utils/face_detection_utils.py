@@ -7,11 +7,11 @@ This file contains face detection utils.
 #==============================================================================
 # Import here:
 
-import bob.ip.dlib # for face detection functionality
+import importlib
 
 
 #==============================================================================
-def detect_face_in_image(image):
+def detect_face_in_image(image, method = "dlib"):
     """
     This function detects a face in the input image.
 
@@ -20,34 +20,45 @@ def detect_face_in_image(image):
     ``image`` : 3D :py:class:`numpy.ndarray`
         A color image to detect the face in.
 
+    ``method`` : :py:class:`str`
+        A package to be used for face detection. Options supported by this
+        package: "dlib" (dlib is a dependency of this package). If  bob.ip.mtcnn
+        is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
+        a dependency of this package).
+
     **Returns:**
 
     ``annotations`` : :py:class:`dict`
         A dictionary containing annotations of the face bounding box.
         Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col)}``.
+        If no annotations found an empty dictionary is returned.
     """
 
-    bounding_box, _ = bob.ip.dlib.FaceDetector().detect_single_face(image)
+    try:
+        face_detection_module = importlib.import_module("bob.ip." + method)
+    except ImportError:
+        raise ImportError("No module named bob.ip." + method)
+
+    if not hasattr(face_detection_module, 'FaceDetector'):
+        raise AttributeError("bob.ip." + method + " module has no attribute FaceDetector")
+
+    data = face_detection_module.FaceDetector().detect_single_face(image)
 
     annotations = {}
 
-    if bounding_box is not None:
+    if ( data is not None ) and ( not all([x is None for x in data]) ):
+
+        bounding_box = data[0]
 
         annotations['topleft'] = bounding_box.topleft
 
         annotations['bottomright'] = bounding_box.bottomright
 
-    else:
-
-        annotations['topleft'] = (0, 0)
-
-        annotations['bottomright'] = (0, 0)
-
     return annotations
 
 
 #==============================================================================
-def detect_faces_in_video(frame_container):
+def detect_faces_in_video(frame_container, method = "dlib"):
     """
     This function detects a face in each farme of the input video.
 
@@ -56,6 +67,12 @@ def detect_faces_in_video(frame_container):
     ``frame_container`` : FrameContainer
         FrameContainer containing the frames data.
 
+    ``method`` : :py:class:`str`
+        A package to be used for face detection. Options supported by this
+        package: "dlib" (dlib is a dependency of this package). If  bob.ip.mtcnn
+        is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
+        a dependency of this package).
+
     **Returns:**
 
     ``annotations`` : :py:class:`dict`
@@ -63,6 +80,7 @@ def detect_faces_in_video(frame_container):
         Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
         Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
         is the dictionary defining the coordinates of the face bounding box in frame N.
+        If no annotations found an empty dictionary is returned.
     """
 
     annotations = {}
@@ -71,9 +89,11 @@ def detect_faces_in_video(frame_container):
 
         image = frame[1]
 
-        frame_annotations = detect_face_in_image(image)
+        frame_annotations = detect_face_in_image(image, method)
 
-        annotations[str(idx)] = frame_annotations
+        if frame_annotations:
+
+            annotations[str(idx)] = frame_annotations
 
     return annotations
 

@@ -84,6 +84,12 @@ class VideoFaceCrop(Preprocessor, object):
         cropping.
         Default: ``False``.
 
+    ``face_detection_method`` : :py:class:`str`
+        A package to be used for face detection. Options supported by this
+        package: "dlib" (dlib is a dependency of this package). If  bob.ip.mtcnn
+        is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
+        a dependency of this package).
+
     ``kwargs``
         Remaining keyword parameters passed to the Base constructor, such as ``color_channel`` or ``dtype``.
     """
@@ -101,6 +107,7 @@ class VideoFaceCrop(Preprocessor, object):
                  use_local_cropper_flag = False,
                  rgb_output_flag = False,
                  detect_faces_flag = False,
+                 face_detection_method = "dlib",
                  **kwargs):
 
         super(VideoFaceCrop, self).__init__(cropped_image_size = cropped_image_size,
@@ -114,6 +121,7 @@ class VideoFaceCrop(Preprocessor, object):
                                             use_local_cropper_flag = use_local_cropper_flag,
                                             rgb_output_flag = rgb_output_flag,
                                             detect_faces_flag = detect_faces_flag,
+                                            face_detection_method = face_detection_method,
                                             **kwargs)
 
         self.cropped_image_size = cropped_image_size
@@ -127,6 +135,7 @@ class VideoFaceCrop(Preprocessor, object):
         self.use_local_cropper_flag = use_local_cropper_flag
         self.rgb_output_flag = rgb_output_flag
         self.detect_faces_flag = detect_faces_flag
+        self.face_detection_method = face_detection_method
 
         # Save also the data stored in the kwargs:
         for (k, v) in kwargs.items():
@@ -276,7 +285,7 @@ class VideoFaceCrop(Preprocessor, object):
 
         if self.detect_faces_flag:
 
-            annotations = detect_faces_in_video(frames)
+            annotations = detect_faces_in_video(frames, self.face_detection_method)
 
         if len(frames) != len(annotations): # if some annotations are missing
 
@@ -307,7 +316,9 @@ class VideoFaceCrop(Preprocessor, object):
             name of the file.
         """
 
-        self.video_preprocessor.write_data(frames, file_name)
+        if frames: # save file if FrameContainer is not empty, otherwise do nothing.
+
+            self.video_preprocessor.write_data(frames, file_name)
 
 
     #==========================================================================
