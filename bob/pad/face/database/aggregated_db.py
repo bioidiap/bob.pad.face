@@ -13,13 +13,17 @@ from bob.pad.face.database import replay_mobile as replay_mobile_hldi
 
 from bob.pad.face.database import msu_mfsd as msu_mfsd_hldi
 
+from bob.bio.video.database.mobio import MobioBioFile
+
+from bob.bio.video import FrameSelector
+
 import numpy as np
 
 #==============================================================================
 class AggregatedDbPadFile(PadFile):
     """
     A high level implementation of the File class for the Aggregated Database
-    uniting 3 databases: REPLAY-ATTACK, REPLAY-MOBILE and MSU MFSD.
+    uniting 4 databases: REPLAY-ATTACK, REPLAY-MOBILE, MSU MFSD and Mobio.
     """
 
     def __init__(self, f):
@@ -28,10 +32,12 @@ class AggregatedDbPadFile(PadFile):
 
         ``f`` : :py:class:`object`
             An instance of the File class defined in the low level db interface
-            of the Replay-Attack or Replay-Mobile or MSU MFSD database, respectively
+            of Replay-Attack, or Replay-Mobile, or MSU MFSD, or Mobio database,
+            respectively:
             in the bob.db.replay.models.py       file or
             in the bob.db.replaymobile.models.py file or
-            in the bob.db.msu_mfsd_mod.models.py file.
+            in the bob.db.msu_mfsd_mod.models.py file or
+            in the bob.db.mobio.models.py file.
         """
 
         self.f = f
@@ -42,10 +48,19 @@ class AggregatedDbPadFile(PadFile):
         # little tricky to get here. Based on the documentation of PadFile:
         # In cased of a spoofed data, this parameter should indicate what kind of spoofed attack it is.
         # The default None value is interpreted that the PadFile is a genuine or real sample.
-        if f.is_real():
+
+        import bob.db.mobio
+
+        if isinstance(f, bob.db.mobio.models.File): # MOBIO files doen't have is_real() method
+
             attack_type = None
+
         else:
-            attack_type = 'attack'
+
+            if f.is_real():
+                attack_type = None
+            else:
+                attack_type = 'attack'
         # attack_type is a string and I decided to make it like this for this
         # particular database. You can do whatever you want for your own database.
 
@@ -67,10 +82,12 @@ class AggregatedDbPadFile(PadFile):
 
         ``f`` : :py:class:`object`
             An instance of the File class defined in the low level db interface
-            of the Replay-Attack or Replay-Mobile or MSU MFSD database, respectively
+            of Replay-Attack, or Replay-Mobile, or MSU MFSD, or Mobio database,
+            respectively:
             in the bob.db.replay.models.py       file or
             in the bob.db.replaymobile.models.py file or
-            in the bob.db.msu_mfsd_mod.models.py file.
+            in the bob.db.msu_mfsd_mod.models.py file or
+            in the bob.db.mobio.models.py file.
 
         ``n`` : :py:class:`int`
             An offset to be added to the file id for different databases is defined
@@ -87,6 +104,7 @@ class AggregatedDbPadFile(PadFile):
         import bob.db.replay
         import bob.db.replaymobile
         import bob.db.msu_mfsd_mod
+        import bob.db.mobio
 
         if isinstance(f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
 
@@ -99,6 +117,10 @@ class AggregatedDbPadFile(PadFile):
         if isinstance(f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
 
             file_id = np.int(f.id + 2*n)
+
+        if isinstance(f, bob.db.mobio.models.File): # check if instance of File class of LLDI of Mobio
+
+            file_id = np.int(f.id + 3*n)
 
         return file_id
 
@@ -113,10 +135,12 @@ class AggregatedDbPadFile(PadFile):
 
         ``f`` : :py:class:`object`
             An instance of the File class defined in the low level db interface
-            of the Replay-Attack or Replay-Mobile or MSU MFSD database, respectively
+            of Replay-Attack, or Replay-Mobile, or MSU MFSD, or Mobio database,
+            respectively:
             in the bob.db.replay.models.py       file or
             in the bob.db.replaymobile.models.py file or
-            in the bob.db.msu_mfsd_mod.models.py file.
+            in the bob.db.msu_mfsd_mod.models.py file or
+            in the bob.db.mobio.models.py file.
 
         **Returns:**
 
@@ -128,6 +152,7 @@ class AggregatedDbPadFile(PadFile):
         import bob.db.replay
         import bob.db.replaymobile
         import bob.db.msu_mfsd_mod
+        import bob.db.mobio
 
         if isinstance(f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
 
@@ -140,6 +165,10 @@ class AggregatedDbPadFile(PadFile):
         if isinstance(f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
 
             file_path = '_'.join([f.path, 'msu_mfsd_mod'])
+
+        if isinstance(f, bob.db.mobio.models.File): # check if instance of File class of LLDI of Mobio
+
+            file_path = '_'.join([f.path, 'mobio'])
 
         return file_path
 
@@ -170,6 +199,7 @@ class AggregatedDbPadFile(PadFile):
         import bob.db.replay
         import bob.db.replaymobile
         import bob.db.msu_mfsd_mod
+        import bob.db.mobio
 
         directories = directory.split(" ")
 
@@ -191,7 +221,21 @@ class AggregatedDbPadFile(PadFile):
 
             directory = directories[2]
 
-        video_data = db_pad_file.load(directory = directory, extension = extension)
+        if isinstance(self.f, bob.db.mobio.models.File): # check if instance of File class of LLDI of Mobio
+
+            db_pad_file = MobioBioFile(self.f) # msu_mfsd_hldi is HLDI of MSU MFSD
+
+            directory = directories[3]
+
+        if isinstance(db_pad_file, bob.bio.video.database.mobio.MobioBioFile):
+
+            frame_selector = FrameSelector(selection_style='all') # select all frames of the file
+
+            video_data = db_pad_file.load(directory = directory, extension = '.mp4', frame_selector = frame_selector)
+
+        else:
+
+            video_data = db_pad_file.load(directory = directory, extension = extension)
 
         return video_data # video data
 
@@ -226,6 +270,10 @@ class AggregatedDbPadDatabase(PadDatabase):
        'eval' set  - only **photo** attacks are used in final evaluation.
        In this case the final performance is estimated on previously
        unseen **photo** attacks.
+
+    4. "grandtest-mobio" - this protocol is using all the data available in the
+       databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
+       from MOBIO dataset is used in the training set.
     """
 
     def __init__(
@@ -258,10 +306,12 @@ class AggregatedDbPadDatabase(PadDatabase):
         import bob.db.replay
         import bob.db.replaymobile
         import bob.db.msu_mfsd_mod
+        import bob.db.mobio
 
         self.replay_db = bob.db.replay.Database()
         self.replaymobile_db = bob.db.replaymobile.Database()
         self.msu_mfsd_db = bob.db.msu_mfsd_mod.Database()
+        self.mobio = bob.db.mobio.Database()
 
         # Since the high level API expects different group names than what the low
         # level API offers, you need to convert them when necessary
@@ -269,7 +319,7 @@ class AggregatedDbPadDatabase(PadDatabase):
         self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
 
         # A list of available protocols:
-        self.available_protocols = ['grandtest', 'photo-photo-video', 'video-video-photo']
+        self.available_protocols = ['grandtest', 'photo-photo-video', 'video-video-photo', 'grandtest-mobio']
 
         # Always use super to call parent class methods.
         super(AggregatedDbPadDatabase, self).__init__(
@@ -281,15 +331,72 @@ class AggregatedDbPadDatabase(PadDatabase):
 
 
     #==========================================================================
+    def get_mobio_files_given_single_group(self, groups=None, purposes=None):
+        """
+        Get a list of files for the MOBIO database. All files are bona-fide
+        samples and used only for training. Thus, a non-empty list is returned
+        only when groups='train' and purposes='real'.
+        Only one file per client is selected. The files collected in Idiap are
+        excluded from training set to make sure identities in 'train' set don't
+        overlap with 'devel' and 'test' sets.
+
+        **Parameters:**
+
+        ``groups`` : :py:class:`str`
+            The group of which the clients should be returned.
+            One element of ('train', 'devel', 'test').
+
+        ``purposes`` : :py:class:`str`
+            OR a list of strings.
+            The purposes for which File objects should be retrieved.
+            Usually it is either 'real' or 'attack'.
+
+        **Returns:**
+
+        ``mobio_files`` : [File]
+            A list of files, as defined in the low level interface of the MOBIO
+            database.
+        """
+
+        mobio_files = []
+
+        if (groups is not None) and ('train' in groups) and (purposes is not None) and ('real' in purposes):
+
+            files_mobio = self.mobio.all_files()
+
+            metadata = []
+
+            for f in files_mobio:
+
+                metadata.append((f.client_id))
+
+            metadata_set = list(set(metadata)) # metadata_set is a list of unique client ids
+
+            for f in files_mobio:
+
+                metadata = (f.client_id)
+
+                if metadata in metadata_set: # only one video per client id is selected
+
+                    metadata_set.remove(metadata)
+
+                    if "idiap" not in f.path:
+                        # videos collected at idiap are excluded to make sure identities in train set dont overlap with dev and test sets.
+                        mobio_files.append(f)
+
+        return mobio_files
+
+
+    #==========================================================================
     def get_files_given_single_group(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
         """
-        This function returns 3 lists of files for Raplay-Attack, Replay-Mobile
-        and MSU MFSD databases, which fulfill the given restrictions. This
+        This function returns 4 lists of files for Raplay-Attack, Replay-Mobile,
+        MSU MFSD and MOBIO databases, which fulfill the given restrictions. This
         function for the groups parameter accepts a single string ONLY, which
         determines the low level name of the group, see ``low_level_group_names``
         argument of this class for available options.
 
-        Keyword parameters:
+        **Parameters:**
 
         ``groups`` : :py:class:`str`
             The group of which the clients should be returned.
@@ -321,6 +428,10 @@ class AggregatedDbPadDatabase(PadDatabase):
                In this case the final performance is estimated on previously
                unseen **photo** attacks.
 
+            4. "grandtest-mobio" - this protocol is using all the data available in the
+               databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
+               from MOBIO dataset is used in the training set.
+
         ``purposes`` : :py:class:`str`
             OR a list of strings.
             The purposes for which File objects should be retrieved.
@@ -339,9 +450,11 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         ``msu_mfsd_files`` : [File]
             A list of files corresponding to MSU MFSD database.
+
+        ``mobio_files`` : [File]
+            A list of files corresponding to MOBIO database or an empty list.
         """
 
-        # with grandtest protocol
         if protocol == 'grandtest' or protocol is None or groups is None:
 
             replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
@@ -386,14 +499,26 @@ class AggregatedDbPadDatabase(PadDatabase):
 
                 msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('print', ''), **kwargs)
 
-        return replay_files, replaymobile_files, msu_mfsd_files
+        mobio_files = []
+
+        if protocol == 'grandtest-mobio':
+
+            replay_files = self.replay_db.objects(protocol='grandtest', groups=groups, cls=purposes, **kwargs)
+
+            replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, **kwargs)
+
+            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
+
+            mobio_files = self.get_mobio_files_given_single_group(groups=groups, purposes=purposes)
+
+        return replay_files, replaymobile_files, msu_mfsd_files, mobio_files
 
 
     #==========================================================================
     def get_files_given_groups(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
         """
-        This function returns 3 lists of files for Raplay-Attack, Replay-Mobile
-        and MSU MFSD databases, which fulfill the given restrictions. This
+        This function returns 4 lists of files for Raplay-Attack, Replay-Mobile,
+        MSU MFSD and MOBIO databases, which fulfill the given restrictions. This
         function for the groups parameter accepts a single string OR a list
         of strings with multiple groups. Group names are low level, see
         ``low_level_group_names`` argument of the class for available options.
@@ -431,6 +556,10 @@ class AggregatedDbPadDatabase(PadDatabase):
                In this case the final performance is estimated on previously
                unseen **photo** attacks.
 
+            4. "grandtest-mobio" - this protocol is using all the data available in the
+               databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
+               from MOBIO dataset is used in the training set.
+
         ``purposes`` : :py:class:`str`
             OR a list of strings.
             The purposes for which File objects should be retrieved.
@@ -449,6 +578,9 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         ``msu_mfsd_files`` : [File]
             A list of files corresponding to MSU MFSD database.
+
+        ``mobio_files`` : [File]
+            A list of files corresponding to MOBIO database or an empty list.
         """
 
         if isinstance(groups, str) or groups is None: # if a single group is given
@@ -461,6 +593,8 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         msu_mfsd_files = []
 
+        mobio_files = []
+
         for group in groups:
 
             files = self.get_files_given_single_group(groups = group, protocol = protocol, purposes = purposes, model_ids = model_ids, **kwargs)
@@ -471,7 +605,9 @@ class AggregatedDbPadDatabase(PadDatabase):
 
             msu_mfsd_files += files[2]
 
-        return replay_files, replaymobile_files, msu_mfsd_files
+            mobio_files += files[3]
+
+        return replay_files, replaymobile_files, msu_mfsd_files, mobio_files
 
 
     #==========================================================================
@@ -512,6 +648,10 @@ class AggregatedDbPadDatabase(PadDatabase):
                In this case the final performance is estimated on previously
                unseen **photo** attacks.
 
+            4. "grandtest-mobio" - this protocol is using all the data available in the
+               databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
+               from MOBIO dataset is used in the training set.
+
         ``purposes`` : :py:class:`str`
             OR a list of strings.
             The purposes for which File objects should be retrieved.
@@ -531,11 +671,11 @@ class AggregatedDbPadDatabase(PadDatabase):
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
 
-        replay_files, replaymobile_files, msu_mfsd_files = self.get_files_given_groups(groups = groups,
-                                                                                       protocol = protocol,
-                                                                                       purposes = purposes,
-                                                                                       model_ids = model_ids,
-                                                                                       **kwargs)
+        replay_files, replaymobile_files, msu_mfsd_files, mobio_files = self.get_files_given_groups(groups = groups,
+                                                                                                    protocol = protocol,
+                                                                                                    purposes = purposes,
+                                                                                                    model_ids = model_ids,
+                                                                                                    **kwargs)
 
 #            replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
 #
@@ -543,7 +683,7 @@ class AggregatedDbPadDatabase(PadDatabase):
 #
 #            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
 
-        files = replay_files + replaymobile_files + msu_mfsd_files # append all files to a single list
+        files = replay_files + replaymobile_files + msu_mfsd_files + mobio_files # append all files to a single list
 
         files = [AggregatedDbPadFile(f) for f in files]
 
@@ -571,6 +711,7 @@ class AggregatedDbPadDatabase(PadDatabase):
             Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
             Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
             is the dictionary defining the coordinates of the face bounding box in frame N.
+
         """
 
         import bob.db.replay
@@ -591,6 +732,37 @@ class AggregatedDbPadDatabase(PadDatabase):
 
             hldi_db = msu_mfsd_hldi.MsuMfsdPadDatabase(original_directory = directories[2])
 
-        annotations = hldi_db.annotations(f)
+        if self.protocol == "grandtest-mobio" or isinstance(f.f, bob.db.mobio.models.File): # annotations are not available for this protocol
+
+            annotations = {}
+
+        else:
+
+            annotations = hldi_db.annotations(f)
 
         return annotations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
