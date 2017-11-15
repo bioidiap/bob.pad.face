@@ -35,7 +35,39 @@ from ..algorithm import VideoSvmPadAlgorithm
 
 from ..algorithm import VideoGmmPadAlgorithm
 
+from ..utils import face_detection_utils
+
 import random
+
+
+
+def test_detect_face_landmarks_in_image():
+
+	img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
+	assert len(img) == 3
+	annotations = face_detection_utils.detect_face_landmarks_in_image(img)
+	assert len(annotations['landmarks']) == 68
+	assert len(annotations['left_eye']) == 2
+	assert len(annotations['right_eye']) == 2
+	assert len(annotations['topleft']) == 2
+	assert len(annotations['bottomright']) == 2
+
+	#assert len(annotations['left_eye']) == (176, 220)
+
+
+
+def test_detect_face_landmarks_in_video():
+
+	img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
+	assert len(img) == 3
+	frame_container= bob.bio.video.FrameContainer()
+	frame_container.add(1,img)
+	frame_container.add(2,img)
+
+	annotations = face_detection_utils.detect_face_landmarks_in_video(frame_container)
+	assert len(annotations) == 2
+	assert len(annotations['1']['landmarks']) == 68
+	
 
 #==============================================================================
 def test_lbp_histogram():

@@ -122,11 +122,11 @@ def getEyePos(lm):
 
     # Mean position of eye corners as eye centers , casted to int()
 
-    left_eye_t=(lm[36,:]+lm[39,:])/2.0
-    right_eye_t=(lm[42,:]+lm[45,:])/2.0
+    left_eye_t = (lm[36,:] + lm[39,:])/2.0
+    right_eye_t = (lm[42,:] + lm[45,:])/2.0
 
-    right_eye=(int(left_eye_t[1]),int(left_eye_t[0]))  
-    left_eye=(int(right_eye_t[1]),int(right_eye_t[0]))
+    right_eye = (int(left_eye_t[1]),int(left_eye_t[0]))  
+    left_eye = (int(right_eye_t[1]),int(right_eye_t[0]))
     
     return right_eye,left_eye
 
@@ -173,18 +173,18 @@ def detect_face_landmarks_in_image(image, method = "dlib"):
 
     if kp is not None:
 
-        lm=np.vstack((kp.landmarks[:,1],kp.landmarks[:,0])).T
+        lm = np.vstack((kp.landmarks[:,1],kp.landmarks[:,0])).T
 
-        right_eye,left_eye=getEyePos(lm)
+        right_eye,left_eye = getEyePos(lm)
 
-        points=[]
+        points = []
 
         for i in range(lm.shape[0]):
             points.append((int(lm[i,0]),int(lm[i,1])))
 
-        annotations['topleft']=kp.bounding_box.topleft
-        annotations['bottomright']=kp.bounding_box.bottomright
-        annotations['landmarks']=points # list of landmarks
+        annotations['topleft'] = kp.bounding_box.topleft
+        annotations['bottomright'] = kp.bounding_box.bottomright
+        annotations['landmarks'] = points # list of landmarks
         annotations['left_eye'] = left_eye
         annotations['right_eye'] = right_eye
 
