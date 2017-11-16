@@ -205,9 +205,9 @@ def detect_face_landmarks_in_image(image, method = "dlib"):
 
         bounding_box = data[0]
 
-        #bounding_box = bounding_box.scale(0.9, True)
+        bounding_box_scaled = bounding_box.scale(0.95, True) # is ok for dlib
 
-        lm=landmark_detection_module.detect_landmarks_on_boundingbox(image, bounding_box)
+        lm=landmark_detection_module.detect_landmarks_on_boundingbox(image, bounding_box_scaled)
 
         if lm is not None:
 
