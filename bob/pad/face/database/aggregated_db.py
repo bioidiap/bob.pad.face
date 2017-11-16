@@ -245,7 +245,7 @@ class AggregatedDbPadDatabase(PadDatabase):
     """
     A high level implementation of the Database class for the Aggregated Database
     uniting 3 databases: REPLAY-ATTACK, REPLAY-MOBILE and MSU MFSD. Currently this
-    database supports 3 protocols, which are listed in the ``available_protocols``
+    database supports 5 protocols, which are listed in the ``available_protocols``
     argument of this class.
 
     Available protocols are:
@@ -274,6 +274,12 @@ class AggregatedDbPadDatabase(PadDatabase):
     4. "grandtest-mobio" - this protocol is using all the data available in the
        databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
        from MOBIO dataset is used in the training set.
+
+    5, "grandtest-train-eval" - - this protocol is using all the data available
+       in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+       'train' and 'eval' are available in this protocol. The 'dev' set is
+       concatenated to the training data. When requesting 'dev' set, the
+       data of the 'eval' set is returned.
     """
 
     def __init__(
@@ -319,7 +325,7 @@ class AggregatedDbPadDatabase(PadDatabase):
         self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
 
         # A list of available protocols:
-        self.available_protocols = ['grandtest', 'photo-photo-video', 'video-video-photo', 'grandtest-mobio']
+        self.available_protocols = ['grandtest', 'photo-photo-video', 'video-video-photo', 'grandtest-mobio', 'grandtest-train-eval']
 
         # Always use super to call parent class methods.
         super(AggregatedDbPadDatabase, self).__init__(
@@ -432,6 +438,12 @@ class AggregatedDbPadDatabase(PadDatabase):
                databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
                from MOBIO dataset is used in the training set.
 
+            5, "grandtest-train-eval" - - this protocol is using all the data available
+               in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+               'train' and 'test' are available in this protocol. The 'devel' set is
+               concatenated to the training data. When requesting 'devel' set, the
+               data of the 'test' set is returned.
+
         ``purposes`` : :py:class:`str`
             OR a list of strings.
             The purposes for which File objects should be retrieved.
@@ -511,6 +523,24 @@ class AggregatedDbPadDatabase(PadDatabase):
 
             mobio_files = self.get_mobio_files_given_single_group(groups=groups, purposes=purposes)
 
+        if protocol == 'grandtest-train-eval':
+
+            if groups == 'train':
+
+                replay_files = self.replay_db.objects(protocol='grandtest', groups=['train', 'devel'], cls=purposes, **kwargs)
+
+                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=['train', 'devel'], cls=purposes, **kwargs)
+
+                msu_mfsd_files = self.msu_mfsd_db.objects(group=['train', 'devel'], cls=purposes, **kwargs)
+
+            if groups in ['devel', 'test']:
+
+                replay_files = self.replay_db.objects(protocol='grandtest', groups='test', cls=purposes, **kwargs)
+
+                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups='test', cls=purposes, **kwargs)
+
+                msu_mfsd_files = self.msu_mfsd_db.objects(group='test', cls=purposes, **kwargs)
+
         return replay_files, replaymobile_files, msu_mfsd_files, mobio_files
 
 
@@ -559,6 +589,12 @@ class AggregatedDbPadDatabase(PadDatabase):
             4. "grandtest-mobio" - this protocol is using all the data available in the
                databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
                from MOBIO dataset is used in the training set.
+
+            5, "grandtest-train-eval" - - this protocol is using all the data available
+               in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+               'train' and 'test' are available in this protocol. The 'devel' set is
+               concatenated to the training data. When requesting 'devel' set, the
+               data of the 'test' set is returned.
 
         ``purposes`` : :py:class:`str`
             OR a list of strings.
@@ -741,24 +777,6 @@ class AggregatedDbPadDatabase(PadDatabase):
             annotations = hldi_db.annotations(f)
 
         return annotations
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
