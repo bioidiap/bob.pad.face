@@ -11,24 +11,23 @@ import importlib
 import numpy as np
 
 
-
-def getEyePos(lm):
+#==============================================================================
+def get_eye_pos(lm):
 
     """
-    This function returns the locations of left and right eyes 
+    This function returns the locations of left and right eyes
 
     **Parameters:**
 
     ``lm`` : :py:class:`array`
         A numpy array containing the coordinates of facial landmarks, (68X2)
 
-
     **Returns:**
 
-    ``right_eye`` 
-        A tuple containing the location of right eye, 
+    ``right_eye``
+        A tuple containing the location of right eye,
 
-    ``left_eye`` 
+    ``left_eye``
         A tuple containing the location of left eye
 
     """
@@ -38,14 +37,10 @@ def getEyePos(lm):
     left_eye_t = (lm[36,:] + lm[39,:])/2.0
     right_eye_t = (lm[42,:] + lm[45,:])/2.0
 
-    right_eye = (int(left_eye_t[1]),int(left_eye_t[0]))  
+    right_eye = (int(left_eye_t[1]),int(left_eye_t[0]))
     left_eye = (int(right_eye_t[1]),int(right_eye_t[0]))
-    
+
     return right_eye,left_eye
-
-
-
-
 
 
 #==============================================================================
@@ -134,10 +129,9 @@ def detect_faces_in_video(frame_container, method = "dlib"):
             annotations[str(idx)] = frame_annotations
 
     return annotations
-    
 
 
-
+#==============================================================================
 def detect_face_landmarks_in_image(image, method = "dlib"):
     """
     This function detects a face in the input image. Two oprions for face detector , but landmark detector is always the same
@@ -169,18 +163,16 @@ def detect_face_landmarks_in_image(image, method = "dlib"):
 
     except ImportError:
 
-    	print("No module named bob.ip." + method + " trying to use default method!")
+        print("No module named bob.ip." + method + " trying to use default method!")
 
-    	try:
-    		face_detection_module = importlib.import_module("bob.ip.dlib")
-    		method = "dlib"
-    	except ImportError:
-    		raise ImportError("No module named bob.ip.dlib")
-   
+        try:
+            face_detection_module = importlib.import_module("bob.ip.dlib")
+            method = "dlib"
+        except ImportError:
+            raise ImportError("No module named bob.ip.dlib")
 
     if not hasattr(face_detection_module, 'FaceDetector'):
         raise AttributeError("bob.ip." + method + " module has no attribute FaceDetector!")
-
 
     #### Landmark detector
 
@@ -191,13 +183,10 @@ def detect_face_landmarks_in_image(image, method = "dlib"):
 
     if not hasattr(landmark_detection_module, 'detect_landmarks_on_boundingbox'):
         raise AttributeError("bob.ip.facelandmarksmodule has no attribute detect_landmarks_on_boundingbox!")
- 
 
     face_detector = face_detection_module.FaceDetector()
-    
 
     data = face_detector.detect_single_face(image)
-
 
     annotations = {}
 
@@ -217,8 +206,7 @@ def detect_face_landmarks_in_image(image, method = "dlib"):
 
             #print("LM",lm)
 
-            right_eye,left_eye = getEyePos(lm)
-
+            right_eye,left_eye = get_eye_pos(lm)
 
             points = []
 
@@ -236,13 +224,10 @@ def detect_face_landmarks_in_image(image, method = "dlib"):
 
             annotations['right_eye'] = right_eye
 
-
     return annotations
 
 
-
-
-
+#==============================================================================
 def detect_face_landmarks_in_video(frame_container, method = "dlib"):
     """
     This function detects a face and face landmarks  in each farme of the input video.
@@ -281,6 +266,7 @@ def detect_face_landmarks_in_video(frame_container, method = "dlib"):
             annotations[str(idx)] = frame_annotations
 
     return annotations
+
 
 
 
