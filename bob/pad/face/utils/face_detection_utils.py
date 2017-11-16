@@ -11,6 +11,43 @@ import importlib
 import numpy as np
 
 
+
+def getEyePos(lm):
+
+    """
+    This function returns the locations of left and right eyes 
+
+    **Parameters:**
+
+    ``lm`` : :py:class:`array`
+        A numpy array containing the coordinates of facial landmarks, (68X2)
+
+
+    **Returns:**
+
+    ``right_eye`` 
+        A tuple containing the location of right eye, 
+
+    ``left_eye`` 
+        A tuple containing the location of left eye
+
+    """
+
+    # Mean position of eye corners as eye centers , casted to int()
+
+    left_eye_t = (lm[36,:] + lm[39,:])/2.0
+    right_eye_t = (lm[42,:] + lm[45,:])/2.0
+
+    right_eye = (int(left_eye_t[1]),int(left_eye_t[0]))  
+    left_eye = (int(right_eye_t[1]),int(right_eye_t[0]))
+    
+    return right_eye,left_eye
+
+
+
+
+
+
 #==============================================================================
 def detect_face_in_image(image, method = "dlib"):
     """
@@ -99,42 +136,11 @@ def detect_faces_in_video(frame_container, method = "dlib"):
     return annotations
     
 
-def getEyePos(lm):
-
-    """
-    This function returns the locations of left and right eyes 
-
-    **Parameters:**
-
-    ``lm`` : :py:class:`array`
-        A numpy array containing the coordinates of facial landmarks, (68X2)
-
-
-    **Returns:**
-
-    ``right_eye`` 
-        A tuple containing the location of right eye, 
-
-    ``left_eye`` 
-        A tuple containing the location of left eye
-
-    """
-
-    # Mean position of eye corners as eye centers , casted to int()
-
-    left_eye_t = (lm[36,:] + lm[39,:])/2.0
-    right_eye_t = (lm[42,:] + lm[45,:])/2.0
-
-    right_eye = (int(left_eye_t[1]),int(left_eye_t[0]))  
-    left_eye = (int(right_eye_t[1]),int(right_eye_t[0]))
-    
-    return right_eye,left_eye
-
 
 
 def detect_face_landmarks_in_image(image, method = "dlib"):
     """
-    This function detects a face and facial landmarks in the input image.
+    This function detects a face in the input image. Two oprions for face detector , but landmark detector is always the same
 
     **Parameters:**
 
@@ -143,53 +149,97 @@ def detect_face_landmarks_in_image(image, method = "dlib"):
 
     ``method`` : :py:class:`str`
         A package to be used for face detection. Options supported by this
-        package: "dlib" (dlib is a dependency of this package). 
+        package: "dlib" (dlib is a dependency of this package). If  bob.ip.mtcnn
+        is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
+        a dependency of this package).
 
     **Returns:**
 
     ``annotations`` : :py:class:`dict`
-        A dictionary containing the annotations for an image.
-        Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col), 'left_eye': (row, col), 'right_eye': (row, col), 'landmarks': [(row1,col1), (row2,col2), ...]}``
+        A dictionary containing annotations of the face bounding box, eye locations and facial landmarks.
+        Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col), 'left_eye': (row, col), 'right_eye': (row, col), 'landmarks': [(col1,row1), (col2,row2), ...]}``.
+        If no annotations found an empty dictionary is returned.
         Where (rowK,colK) is the location of Kth facial landmark (K=0,...,67).
-        If no annotations found an empty dictionary is returned. 
     """
 
+    ### Face detector
+
     try:
-        face_landmark_detection_module = importlib.import_module("bob.ip.facelandmarks");
+        face_detection_module = importlib.import_module("bob.ip."+ method)
+
     except ImportError:
-        raise ImportError("No module named bob.ip.facelandmarks")
 
-    if not hasattr(face_landmark_detection_module, 'detect_landmarks'):
-        raise AttributeError("bob.ip.facelandmarks module has no attribute detect_landmarks")
+    	print("No module named bob.ip." + method + " trying to use default method!")
 
-    key_points = face_landmark_detection_module.detect_landmarks(image, 1);
+    	try:
+    		face_detection_module = importlib.import_module("bob.ip.dlib")
+    		method = "dlib"
+    	except ImportError:
+    		raise ImportError("No module named bob.ip.dlib")
+   
+
+    if not hasattr(face_detection_module, 'FaceDetector'):
+        raise AttributeError("bob.ip." + method + " module has no attribute FaceDetector!")
+
+
+    #### Landmark detector
+
+    try:
+        landmark_detection_module = importlib.import_module("bob.ip.facelandmarks")
+    except ImportError:
+        raise ImportError("No module named bob.ip.facelandmarks!!")
+
+    if not hasattr(landmark_detection_module, 'detect_landmarks_on_boundingbox'):
+        raise AttributeError("bob.ip.facelandmarksmodule has no attribute detect_landmarks_on_boundingbox!")
+ 
+
+    face_detector = face_detection_module.FaceDetector()
+    
+
+    data = face_detector.detect_single_face(image)
+
 
     annotations = {}
 
-    try:
-        kp = key_points[0]
-    except:
-        kp = None
+    if ( data is not None ) and ( not all([x is None for x in data]) ):
 
-    if kp is not None:
+        bounding_box = data[0]
 
-        lm = np.vstack((kp.landmarks[:,1],kp.landmarks[:,0])).T
+        #bounding_box = bounding_box.scale(0.9, True)
 
-        right_eye,left_eye = getEyePos(lm)
+        lm=landmark_detection_module.detect_landmarks_on_boundingbox(image, bounding_box)
 
-        points = []
+        if lm is not None:
 
-        for i in range(lm.shape[0]):
-            points.append((int(lm[i,0]),int(lm[i,1])))
+            lm=np.array(lm)
 
-        annotations['topleft'] = kp.bounding_box.topleft
-        annotations['bottomright'] = kp.bounding_box.bottomright
-        annotations['landmarks'] = points # list of landmarks
-        annotations['left_eye'] = left_eye
-        annotations['right_eye'] = right_eye
+            lm=np.vstack((lm[:,1],lm[:,0])).T
+
+            #print("LM",lm)
+
+            right_eye,left_eye = getEyePos(lm)
+
+
+            points = []
+
+            for i in range(lm.shape[0]):
+
+                points.append((int(lm[i,0]),int(lm[i,1])))
+
+            annotations['topleft'] = bounding_box.topleft
+
+            annotations['bottomright'] = bounding_box.bottomright
+
+            annotations['landmarks'] = points
+
+            annotations['left_eye'] = left_eye
+
+            annotations['right_eye'] = right_eye
 
 
     return annotations
+
+
 
 
 
@@ -204,16 +254,17 @@ def detect_face_landmarks_in_video(frame_container, method = "dlib"):
 
     ``method`` : :py:class:`str`
         A package to be used for face detection. Options supported by this
-        package: "dlib" (dlib is a dependency of this package). 
+        package: "dlib" (dlib is a dependency of this package) and "mtcnn".
+        If its found it will be used else defaults to "dlib"
 
     **Returns:**
 
     ``annotations`` : :py:class:`dict`
         A dictionary containing the annotations for each frame in the video.
         Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
-        Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col), 'left_eye': (row, col), 'right_eye': (row, col), 'landmarks': [(row1,col1), (row2,col2), ...]}``
+        Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col), 'left_eye': (row, col), 'right_eye': (row, col), 'landmarks': [(col1,row1), (col2,row2), ...]}``
         is the dictionary defining the coordinates of the face bounding box in frame N.
-        Where (rowK,colK) is the location of Kth facial landmark (K=0,...,67).
+        Where (colK,rowK) is the location of Kth facial landmark (K=0,...,67).
         If no annotations found an empty dictionary is returned.
     """
 
