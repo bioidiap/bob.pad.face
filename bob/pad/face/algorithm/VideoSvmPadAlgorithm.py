@@ -169,8 +169,6 @@ class VideoSvmPadAlgorithm(Algorithm):
             An array containing features for all samples and frames.
         """
 
-        feature_vectors = []
-
         if isinstance(features[0], FrameContainer):  # if FrameContainer convert to 2D numpy array
             return self.convert_list_of_frame_cont_to_array(features)
         else:

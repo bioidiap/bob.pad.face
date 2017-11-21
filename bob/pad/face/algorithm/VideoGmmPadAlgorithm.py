@@ -6,7 +6,7 @@ Created on Mon Aug 28 16:47:47 2017
 @author: Olegs Nikisins
 """
 
-#==============================================================================
+# ==============================================================================
 # Import what is needed here:
 
 from bob.pad.base.algorithm import Algorithm
@@ -20,7 +20,7 @@ import bob.io.base
 from sklearn import mixture
 
 
-#==============================================================================
+# ==============================================================================
 # Main body :
 
 class VideoGmmPadAlgorithm(Algorithm):
@@ -51,15 +51,14 @@ class VideoGmmPadAlgorithm(Algorithm):
     """
 
     def __init__(self,
-                 n_components = 1,
-                 random_state = 3,
-                 frame_level_scores_flag = False):
-
+                 n_components=1,
+                 random_state=3,
+                 frame_level_scores_flag=False):
 
         Algorithm.__init__(self,
-                           n_components = n_components,
-                           random_state = random_state,
-                           frame_level_scores_flag = frame_level_scores_flag,
+                           n_components=n_components,
+                           random_state=random_state,
+                           frame_level_scores_flag=frame_level_scores_flag,
                            performs_projection=True,
                            requires_projector_training=True)
 
@@ -69,17 +68,17 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         self.frame_level_scores_flag = frame_level_scores_flag
 
-        self.machine = None # this argument will be updated with pretrained GMM machine
+        self.machine = None  # this argument will be updated with pretrained GMM machine
 
-        self.features_mean = None # this argument will be updated with features mean
+        self.features_mean = None  # this argument will be updated with features mean
 
-        self.features_std = None # this argument will be updated with features std
+        self.features_std = None  # this argument will be updated with features std
 
         # names of the arguments of the pretrained GMM machine to be saved/loaded to/from HDF5 file:
-        self.gmm_param_keys = ["covariance_type", "covariances_", "lower_bound_", "means_", "n_components", "weights_", "converged_", "precisions_", "precisions_cholesky_" ]
+        self.gmm_param_keys = ["covariance_type", "covariances_", "lower_bound_", "means_", "n_components", "weights_",
+                               "converged_", "precisions_", "precisions_cholesky_"]
 
-
-    #==========================================================================
+    # ==========================================================================
     def convert_frame_cont_to_array(self, frame_container):
         """
         This function converts a single Frame Container into an array of features.
@@ -103,11 +102,9 @@ class VideoGmmPadAlgorithm(Algorithm):
         frame_dictionary = {}
 
         for frame in frame_container:
-
             frame_dictionary[frame[0]] = frame[1]
 
         for idx, _ in enumerate(frame_container):
-
             # Frames are stored in a mixed order, therefore we get them using incrementing frame index:
             feature_vectors.append(frame_dictionary[str(idx)])
 
@@ -115,8 +112,32 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         return features_array
 
+    # ==========================================================================
+    def convert_and_prepare_features(self, features):
+        """
+        This function converts a list or a frame container of features into a 2D array of features.
+        If the input is a list of frame containers, features from different frame containers (individuals)
+        are concatenated into the same list. This list is then converted to an array. The rows are samples,
+        the columns are features.
 
-    #==========================================================================
+        **Parameters:**
+
+        ``features`` : [2D :py:class:`numpy.ndarray`] or [FrameContainer]
+            A list or 2D feature arrays or a list of Frame Containers, see ``bob.bio.video.utils.FrameContainer``.
+            Each frame Container contains feature vectors for the particular individual/person.
+
+        **Returns:**
+
+        ``features_array`` : 2D :py:class:`numpy.ndarray`
+            An array containing features for all samples and frames.
+        """
+
+        if isinstance(features[0], FrameContainer):  # if FrameContainer convert to 2D numpy array
+            return self.convert_list_of_frame_cont_to_array(features)
+        else:
+            return np.vstack(features)
+
+    # ==========================================================================
     def convert_list_of_frame_cont_to_array(self, frame_containers):
         """
         This function converts a list of Frame containers into an array of features.
@@ -139,18 +160,16 @@ class VideoGmmPadAlgorithm(Algorithm):
         feature_vectors = []
 
         for frame_container in frame_containers:
-
             video_features_array = self.convert_frame_cont_to_array(frame_container)
 
-            feature_vectors.append( video_features_array )
+            feature_vectors.append(video_features_array)
 
         features_array = np.vstack(feature_vectors)
 
         return features_array
 
-
-    #==========================================================================
-    def mean_std_normalize(self, features, features_mean= None, features_std = None):
+    # ==========================================================================
+    def mean_std_normalize(self, features, features_mean=None, features_std=None):
         """
         The features in the input 2D array are mean-std normalized.
         The rows are samples, the columns are features. If ``features_mean``
@@ -185,14 +204,13 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         # Compute mean and std if not given:
         if features_mean is None:
-
             features_mean = np.mean(features, axis=0)
 
             features_std = np.std(features, axis=0)
 
         row_norm_list = []
 
-        for row in features: # row is a sample
+        for row in features:  # row is a sample
 
             row_norm = (row - features_mean) / features_std
 
@@ -202,8 +220,7 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         return features_norm, features_mean, features_std
 
-
-    #==========================================================================
+    # ==========================================================================
     def train_gmm(self, real, n_components, random_state):
         """
         Train GMM classifier given real class. Prior to the training the data is
@@ -236,16 +253,15 @@ class VideoGmmPadAlgorithm(Algorithm):
         features_norm, features_mean, features_std = self.mean_std_normalize(real)
         # real is now mean-std normalized
 
-        machine = mixture.GaussianMixture(n_components = n_components,
-                                          random_state = random_state,
-                                          covariance_type = 'full')
+        machine = mixture.GaussianMixture(n_components=n_components,
+                                          random_state=random_state,
+                                          covariance_type='full')
 
-        machine.fit( features_norm )
+        machine.fit(features_norm)
 
         return machine, features_mean, features_std
 
-
-    #==========================================================================
+    # ==========================================================================
     def save_gmm_machine_and_mean_std(self, projector_file, machine, features_mean, features_std):
         """
         Saves the GMM machine, features mean and std to the hdf5 file.
@@ -268,22 +284,20 @@ class VideoGmmPadAlgorithm(Algorithm):
             Standart deviation of the features.
         """
 
-        f = bob.io.base.HDF5File(projector_file, 'w') # open hdf5 file to save to
+        f = bob.io.base.HDF5File(projector_file, 'w')  # open hdf5 file to save to
 
         for key in self.gmm_param_keys:
+            data = getattr(machine, key)
 
-            data = getattr( machine, key )
+            f.set(key, data)
 
-            f.set( key, data )
+        f.set("features_mean", features_mean)
 
-        f.set( "features_mean", features_mean )
-
-        f.set( "features_std", features_std )
+        f.set("features_std", features_std)
 
         del f
 
-
-    #==========================================================================
+    # ==========================================================================
     def train_projector(self, training_features, projector_file):
         """
         Train GMM for feature projection and save it to file.
@@ -303,21 +317,20 @@ class VideoGmmPadAlgorithm(Algorithm):
         """
 
         # training_features[0] - training features for the REAL class.
-        real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
+        real = self.convert_and_prepare_features(training_features[0])  # output is array
 
         # training_features[1] - training features for the ATTACK class.
-#        attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+        #        attack = self.convert_and_prepare_features(training_features[1]) # output is array
 
         # Train the GMM machine and get normalizers:
-        machine, features_mean, features_std = self.train_gmm(real = real,
-                                                              n_components = self.n_components,
-                                                              random_state = self.random_state)
+        machine, features_mean, features_std = self.train_gmm(real=real,
+                                                              n_components=self.n_components,
+                                                              random_state=self.random_state)
 
         # Save the GNN machine and normalizers:
         self.save_gmm_machine_and_mean_std(projector_file, machine, features_mean, features_std)
 
-
-    #==========================================================================
+    # ==========================================================================
     def load_gmm_machine_and_mean_std(self, projector_file):
         """
         Loads the machine, features mean and std from the hdf5 file.
@@ -341,14 +354,13 @@ class VideoGmmPadAlgorithm(Algorithm):
             Standart deviation of the features.
         """
 
-        f = bob.io.base.HDF5File(projector_file, 'r') # file to read the machine from
+        f = bob.io.base.HDF5File(projector_file, 'r')  # file to read the machine from
 
         # initialize the machine:
         machine = mixture.GaussianMixture()
 
         # set the params of the machine:
         for key in self.gmm_param_keys:
-
             data = f.read(key)
 
             setattr(machine, key, data)
@@ -361,8 +373,7 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         return machine, features_mean, features_std
 
-
-    #==========================================================================
+    # ==========================================================================
     def load_projector(self, projector_file):
         """
         Loads the machine, features mean and std from the hdf5 file.
@@ -394,8 +405,7 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         self.features_std = features_std
 
-
-    #==========================================================================
+    # ==========================================================================
     def project(self, feature):
         """
         This function computes a vector of scores for each sample in the input
@@ -427,7 +437,7 @@ class VideoGmmPadAlgorithm(Algorithm):
         """
 
         # 1. Convert input array to numpy array if necessary.
-        if isinstance(feature, FrameContainer): # if FrameContainer convert to 2D numpy array
+        if isinstance(feature, FrameContainer):  # if FrameContainer convert to 2D numpy array
 
             features_array = self.convert_frame_cont_to_array(feature)
 
@@ -437,12 +447,11 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         features_array_norm, _, _ = self.mean_std_normalize(features_array, self.features_mean, self.features_std)
 
-        scores = self.machine.score_samples( features_array_norm )
+        scores = self.machine.score_samples(features_array_norm)
 
         return scores
 
-
-    #==========================================================================
+    # ==========================================================================
     def score(self, toscore):
         """
         Returns a probability of a sample being a real class.
@@ -470,7 +479,6 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         else:
 
-            score = [np.mean( toscore )] # compute a single score per video
+            score = [np.mean(toscore)]  # compute a single score per video
 
         return score
-
