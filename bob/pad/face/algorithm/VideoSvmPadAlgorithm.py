@@ -6,10 +6,12 @@ Created on Wed May 17 09:43:09 2017
 @author: Olegs Nikisins
 """
 
-#==============================================================================
+# ==============================================================================
 # Import what is needed here:
 
 from bob.pad.base.algorithm import Algorithm
+from bob.bio.video.utils import FrameContainer
+
 
 import itertools as it
 
@@ -21,13 +23,15 @@ import bob.io.base
 
 import os
 
-#==============================================================================
+
+# ==============================================================================
 # Main body :
+
 
 class VideoSvmPadAlgorithm(Algorithm):
     """
-    This class is designed to train SVM given Frame Containers with features
-    of real and attack classes. The trained SVM is then used to classify the
+    This class is designed to train SVM given features (either numpy arrays or Frame Containers)
+    from real and attack classes. The trained SVM is then used to classify the
     testing data as either real or attack. The SVM is trained in two stages.
     First, the best parameters for SVM are estimated using train and
     cross-validation subsets. The size of the subsets used in hyper-parameter
@@ -59,7 +63,7 @@ class VideoSvmPadAlgorithm(Algorithm):
 
     ``frame_level_scores_flag`` : :py:class:`bool`
         Return scores for each frame individually if True. Otherwise, return a
-        single score per video. Default: False.
+        single score per video. Should be used only when features are in Frame Containers. Default: False.
 
     ``save_debug_data_flag`` : :py:class:`bool`
         Save the data, which might be usefull for debugging if ``True``.
@@ -76,27 +80,27 @@ class VideoSvmPadAlgorithm(Algorithm):
     """
 
     def __init__(self,
-                 machine_type = 'C_SVC',
-                 kernel_type = 'RBF',
-                 n_samples = 10000,
-                 trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
-                 mean_std_norm_flag = False,
-                 frame_level_scores_flag = False,
-                 save_debug_data_flag = True,
-                 reduced_train_data_flag = False,
-                 n_train_samples = 50000):
-
+                 machine_type='C_SVC',
+                 kernel_type='RBF',
+                 n_samples=10000,
+                 trainer_grid_search_params={'cost': [2 ** p for p in range(-5, 16, 2)],
+                                             'gamma': [2 ** p for p in range(-15, 4, 2)]},
+                 mean_std_norm_flag=False,
+                 frame_level_scores_flag=False,
+                 save_debug_data_flag=True,
+                 reduced_train_data_flag=False,
+                 n_train_samples=50000):
 
         Algorithm.__init__(self,
-                           machine_type = machine_type,
-                           kernel_type = kernel_type,
-                           n_samples = n_samples,
-                           trainer_grid_search_params = trainer_grid_search_params,
-                           mean_std_norm_flag = mean_std_norm_flag,
-                           frame_level_scores_flag = frame_level_scores_flag,
-                           save_debug_data_flag = save_debug_data_flag,
-                           reduced_train_data_flag = reduced_train_data_flag,
-                           n_train_samples = n_train_samples,
+                           machine_type=machine_type,
+                           kernel_type=kernel_type,
+                           n_samples=n_samples,
+                           trainer_grid_search_params=trainer_grid_search_params,
+                           mean_std_norm_flag=mean_std_norm_flag,
+                           frame_level_scores_flag=frame_level_scores_flag,
+                           save_debug_data_flag=save_debug_data_flag,
+                           reduced_train_data_flag=reduced_train_data_flag,
+                           n_train_samples=n_train_samples,
                            performs_projection=True,
                            requires_projector_training=True)
 
@@ -111,8 +115,7 @@ class VideoSvmPadAlgorithm(Algorithm):
         self.n_train_samples = n_train_samples
         self.machine = None
 
-
-    #==========================================================================
+    # ==========================================================================
     def convert_frame_cont_to_array(self, frame_container):
         """
         This function converts a single Frame Container into an array of features.
@@ -136,11 +139,9 @@ class VideoSvmPadAlgorithm(Algorithm):
         frame_dictionary = {}
 
         for frame in frame_container:
-
             frame_dictionary[frame[0]] = frame[1]
 
         for idx, _ in enumerate(frame_container):
-
             # Frames are stored in a mixed order, therefore we get them using incrementing frame index:
             feature_vectors.append(frame_dictionary[str(idx)])
 
@@ -148,8 +149,34 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         return features_array
 
+    # ==========================================================================
+    def convert_and_prepare_features(self, features):
+        """
+        This function converts a list or a frame container of features into a 2D array of features.
+        If the input is a list of frame containers, features from different frame containers (individuals)
+        are concatenated into the same list. This list is then converted to an array. The rows are samples,
+        the columns are features.
 
-    #==========================================================================
+        **Parameters:**
+
+        ``features`` : [2D :py:class:`numpy.ndarray`] or [FrameContainer]
+            A list or 2D feature arrays or a list of Frame Containers, see ``bob.bio.video.utils.FrameContainer``.
+            Each frame Container contains feature vectors for the particular individual/person.
+
+        **Returns:**
+
+        ``features_array`` : 2D :py:class:`numpy.ndarray`
+            An array containing features for all samples and frames.
+        """
+
+        feature_vectors = []
+
+        if isinstance(features[0], FrameContainer):  # if FrameContainer convert to 2D numpy array
+            return self.convert_list_of_frame_cont_to_array(features)
+        else:
+            return np.vstack(features)
+
+    # ==========================================================================
     def convert_list_of_frame_cont_to_array(self, frame_containers):
         """
         This function converts a list of Frame containers into an array of features.
@@ -172,17 +199,15 @@ class VideoSvmPadAlgorithm(Algorithm):
         feature_vectors = []
 
         for frame_container in frame_containers:
-
             video_features_array = self.convert_frame_cont_to_array(frame_container)
 
-            feature_vectors.append( video_features_array )
+            feature_vectors.append(video_features_array)
 
         features_array = np.vstack(feature_vectors)
 
         return features_array
 
-
-    #==========================================================================
+    # ==========================================================================
     def combinations(self, input_dict):
         """
         Obtain all possible key-value combinations in the input dictionary
@@ -201,12 +226,12 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         varNames = sorted(input_dict)
 
-        combinations = [ dict( zip( varNames, prod ) ) for prod in it.product( *( input_dict[ varName ] for varName in varNames ) ) ]
+        combinations = [dict(zip(varNames, prod)) for prod in
+                        it.product(*(input_dict[varName] for varName in varNames))]
 
         return combinations
 
-
-    #==========================================================================
+    # ==========================================================================
     def select_uniform_data_subset(self, features, n_samples):
         """
         Uniformly select N samples/feature vectors from the input array of samples.
@@ -232,14 +257,13 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         else:
 
-            uniform_step = np.int(features.shape[0]/n_samples)
+            uniform_step = np.int(features.shape[0] / n_samples)
 
-            features_subset = features[0 : np.int(uniform_step*n_samples) : uniform_step, :]
+            features_subset = features[0: np.int(uniform_step * n_samples): uniform_step, :]
 
         return features_subset
 
-
-    #==========================================================================
+    # ==========================================================================
     def select_quasi_uniform_data_subset(self, features, n_samples):
         """
         Select quasi uniformly N samples/feature vectors from the input array of samples.
@@ -268,16 +292,15 @@ class VideoSvmPadAlgorithm(Algorithm):
 
             uniform_step = (1.0 * features.shape[0]) / n_samples
 
-            element_num_list = range(0,n_samples)
+            element_num_list = range(0, n_samples)
 
-            idx = [np.int(uniform_step*item) for item in element_num_list]
+            idx = [np.int(uniform_step * item) for item in element_num_list]
 
             features_subset = features[idx, :]
 
         return features_subset
 
-
-    #==========================================================================
+    # ==========================================================================
     def split_data_to_train_cv(self, features):
         """
         This function is designed to split the input array of features into two
@@ -300,15 +323,14 @@ class VideoSvmPadAlgorithm(Algorithm):
             Selected subset of cross-validation features.
         """
 
-        half_samples_num = np.int(features.shape[0]/2)
+        half_samples_num = np.int(features.shape[0] / 2)
 
-        features_train = features[ 0 : half_samples_num, : ]
-        features_cv = features[ half_samples_num : 2 * half_samples_num + 1, : ]
+        features_train = features[0: half_samples_num, :]
+        features_cv = features[half_samples_num: 2 * half_samples_num + 1, :]
 
         return features_train, features_cv
 
-
-    #==========================================================================
+    # ==========================================================================
     def prepare_data_for_hyper_param_grid_search(self, training_features, n_samples):
         """
         This function converts a list of all training features returned by ``read_features``
@@ -349,9 +371,9 @@ class VideoSvmPadAlgorithm(Algorithm):
         """
 
         # training_features[0] - training features for the REAL class.
-        real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
+        real = self.convert_and_prepare_features(training_features[0])  # output is array
         # training_features[1] - training features for the ATTACK class.
-        attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+        attack = self.convert_and_prepare_features(training_features[1])  # output is array
 
         # uniformly select subsets of features:
         real_subset = self.select_uniform_data_subset(real, n_samples)
@@ -363,8 +385,7 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         return real_train, real_cv, attack_train, attack_cv
 
-
-    #==========================================================================
+    # ==========================================================================
     def comp_prediction_precision(self, machine, real, attack):
         """
         This function computes the precision of the predictions as a ratio
@@ -393,13 +414,12 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         samples_num = len(labels_real) + len(labels_attack)
 
-        precision = ( np.sum(labels_real == 1) + np.sum(labels_attack == -1) ).astype( np.float ) / samples_num
+        precision = (np.sum(labels_real == 1) + np.sum(labels_attack == -1)).astype(np.float) / samples_num
 
         return precision
 
-
-    #==========================================================================
-    def mean_std_normalize(self, features, features_mean= None, features_std = None):
+    # ==========================================================================
+    def mean_std_normalize(self, features, features_mean=None, features_std=None):
         """
         The features in the input 2D array are mean-std normalized.
         The rows are samples, the columns are features. If ``features_mean``
@@ -434,14 +454,13 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         # Compute mean and std if not given:
         if features_mean is None:
-
             features_mean = np.mean(features, axis=0)
 
             features_std = np.std(features, axis=0)
 
         row_norm_list = []
 
-        for row in features: # row is a sample
+        for row in features:  # row is a sample
 
             row_norm = (row - features_mean) / features_std
 
@@ -451,9 +470,8 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         return features_norm, features_mean, features_std
 
-
-    #==========================================================================
-    def norm_train_cv_data(self, real_train, real_cv, attack_train, attack_cv, one_class_flag = False):
+    # ==========================================================================
+    def norm_train_cv_data(self, real_train, real_cv, attack_train, attack_cv, one_class_flag=False):
         """
         Mean-std normalization of train and cross-validation data arrays.
 
@@ -490,7 +508,7 @@ class VideoSvmPadAlgorithm(Algorithm):
         ``attack_cv_norm`` : 2D :py:class:`numpy.ndarray`
             Normalized subset of cross-validation features for the attack class.
         """
-        if not(one_class_flag):
+        if not (one_class_flag):
 
             features_train = np.vstack([real_train, attack_train])
 
@@ -504,9 +522,9 @@ class VideoSvmPadAlgorithm(Algorithm):
 
             attack_cv_norm, _, _ = self.mean_std_normalize(attack_cv, features_mean, features_std)
 
-        else: # one-class SVM case
+        else:  # one-class SVM case
 
-            #only real class used for training in one class SVM:
+            # only real class used for training in one class SVM:
             real_train_norm, features_mean, features_std = self.mean_std_normalize(real_train)
 
             attack_train_norm, _, _ = self.mean_std_normalize(attack_train, features_mean, features_std)
@@ -517,16 +535,16 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         return real_train_norm, real_cv_norm, attack_train_norm, attack_cv_norm
 
-
-    #==========================================================================
-    def train_svm(self, training_features, n_samples = 10000,
-                  machine_type = 'C_SVC', kernel_type = 'RBF',
-                  trainer_grid_search_params = { 'cost': [2**p for p in range(-5, 16, 2)], 'gamma': [2**p for p in range(-15, 4, 2)]},
-                  mean_std_norm_flag = False,
-                  projector_file = "",
-                  save_debug_data_flag = True,
-                  reduced_train_data_flag = False,
-                  n_train_samples = 50000):
+    # ==========================================================================
+    def train_svm(self, training_features, n_samples=10000,
+                  machine_type='C_SVC', kernel_type='RBF',
+                  trainer_grid_search_params={'cost': [2 ** p for p in range(-5, 16, 2)],
+                                              'gamma': [2 ** p for p in range(-15, 4, 2)]},
+                  mean_std_norm_flag=False,
+                  projector_file="",
+                  save_debug_data_flag=True,
+                  reduced_train_data_flag=False,
+                  n_train_samples=50000):
         """
         First, this function tunes the hyper-parameters of the SVM classifier using
         grid search on the sub-sets of training data. Train and cross-validation
@@ -586,42 +604,45 @@ class VideoSvmPadAlgorithm(Algorithm):
             A trained SVM machine.
         """
 
-        one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
+        one_class_flag = (machine_type == 'ONE_CLASS')  # True if one-class SVM is used
 
         # get the data for the hyper-parameter grid-search:
-        real_train, real_cv, attack_train, attack_cv = self.prepare_data_for_hyper_param_grid_search(training_features, n_samples)
+        real_train, real_cv, attack_train, attack_cv = self.prepare_data_for_hyper_param_grid_search(training_features,
+                                                                                                     n_samples)
 
         if mean_std_norm_flag:
             # normalize the data:
-            real_train, real_cv, attack_train, attack_cv = self.norm_train_cv_data(real_train, real_cv, attack_train, attack_cv,
+            real_train, real_cv, attack_train, attack_cv = self.norm_train_cv_data(real_train, real_cv, attack_train,
+                                                                                   attack_cv,
                                                                                    one_class_flag)
 
-        precisions_cv = [] # for saving the precision on the cross-validation set
+        precisions_cv = []  # for saving the precision on the cross-validation set
 
         precisions_train = []
 
-        trainer_grid_search_params_list = self.combinations(trainer_grid_search_params) # list containing all combinations of params
+        trainer_grid_search_params_list = self.combinations(
+            trainer_grid_search_params)  # list containing all combinations of params
 
         for trainer_grid_search_param in trainer_grid_search_params_list:
 
             # initialize the SVM trainer:
-            trainer = bob.learn.libsvm.Trainer(machine_type = machine_type,
-                                               kernel_type = kernel_type,
-                                               probability = True)
+            trainer = bob.learn.libsvm.Trainer(machine_type=machine_type,
+                                               kernel_type=kernel_type,
+                                               probability=True)
 
             for key in trainer_grid_search_param.keys():
+                setattr(trainer, key, trainer_grid_search_param[key])  # set the params of trainer
 
-                setattr(trainer, key, trainer_grid_search_param[key]) # set the params of trainer
+            if not (one_class_flag):  # two-class SVM case
 
-            if not( one_class_flag ): # two-class SVM case
+                data = [np.copy(real_train),
+                        np.copy(attack_train)]  # data used for training the machine in the grid-search
 
-                data  = [np.copy(real_train), np.copy(attack_train)] # data used for training the machine in the grid-search
+            else:  # one class SVM case
 
-            else: # one class SVM case
+                data = [np.copy(real_train)]  # only real class is used for training
 
-                data = [np.copy(real_train)] # only real class is used for training
-
-            machine = trainer.train(data) # train the machine
+            machine = trainer.train(data)  # train the machine
 
             precision_cv = self.comp_prediction_precision(machine, np.copy(real_cv), np.copy(attack_cv))
 
@@ -635,20 +656,20 @@ class VideoSvmPadAlgorithm(Algorithm):
             del machine
             del trainer
 
-        selected_params = trainer_grid_search_params_list[np.argmax(precisions_cv)] # best SVM parameters according to CV set
+        selected_params = trainer_grid_search_params_list[
+            np.argmax(precisions_cv)]  # best SVM parameters according to CV set
 
-        trainer = bob.learn.libsvm.Trainer(machine_type = machine_type,
-                                           kernel_type = kernel_type,
-                                           probability = True)
+        trainer = bob.learn.libsvm.Trainer(machine_type=machine_type,
+                                           kernel_type=kernel_type,
+                                           probability=True)
 
         for key in selected_params.keys():
-
-            setattr(trainer, key, selected_params[key]) # set the params of trainer
+            setattr(trainer, key, selected_params[key])  # set the params of trainer
 
         # Save the data, which is usefull for debugging.
         if save_debug_data_flag:
 
-            debug_file = os.path.join( os.path.split(projector_file)[0], "debug_data.hdf5" )
+            debug_file = os.path.join(os.path.split(projector_file)[0], "debug_data.hdf5")
             debug_dict = {}
             debug_dict['precisions_train'] = precisions_train
             debug_dict['precisions_cv'] = precisions_cv
@@ -656,57 +677,56 @@ class VideoSvmPadAlgorithm(Algorithm):
             for key in selected_params.keys():
                 debug_dict[key] = selected_params[key]
 
-            f = bob.io.base.HDF5File(debug_file, 'w') # open hdf5 file to save the debug data
+            f = bob.io.base.HDF5File(debug_file, 'w')  # open hdf5 file to save the debug data
             for key in debug_dict.keys():
                 f.set(key, debug_dict[key])
             del f
 
         # training_features[0] - training features for the REAL class.
-        real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
+        real = self.convert_and_prepare_features(training_features[0])  # output is array
         # training_features[1] - training features for the ATTACK class.
-        attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+        attack = self.convert_and_prepare_features(training_features[1])  # output is array
 
         if mean_std_norm_flag:
             # Normalize the data:
-            if not( one_class_flag ): # two-class SVM case
+            if not (one_class_flag):  # two-class SVM case
 
                 features = np.vstack([real, attack])
                 features_norm, features_mean, features_std = self.mean_std_normalize(features)
-                real =   features_norm[0:real.shape[0], :] # The array is now normalized
-                attack = features_norm[real.shape[0]:, :] # The array is now normalized
+                real = features_norm[0:real.shape[0], :]  # The array is now normalized
+                attack = features_norm[real.shape[0]:, :]  # The array is now normalized
 
-            else: # one-class SVM case
+            else:  # one-class SVM case
 
-                real, features_mean, features_std = self.mean_std_normalize(real) # use only real class to compute normalizers
+                real, features_mean, features_std = self.mean_std_normalize(
+                    real)  # use only real class to compute normalizers
                 attack = self.mean_std_normalize(attack, features_mean, features_std)
                 # ``real`` and ``attack`` arrays are now normalizaed
 
         if reduced_train_data_flag:
-
             # uniformly select subsets of features:
             real = self.select_quasi_uniform_data_subset(real, n_train_samples)
             attack = self.select_quasi_uniform_data_subset(attack, n_train_samples)
 
-        if not( one_class_flag ): # two-class SVM case
+        if not (one_class_flag):  # two-class SVM case
 
-            data = [np.copy(real), np.copy(attack)] # data for final training
+            data = [np.copy(real), np.copy(attack)]  # data for final training
 
-        else: # one-class SVM case
+        else:  # one-class SVM case
 
-            data = [np.copy(real)] # only real class used for training
+            data = [np.copy(real)]  # only real class used for training
 
-        machine = trainer.train(data) # train the machine
+        machine = trainer.train(data)  # train the machine
 
         if mean_std_norm_flag:
-            machine.input_subtract = features_mean # subtract the mean of train data
-            machine.input_divide   = features_std  # divide by std of train data
+            machine.input_subtract = features_mean  # subtract the mean of train data
+            machine.input_divide = features_std  # divide by std of train data
 
         del data
 
         return machine
 
-
-    #==========================================================================
+    # ==========================================================================
     def train_projector(self, training_features, projector_file):
         """
         Train SVM feature projector and save the trained SVM to a given file.
@@ -725,25 +745,24 @@ class VideoSvmPadAlgorithm(Algorithm):
             This file should be readable with the :py:meth:`load_projector` function.
         """
 
-        machine = self.train_svm(training_features = training_features,
-                                 n_samples = self.n_samples,
-                                 machine_type = self.machine_type,
-                                 kernel_type = self.kernel_type,
-                                 trainer_grid_search_params = self.trainer_grid_search_params,
-                                 mean_std_norm_flag = self.mean_std_norm_flag,
-                                 projector_file = projector_file,
-                                 save_debug_data_flag = self.save_debug_data_flag,
-                                 reduced_train_data_flag = self.reduced_train_data_flag,
-                                 n_train_samples = self.n_train_samples)
+        machine = self.train_svm(training_features=training_features,
+                                 n_samples=self.n_samples,
+                                 machine_type=self.machine_type,
+                                 kernel_type=self.kernel_type,
+                                 trainer_grid_search_params=self.trainer_grid_search_params,
+                                 mean_std_norm_flag=self.mean_std_norm_flag,
+                                 projector_file=projector_file,
+                                 save_debug_data_flag=self.save_debug_data_flag,
+                                 reduced_train_data_flag=self.reduced_train_data_flag,
+                                 n_train_samples=self.n_train_samples)
 
-        f = bob.io.base.HDF5File(projector_file, 'w') # open hdf5 file to save to
+        f = bob.io.base.HDF5File(projector_file, 'w')  # open hdf5 file to save to
 
-        machine.save(f) # save the machine and normalization parameters
+        machine.save(f)  # save the machine and normalization parameters
 
         del f
 
-
-    #==========================================================================
+    # ==========================================================================
     def load_projector(self, projector_file):
         """
         Load the pretrained projector/SVM from file to perform a feature projection.
@@ -765,8 +784,7 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         del f
 
-
-    #==========================================================================
+    # ==========================================================================
     def project(self, feature):
         """
         This function computes class probabilities for the input feature using pretrained SVM.
@@ -796,9 +814,15 @@ class VideoSvmPadAlgorithm(Algorithm):
             readable with the ``read_feature`` function.
         """
 
-        features_array = self.convert_frame_cont_to_array(feature)
+        if isinstance(feature, FrameContainer):  # if FrameContainer convert to 2D numpy array
 
-        if not( self.machine_type == 'ONE_CLASS' ): # two-class SVM case
+            features_array = self.convert_frame_cont_to_array(feature)
+
+        else:
+
+            features_array = feature
+
+        if not (self.machine_type == 'ONE_CLASS'):  # two-class SVM case
 
             probabilities = self.machine.predict_class_and_probabilities(features_array)[1]
 
@@ -808,8 +832,7 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         return probabilities
 
-
-    #==========================================================================
+    # ==========================================================================
     def score(self, toscore):
         """
         Returns a probability of a sample being a real class.
@@ -837,16 +860,15 @@ class VideoSvmPadAlgorithm(Algorithm):
 
         if self.frame_level_scores_flag:
 
-            score = toscore[:,0] # here score is a 1D array containing scores for each frame
+            score = toscore[:, 0]  # here score is a 1D array containing scores for each frame
 
         else:
 
-            score = np.mean( toscore[:,0] ) # compute a single score per video
+            score = np.mean(toscore[:, 0])  # compute a single score per sample
 
         return score
 
-
-    #==========================================================================
+    # ==========================================================================
     def score_for_multiple_projections(self, toscore):
         """
         Returns a list of scores computed by the score method of this class.
@@ -867,9 +889,9 @@ class VideoSvmPadAlgorithm(Algorithm):
             A list containing the scores.
         """
 
-        scores = self.score(toscore) # returns float score or 1D array of scores
+        scores = self.score(toscore)  # returns float score or 1D array of scores
 
-        if isinstance(scores, np.float): # if a single score
+        if isinstance(scores, np.float):  # if a single score
 
             list_of_scores = [scores]
 
@@ -878,5 +900,3 @@ class VideoSvmPadAlgorithm(Algorithm):
             list_of_scores = list(scores)
 
         return list_of_scores
-
-
