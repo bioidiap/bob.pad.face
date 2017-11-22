@@ -275,7 +275,7 @@ class AggregatedDbPadDatabase(PadDatabase):
        databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
        from MOBIO dataset is used in the training set.
 
-    5, "grandtest-train-eval" - - this protocol is using all the data available
+    5. "grandtest-train-eval" - - this protocol is using all the data available
        in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
        'train' and 'eval' are available in this protocol. The 'dev' set is
        concatenated to the training data. When requesting 'dev' set, the
@@ -438,7 +438,7 @@ class AggregatedDbPadDatabase(PadDatabase):
                databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
                from MOBIO dataset is used in the training set.
 
-            5, "grandtest-train-eval" - - this protocol is using all the data available
+            5. "grandtest-train-eval" - - this protocol is using all the data available
                in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
                'train' and 'test' are available in this protocol. The 'devel' set is
                concatenated to the training data. When requesting 'devel' set, the
@@ -590,7 +590,7 @@ class AggregatedDbPadDatabase(PadDatabase):
                databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
                from MOBIO dataset is used in the training set.
 
-            5, "grandtest-train-eval" - - this protocol is using all the data available
+            5. "grandtest-train-eval" - - this protocol is using all the data available
                in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
                'train' and 'test' are available in this protocol. The 'devel' set is
                concatenated to the training data. When requesting 'devel' set, the
