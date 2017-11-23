@@ -304,11 +304,24 @@ class AggregatedDbPadDatabase(PadDatabase):
        databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
        from MOBIO dataset is used in the training set.
 
-    5. "grandtest-train-eval" - - this protocol is using all the data available
+    5. "grandtest-train-eval" - this protocol is using all the data available
        in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
        'train' and 'eval' are available in this protocol. The 'dev' set is
        concatenated to the training data. When requesting 'dev' set, the
        data of the 'eval' set is returned.
+
+    6. "grandtest-train-eval-<num_train_samples>" -
+       this protocol is using all the data available in the databases
+       Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+       'train' and 'eval' are available in this protocol. The 'dev' set is
+       concatenated to the training data. When requesting 'dev' set, the
+       data of the 'eval' set is returned.
+       MOREOVER, in this protocol you can specify the number of training samples
+       <num_train_samples>, which will be uniformly selected for each database
+       (Replay-Attack, Replay-Mobile, MSU MFSD) used in the Aggregated DB.
+       For example, in the protocol "grandtest-train-eval-5", 5 training samples
+       will be selected for Replay-Attack, 5 for Replay-Mobile, and 5 for
+       MSU MFSD. The total number of training samples is 15 in this case.
     """
 
     def __init__(
@@ -334,7 +347,8 @@ class AggregatedDbPadDatabase(PadDatabase):
             in the HighLevel DB Interface of MSU MFSD. Default: None.
 
         ``kwargs``
-            The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
+            The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
+            base class constructor.
         """
 
         # Import LLDI for all databases:
@@ -360,8 +374,7 @@ class AggregatedDbPadDatabase(PadDatabase):
         # A list of available protocols:
         self.available_protocols = [
             'grandtest', 'photo-photo-video', 'video-video-photo',
-            'grandtest-mobio', 'grandtest-train-eval'
-        ]
+            'grandtest-mobio', 'grandtest-train-eval', "grandtest-train-eval-<num_train_samples>"]
 
         # Always use super to call parent class methods.
         super(AggregatedDbPadDatabase, self).__init__(
@@ -430,6 +443,39 @@ class AggregatedDbPadDatabase(PadDatabase):
         return mobio_files
 
     #==========================================================================
+    def uniform_select_list_elements(self, data, n_samples):
+        """
+        Uniformly select N elements from the input data list.
+
+        **Parameters:**
+
+        ``data`` : []
+            Input list to select elements from.
+
+        ``n_samples`` : :py:class:`int`
+            The number of samples to be selected uniformly from the input list.
+
+        **Returns:**
+
+        ``selected_data`` : []
+            Selected subset of elements.
+        """
+
+        if len(data) <= n_samples:
+
+            selected_data = data
+
+        else:
+
+            uniform_step = len(data)/np.float(n_samples+1)
+
+            idxs = [int(np.round(uniform_step*(x+1))) for x in range(n_samples)]
+
+            selected_data = [data[idx] for idx in idxs]
+
+        return selected_data
+
+    #==========================================================================
     def get_files_given_single_group(self,
                                      groups=None,
                                      protocol=None,
@@ -479,11 +525,24 @@ class AggregatedDbPadDatabase(PadDatabase):
                databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
                from MOBIO dataset is used in the training set.
 
-            5. "grandtest-train-eval" - - this protocol is using all the data available
+            5. "grandtest-train-eval" - this protocol is using all the data available
                in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
                'train' and 'test' are available in this protocol. The 'devel' set is
                concatenated to the training data. When requesting 'devel' set, the
                data of the 'test' set is returned.
+
+            6. "grandtest-train-eval-<num_train_samples>" -
+               this protocol is using all the data available in the databases
+               Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+               'train' and 'eval' are available in this protocol. The 'dev' set is
+               concatenated to the training data. When requesting 'dev' set, the
+               data of the 'eval' set is returned.
+               MOREOVER, in this protocol you can specify the number of training samples
+               <num_train_samples>, which will be uniformly selected for each database
+               (Replay-Attack, Replay-Mobile, MSU MFSD) used in the Aggregated DB.
+               For example, in the protocol "grandtest-train-eval-5", 5 training samples
+               will be selected for Replay-Attack, 5 for Replay-Mobile, and 5 for
+               MSU MFSD. The total number of training samples is 15 in this case.
 
         ``purposes`` : :py:class:`str`
             OR a list of strings.
@@ -611,7 +670,7 @@ class AggregatedDbPadDatabase(PadDatabase):
             mobio_files = self.get_mobio_files_given_single_group(
                 groups=groups, purposes=purposes)
 
-        if protocol == 'grandtest-train-eval':
+        if 'grandtest-train-eval' in protocol:
 
             if groups == 'train':
 
@@ -629,6 +688,14 @@ class AggregatedDbPadDatabase(PadDatabase):
 
                 msu_mfsd_files = self.msu_mfsd_db.objects(
                     group=['train', 'devel'], cls=purposes, **kwargs)
+
+                if len(protocol) > len('grandtest-train-eval'):
+
+                    num_train_samples = [int(s) for s in protocol.split("-") if s.isdigit()][-1]
+
+                    replay_files = self.uniform_select_list_elements(data = replay_files, n_samples = num_train_samples)
+                    replaymobile_files = self.uniform_select_list_elements(data = replaymobile_files, n_samples = num_train_samples)
+                    msu_mfsd_files = self.uniform_select_list_elements(data = msu_mfsd_files, n_samples = num_train_samples)
 
             if groups in ['devel', 'test']:
 
@@ -700,11 +767,24 @@ class AggregatedDbPadDatabase(PadDatabase):
                databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
                from MOBIO dataset is used in the training set.
 
-            5. "grandtest-train-eval" - - this protocol is using all the data available
+            5. "grandtest-train-eval" - this protocol is using all the data available
                in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
                'train' and 'test' are available in this protocol. The 'devel' set is
                concatenated to the training data. When requesting 'devel' set, the
                data of the 'test' set is returned.
+
+            6. "grandtest-train-eval-<num_train_samples>" -
+               this protocol is using all the data available in the databases
+               Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+               'train' and 'eval' are available in this protocol. The 'dev' set is
+               concatenated to the training data. When requesting 'dev' set, the
+               data of the 'eval' set is returned.
+               MOREOVER, in this protocol you can specify the number of training samples
+               <num_train_samples>, which will be uniformly selected for each database
+               (Replay-Attack, Replay-Mobile, MSU MFSD) used in the Aggregated DB.
+               For example, in the protocol "grandtest-train-eval-5", 5 training samples
+               will be selected for Replay-Attack, 5 for Replay-Mobile, and 5 for
+               MSU MFSD. The total number of training samples is 15 in this case.
 
         ``purposes`` : :py:class:`str`
             OR a list of strings.
@@ -807,6 +887,25 @@ class AggregatedDbPadDatabase(PadDatabase):
             4. "grandtest-mobio" - this protocol is using all the data available in the
                databases Replay-Attack, Replay-Mobile, MSU MFSD plus some additional data
                from MOBIO dataset is used in the training set.
+
+            5. "grandtest-train-eval" - this protocol is using all the data available
+               in the databases Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+               'train' and 'eval' are available in this protocol. The 'dev' set is
+               concatenated to the training data. When requesting 'dev' set, the
+               data of the 'eval' set is returned.
+
+            6. "grandtest-train-eval-<num_train_samples>" -
+               this protocol is using all the data available in the databases
+               Replay-Attack, Replay-Mobile, MSU MFSD. Only two gropus
+               'train' and 'eval' are available in this protocol. The 'dev' set is
+               concatenated to the training data. When requesting 'dev' set, the
+               data of the 'eval' set is returned.
+               MOREOVER, in this protocol you can specify the number of training samples
+               <num_train_samples>, which will be uniformly selected for each database
+               (Replay-Attack, Replay-Mobile, MSU MFSD) used in the Aggregated DB.
+               For example, in the protocol "grandtest-train-eval-5", 5 training samples
+               will be selected for Replay-Attack, 5 for Replay-Mobile, and 5 for
+               MSU MFSD. The total number of training samples is 15 in this case.
 
         ``purposes`` : :py:class:`str`
             OR a list of strings.
