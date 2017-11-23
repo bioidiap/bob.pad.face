@@ -5,7 +5,8 @@
 
 #==============================================================================
 
-import bob.bio.video  # Used in MIFSPadFile class
+# Used in ReplayMobilePadFile class
+from bob.bio.video import FrameSelector, FrameContainer
 import bob.io.base
 import numpy as np
 
@@ -26,7 +27,7 @@ class MIFSPadFile(PadFile):
                                           file_id)
 
     #==========================================================================
-    def load(self, directory=None, extension=None):
+    def load(self, directory=None, extension=None, frame_selector=FrameSelector(selection_style='all')):
         """
         Overridden version of the load method defined in the ``PadFile``.
 
@@ -49,9 +50,6 @@ class MIFSPadFile(PadFile):
 
         path = self.make_path(
             directory=directory, extension=extension)  # path to the file
-        frame_selector = bob.bio.video.FrameSelector(
-            selection_style='all'
-        )  # this frame_selector will select all frames from the video file
 
         data = bob.io.base.load(path)
         data = np.expand_dims(data, axis=0)  # upgrade to 4D (video)

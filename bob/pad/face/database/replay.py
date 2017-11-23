@@ -3,7 +3,8 @@
 
 #==============================================================================
 
-import bob.bio.video  # Used in ReplayPadFile class
+# Used in ReplayMobilePadFile class
+from bob.bio.video import FrameSelector, FrameContainer
 
 from bob.pad.base.database import PadFile  # Used in ReplayPadFile class
 
@@ -48,7 +49,7 @@ class ReplayPadFile(PadFile):
             file_id=f.id)
 
     #==========================================================================
-    def load(self, directory=None, extension='.mov'):
+    def load(self, directory=None, extension='.mov', frame_selector=FrameSelector(selection_style='all')):
         """
         Overridden version of the load method defined in the ``PadFile``.
 
@@ -69,10 +70,6 @@ class ReplayPadFile(PadFile):
 
         path = self.f.make_path(
             directory=directory, extension=extension)  # path to the video file
-
-        frame_selector = bob.bio.video.FrameSelector(
-            selection_style='all'
-        )  # this frame_selector will select all frames from the video file
 
         video_data = frame_selector(path)  # video data
 
