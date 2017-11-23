@@ -15,9 +15,9 @@ from bob.pad.face.extractor import LBPHistogram
 
 import bob.bio.video
 
-
 #==============================================================================
 # Main body:
+
 
 class VideoLBPHistogram(Extractor, object):
     """
@@ -60,13 +60,13 @@ class VideoLBPHistogram(Extractor, object):
                  circ=False,
                  dtype=None):
 
-
-        super(VideoLBPHistogram, self).__init__(lbptype = lbptype,
-                                                elbptype = elbptype,
-                                                rad = rad,
-                                                neighbors = neighbors,
-                                                circ = circ,
-                                                dtype = dtype)
+        super(VideoLBPHistogram, self).__init__(
+            lbptype=lbptype,
+            elbptype=elbptype,
+            rad=rad,
+            neighbors=neighbors,
+            circ=circ,
+            dtype=dtype)
 
         self.lbptype = lbptype
         self.elbptype = elbptype
@@ -76,16 +76,16 @@ class VideoLBPHistogram(Extractor, object):
         self.dtype = dtype
 
         # extractor to process a single image/frame:
-        extractor = LBPHistogram(lbptype=lbptype,
-                                 elbptype=elbptype,
-                                 rad=rad,
-                                 neighbors=neighbors,
-                                 circ=circ,
-                                 dtype=dtype)
+        extractor = LBPHistogram(
+            lbptype=lbptype,
+            elbptype=elbptype,
+            rad=rad,
+            neighbors=neighbors,
+            circ=circ,
+            dtype=dtype)
 
         # a wrapper allowing to apply above extractor to the whole video:
         self.video_extractor = bob.bio.video.extractor.Wrapper(extractor)
-
 
     #==========================================================================
     def __call__(self, frames):
@@ -104,10 +104,9 @@ class VideoLBPHistogram(Extractor, object):
             LBP histograms for each frame stored in the FrameContainer.
         """
 
-        lbp_histograms = self.video_extractor(frames = frames)
+        lbp_histograms = self.video_extractor(frames=frames)
 
         return lbp_histograms
-
 
     #==========================================================================
     def write_feature(self, frames, file_name):
@@ -125,7 +124,6 @@ class VideoLBPHistogram(Extractor, object):
         """
 
         self.video_extractor.write_feature(frames, file_name)
-
 
     #==========================================================================
     def read_feature(self, file_name):
@@ -147,5 +145,3 @@ class VideoLBPHistogram(Extractor, object):
         frames = self.video_extractor.read_feature(file_name)
 
         return frames
-
-

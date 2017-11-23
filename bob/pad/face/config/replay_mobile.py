@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """`Replay-Mobile`_ is a database for face PAD experiments.
 
 The Replay-Mobile Database for face spoofing consists of 1030 video clips of photo and video attack attempts to 40 clients,
@@ -22,7 +21,7 @@ from bob.pad.face.database import ReplayMobilePadDatabase
 ORIGINAL_DIRECTORY = "[YOUR_REPLAY_MOBILE_DIRECTORY]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
-ORIGINAL_EXTENSION = ".mov" # extension of the data files
+ORIGINAL_EXTENSION = ".mov"  # extension of the data files
 
 database = ReplayMobilePadDatabase(
     protocol='grandtest',
