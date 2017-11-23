@@ -66,6 +66,9 @@ class MsuMfsdPadFile(VideoPadFile):
             Note: ``extension`` value is not used in the code of this method.
             Default: None
 
+        ``frame_selector`` : ``FrameSelector``
+            The frame selector to use.
+
         **Returns:**
 
         ``video_data`` : FrameContainer

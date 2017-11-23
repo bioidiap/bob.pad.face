@@ -59,6 +59,9 @@ class ReplayMobilePadFile(VideoPadFile):
         ``extension`` : :py:class:`str`
             Extension of the video files in the Replay-Mobile database.
 
+        ``frame_selector`` : ``FrameSelector``
+            The frame selector to use.
+
         **Returns:**
 
         ``video_data`` : FrameContainer

@@ -41,6 +41,9 @@ class MIFSPadFile(VideoPadFile):
             Extension of the video files in the MIFS database.
             Default: None
 
+        ``frame_selector`` : ``FrameSelector``
+            The frame selector to use.
+
         **Returns:**
 
         ``video_data`` : FrameContainer
