@@ -48,32 +48,9 @@ class ReplayPadFile(VideoPadFile):
             attack_type=attack_type,
             file_id=f.id)
 
-    #==========================================================================
-    def load(self, directory=None, extension='.mov', frame_selector=FrameSelector(selection_style='all')):
-        """
-        Overridden version of the load method defined in the ``VideoPadFile``.
-
-        **Parameters:**
-
-        ``directory`` : :py:class:`str`
-            String containing the path to the Replay database.
-
-        ``extension`` : :py:class:`str`
-            Extension of the video files in the Replay database.
-
-        **Returns:**
-
-        ``video_data`` : FrameContainer
-            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
-            for further details.
-        """
-
-        path = self.f.make_path(
-            directory=directory, extension=extension)  # path to the video file
-
-        video_data = frame_selector(path)  # video data
-
-        return video_data  # video data
+    def make_path(self, directory=None, extension='.mov'):
+        # path to the video file
+        return self.f.make_path(directory=directory, extension=extension)
 
 
 #==============================================================================
