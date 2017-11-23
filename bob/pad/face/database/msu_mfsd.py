@@ -5,7 +5,7 @@
 # Used in ReplayMobilePadFile class
 from bob.bio.video import FrameSelector, FrameContainer
 
-from bob.pad.base.database import PadFile  # Used in MsuMfsdPadFile class
+from bob.pad.face.database import VideoPadFile  # Used in MsuMfsdPadFile class
 
 from bob.pad.base.database import PadDatabase
 
@@ -15,7 +15,7 @@ import numpy as np
 
 
 #==============================================================================
-class MsuMfsdPadFile(PadFile):
+class MsuMfsdPadFile(VideoPadFile):
     """
     A high level implementation of the File class for the MSU MFSD database.
     """
@@ -53,7 +53,7 @@ class MsuMfsdPadFile(PadFile):
     #==========================================================================
     def load(self, directory=None, extension=None, frame_selector=FrameSelector(selection_style='all')):
         """
-        Overridden version of the load method defined in the ``PadFile``.
+        Overridden version of the load method defined in the ``VideoPadFile``.
 
         **Parameters:**
 

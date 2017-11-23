@@ -6,14 +6,14 @@
 # Used in ReplayMobilePadFile class
 from bob.bio.video import FrameSelector, FrameContainer
 
-from bob.pad.base.database import PadFile  # Used in ReplayPadFile class
+from bob.pad.face.database import VideoPadFile  # Used in ReplayPadFile class
 
 from bob.pad.base.database import PadDatabase
 
 #==============================================================================
 
 
-class ReplayPadFile(PadFile):
+class ReplayPadFile(VideoPadFile):
     """
     A high level implementation of the File class for the REPLAY-ATTACK database.
     """
@@ -51,7 +51,7 @@ class ReplayPadFile(PadFile):
     #==========================================================================
     def load(self, directory=None, extension='.mov', frame_selector=FrameSelector(selection_style='all')):
         """
-        Overridden version of the load method defined in the ``PadFile``.
+        Overridden version of the load method defined in the ``VideoPadFile``.
 
         **Parameters:**
 

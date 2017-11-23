@@ -1,3 +1,4 @@
+from .database import VideoPadFile
 from .replay import ReplayPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .msu_mfsd import MsuMfsdPadDatabase
@@ -8,8 +9,8 @@ from .mifs import MIFSPadDatabase
 # gets sphinx autodoc done right - don't remove it
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
-  Fixing sphinx warnings of not being able to find classes, when path is shortened.
-  Parameters:
+  Fixing sphinx warnings of not being able to find classes, when path is
+  shortened. Parameters:
 
     *args: An iterable of objects to modify
 
@@ -22,6 +23,7 @@ def __appropriate__(*args):
 
 
 __appropriate__(
+    VideoPadFile,
     ReplayPadDatabase,
     ReplayMobilePadDatabase,
     MsuMfsdPadDatabase,
