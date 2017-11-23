@@ -12,6 +12,11 @@ This section lists all the functionality available in this library allowing to r
 Database Interfaces
 ------------------------------
 
+Base classes
+============
+
+.. autoclass:: bob.pad.face.database.VideoPadFile
+
 
 REPLAY-ATTACK Database
 ========================

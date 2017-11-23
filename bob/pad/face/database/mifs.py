@@ -10,14 +10,14 @@ from bob.bio.video import FrameSelector, FrameContainer
 import bob.io.base
 import numpy as np
 
-from bob.pad.base.database import PadFile  # Used in ReplayPadFile class
+from bob.pad.face.database import VideoPadFile  # Used in ReplayPadFile class
 
 from bob.pad.base.database import FileListPadDatabase
 
 #==============================================================================
 
 
-class MIFSPadFile(PadFile):
+class MIFSPadFile(VideoPadFile):
     """
     A high level implementation of the File class for the MIFS database.
     """
@@ -29,7 +29,7 @@ class MIFSPadFile(PadFile):
     #==========================================================================
     def load(self, directory=None, extension=None, frame_selector=FrameSelector(selection_style='all')):
         """
-        Overridden version of the load method defined in the ``PadFile``.
+        Overridden version of the load method defined in the ``VideoPadFile``.
 
         **Parameters:**
 

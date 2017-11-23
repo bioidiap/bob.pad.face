@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #==============================================================================
-from bob.pad.base.database import PadFile  # Used in ReplayPadFile class
+from bob.pad.face.database import VideoPadFile  # Used in ReplayPadFile class
 
 from bob.pad.base.database import PadDatabase
 
@@ -21,7 +21,7 @@ import numpy as np
 
 
 #==============================================================================
-class AggregatedDbPadFile(PadFile):
+class AggregatedDbPadFile(VideoPadFile):
     """
     A high level implementation of the File class for the Aggregated Database
     uniting 4 databases: REPLAY-ATTACK, REPLAY-MOBILE, MSU MFSD and Mobio.
@@ -190,7 +190,7 @@ class AggregatedDbPadFile(PadFile):
     #==========================================================================
     def load(self, directory=None, extension='.mov'):
         """
-        Overridden version of the load method defined in the ``PadFile``.
+        Overridden version of the load method defined in the ``VideoPadFile``.
 
         **Parameters:**
 
