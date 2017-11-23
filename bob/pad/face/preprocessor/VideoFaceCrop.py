@@ -23,6 +23,7 @@ from ..utils.face_detection_utils import detect_faces_in_video
 #==============================================================================
 # Main body:
 
+
 class VideoFaceCrop(Preprocessor, object):
     """
     This class is designed to crop faces in each frame of the input video given
@@ -98,31 +99,32 @@ class VideoFaceCrop(Preprocessor, object):
     def __init__(self,
                  cropped_image_size,
                  cropped_positions,
-                 fixed_positions = None,
-                 mask_sigma = None,
-                 mask_neighbors = 5,
-                 mask_seed = None,
-                 check_face_size_flag = False,
-                 min_face_size = 50,
-                 use_local_cropper_flag = False,
-                 rgb_output_flag = False,
-                 detect_faces_flag = False,
-                 face_detection_method = "dlib",
+                 fixed_positions=None,
+                 mask_sigma=None,
+                 mask_neighbors=5,
+                 mask_seed=None,
+                 check_face_size_flag=False,
+                 min_face_size=50,
+                 use_local_cropper_flag=False,
+                 rgb_output_flag=False,
+                 detect_faces_flag=False,
+                 face_detection_method="dlib",
                  **kwargs):
 
-        super(VideoFaceCrop, self).__init__(cropped_image_size = cropped_image_size,
-                                            cropped_positions = cropped_positions,
-                                            fixed_positions = fixed_positions,
-                                            mask_sigma = mask_sigma,
-                                            mask_neighbors = mask_neighbors,
-                                            mask_seed = mask_seed,
-                                            check_face_size_flag = check_face_size_flag,
-                                            min_face_size = min_face_size,
-                                            use_local_cropper_flag = use_local_cropper_flag,
-                                            rgb_output_flag = rgb_output_flag,
-                                            detect_faces_flag = detect_faces_flag,
-                                            face_detection_method = face_detection_method,
-                                            **kwargs)
+        super(VideoFaceCrop, self).__init__(
+            cropped_image_size=cropped_image_size,
+            cropped_positions=cropped_positions,
+            fixed_positions=fixed_positions,
+            mask_sigma=mask_sigma,
+            mask_neighbors=mask_neighbors,
+            mask_seed=mask_seed,
+            check_face_size_flag=check_face_size_flag,
+            min_face_size=min_face_size,
+            use_local_cropper_flag=use_local_cropper_flag,
+            rgb_output_flag=rgb_output_flag,
+            detect_faces_flag=detect_faces_flag,
+            face_detection_method=face_detection_method,
+            **kwargs)
 
         self.cropped_image_size = cropped_image_size
         self.cropped_positions = cropped_positions
@@ -143,21 +145,23 @@ class VideoFaceCrop(Preprocessor, object):
 
         if self.use_local_cropper_flag:
 
-            preprocessor = ImageFaceCrop(face_size = self.cropped_image_size[0],
-                                         rgb_output_flag = self.rgb_output_flag)
+            preprocessor = ImageFaceCrop(
+                face_size=self.cropped_image_size[0],
+                rgb_output_flag=self.rgb_output_flag)
 
         else:
 
-            preprocessor = FaceCrop(cropped_image_size = self.cropped_image_size,
-                                    cropped_positions = self.cropped_positions,
-                                    fixed_positions = self.fixed_positions,
-                                    mask_sigma = self.mask_sigma,
-                                    mask_neighbors = self.mask_neighbors,
-                                    mask_seed = self.mask_seed,
-                                    **kwargs)
+            preprocessor = FaceCrop(
+                cropped_image_size=self.cropped_image_size,
+                cropped_positions=self.cropped_positions,
+                fixed_positions=self.fixed_positions,
+                mask_sigma=self.mask_sigma,
+                mask_neighbors=self.mask_neighbors,
+                mask_seed=self.mask_seed,
+                **kwargs)
 
-        self.video_preprocessor = bob.bio.video.preprocessor.Wrapper(preprocessor)
-
+        self.video_preprocessor = bob.bio.video.preprocessor.Wrapper(
+            preprocessor)
 
     #==========================================================================
     def check_face_size(self, frame_container, annotations, min_face_size):
@@ -187,27 +191,34 @@ class VideoFaceCrop(Preprocessor, object):
             overcoming the specified threshold.
         """
 
-        cleaned_frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+        cleaned_frame_container = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
 
         selected_frame_idx = 0
 
-        for idx in range(0, np.min( [len(annotations), len(frame_container)] )): # idx - frame index
+        for idx in range(0,
+                         np.min([len(annotations),
+                                 len(frame_container)])):  # idx - frame index
 
-            frame_annotations = annotations[str(idx)] # annotations for particular frame
+            frame_annotations = annotations[str(
+                idx)]  # annotations for particular frame
 
             # size of current face
-            face_size = np.min(np.array(frame_annotations['bottomright']) - np.array(frame_annotations['topleft']))
+            face_size = np.min(
+                np.array(frame_annotations['bottomright']) -
+                np.array(frame_annotations['topleft']))
 
-            if face_size >= min_face_size: # check if face size is above the threshold
+            if face_size >= min_face_size:  # check if face size is above the threshold
 
-                selected_frame = frame_container[idx][1] # get current frame
+                selected_frame = frame_container[idx][1]  # get current frame
 
-                cleaned_frame_container.add(selected_frame_idx, selected_frame) # add current frame to FrameContainer
+                cleaned_frame_container.add(
+                    selected_frame_idx,
+                    selected_frame)  # add current frame to FrameContainer
 
                 selected_frame_idx = selected_frame_idx + 1
 
         return cleaned_frame_container
-
 
     #==========================================================================
     def select_annotated_frames(self, frames, annotations):
@@ -238,27 +249,34 @@ class VideoFaceCrop(Preprocessor, object):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        annotated_frames = np.sort( [np.int(item) for item in annotations.keys()] ) # annotated frame numbers
+        annotated_frames = np.sort([
+            np.int(item) for item in annotations.keys()
+        ])  # annotated frame numbers
 
-        available_frames = range(0,len(frames)) # frame numbers in the input video
+        available_frames = range(
+            0, len(frames))  # frame numbers in the input video
 
-        valid_frames = list(set(annotated_frames).intersection(available_frames)) # valid and annotated frames
+        valid_frames = list(
+            set(annotated_frames).intersection(
+                available_frames))  # valid and annotated frames
 
-        cleaned_frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+        cleaned_frame_container = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
 
         cleaned_annotations = {}
 
         for idx, valid_frame_num in enumerate(valid_frames):
             ## valid_frame_num - is the number of the original frame having annotations
 
-            cleaned_annotations[str(idx)] = annotations[str(valid_frame_num)] # correct the frame numbers
+            cleaned_annotations[str(idx)] = annotations[str(
+                valid_frame_num)]  # correct the frame numbers
 
-            selected_frame = frames[valid_frame_num][1] # get current frame
+            selected_frame = frames[valid_frame_num][1]  # get current frame
 
-            cleaned_frame_container.add(idx, selected_frame) # add current frame to FrameContainer
+            cleaned_frame_container.add(
+                idx, selected_frame)  # add current frame to FrameContainer
 
         return cleaned_frame_container, cleaned_annotations
-
 
     #==========================================================================
     def __call__(self, frames, annotations):
@@ -285,24 +303,27 @@ class VideoFaceCrop(Preprocessor, object):
 
         if self.detect_faces_flag:
 
-            annotations = detect_faces_in_video(frames, self.face_detection_method)
+            annotations = detect_faces_in_video(frames,
+                                                self.face_detection_method)
 
-        if len(frames) != len(annotations): # if some annotations are missing
+        if len(frames) != len(annotations):  # if some annotations are missing
 
             ## Select only annotated frames:
-            frames, annotations = self.select_annotated_frames(frames, annotations)
+            frames, annotations = self.select_annotated_frames(
+                frames, annotations)
 
-        preprocessed_video = self.video_preprocessor(frames = frames, annotations = annotations)
+        preprocessed_video = self.video_preprocessor(
+            frames=frames, annotations=annotations)
 
         if self.check_face_size_flag:
 
-            preprocessed_video = self.check_face_size(preprocessed_video, annotations, self.min_face_size)
+            preprocessed_video = self.check_face_size(
+                preprocessed_video, annotations, self.min_face_size)
 
         return preprocessed_video
 
-
     #==========================================================================
-    def write_data( self, frames, file_name ):
+    def write_data(self, frames, file_name):
         """
         Writes the given data (that has been generated using the __call__ function of this class) to file.
         This method overwrites the write_data() method of the Preprocessor class.
@@ -316,13 +337,12 @@ class VideoFaceCrop(Preprocessor, object):
             name of the file.
         """
 
-        if frames: # save file if FrameContainer is not empty, otherwise do nothing.
+        if frames:  # save file if FrameContainer is not empty, otherwise do nothing.
 
             self.video_preprocessor.write_data(frames, file_name)
 
-
     #==========================================================================
-    def read_data( self, file_name ):
+    def read_data(self, file_name):
         """
         Reads the preprocessed data from file.
         This method overwrites the read_data() method of the Preprocessor class.
@@ -341,5 +361,3 @@ class VideoFaceCrop(Preprocessor, object):
         frames = self.video_preprocessor.read_data(file_name)
 
         return frames
-
-

@@ -1,17 +1,16 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-
 #==============================================================================
 
-import bob.bio.video # Used in ReplayPadFile class
+import bob.bio.video  # Used in ReplayPadFile class
 
-from bob.pad.base.database import PadFile # Used in ReplayPadFile class
+from bob.pad.base.database import PadFile  # Used in ReplayPadFile class
 
 from bob.pad.base.database import PadDatabase
 
-
 #==============================================================================
+
 
 class ReplayPadFile(PadFile):
     """
@@ -42,9 +41,11 @@ class ReplayPadFile(PadFile):
         # attack_type is a string and I decided to make it like this for this
         # particular database. You can do whatever you want for your own database.
 
-        super(ReplayPadFile, self).__init__(client_id=f.client_id, path=f.path,
-                                            attack_type=attack_type, file_id=f.id)
-
+        super(ReplayPadFile, self).__init__(
+            client_id=f.client_id,
+            path=f.path,
+            attack_type=attack_type,
+            file_id=f.id)
 
     #==========================================================================
     def load(self, directory=None, extension='.mov'):
@@ -66,13 +67,16 @@ class ReplayPadFile(PadFile):
             for further details.
         """
 
-        path = self.f.make_path(directory=directory, extension=extension) # path to the video file
+        path = self.f.make_path(
+            directory=directory, extension=extension)  # path to the video file
 
-        frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
+        frame_selector = bob.bio.video.FrameSelector(
+            selection_style='all'
+        )  # this frame_selector will select all frames from the video file
 
-        video_data = frame_selector(path) # video data
+        video_data = frame_selector(path)  # video data
 
-        return video_data # video data
+        return video_data  # video data
 
 
 #==============================================================================
@@ -82,11 +86,11 @@ class ReplayPadDatabase(PadDatabase):
     """
 
     def __init__(
-        self,
-        protocol='grandtest', # grandtest is the default protocol for this database
-        original_directory=None,
-        original_extension=None,
-        **kwargs):
+            self,
+            protocol='grandtest',  # grandtest is the default protocol for this database
+            original_directory=None,
+            original_extension=None,
+            **kwargs):
         """
         **Parameters:**
 
@@ -109,20 +113,28 @@ class ReplayPadDatabase(PadDatabase):
 
         # Since the high level API expects different group names than what the low
         # level API offers, you need to convert them when necessary
-        self.low_level_group_names = ('train', 'devel', 'test') # group names in the low-level database interface
-        self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
+        self.low_level_group_names = (
+            'train', 'devel',
+            'test')  # group names in the low-level database interface
+        self.high_level_group_names = (
+            'train', 'dev',
+            'eval')  # names are expected to be like that in objects() function
 
         # Always use super to call parent class methods.
         super(ReplayPadDatabase, self).__init__(
-            name = 'replay',
-            protocol = protocol,
-            original_directory = original_directory,
-            original_extension = original_extension,
+            name='replay',
+            protocol=protocol,
+            original_directory=original_directory,
+            original_extension=original_extension,
             **kwargs)
 
-
     #==========================================================================
-    def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+    def objects(self,
+                groups=None,
+                protocol=None,
+                purposes=None,
+                model_ids=None,
+                **kwargs):
         """
         This function returns lists of ReplayPadFile objects, which fulfill the given restrictions.
 
@@ -153,13 +165,14 @@ class ReplayPadDatabase(PadDatabase):
         """
 
         # Convert group names to low-level group names here.
-        groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
+        groups = self.convert_names_to_lowlevel(
+            groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
-        files = self.db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+        files = self.db.objects(
+            protocol=protocol, groups=groups, cls=purposes, **kwargs)
         files = [ReplayPadFile(f) for f in files]
         return files
-
 
     #==========================================================================
     def annotations(self, f):
@@ -184,16 +197,21 @@ class ReplayPadDatabase(PadDatabase):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        annots = f.f.bbx(directory=self.original_directory) # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
+        annots = f.f.bbx(
+            directory=self.original_directory
+        )  # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
 
-        annotations = {} # dictionary to return
+        annotations = {}  # dictionary to return
 
         for fn, frame_annots in enumerate(annots):
 
             topleft = (frame_annots[2], frame_annots[1])
-            bottomright = (frame_annots[2] + frame_annots[4], frame_annots[1] + frame_annots[3])
+            bottomright = (frame_annots[2] + frame_annots[4],
+                           frame_annots[1] + frame_annots[3])
 
-            annotations[str(fn)] = {'topleft': topleft, 'bottomright': bottomright}
+            annotations[str(fn)] = {
+                'topleft': topleft,
+                'bottomright': bottomright
+            }
 
         return annotations
-

@@ -86,26 +86,27 @@ class VideoSparseCoding(Preprocessor, object):
 
     #==========================================================================
     def __init__(self,
-                 block_size = 5,
-                 block_length = 10,
-                 min_face_size = 50,
-                 norm_face_size = 64,
-                 dictionary_file_names = [],
-                 frame_step = 1,
-                 extract_histograms_flag = False,
-                 method = "hist",
-                 comp_reconstruct_err_flag = False,
+                 block_size=5,
+                 block_length=10,
+                 min_face_size=50,
+                 norm_face_size=64,
+                 dictionary_file_names=[],
+                 frame_step=1,
+                 extract_histograms_flag=False,
+                 method="hist",
+                 comp_reconstruct_err_flag=False,
                  **kwargs):
 
-        super(VideoSparseCoding, self).__init__(block_size = block_size,
-                                                block_length = block_length,
-                                                min_face_size = min_face_size,
-                                                norm_face_size = norm_face_size,
-                                                dictionary_file_names = dictionary_file_names,
-                                                frame_step = frame_step,
-                                                extract_histograms_flag = extract_histograms_flag,
-                                                comp_reconstruct_err_flag = comp_reconstruct_err_flag,
-                                                method = method)
+        super(VideoSparseCoding, self).__init__(
+            block_size=block_size,
+            block_length=block_length,
+            min_face_size=min_face_size,
+            norm_face_size=norm_face_size,
+            dictionary_file_names=dictionary_file_names,
+            frame_step=frame_step,
+            extract_histograms_flag=extract_histograms_flag,
+            comp_reconstruct_err_flag=comp_reconstruct_err_flag,
+            method=method)
 
         self.block_size = block_size
         self.block_length = block_length
@@ -118,7 +119,6 @@ class VideoSparseCoding(Preprocessor, object):
         self.comp_reconstruct_err_flag = comp_reconstruct_err_flag
 
         self.video_preprocessor = bob.bio.video.preprocessor.Wrapper()
-
 
     #==========================================================================
     def crop_norm_face_grayscale(self, image, annotations, face_size):
@@ -149,18 +149,17 @@ class VideoSparseCoding(Preprocessor, object):
             Cropped facial image of the size (self.face_size, self.face_size).
         """
 
-        cutframe = image[annotations['topleft'][0]:annotations['bottomright'][0],
-                 annotations['topleft'][1]:annotations['bottomright'][1]]
+        cutframe = image[annotations['topleft'][0]:annotations['bottomright'][
+            0], annotations['topleft'][1]:annotations['bottomright'][1]]
 
         tempbbx = np.ndarray((face_size, face_size), 'float64')
         normbbx = np.ndarray((face_size, face_size), 'uint8')
-        bob.ip.base.scale(cutframe, tempbbx) # normalization
+        bob.ip.base.scale(cutframe, tempbbx)  # normalization
         tempbbx_ = tempbbx + 0.5
         tempbbx_ = np.floor(tempbbx_)
         normbbx = np.cast['uint8'](tempbbx_)
 
         return normbbx
-
 
     #==========================================================================
     def crop_norm_faces_grayscale(self, images, annotations, face_size):
@@ -192,12 +191,12 @@ class VideoSparseCoding(Preprocessor, object):
 
         for image in images:
 
-            normbbx.append( self.crop_norm_face_grayscale(image, annotations, face_size) )
+            normbbx.append(
+                self.crop_norm_face_grayscale(image, annotations, face_size))
 
         normbbx = np.stack(normbbx)
 
         return normbbx
-
 
     #==========================================================================
     def select_all_blocks(self, images, block_size):
@@ -221,12 +220,11 @@ class VideoSparseCoding(Preprocessor, object):
 
             for col in range(col_num - block_size):
 
-                block = images[:, row:row+block_size, col:col+block_size]
+                block = images[:, row:row + block_size, col:col + block_size]
 
-                all_blocks.append( block )
+                all_blocks.append(block)
 
         return all_blocks
-
 
     #==========================================================================
     def convert_frame_cont_to_grayscale_array(self, frame_cont):
@@ -254,15 +252,16 @@ class VideoSparseCoding(Preprocessor, object):
 
             image = frame[1]
 
-            result_array.append( bob.ip.color.rgb_to_gray(image) )
+            result_array.append(bob.ip.color.rgb_to_gray(image))
 
         result_array = np.stack(result_array)
 
         return result_array
 
-
     #==========================================================================
-    def get_all_blocks_from_color_channel(self, video, annotations, block_size, block_length, min_face_size, norm_face_size):
+    def get_all_blocks_from_color_channel(self, video, annotations, block_size,
+                                          block_length, min_face_size,
+                                          norm_face_size):
         """
         Extract all 3D blocks from facial region of the input 3D array.
         Input 3D array represents one color channel of the video or a gray-scale
@@ -324,29 +323,32 @@ class VideoSparseCoding(Preprocessor, object):
 
         all_blocks = []
 
-        for fn in range(len(video)-block_length):
+        for fn in range(len(video) - block_length):
 
-            if str(fn) in annotated_frames: # process if frame is annotated
+            if str(fn) in annotated_frames:  # process if frame is annotated
 
                 frame_annotations = annotations[str(fn)]
 
-                face_size = np.min(np.array(frame_annotations['bottomright']) - np.array(frame_annotations['topleft']))
+                face_size = np.min(
+                    np.array(frame_annotations['bottomright']) -
+                    np.array(frame_annotations['topleft']))
 
-                if face_size >= min_face_size: # process is face is large enough
+                if face_size >= min_face_size:  # process is face is large enough
 
                     # Selected 3D stacks of images. Stack has ``block_length`` images.
                     stack_of_images = video[fn:fn + block_length, :, :]
 
                     # 3D stacks of normalized face images.
-                    faces = self.crop_norm_faces_grayscale(stack_of_images, frame_annotations, norm_face_size)
+                    faces = self.crop_norm_faces_grayscale(
+                        stack_of_images, frame_annotations, norm_face_size)
 
                     # A list with all blocks per stack of facial images.
-                    list_all_blocks_per_stack = self.select_all_blocks(faces, block_size)
+                    list_all_blocks_per_stack = self.select_all_blocks(
+                        faces, block_size)
 
-                    all_blocks.append( list_all_blocks_per_stack )
+                    all_blocks.append(list_all_blocks_per_stack)
 
         return all_blocks
-
 
     #==========================================================================
     def extract_patches_from_blocks(self, all_blocks):
@@ -398,9 +400,9 @@ class VideoSparseCoding(Preprocessor, object):
 
         lenghth, row_num, col_num = all_blocks[0][0].shape
 
-        selected_row = np.int(row_num/2)
+        selected_row = np.int(row_num / 2)
 
-        selected_col = np.int(col_num/2)
+        selected_col = np.int(col_num / 2)
 
         frontal_patches = []
         horizontal_patches = []
@@ -415,24 +417,26 @@ class VideoSparseCoding(Preprocessor, object):
 
             for block in volume:
 
-                frontal_patch = block[0, :, :] # the frontal patch of a block. Size: (row_num x col_num)
+                frontal_patch = block[
+                    0, :, :]  # the frontal patch of a block. Size: (row_num x col_num)
                 volume_frontal_patches.append(frontal_patch.flatten())
 
-                horizontal_patch = block[:, selected_row, :] # the central-horizontal patch of a block. Size: (lenghth x col_num), where
+                horizontal_patch = block[:,
+                                         selected_row, :]  # the central-horizontal patch of a block. Size: (lenghth x col_num), where
                 # lenghth = block_length, col_num = block_size.
                 volume_horizontal_patches.append(horizontal_patch.flatten())
 
-                vertical_patch = block[:, :, selected_col] # the central-vertical patch of a block. Size: (lenghth x row_num)
+                vertical_patch = block[:, :,
+                                       selected_col]  # the central-vertical patch of a block. Size: (lenghth x row_num)
                 volume_vertical_patches.append(vertical_patch.flatten())
 
-            frontal_patches.append( np.stack(volume_frontal_patches) )
+            frontal_patches.append(np.stack(volume_frontal_patches))
 
-            horizontal_patches.append( np.stack(volume_horizontal_patches) )
+            horizontal_patches.append(np.stack(volume_horizontal_patches))
 
-            vertical_patches.append( np.stack(volume_vertical_patches) )
+            vertical_patches.append(np.stack(volume_vertical_patches))
 
         return frontal_patches, horizontal_patches, vertical_patches
-
 
     #==========================================================================
     def __select_random_patches_single_list(self, patches, n_patches):
@@ -462,15 +466,18 @@ class VideoSparseCoding(Preprocessor, object):
 
         all_patches = np.vstack(patches)
 
-        idx = [random.randint( 0, len(all_patches) - 1 ) for _ in range(n_patches)]
+        idx = [
+            random.randint(0,
+                           len(all_patches) - 1) for _ in range(n_patches)
+        ]
 
         selected_patches = all_patches[idx, :]
 
         return selected_patches
 
-
     #==========================================================================
-    def select_random_patches(self, frontal_patches, horizontal_patches, vertical_patches, n_patches):
+    def select_random_patches(self, frontal_patches, horizontal_patches,
+                              vertical_patches, n_patches):
         """
         Select random patches given lists of frontal, central-horizontal and
         central-vertical patches, as returned by ``extract_patches_from_blocks``
@@ -523,14 +530,16 @@ class VideoSparseCoding(Preprocessor, object):
             (``n_patches`` x ``number_of_features``).
         """
 
-        selected_frontal_patches = self.__select_random_patches_single_list(frontal_patches, n_patches)
+        selected_frontal_patches = self.__select_random_patches_single_list(
+            frontal_patches, n_patches)
 
-        selected_horizontal_patches = self.__select_random_patches_single_list(horizontal_patches, n_patches)
+        selected_horizontal_patches = self.__select_random_patches_single_list(
+            horizontal_patches, n_patches)
 
-        selected_vertical_patches = self.__select_random_patches_single_list(vertical_patches, n_patches)
+        selected_vertical_patches = self.__select_random_patches_single_list(
+            vertical_patches, n_patches)
 
         return selected_frontal_patches, selected_horizontal_patches, selected_vertical_patches
-
 
     #==========================================================================
     def get_sparse_codes_for_patches(self, patches, dictionary):
@@ -561,12 +570,15 @@ class VideoSparseCoding(Preprocessor, object):
 
         algo = 'omp'
 
-        n_nonzero = np.int(dictionary.shape[1]/5.)
+        n_nonzero = np.int(dictionary.shape[1] / 5.)
 
         alpha = n_nonzero
 
-        coder = SparseCoder(dictionary=dictionary, transform_n_nonzero_coefs=n_nonzero,
-                            transform_alpha=alpha, transform_algorithm=algo)
+        coder = SparseCoder(
+            dictionary=dictionary,
+            transform_n_nonzero_coefs=n_nonzero,
+            transform_alpha=alpha,
+            transform_algorithm=algo)
 
         # if a single patch is given of the shape (n_features,) convert it to the shape (1, n_features):
 
@@ -578,9 +590,9 @@ class VideoSparseCoding(Preprocessor, object):
 
         return codes
 
-
     #==========================================================================
-    def get_sparse_codes_for_list_of_patches(self, list_of_patches, dictionary):
+    def get_sparse_codes_for_list_of_patches(self, list_of_patches,
+                                             dictionary):
         """
         Compute sparse codes for each array of vectorized patches in the list.
         This function just calls ``get_sparse_codes_for_patches`` method
@@ -609,14 +621,13 @@ class VideoSparseCoding(Preprocessor, object):
 
         for idx, patches in enumerate(list_of_patches):
 
-#            print idx
+            #            print idx
 
             codes = self.get_sparse_codes_for_patches(patches, dictionary)
 
             video_codes.append(codes)
 
         return video_codes
-
 
     #==========================================================================
     def load_array_from_hdf5(self, file_name):
@@ -634,14 +645,13 @@ class VideoSparseCoding(Preprocessor, object):
             Downloaded array.
         """
 
-        f = bob.io.base.HDF5File(file_name) #read only
+        f = bob.io.base.HDF5File(file_name)  #read only
 
-        data = f.read('data') #reads integer
+        data = f.read('data')  #reads integer
 
         del f
 
         return data
-
 
     #==========================================================================
     def load_the_dictionaries(self, dictionary_file_names):
@@ -673,14 +683,16 @@ class VideoSparseCoding(Preprocessor, object):
             The dimensions are: (n_words_in_dictionary x n_features_vert)
         """
 
-        dictionary_frontal = self.load_array_from_hdf5(dictionary_file_names[0])
+        dictionary_frontal = self.load_array_from_hdf5(
+            dictionary_file_names[0])
 
-        dictionary_horizontal = self.load_array_from_hdf5(dictionary_file_names[1])
+        dictionary_horizontal = self.load_array_from_hdf5(
+            dictionary_file_names[1])
 
-        dictionary_vertical = self.load_array_from_hdf5(dictionary_file_names[2])
+        dictionary_vertical = self.load_array_from_hdf5(
+            dictionary_file_names[2])
 
         return dictionary_frontal, dictionary_horizontal, dictionary_vertical
-
 
     #==========================================================================
     def convert_sparse_codes_to_frame_container(self, sparse_codes):
@@ -707,20 +719,22 @@ class VideoSparseCoding(Preprocessor, object):
             (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
         """
 
-        frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+        frame_container = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
 
         idx = 0
 
-        for frontal_codes, horizontal_codes, vertical_codes in zip(sparse_codes[0], sparse_codes[1], sparse_codes[2]):
+        for frontal_codes, horizontal_codes, vertical_codes in zip(
+                sparse_codes[0], sparse_codes[1], sparse_codes[2]):
 
-            frame_3d = np.stack([frontal_codes, horizontal_codes, vertical_codes])
+            frame_3d = np.stack(
+                [frontal_codes, horizontal_codes, vertical_codes])
 
-            frame_container.add(idx, frame_3d) # add frame to FrameContainer
+            frame_container.add(idx, frame_3d)  # add frame to FrameContainer
 
             idx = idx + 1
 
         return frame_container
-
 
     #==========================================================================
     def comp_hist_of_sparse_codes(self, sparse_codes, method):
@@ -757,7 +771,8 @@ class VideoSparseCoding(Preprocessor, object):
 
         histograms = []
 
-        for frontal_codes, horizontal_codes, vertical_codes in zip(sparse_codes[0], sparse_codes[1], sparse_codes[2]):
+        for frontal_codes, horizontal_codes, vertical_codes in zip(
+                sparse_codes[0], sparse_codes[1], sparse_codes[2]):
 
             frame = np.stack([frontal_codes, horizontal_codes, vertical_codes])
 
@@ -767,18 +782,17 @@ class VideoSparseCoding(Preprocessor, object):
 
             if method == "hist":
 
-                frame_codes = np.mean(frame!=0, axis=1)
+                frame_codes = np.mean(frame != 0, axis=1)
 
             for idx, row in enumerate(frame_codes):
 
-                frame_codes[idx,:] = row/np.sum(row)
+                frame_codes[idx, :] = row / np.sum(row)
 
             hist = frame_codes.flatten()
 
             histograms.append(hist)
 
         return histograms
-
 
     #==========================================================================
     def convert_arrays_to_frame_container(self, list_of_arrays):
@@ -796,17 +810,20 @@ class VideoSparseCoding(Preprocessor, object):
             FrameContainer containing the feature vectors.
         """
 
-        frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+        frame_container = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
 
         for idx, item in enumerate(list_of_arrays):
 
-            frame_container.add(idx, item) # add frame to FrameContainer
+            frame_container.add(idx, item)  # add frame to FrameContainer
 
         return frame_container
 
-
     #==========================================================================
-    def mean_std_normalize(self, features, features_mean= None, features_std = None):
+    def mean_std_normalize(self,
+                           features,
+                           features_mean=None,
+                           features_std=None):
         """
         The features in the input 2D array are mean-std normalized.
         The rows are samples, the columns are features. If ``features_mean``
@@ -848,7 +865,7 @@ class VideoSparseCoding(Preprocessor, object):
 
         row_norm_list = []
 
-        for row in features: # row is a sample
+        for row in features:  # row is a sample
 
             row_norm = (row - features_mean) / features_std
 
@@ -858,9 +875,9 @@ class VideoSparseCoding(Preprocessor, object):
 
         return features_norm, features_mean, features_std
 
-
     #==========================================================================
-    def compute_patches_mean_squared_errors(self, sparse_codes, original_data, dictionary):
+    def compute_patches_mean_squared_errors(self, sparse_codes, original_data,
+                                            dictionary):
         """
         This function computes normalized mean squared errors (MSE) for each
         feature (column) in the reconstructed array of vectorized patches.
@@ -893,13 +910,15 @@ class VideoSparseCoding(Preprocessor, object):
 
         recovered_data = np.dot(sparse_codes, dictionary)
 
-        squared_error = 1.*np.sum((original_data - recovered_data) ** 2, axis=0) / np.sum(original_data**2, axis=0)
+        squared_error = 1. * np.sum(
+            (original_data - recovered_data)**2, axis=0) / np.sum(
+                original_data**2, axis=0)
 
         return squared_error
 
-
     #==========================================================================
-    def compute_mse_for_all_patches_types(self, sparse_codes_list, original_data_list, dictionary_list):
+    def compute_mse_for_all_patches_types(self, sparse_codes_list,
+                                          original_data_list, dictionary_list):
         """
         This function computes mean squared errors (MSE) for all types of patches:
         frontal, horizontal, and vertical. In this case the function
@@ -942,9 +961,11 @@ class VideoSparseCoding(Preprocessor, object):
 
         squared_errors_sorted = []
 
-        for sparse_codes, original_data, dictionary in zip(sparse_codes_list, original_data_list, dictionary_list):
+        for sparse_codes, original_data, dictionary in zip(
+                sparse_codes_list, original_data_list, dictionary_list):
 
-            squared_error = self.compute_patches_mean_squared_errors(sparse_codes, original_data, dictionary)
+            squared_error = self.compute_patches_mean_squared_errors(
+                sparse_codes, original_data, dictionary)
 
             squared_error_sorted = np.sort(squared_error)
 
@@ -960,9 +981,9 @@ class VideoSparseCoding(Preprocessor, object):
 
         return squared_errors
 
-
     #==========================================================================
-    def compute_mse_for_all_stacks(self, video_codes_list, patches_list, dictionary_list):
+    def compute_mse_for_all_stacks(self, video_codes_list, patches_list,
+                                   dictionary_list):
         """
         Call ``compute_mse_for_all_patches_types`` for data coming from all stacks
         of facial images.
@@ -1008,12 +1029,12 @@ class VideoSparseCoding(Preprocessor, object):
 
             original_data_list = [fp, hp, vp]
 
-            squared_errors = self.compute_mse_for_all_patches_types(sparse_codes_list, original_data_list, dictionary_list)
+            squared_errors = self.compute_mse_for_all_patches_types(
+                sparse_codes_list, original_data_list, dictionary_list)
 
             squared_errors_list.append(squared_errors)
 
         return squared_errors_list
-
 
     #==========================================================================
     def __call__(self, frames, annotations):
@@ -1065,15 +1086,17 @@ class VideoSparseCoding(Preprocessor, object):
         video = self.convert_frame_cont_to_grayscale_array(frames)
 
         # Get all blocks from all possible facial stacks:
-        all_blocks = self.get_all_blocks_from_color_channel(video, annotations,
-                                                            self.block_size, self.block_length,
-                                                            self.min_face_size, self.norm_face_size)
+        all_blocks = self.get_all_blocks_from_color_channel(
+            video, annotations, self.block_size, self.block_length,
+            self.min_face_size, self.norm_face_size)
 
         # Extract three sets of patches per each stack of facial images:
-        frontal_patches, horizontal_patches, vertical_patches = self.extract_patches_from_blocks(all_blocks)
+        frontal_patches, horizontal_patches, vertical_patches = self.extract_patches_from_blocks(
+            all_blocks)
 
         # Download the dictionaries:
-        dictionary_frontal, dictionary_horizontal, dictionary_vertical = self.load_the_dictionaries(self.dictionary_file_names)
+        dictionary_frontal, dictionary_horizontal, dictionary_vertical = self.load_the_dictionaries(
+            self.dictionary_file_names)
 
         # Select subset of patches if ``frame_step`` > 1:
         frontal_patches_subset = frontal_patches[::self.frame_step]
@@ -1081,39 +1104,59 @@ class VideoSparseCoding(Preprocessor, object):
         vertical_patches_subset = vertical_patches[::self.frame_step]
 
         # Compute sparse codes for all patches of all types:
-        frontal_video_codes = self.get_sparse_codes_for_list_of_patches(frontal_patches_subset, dictionary_frontal)
-        horizontal_video_codes = self.get_sparse_codes_for_list_of_patches(horizontal_patches_subset, dictionary_horizontal)
-        vertical_video_codes = self.get_sparse_codes_for_list_of_patches(vertical_patches_subset, dictionary_vertical)
+        frontal_video_codes = self.get_sparse_codes_for_list_of_patches(
+            frontal_patches_subset, dictionary_frontal)
+        horizontal_video_codes = self.get_sparse_codes_for_list_of_patches(
+            horizontal_patches_subset, dictionary_horizontal)
+        vertical_video_codes = self.get_sparse_codes_for_list_of_patches(
+            vertical_patches_subset, dictionary_vertical)
 
         if self.comp_reconstruct_err_flag:
 
-            video_codes_list = [frontal_video_codes, horizontal_video_codes, vertical_video_codes]
+            video_codes_list = [
+                frontal_video_codes, horizontal_video_codes,
+                vertical_video_codes
+            ]
 
-            patches_list = [frontal_patches_subset, horizontal_patches_subset, vertical_patches_subset]
+            patches_list = [
+                frontal_patches_subset, horizontal_patches_subset,
+                vertical_patches_subset
+            ]
 
-            dictionary_list = [dictionary_frontal, dictionary_horizontal, dictionary_vertical]
+            dictionary_list = [
+                dictionary_frontal, dictionary_horizontal, dictionary_vertical
+            ]
 
-            squared_errors_list = self.compute_mse_for_all_stacks(video_codes_list, patches_list, dictionary_list)
+            squared_errors_list = self.compute_mse_for_all_stacks(
+                video_codes_list, patches_list, dictionary_list)
 
-            frame_container = self.convert_arrays_to_frame_container(squared_errors_list)
+            frame_container = self.convert_arrays_to_frame_container(
+                squared_errors_list)
 
         else:
 
-            if self.extract_histograms_flag: # in this case histograms will be extracted in the preprocessor , no feature extraction is needed then
+            if self.extract_histograms_flag:  # in this case histograms will be extracted in the preprocessor , no feature extraction is needed then
 
-                histograms = self.comp_hist_of_sparse_codes([frontal_video_codes, horizontal_video_codes, vertical_video_codes], self.method)
+                histograms = self.comp_hist_of_sparse_codes([
+                    frontal_video_codes, horizontal_video_codes,
+                    vertical_video_codes
+                ], self.method)
 
-                frame_container = self.convert_arrays_to_frame_container(histograms)
+                frame_container = self.convert_arrays_to_frame_container(
+                    histograms)
 
             else:
 
-                frame_container = self.convert_sparse_codes_to_frame_container([frontal_video_codes, horizontal_video_codes, vertical_video_codes])
+                frame_container = self.convert_sparse_codes_to_frame_container(
+                    [
+                        frontal_video_codes, horizontal_video_codes,
+                        vertical_video_codes
+                    ])
 
         return frame_container
 
-
     #==========================================================================
-    def write_data( self, frames, file_name ):
+    def write_data(self, frames, file_name):
         """
         Writes the given data (that has been generated using the __call__
         function of this class) to file. This method overwrites the write_data()
@@ -1130,9 +1173,8 @@ class VideoSparseCoding(Preprocessor, object):
 
         self.video_preprocessor.write_data(frames, file_name)
 
-
     #==========================================================================
-    def read_data( self, file_name ):
+    def read_data(self, file_name):
         """
         Reads the preprocessed data from file.
         This method overwrites the read_data() method of the Preprocessor class.
@@ -1151,11 +1193,3 @@ class VideoSparseCoding(Preprocessor, object):
         frames = self.video_preprocessor.read_data(file_name)
 
         return frames
-
-
-
-
-
-
-
-

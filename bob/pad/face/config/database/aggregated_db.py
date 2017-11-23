@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """Aggregated Db is a database for face PAD experiments.
 This database aggregates the data from 3 publicly available data-sets:
 `REPLAYATTACK`_, `REPLAY-MOBILE`_ and `MSU MFSD`_.
@@ -20,7 +19,7 @@ from bob.pad.face.database import AggregatedDbPadDatabase
 original_directory = "[YOUR_AGGREGATED_DB_DIRECTORIES]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
-original_extension = ".mov" # extension of the data files
+original_extension = ".mov"  # extension of the data files
 
 database = AggregatedDbPadDatabase(
     protocol='grandtest',

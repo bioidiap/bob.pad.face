@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """`MSU MFSD`_ is a database for face PAD experiments.
 
 Database created at MSU, for face-PAD experiments. The public version of the database contains
@@ -18,13 +17,12 @@ the link.
 
 from bob.pad.face.database import MsuMfsdPadDatabase
 
-
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
 original_directory = "[YOUR_MSU_MFSD_DIRECTORY]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
-original_extension = "none" # extension is not used to load the data in the HLDI of this database
+original_extension = "none"  # extension is not used to load the data in the HLDI of this database
 
 database = MsuMfsdPadDatabase(
     protocol='grandtest',

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #==============================================================================
-from bob.pad.base.database import PadFile # Used in ReplayPadFile class
+from bob.pad.base.database import PadFile  # Used in ReplayPadFile class
 
 from bob.pad.base.database import PadDatabase
 
@@ -18,6 +18,7 @@ from bob.bio.video.database.mobio import MobioBioFile
 from bob.bio.video import FrameSelector
 
 import numpy as np
+
 
 #==============================================================================
 class AggregatedDbPadFile(PadFile):
@@ -51,7 +52,8 @@ class AggregatedDbPadFile(PadFile):
 
         import bob.db.mobio
 
-        if isinstance(f, bob.db.mobio.models.File): # MOBIO files doen't have is_real() method
+        if isinstance(f, bob.db.mobio.models.File
+                      ):  # MOBIO files doen't have is_real() method
 
             attack_type = None
 
@@ -68,12 +70,14 @@ class AggregatedDbPadFile(PadFile):
 
         file_id = self.encode_file_id(f)
 
-        super(AggregatedDbPadFile, self).__init__(client_id = f.client_id, path = file_path,
-                                                  attack_type = attack_type, file_id = file_id)
-
+        super(AggregatedDbPadFile, self).__init__(
+            client_id=f.client_id,
+            path=file_path,
+            attack_type=attack_type,
+            file_id=file_id)
 
     #==========================================================================
-    def encode_file_id(self, f, n = 2000):
+    def encode_file_id(self, f, n=2000):
         """
         Return a modified version of the ``f.id`` ensuring uniqueness of the ids
         across all databases.
@@ -106,24 +110,29 @@ class AggregatedDbPadFile(PadFile):
         import bob.db.msu_mfsd_mod
         import bob.db.mobio
 
-        if isinstance(f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
+        if isinstance(
+                f, bob.db.replay.models.File
+        ):  # check if instance of File class of LLDI of Replay-Attack
 
             file_id = f.id
 
-        if isinstance(f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+        if isinstance(
+                f, bob.db.replaymobile.models.File
+        ):  # check if instance of File class of LLDI of Replay-Mobile
 
             file_id = np.int(f.id + n)
 
-        if isinstance(f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+        if isinstance(f, bob.db.msu_mfsd_mod.models.File
+                      ):  # check if instance of File class of LLDI of MSU MFSD
 
-            file_id = np.int(f.id + 2*n)
+            file_id = np.int(f.id + 2 * n)
 
-        if isinstance(f, bob.db.mobio.models.File): # check if instance of File class of LLDI of Mobio
+        if isinstance(f, bob.db.mobio.models.File
+                      ):  # check if instance of File class of LLDI of Mobio
 
-            file_id = np.int(f.id + 3*n)
+            file_id = np.int(f.id + 3 * n)
 
         return file_id
-
 
     #==========================================================================
     def encode_file_path(self, f):
@@ -154,24 +163,29 @@ class AggregatedDbPadFile(PadFile):
         import bob.db.msu_mfsd_mod
         import bob.db.mobio
 
-        if isinstance(f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
+        if isinstance(
+                f, bob.db.replay.models.File
+        ):  # check if instance of File class of LLDI of Replay-Attack
 
             file_path = '_'.join([f.path, 'replay'])
 
-        if isinstance(f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+        if isinstance(
+                f, bob.db.replaymobile.models.File
+        ):  # check if instance of File class of LLDI of Replay-Mobile
 
             file_path = '_'.join([f.path, 'replaymobile'])
 
-        if isinstance(f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+        if isinstance(f, bob.db.msu_mfsd_mod.models.File
+                      ):  # check if instance of File class of LLDI of MSU MFSD
 
             file_path = '_'.join([f.path, 'msu_mfsd_mod'])
 
-        if isinstance(f, bob.db.mobio.models.File): # check if instance of File class of LLDI of Mobio
+        if isinstance(f, bob.db.mobio.models.File
+                      ):  # check if instance of File class of LLDI of Mobio
 
             file_path = '_'.join([f.path, 'mobio'])
 
         return file_path
-
 
     #==========================================================================
     def load(self, directory=None, extension='.mov'):
@@ -203,41 +217,56 @@ class AggregatedDbPadFile(PadFile):
 
         directories = directory.split(" ")
 
-        if isinstance(self.f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
+        if isinstance(
+                self.f, bob.db.replay.models.File
+        ):  # check if instance of File class of LLDI of Replay-Attack
 
-            db_pad_file = replay_hldi.ReplayPadFile(self.f) # replay_hldi is HLDI of Replay-Attack
+            db_pad_file = replay_hldi.ReplayPadFile(
+                self.f)  # replay_hldi is HLDI of Replay-Attack
 
             directory = directories[0]
 
-        if isinstance(self.f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+        if isinstance(
+                self.f, bob.db.replaymobile.models.File
+        ):  # check if instance of File class of LLDI of Replay-Mobile
 
-            db_pad_file = replay_mobile_hldi.ReplayMobilePadFile(self.f) # replay_mobile_hldi is HLDI of Replay-Mobile
+            db_pad_file = replay_mobile_hldi.ReplayMobilePadFile(
+                self.f)  # replay_mobile_hldi is HLDI of Replay-Mobile
 
             directory = directories[1]
 
-        if isinstance(self.f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+        if isinstance(self.f, bob.db.msu_mfsd_mod.models.File
+                      ):  # check if instance of File class of LLDI of MSU MFSD
 
-            db_pad_file = msu_mfsd_hldi.MsuMfsdPadFile(self.f) # msu_mfsd_hldi is HLDI of MSU MFSD
+            db_pad_file = msu_mfsd_hldi.MsuMfsdPadFile(
+                self.f)  # msu_mfsd_hldi is HLDI of MSU MFSD
 
             directory = directories[2]
 
-        if isinstance(self.f, bob.db.mobio.models.File): # check if instance of File class of LLDI of Mobio
+        if isinstance(self.f, bob.db.mobio.models.File
+                      ):  # check if instance of File class of LLDI of Mobio
 
-            db_pad_file = MobioBioFile(self.f) # msu_mfsd_hldi is HLDI of MSU MFSD
+            db_pad_file = MobioBioFile(
+                self.f)  # msu_mfsd_hldi is HLDI of MSU MFSD
 
             directory = directories[3]
 
         if isinstance(db_pad_file, bob.bio.video.database.mobio.MobioBioFile):
 
-            frame_selector = FrameSelector(selection_style='all') # select all frames of the file
+            frame_selector = FrameSelector(
+                selection_style='all')  # select all frames of the file
 
-            video_data = db_pad_file.load(directory = directory, extension = '.mp4', frame_selector = frame_selector)
+            video_data = db_pad_file.load(
+                directory=directory,
+                extension='.mp4',
+                frame_selector=frame_selector)
 
         else:
 
-            video_data = db_pad_file.load(directory = directory, extension = extension)
+            video_data = db_pad_file.load(
+                directory=directory, extension=extension)
 
-        return video_data # video data
+        return video_data  # video data
 
 
 #==============================================================================
@@ -283,11 +312,11 @@ class AggregatedDbPadDatabase(PadDatabase):
     """
 
     def __init__(
-        self,
-        protocol='grandtest', # grandtest is the default protocol for this database
-        original_directory=None,
-        original_extension=None,
-        **kwargs):
+            self,
+            protocol='grandtest',  # grandtest is the default protocol for this database
+            original_directory=None,
+            original_extension=None,
+            **kwargs):
         """
         **Parameters:**
 
@@ -321,20 +350,26 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         # Since the high level API expects different group names than what the low
         # level API offers, you need to convert them when necessary
-        self.low_level_group_names = ('train', 'devel', 'test') # group names in the low-level database interface
-        self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
+        self.low_level_group_names = (
+            'train', 'devel',
+            'test')  # group names in the low-level database interface
+        self.high_level_group_names = (
+            'train', 'dev',
+            'eval')  # names are expected to be like that in objects() function
 
         # A list of available protocols:
-        self.available_protocols = ['grandtest', 'photo-photo-video', 'video-video-photo', 'grandtest-mobio', 'grandtest-train-eval']
+        self.available_protocols = [
+            'grandtest', 'photo-photo-video', 'video-video-photo',
+            'grandtest-mobio', 'grandtest-train-eval'
+        ]
 
         # Always use super to call parent class methods.
         super(AggregatedDbPadDatabase, self).__init__(
-            name = 'aggregated_db',
-            protocol = protocol,
-            original_directory = original_directory,
-            original_extension = original_extension,
+            name='aggregated_db',
+            protocol=protocol,
+            original_directory=original_directory,
+            original_extension=original_extension,
             **kwargs)
-
 
     #==========================================================================
     def get_mobio_files_given_single_group(self, groups=None, purposes=None):
@@ -366,7 +401,8 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         mobio_files = []
 
-        if (groups is not None) and ('train' in groups) and (purposes is not None) and ('real' in purposes):
+        if (groups is not None) and ('train' in groups) and (
+                purposes is not None) and ('real' in purposes):
 
             files_mobio = self.mobio.all_files()
 
@@ -376,13 +412,14 @@ class AggregatedDbPadDatabase(PadDatabase):
 
                 metadata.append((f.client_id))
 
-            metadata_set = list(set(metadata)) # metadata_set is a list of unique client ids
+            metadata_set = list(
+                set(metadata))  # metadata_set is a list of unique client ids
 
             for f in files_mobio:
 
                 metadata = (f.client_id)
 
-                if metadata in metadata_set: # only one video per client id is selected
+                if metadata in metadata_set:  # only one video per client id is selected
 
                     metadata_set.remove(metadata)
 
@@ -392,9 +429,13 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         return mobio_files
 
-
     #==========================================================================
-    def get_files_given_single_group(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+    def get_files_given_single_group(self,
+                                     groups=None,
+                                     protocol=None,
+                                     purposes=None,
+                                     model_ids=None,
+                                     **kwargs):
         """
         This function returns 4 lists of files for Raplay-Attack, Replay-Mobile,
         MSU MFSD and MOBIO databases, which fulfill the given restrictions. This
@@ -469,83 +510,152 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         if protocol == 'grandtest' or protocol is None or groups is None:
 
-            replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+            replay_files = self.replay_db.objects(
+                protocol=protocol, groups=groups, cls=purposes, **kwargs)
 
-            replaymobile_files = self.replaymobile_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+            replaymobile_files = self.replaymobile_db.objects(
+                protocol=protocol, groups=groups, cls=purposes, **kwargs)
 
-            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
+            msu_mfsd_files = self.msu_mfsd_db.objects(
+                group=groups, cls=purposes, **kwargs)
 
         if protocol == 'photo-photo-video':
 
-            if groups == 'train' or groups ==  'devel': # the group names are low-level here: ('train', 'devel', 'test')
+            if groups == 'train' or groups == 'devel':  # the group names are low-level here: ('train', 'devel', 'test')
 
-                replay_files = self.replay_db.objects(protocol='photo', groups=groups, cls=purposes, **kwargs)
+                replay_files = self.replay_db.objects(
+                    protocol='photo', groups=groups, cls=purposes, **kwargs)
 
-                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='photo', **kwargs)
+                replaymobile_files = self.replaymobile_db.objects(
+                    protocol='grandtest',
+                    groups=groups,
+                    cls=purposes,
+                    sample_type='photo',
+                    **kwargs)
 
-                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('print', ''), **kwargs)
+                msu_mfsd_files = self.msu_mfsd_db.objects(
+                    group=groups,
+                    cls=purposes,
+                    instrument=('print', ''),
+                    **kwargs)
 
             if groups == 'test':
 
-                replay_files = self.replay_db.objects(protocol='video', groups=groups, cls=purposes, **kwargs)
+                replay_files = self.replay_db.objects(
+                    protocol='video', groups=groups, cls=purposes, **kwargs)
 
-                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='video', **kwargs)
+                replaymobile_files = self.replaymobile_db.objects(
+                    protocol='grandtest',
+                    groups=groups,
+                    cls=purposes,
+                    sample_type='video',
+                    **kwargs)
 
-                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('video_hd', 'video_mobile', ''), **kwargs)
+                msu_mfsd_files = self.msu_mfsd_db.objects(
+                    group=groups,
+                    cls=purposes,
+                    instrument=('video_hd', 'video_mobile', ''),
+                    **kwargs)
 
         if protocol == 'video-video-photo':
 
-            if groups == 'train' or groups ==  'devel': # the group names are low-level here: ('train', 'devel', 'test')
+            if groups == 'train' or groups == 'devel':  # the group names are low-level here: ('train', 'devel', 'test')
 
-                replay_files = self.replay_db.objects(protocol='video', groups=groups, cls=purposes, **kwargs)
+                replay_files = self.replay_db.objects(
+                    protocol='video', groups=groups, cls=purposes, **kwargs)
 
-                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='video', **kwargs)
+                replaymobile_files = self.replaymobile_db.objects(
+                    protocol='grandtest',
+                    groups=groups,
+                    cls=purposes,
+                    sample_type='video',
+                    **kwargs)
 
-                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('video_hd', 'video_mobile', ''), **kwargs)
+                msu_mfsd_files = self.msu_mfsd_db.objects(
+                    group=groups,
+                    cls=purposes,
+                    instrument=('video_hd', 'video_mobile', ''),
+                    **kwargs)
 
             if groups == 'test':
 
-                replay_files = self.replay_db.objects(protocol='photo', groups=groups, cls=purposes, **kwargs)
+                replay_files = self.replay_db.objects(
+                    protocol='photo', groups=groups, cls=purposes, **kwargs)
 
-                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, sample_type='photo', **kwargs)
+                replaymobile_files = self.replaymobile_db.objects(
+                    protocol='grandtest',
+                    groups=groups,
+                    cls=purposes,
+                    sample_type='photo',
+                    **kwargs)
 
-                msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, instrument = ('print', ''), **kwargs)
+                msu_mfsd_files = self.msu_mfsd_db.objects(
+                    group=groups,
+                    cls=purposes,
+                    instrument=('print', ''),
+                    **kwargs)
 
         mobio_files = []
 
         if protocol == 'grandtest-mobio':
 
-            replay_files = self.replay_db.objects(protocol='grandtest', groups=groups, cls=purposes, **kwargs)
+            replay_files = self.replay_db.objects(
+                protocol='grandtest', groups=groups, cls=purposes, **kwargs)
 
-            replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=groups, cls=purposes, **kwargs)
+            replaymobile_files = self.replaymobile_db.objects(
+                protocol='grandtest', groups=groups, cls=purposes, **kwargs)
 
-            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
+            msu_mfsd_files = self.msu_mfsd_db.objects(
+                group=groups, cls=purposes, **kwargs)
 
-            mobio_files = self.get_mobio_files_given_single_group(groups=groups, purposes=purposes)
+            mobio_files = self.get_mobio_files_given_single_group(
+                groups=groups, purposes=purposes)
 
         if protocol == 'grandtest-train-eval':
 
             if groups == 'train':
 
-                replay_files = self.replay_db.objects(protocol='grandtest', groups=['train', 'devel'], cls=purposes, **kwargs)
+                replay_files = self.replay_db.objects(
+                    protocol='grandtest',
+                    groups=['train', 'devel'],
+                    cls=purposes,
+                    **kwargs)
 
-                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups=['train', 'devel'], cls=purposes, **kwargs)
+                replaymobile_files = self.replaymobile_db.objects(
+                    protocol='grandtest',
+                    groups=['train', 'devel'],
+                    cls=purposes,
+                    **kwargs)
 
-                msu_mfsd_files = self.msu_mfsd_db.objects(group=['train', 'devel'], cls=purposes, **kwargs)
+                msu_mfsd_files = self.msu_mfsd_db.objects(
+                    group=['train', 'devel'], cls=purposes, **kwargs)
 
             if groups in ['devel', 'test']:
 
-                replay_files = self.replay_db.objects(protocol='grandtest', groups='test', cls=purposes, **kwargs)
+                replay_files = self.replay_db.objects(
+                    protocol='grandtest',
+                    groups='test',
+                    cls=purposes,
+                    **kwargs)
 
-                replaymobile_files = self.replaymobile_db.objects(protocol='grandtest', groups='test', cls=purposes, **kwargs)
+                replaymobile_files = self.replaymobile_db.objects(
+                    protocol='grandtest',
+                    groups='test',
+                    cls=purposes,
+                    **kwargs)
 
-                msu_mfsd_files = self.msu_mfsd_db.objects(group='test', cls=purposes, **kwargs)
+                msu_mfsd_files = self.msu_mfsd_db.objects(
+                    group='test', cls=purposes, **kwargs)
 
         return replay_files, replaymobile_files, msu_mfsd_files, mobio_files
 
-
     #==========================================================================
-    def get_files_given_groups(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+    def get_files_given_groups(self,
+                               groups=None,
+                               protocol=None,
+                               purposes=None,
+                               model_ids=None,
+                               **kwargs):
         """
         This function returns 4 lists of files for Raplay-Attack, Replay-Mobile,
         MSU MFSD and MOBIO databases, which fulfill the given restrictions. This
@@ -619,7 +729,8 @@ class AggregatedDbPadDatabase(PadDatabase):
             A list of files corresponding to MOBIO database or an empty list.
         """
 
-        if isinstance(groups, str) or groups is None: # if a single group is given
+        if isinstance(groups,
+                      str) or groups is None:  # if a single group is given
 
             groups = [groups]
 
@@ -633,7 +744,12 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         for group in groups:
 
-            files = self.get_files_given_single_group(groups = group, protocol = protocol, purposes = purposes, model_ids = model_ids, **kwargs)
+            files = self.get_files_given_single_group(
+                groups=group,
+                protocol=protocol,
+                purposes=purposes,
+                model_ids=model_ids,
+                **kwargs)
 
             replay_files += files[0]
 
@@ -645,9 +761,13 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         return replay_files, replaymobile_files, msu_mfsd_files, mobio_files
 
-
     #==========================================================================
-    def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+    def objects(self,
+                groups=None,
+                protocol=None,
+                purposes=None,
+                model_ids=None,
+                **kwargs):
         """
         This function returns a list of AggregatedDbPadFile objects, which fulfill the given restrictions.
 
@@ -703,28 +823,29 @@ class AggregatedDbPadDatabase(PadDatabase):
         """
 
         # Convert group names to low-level group names here.
-        groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
+        groups = self.convert_names_to_lowlevel(
+            groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
 
-        replay_files, replaymobile_files, msu_mfsd_files, mobio_files = self.get_files_given_groups(groups = groups,
-                                                                                                    protocol = protocol,
-                                                                                                    purposes = purposes,
-                                                                                                    model_ids = model_ids,
-                                                                                                    **kwargs)
+        replay_files, replaymobile_files, msu_mfsd_files, mobio_files = self.get_files_given_groups(
+            groups=groups,
+            protocol=protocol,
+            purposes=purposes,
+            model_ids=model_ids,
+            **kwargs)
 
-#            replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
-#
-#            replaymobile_files = self.replaymobile_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
-#
-#            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
+        #            replay_files = self.replay_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+        #
+        #            replaymobile_files = self.replaymobile_db.objects(protocol=protocol, groups=groups, cls=purposes, **kwargs)
+        #
+        #            msu_mfsd_files = self.msu_mfsd_db.objects(group=groups, cls=purposes, **kwargs)
 
-        files = replay_files + replaymobile_files + msu_mfsd_files + mobio_files # append all files to a single list
+        files = replay_files + replaymobile_files + msu_mfsd_files + mobio_files  # append all files to a single list
 
         files = [AggregatedDbPadFile(f) for f in files]
 
         return files
-
 
     #==========================================================================
     def annotations(self, f):
@@ -756,19 +877,29 @@ class AggregatedDbPadDatabase(PadDatabase):
 
         directories = self.original_directory.split(" ")
 
-        if isinstance(f.f, bob.db.replay.models.File): # check if instance of File class of LLDI of Replay-Attack
+        if isinstance(
+                f.f, bob.db.replay.models.File
+        ):  # check if instance of File class of LLDI of Replay-Attack
 
-            hldi_db = replay_hldi.ReplayPadDatabase(original_directory = directories[0])
+            hldi_db = replay_hldi.ReplayPadDatabase(
+                original_directory=directories[0])
 
-        if isinstance(f.f, bob.db.replaymobile.models.File): # check if instance of File class of LLDI of Replay-Mobile
+        if isinstance(
+                f.f, bob.db.replaymobile.models.File
+        ):  # check if instance of File class of LLDI of Replay-Mobile
 
-            hldi_db = replay_mobile_hldi.ReplayMobilePadDatabase(original_directory = directories[1])
+            hldi_db = replay_mobile_hldi.ReplayMobilePadDatabase(
+                original_directory=directories[1])
 
-        if isinstance(f.f, bob.db.msu_mfsd_mod.models.File): # check if instance of File class of LLDI of MSU MFSD
+        if isinstance(f.f, bob.db.msu_mfsd_mod.models.File
+                      ):  # check if instance of File class of LLDI of MSU MFSD
 
-            hldi_db = msu_mfsd_hldi.MsuMfsdPadDatabase(original_directory = directories[2])
+            hldi_db = msu_mfsd_hldi.MsuMfsdPadDatabase(
+                original_directory=directories[2])
 
-        if self.protocol == "grandtest-mobio" or isinstance(f.f, bob.db.mobio.models.File): # annotations are not available for this protocol
+        if self.protocol == "grandtest-mobio" or isinstance(
+                f.f, bob.db.mobio.models.File
+        ):  # annotations are not available for this protocol
 
             annotations = {}
 
@@ -777,10 +908,3 @@ class AggregatedDbPadDatabase(PadDatabase):
             annotations = hldi_db.annotations(f)
 
         return annotations
-
-
-
-
-
-
-

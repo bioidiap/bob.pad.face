@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
-
 """Test Units
 """
 #==============================================================================
@@ -40,12 +39,12 @@ from ..utils import face_detection_utils
 import random
 
 
-
 def test_detect_face_landmarks_in_image_mtcnn():
 
     img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
     assert len(img) == 3
-    annotations = face_detection_utils.detect_face_landmarks_in_image(img, method = 'mtcnn')
+    annotations = face_detection_utils.detect_face_landmarks_in_image(
+        img, method='mtcnn')
     assert len(annotations['landmarks']) == 68
     assert len(annotations['left_eye']) == 2
     assert len(annotations['right_eye']) == 2
@@ -55,49 +54,48 @@ def test_detect_face_landmarks_in_image_mtcnn():
     #assert len(annotations['left_eye']) == (176, 220)
 
 
-
 def test_detect_face_landmarks_in_video_mtcnn():
 
     img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
     assert len(img) == 3
-    frame_container= bob.bio.video.FrameContainer()
-    frame_container.add(1,img)
-    frame_container.add(2,img)
+    frame_container = bob.bio.video.FrameContainer()
+    frame_container.add(1, img)
+    frame_container.add(2, img)
 
-    annotations = face_detection_utils.detect_face_landmarks_in_video(frame_container, method = 'mtcnn')
+    annotations = face_detection_utils.detect_face_landmarks_in_video(
+        frame_container, method='mtcnn')
     assert len(annotations) == 2
     assert len(annotations['1']['landmarks']) == 68
-    
-
 
 
 def test_detect_face_landmarks_in_image_dlib():
 
-	img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
-	assert len(img) == 3
-	annotations = face_detection_utils.detect_face_landmarks_in_image(img, method = 'dlib')
-	assert len(annotations['landmarks']) == 68
-	assert len(annotations['left_eye']) == 2
-	assert len(annotations['right_eye']) == 2
-	assert len(annotations['topleft']) == 2
-	assert len(annotations['bottomright']) == 2
+    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
+    assert len(img) == 3
+    annotations = face_detection_utils.detect_face_landmarks_in_image(
+        img, method='dlib')
+    assert len(annotations['landmarks']) == 68
+    assert len(annotations['left_eye']) == 2
+    assert len(annotations['right_eye']) == 2
+    assert len(annotations['topleft']) == 2
+    assert len(annotations['bottomright']) == 2
 
-	#assert len(annotations['left_eye']) == (176, 220)
-
+    #assert len(annotations['left_eye']) == (176, 220)
 
 
 def test_detect_face_landmarks_in_video_dlib():
 
-	img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
-	assert len(img) == 3
-	frame_container= bob.bio.video.FrameContainer()
-	frame_container.add(1,img)
-	frame_container.add(2,img)
+    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
+    assert len(img) == 3
+    frame_container = bob.bio.video.FrameContainer()
+    frame_container.add(1, img)
+    frame_container.add(2, img)
 
-	annotations = face_detection_utils.detect_face_landmarks_in_video(frame_container, method = 'dlib')
-	assert len(annotations) == 2
-	assert len(annotations['1']['landmarks']) == 68
-	
+    annotations = face_detection_utils.detect_face_landmarks_in_video(
+        frame_container, method='dlib')
+    assert len(annotations) == 2
+    assert len(annotations['1']['landmarks']) == 68
+
 
 #==============================================================================
 def test_lbp_histogram():
@@ -118,13 +116,13 @@ def test_image_face_crop():
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
     annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
 
-    preprocessor = ImageFaceCrop(face_size = 64, rgb_output_flag = False)
+    preprocessor = ImageFaceCrop(face_size=64, rgb_output_flag=False)
     face = preprocessor(image, annotations)
 
     assert face.shape == (64, 64)
     assert np.sum(face) == 429158
 
-    preprocessor = ImageFaceCrop(face_size = 64, rgb_output_flag = True)
+    preprocessor = ImageFaceCrop(face_size=64, rgb_output_flag=True)
     face = preprocessor(image, annotations)
 
     assert face.shape == (3, 64, 64)
@@ -161,13 +159,14 @@ def convert_image_to_video_data(image, annotations, n_frames):
         is the dictionary defining the coordinates of the face bounding box in frame N.
     """
 
-    frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+    frame_container = bob.bio.video.FrameContainer(
+    )  # initialize the FrameContainer
 
     video_annotations = {}
 
-    for idx, fn in enumerate( range(0, n_frames) ):
+    for idx, fn in enumerate(range(0, n_frames)):
 
-        frame_container.add(idx, image) # add current frame to FrameContainer
+        frame_container.add(idx, image)  # add current frame to FrameContainer
 
         video_annotations[str(idx)] = annotations
 
@@ -183,31 +182,32 @@ def test_video_face_crop():
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
     annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
 
-    CROPPED_IMAGE_SIZE = (64, 64) # The size of the resulting face
-    CROPPED_POSITIONS = {'topleft' : (0,0) , 'bottomright' : CROPPED_IMAGE_SIZE}
+    CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
+    CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
     FIXED_POSITIONS = None
-    MASK_SIGMA = None             # The sigma for random values areas outside image
-    MASK_NEIGHBORS = 5            # The number of neighbors to consider while extrapolating
-    MASK_SEED = None              # The seed for generating random values during extrapolation
-    CHECK_FACE_SIZE_FLAG = True   # Check the size of the face
-    MIN_FACE_SIZE = 50            # Minimal possible size of the face
-    USE_LOCAL_CROPPER_FLAG = True # Use the local face cropping class (identical to Ivana's paper)
-    COLOR_CHANNEL = 'gray'        # Convert image to gray-scale format
+    MASK_SIGMA = None  # The sigma for random values areas outside image
+    MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
+    MASK_SEED = None  # The seed for generating random values during extrapolation
+    CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
+    MIN_FACE_SIZE = 50  # Minimal possible size of the face
+    USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
+    COLOR_CHANNEL = 'gray'  # Convert image to gray-scale format
 
-    preprocessor = VideoFaceCrop(cropped_image_size = CROPPED_IMAGE_SIZE,
-                                 cropped_positions = CROPPED_POSITIONS,
-                                 fixed_positions = FIXED_POSITIONS,
-                                 mask_sigma = MASK_SIGMA,
-                                 mask_neighbors = MASK_NEIGHBORS,
-                                 mask_seed = MASK_SEED,
-                                 check_face_size_flag = CHECK_FACE_SIZE_FLAG,
-                                 min_face_size = MIN_FACE_SIZE,
-                                 use_local_cropper_flag = USE_LOCAL_CROPPER_FLAG,
-                                 color_channel = COLOR_CHANNEL)
+    preprocessor = VideoFaceCrop(
+        cropped_image_size=CROPPED_IMAGE_SIZE,
+        cropped_positions=CROPPED_POSITIONS,
+        fixed_positions=FIXED_POSITIONS,
+        mask_sigma=MASK_SIGMA,
+        mask_neighbors=MASK_NEIGHBORS,
+        mask_seed=MASK_SEED,
+        check_face_size_flag=CHECK_FACE_SIZE_FLAG,
+        min_face_size=MIN_FACE_SIZE,
+        use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
+        color_channel=COLOR_CHANNEL)
 
     video, annotations = convert_image_to_video_data(image, annotations, 20)
 
-    faces = preprocessor(frames = video, annotations = annotations)
+    faces = preprocessor(frames=video, annotations=annotations)
 
     assert len(faces) == 20
     assert faces[0][1].shape == (64, 64)
@@ -218,35 +218,36 @@ def test_video_face_crop():
     #==========================================================================
     # test another configuration of the  VideoFaceCrop preprocessor:
 
-    CROPPED_IMAGE_SIZE = (64, 64) # The size of the resulting face
-    CROPPED_POSITIONS = {'topleft' : (0,0) , 'bottomright' : CROPPED_IMAGE_SIZE}
+    CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
+    CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
     FIXED_POSITIONS = None
-    MASK_SIGMA = None             # The sigma for random values areas outside image
-    MASK_NEIGHBORS = 5            # The number of neighbors to consider while extrapolating
-    MASK_SEED = None              # The seed for generating random values during extrapolation
-    CHECK_FACE_SIZE_FLAG = True   # Check the size of the face
+    MASK_SIGMA = None  # The sigma for random values areas outside image
+    MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
+    MASK_SEED = None  # The seed for generating random values during extrapolation
+    CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
     MIN_FACE_SIZE = 50
-    USE_LOCAL_CROPPER_FLAG = True # Use the local face cropping class (identical to Ivana's paper)
-    RGB_OUTPUT_FLAG = True        # Return RGB cropped face using local cropper
-    DETECT_FACES_FLAG = True      # find annotations locally replacing the database annotations
+    USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
+    RGB_OUTPUT_FLAG = True  # Return RGB cropped face using local cropper
+    DETECT_FACES_FLAG = True  # find annotations locally replacing the database annotations
     FACE_DETECTION_METHOD = "dlib"
 
-    preprocessor = VideoFaceCrop(cropped_image_size = CROPPED_IMAGE_SIZE,
-                                 cropped_positions = CROPPED_POSITIONS,
-                                 fixed_positions = FIXED_POSITIONS,
-                                 mask_sigma = MASK_SIGMA,
-                                 mask_neighbors = MASK_NEIGHBORS,
-                                 mask_seed = None,
-                                 check_face_size_flag = CHECK_FACE_SIZE_FLAG,
-                                 min_face_size = MIN_FACE_SIZE,
-                                 use_local_cropper_flag = USE_LOCAL_CROPPER_FLAG,
-                                 rgb_output_flag = RGB_OUTPUT_FLAG,
-                                 detect_faces_flag = DETECT_FACES_FLAG,
-                                 face_detection_method = FACE_DETECTION_METHOD)
+    preprocessor = VideoFaceCrop(
+        cropped_image_size=CROPPED_IMAGE_SIZE,
+        cropped_positions=CROPPED_POSITIONS,
+        fixed_positions=FIXED_POSITIONS,
+        mask_sigma=MASK_SIGMA,
+        mask_neighbors=MASK_NEIGHBORS,
+        mask_seed=None,
+        check_face_size_flag=CHECK_FACE_SIZE_FLAG,
+        min_face_size=MIN_FACE_SIZE,
+        use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
+        rgb_output_flag=RGB_OUTPUT_FLAG,
+        detect_faces_flag=DETECT_FACES_FLAG,
+        face_detection_method=FACE_DETECTION_METHOD)
 
     video, _ = convert_image_to_video_data(image, annotations, 3)
 
-    faces = preprocessor(frames = video, annotations = annotations)
+    faces = preprocessor(frames=video, annotations=annotations)
 
     assert len(faces) == 3
     assert faces[0][1].shape == (3, 64, 64)
@@ -267,20 +268,22 @@ def test_frame_difference():
 
     n_frames = 20
 
-    video, annotations = convert_image_to_video_data(image, annotations, n_frames)
+    video, annotations = convert_image_to_video_data(image, annotations,
+                                                     n_frames)
 
-    NUMBER_OF_FRAMES = None # process all frames
-    CHECK_FACE_SIZE_FLAG = True # Check size of the face
-    MIN_FACE_SIZE = 50 # Minimal size of the face to consider
+    NUMBER_OF_FRAMES = None  # process all frames
+    CHECK_FACE_SIZE_FLAG = True  # Check size of the face
+    MIN_FACE_SIZE = 50  # Minimal size of the face to consider
 
-    preprocessor = FrameDifference(number_of_frames = NUMBER_OF_FRAMES,
-                                   check_face_size_flag = CHECK_FACE_SIZE_FLAG,
-                                   min_face_size = MIN_FACE_SIZE)
+    preprocessor = FrameDifference(
+        number_of_frames=NUMBER_OF_FRAMES,
+        check_face_size_flag=CHECK_FACE_SIZE_FLAG,
+        min_face_size=MIN_FACE_SIZE)
 
-    diff = preprocessor(frames = video, annotations = annotations)
+    diff = preprocessor(frames=video, annotations=annotations)
 
-    assert diff.shape == (n_frames-1, 2)
-    assert (diff==0).all()
+    assert diff.shape == (n_frames - 1, 2)
+    assert (diff == 0).all()
 
 
 #==============================================================================
@@ -289,20 +292,19 @@ def test_frame_diff_features():
     Test FrameDiffFeatures extractor computing 10 features given frame differences.
     """
 
-    WINDOW_SIZE=20
-    OVERLAP=0
+    WINDOW_SIZE = 20
+    OVERLAP = 0
 
-    extractor = FrameDiffFeatures(window_size=WINDOW_SIZE,
-                                  overlap=OVERLAP)
+    extractor = FrameDiffFeatures(window_size=WINDOW_SIZE, overlap=OVERLAP)
 
-    data = np.transpose( np.vstack( [range(0,100), range(0,100)] ) )
+    data = np.transpose(np.vstack([range(0, 100), range(0, 100)]))
 
     features = extractor(data)
 
     assert len(features) == 5
     assert len(features[0][1]) == 10
     assert len(features[-1][1]) == 10
-    assert (features[0][1][0:5]==features[0][1][5:]).all()
+    assert (features[0][1][0:5] == features[0][1][5:]).all()
     assert (np.sum(features[0][1]) - 73.015116873109207) < 0.000001
 
 
@@ -315,53 +317,55 @@ def test_video_lbp_histogram():
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
     annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
 
-    CROPPED_IMAGE_SIZE = (64, 64) # The size of the resulting face
-    CROPPED_POSITIONS = {'topleft' : (0,0) , 'bottomright' : CROPPED_IMAGE_SIZE}
+    CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
+    CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
     FIXED_POSITIONS = None
-    MASK_SIGMA = None             # The sigma for random values areas outside image
-    MASK_NEIGHBORS = 5            # The number of neighbors to consider while extrapolating
-    MASK_SEED = None              # The seed for generating random values during extrapolation
-    CHECK_FACE_SIZE_FLAG = True   # Check the size of the face
-    MIN_FACE_SIZE = 50            # Minimal possible size of the face
-    USE_LOCAL_CROPPER_FLAG = True # Use the local face cropping class (identical to Ivana's paper)
-    RGB_OUTPUT_FLAG = False       # The output is gray-scale
-    COLOR_CHANNEL = 'gray'        # Convert image to gray-scale format
+    MASK_SIGMA = None  # The sigma for random values areas outside image
+    MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
+    MASK_SEED = None  # The seed for generating random values during extrapolation
+    CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
+    MIN_FACE_SIZE = 50  # Minimal possible size of the face
+    USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
+    RGB_OUTPUT_FLAG = False  # The output is gray-scale
+    COLOR_CHANNEL = 'gray'  # Convert image to gray-scale format
 
-    preprocessor = VideoFaceCrop(cropped_image_size = CROPPED_IMAGE_SIZE,
-                                 cropped_positions = CROPPED_POSITIONS,
-                                 fixed_positions = FIXED_POSITIONS,
-                                 mask_sigma = MASK_SIGMA,
-                                 mask_neighbors = MASK_NEIGHBORS,
-                                 mask_seed = MASK_SEED,
-                                 check_face_size_flag = CHECK_FACE_SIZE_FLAG,
-                                 min_face_size = MIN_FACE_SIZE,
-                                 use_local_cropper_flag = USE_LOCAL_CROPPER_FLAG,
-                                 rgb_output_flag = RGB_OUTPUT_FLAG,
-                                 color_channel = COLOR_CHANNEL)
+    preprocessor = VideoFaceCrop(
+        cropped_image_size=CROPPED_IMAGE_SIZE,
+        cropped_positions=CROPPED_POSITIONS,
+        fixed_positions=FIXED_POSITIONS,
+        mask_sigma=MASK_SIGMA,
+        mask_neighbors=MASK_NEIGHBORS,
+        mask_seed=MASK_SEED,
+        check_face_size_flag=CHECK_FACE_SIZE_FLAG,
+        min_face_size=MIN_FACE_SIZE,
+        use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
+        rgb_output_flag=RGB_OUTPUT_FLAG,
+        color_channel=COLOR_CHANNEL)
 
     video, annotations = convert_image_to_video_data(image, annotations, 20)
 
-    faces = preprocessor(frames = video, annotations = annotations)
+    faces = preprocessor(frames=video, annotations=annotations)
 
-    LBPTYPE='uniform'
-    ELBPTYPE='regular'
-    RAD=1
-    NEIGHBORS=8
-    CIRC=False
-    DTYPE=None
+    LBPTYPE = 'uniform'
+    ELBPTYPE = 'regular'
+    RAD = 1
+    NEIGHBORS = 8
+    CIRC = False
+    DTYPE = None
 
-    extractor = VideoLBPHistogram(lbptype=LBPTYPE,
-                                  elbptype=ELBPTYPE,
-                                  rad=RAD,
-                                  neighbors=NEIGHBORS,
-                                  circ=CIRC,
-                                  dtype=DTYPE)
+    extractor = VideoLBPHistogram(
+        lbptype=LBPTYPE,
+        elbptype=ELBPTYPE,
+        rad=RAD,
+        neighbors=NEIGHBORS,
+        circ=CIRC,
+        dtype=DTYPE)
 
     lbp_histograms = extractor(faces)
 
     assert len(lbp_histograms) == 20
     assert len(lbp_histograms[0][1]) == 59
-    assert (lbp_histograms[0][1]==lbp_histograms[-1][1]).all()
+    assert (lbp_histograms[0][1] == lbp_histograms[-1][1]).all()
     assert (lbp_histograms[0][1][0] - 0.12695109261186263) < 0.000001
     assert (lbp_histograms[0][1][-1] - 0.031737773152965658) < 0.000001
 
@@ -377,19 +381,17 @@ def test_video_quality_measure():
 
     video, annotations = convert_image_to_video_data(image, annotations, 2)
 
-    GALBALLY=True
-    MSU=True
-    DTYPE=None
+    GALBALLY = True
+    MSU = True
+    DTYPE = None
 
-    extractor = VideoQualityMeasure(galbally=GALBALLY,
-                                    msu=MSU,
-                                    dtype=DTYPE)
+    extractor = VideoQualityMeasure(galbally=GALBALLY, msu=MSU, dtype=DTYPE)
 
     features = extractor(video)
 
     assert len(features) == 2
     assert len(features[0][1]) == 139
-    assert (features[0][1]==features[-1][1]).all()
+    assert (features[0][1] == features[-1][1]).all()
     assert (features[0][1][0] - 2.7748559659812599e-05) < 0.000001
     assert (features[0][1][-1] - 0.16410418866596271) < 0.000001
 
@@ -415,11 +417,13 @@ def convert_array_to_list_of_frame_cont(data):
 
     for idx, vec in enumerate(data):
 
-        frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+        frame_container = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
 
         frame_container.add(0, vec)
 
-        frame_container_list.append( frame_container ) # add current frame to FrameContainer
+        frame_container_list.append(
+            frame_container)  # add current frame to FrameContainer
 
     return frame_container_list
 
@@ -435,11 +439,15 @@ def test_video_svm_pad_algorithm():
     N = 20000
     mu = 1
     sigma = 1
-    real_array = np.transpose( np.vstack([[random.gauss(mu, sigma) for _ in range(N)], [random.gauss(mu, sigma) for _ in range(N)]]) )
+    real_array = np.transpose(
+        np.vstack([[random.gauss(mu, sigma) for _ in range(N)],
+                   [random.gauss(mu, sigma) for _ in range(N)]]))
 
     mu = 5
     sigma = 1
-    attack_array = np.transpose( np.vstack([[random.gauss(mu, sigma) for _ in range(N)], [random.gauss(mu, sigma) for _ in range(N)]]) )
+    attack_array = np.transpose(
+        np.vstack([[random.gauss(mu, sigma) for _ in range(N)],
+                   [random.gauss(mu, sigma) for _ in range(N)]]))
 
     real = convert_array_to_list_of_frame_cont(real_array)
     attack = convert_array_to_list_of_frame_cont(attack_array)
@@ -450,35 +458,38 @@ def test_video_svm_pad_algorithm():
     KERNEL_TYPE = 'RBF'
     N_SAMPLES = 1000
     TRAINER_GRID_SEARCH_PARAMS = {'cost': [1], 'gamma': [0.5, 1]}
-    MEAN_STD_NORM_FLAG = True      # enable mean-std normalization
-    FRAME_LEVEL_SCORES_FLAG = True # one score per frame(!) in this case
+    MEAN_STD_NORM_FLAG = True  # enable mean-std normalization
+    FRAME_LEVEL_SCORES_FLAG = True  # one score per frame(!) in this case
 
-    algorithm = VideoSvmPadAlgorithm(machine_type = MACHINE_TYPE,
-                                     kernel_type = KERNEL_TYPE,
-                                     n_samples = N_SAMPLES,
-                                     trainer_grid_search_params = TRAINER_GRID_SEARCH_PARAMS,
-                                     mean_std_norm_flag = MEAN_STD_NORM_FLAG,
-                                     frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG)
+    algorithm = VideoSvmPadAlgorithm(
+        machine_type=MACHINE_TYPE,
+        kernel_type=KERNEL_TYPE,
+        n_samples=N_SAMPLES,
+        trainer_grid_search_params=TRAINER_GRID_SEARCH_PARAMS,
+        mean_std_norm_flag=MEAN_STD_NORM_FLAG,
+        frame_level_scores_flag=FRAME_LEVEL_SCORES_FLAG)
 
-    machine = algorithm.train_svm(training_features = training_features,
-                             n_samples = algorithm.n_samples,
-                             machine_type = algorithm.machine_type,
-                             kernel_type = algorithm.kernel_type,
-                             trainer_grid_search_params = algorithm.trainer_grid_search_params,
-                             mean_std_norm_flag = algorithm.mean_std_norm_flag,
-                             projector_file = "",
-                             save_debug_data_flag = False)
+    machine = algorithm.train_svm(
+        training_features=training_features,
+        n_samples=algorithm.n_samples,
+        machine_type=algorithm.machine_type,
+        kernel_type=algorithm.kernel_type,
+        trainer_grid_search_params=algorithm.trainer_grid_search_params,
+        mean_std_norm_flag=algorithm.mean_std_norm_flag,
+        projector_file="",
+        save_debug_data_flag=False)
 
     assert machine.n_support_vectors == [148, 150]
     assert machine.gamma == 0.5
 
     real_sample = algorithm.convert_frame_cont_to_array(real[0])
 
-    prob = machine.predict_class_and_probabilities( real_sample )[1]
+    prob = machine.predict_class_and_probabilities(real_sample)[1]
 
-    assert prob[0,0] > prob[0,1]
+    assert prob[0, 0] > prob[0, 1]
 
-    precision = algorithm.comp_prediction_precision(machine, real_array, attack_array)
+    precision = algorithm.comp_prediction_precision(machine, real_array,
+                                                    attack_array)
 
     assert precision > 0.99
 
@@ -494,11 +505,15 @@ def test_video_gmm_pad_algorithm():
     N = 1000
     mu = 1
     sigma = 1
-    real_array = np.transpose( np.vstack([[random.gauss(mu, sigma) for _ in range(N)], [random.gauss(mu, sigma) for _ in range(N)]]) )
+    real_array = np.transpose(
+        np.vstack([[random.gauss(mu, sigma) for _ in range(N)],
+                   [random.gauss(mu, sigma) for _ in range(N)]]))
 
     mu = 5
     sigma = 1
-    attack_array = np.transpose( np.vstack([[random.gauss(mu, sigma) for _ in range(N)], [random.gauss(mu, sigma) for _ in range(N)]]) )
+    attack_array = np.transpose(
+        np.vstack([[random.gauss(mu, sigma) for _ in range(N)],
+                   [random.gauss(mu, sigma) for _ in range(N)]]))
 
     real = convert_array_to_list_of_frame_cont(real_array)
 
@@ -506,19 +521,22 @@ def test_video_gmm_pad_algorithm():
     RANDOM_STATE = 3
     FRAME_LEVEL_SCORES_FLAG = True
 
-    algorithm = VideoGmmPadAlgorithm(n_components = N_COMPONENTS,
-                                     random_state = RANDOM_STATE,
-                                     frame_level_scores_flag = FRAME_LEVEL_SCORES_FLAG)
+    algorithm = VideoGmmPadAlgorithm(
+        n_components=N_COMPONENTS,
+        random_state=RANDOM_STATE,
+        frame_level_scores_flag=FRAME_LEVEL_SCORES_FLAG)
 
     # training_features[0] - training features for the REAL class.
-    real_array_converted = algorithm.convert_list_of_frame_cont_to_array(real) # output is array
+    real_array_converted = algorithm.convert_list_of_frame_cont_to_array(
+        real)  # output is array
 
     assert (real_array == real_array_converted).all()
 
     # Train the GMM machine and get normalizers:
-    machine, features_mean, features_std = algorithm.train_gmm(real = real_array_converted,
-                                                               n_components = algorithm.n_components,
-                                                               random_state = algorithm.random_state)
+    machine, features_mean, features_std = algorithm.train_gmm(
+        real=real_array_converted,
+        n_components=algorithm.n_components,
+        random_state=algorithm.random_state)
 
     algorithm.machine = machine
 
@@ -534,7 +552,3 @@ def test_video_gmm_pad_algorithm():
     assert (np.max(scores_real) + 1.8380480068281055) < 0.000001
     assert (np.min(scores_attack) + 38.831260843070098) < 0.000001
     assert (np.max(scores_attack) + 5.3633030621521272) < 0.000001
-
-
-
-
