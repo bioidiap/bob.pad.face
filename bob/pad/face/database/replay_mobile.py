@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #==============================================================================
-import bob.bio.video  # Used in ReplayMobilePadFile class
+# Used in ReplayMobilePadFile class
+from bob.bio.video import FrameSelector, FrameContainer
 
 from bob.pad.base.database import PadFile  # Used in ReplayMobilePadFile class
 
@@ -46,35 +47,7 @@ class ReplayMobilePadFile(PadFile):
             file_id=f.id)
 
     #==========================================================================
-    def convert_arr_to_frame_cont(self, data):
-        """
-        This function converts an input 4D array with frames into FrameContainer,
-        where each frame is an RGB image. The dimensionality of the input array
-        is [N_frames, 3, N_rows, N_cols].
-
-        **Parameters:**
-
-        ``data`` : 4D :py:class:`numpy.ndarray`
-            An input 4D array with frames of the dimensionality:
-            [N_frames, 3, N_rows, N_cols].
-
-        **Returns:**
-
-        ``frames`` : FrameContainer
-            Resulting FrameContainer containing RGB frames.
-        """
-
-        frames = bob.bio.video.FrameContainer(
-        )  # initialize the FrameContainer
-
-        for idx, sample in enumerate(data):
-
-            frames.add(idx, sample)
-
-        return frames
-
-    #==========================================================================
-    def load(self, directory=None, extension='.mov'):
+    def load(self, directory=None, extension='.mov', frame_selector=FrameSelector(selection_style='all')):
         """
         Overridden version of the load method defined in the ``PadFile``.
 
@@ -96,10 +69,7 @@ class ReplayMobilePadFile(PadFile):
         video_data_array = self.f.load(
             directory=directory, extension=extension)
 
-        video_data = self.convert_arr_to_frame_cont(
-            video_data_array)  # the result is now a FrameContainer
-
-        return video_data
+        return frame_selector(video_data_array)
 
 
 #==============================================================================

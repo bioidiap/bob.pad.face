@@ -15,7 +15,7 @@ from bob.pad.face.database import msu_mfsd as msu_mfsd_hldi
 
 from bob.bio.video.database.mobio import MobioBioFile
 
-from bob.bio.video import FrameSelector
+from bob.bio.video import FrameSelector, FrameContainer
 
 import numpy as np
 
