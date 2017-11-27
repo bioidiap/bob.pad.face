@@ -31,7 +31,7 @@ def test_yield_faces_1():
 def test_yield_faces_2():
     database = Database()
     database.annotations = MethodType(
-        _annotations, database, database.__class__)
+        _annotations, database)
     for face in yield_faces(database, padfile):
         assert face.ndim == 2
         assert face.shape == database.frame_shape
