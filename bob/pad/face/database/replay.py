@@ -102,6 +102,14 @@ class ReplayPadDatabase(PadDatabase):
             original_extension=original_extension,
             **kwargs)
 
+    @property
+    def original_directory(self):
+        return self._db.original_directory
+
+    @original_directory.setter
+    def original_directory(self, value):
+        self._db.original_directory = value
+
     #==========================================================================
     def objects(self,
                 groups=None,
