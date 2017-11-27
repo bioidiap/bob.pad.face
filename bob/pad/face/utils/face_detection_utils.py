@@ -17,7 +17,7 @@ def get_eye_pos(lm):
 
     **Parameters:**
 
-    ``lm`` : :py:class:`array`
+    ``lm`` : :py:class:`numpy.ndarray`
         A numpy array containing the coordinates of facial landmarks, (68X2)
 
     **Returns:**
