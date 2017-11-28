@@ -104,11 +104,11 @@ class ReplayPadDatabase(PadDatabase):
 
     @property
     def original_directory(self):
-        return self._db.original_directory
+        return self.db.original_directory
 
     @original_directory.setter
     def original_directory(self, value):
-        self._db.original_directory = value
+        self.db.original_directory = value
 
     #==========================================================================
     def objects(self,
