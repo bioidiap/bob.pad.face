@@ -1,46 +1,45 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-#==============================================================================
 
 # Used in ReplayMobilePadFile class
 from bob.bio.video import FrameSelector, FrameContainer
-
-from bob.pad.face.database import VideoPadFile  # Used in ReplayPadFile class
-
 from bob.pad.base.database import PadDatabase
-
-#==============================================================================
+from bob.pad.face.database import VideoPadFile  # Used in ReplayPadFile class
+from bob.pad.face.utils import frames, number_of_frames
 
 
 class ReplayPadFile(VideoPadFile):
     """
-    A high level implementation of the File class for the REPLAY-ATTACK database.
+    A high level implementation of the File class for the REPLAY-ATTACK
+    database.
     """
 
     def __init__(self, f):
         """
-        **Parameters:**
-
-        ``f`` : :py:class:`object`
+        Parameters
+        ----------
+        f : object
             An instance of the File class defined in the low level db interface
             of the Replay database, in the bob.db.replay.models.py file.
         """
 
         self.f = f
         # this f is actually an instance of the File class that is defined in
-        # bob.db.replay.models and the PadFile class here needs
-        # client_id, path, attack_type, file_id for initialization. We have to
-        # convert information here and provide them to PadFile. attack_type is a
-        # little tricky to get here. Based on the documentation of PadFile:
-        # In cased of a spoofed data, this parameter should indicate what kind of spoofed attack it is.
-        # The default None value is interpreted that the PadFile is a genuine or real sample.
+        # bob.db.replay.models and the PadFile class here needs client_id,
+        # path, attack_type, file_id for initialization. We have to convert
+        # information here and provide them to PadFile. attack_type is a little
+        # tricky to get here. Based on the documentation of PadFile: In cased
+        # of a spoofed data, this parameter should indicate what kind of
+        # spoofed attack it is. The default None value is interpreted that the
+        # PadFile is a genuine or real sample.
         if f.is_real():
             attack_type = None
         else:
             attack_type = 'attack'
         # attack_type is a string and I decided to make it like this for this
-        # particular database. You can do whatever you want for your own database.
+        # particular database. You can do whatever you want for your own
+        # database.
 
         super(ReplayPadFile, self).__init__(
             client_id=f.client_id,
@@ -48,45 +47,45 @@ class ReplayPadFile(VideoPadFile):
             attack_type=attack_type,
             file_id=f.id)
 
-    def make_path(self, directory=None, extension='.mov'):
-        # path to the video file
-        return self.f.make_path(directory=directory, extension=extension)
 
-
-#==============================================================================
 class ReplayPadDatabase(PadDatabase):
     """
-    A high level implementation of the Database class for the REPLAY-ATTACK database.
+    A high level implementation of the Database class for the REPLAY-ATTACK
+    database.
     """
 
     def __init__(
             self,
-            protocol='grandtest',  # grandtest is the default protocol for this database
+            # grandtest is the default protocol for this database
+            protocol='grandtest',
             original_directory=None,
             original_extension=None,
             **kwargs):
         """
-        **Parameters:**
+        Parameters
+        ----------
 
-        ``protocol`` : :py:class:`str` or ``None``
-            The name of the protocol that defines the default experimental setup for this database.
+        protocol : str or None
+            The name of the protocol that defines the default experimental
+            setup for this database.
 
-        ``original_directory`` : :py:class:`str`
+        original_directory : str
             The directory where the original data of the database are stored.
 
-        ``original_extension`` : :py:class:`str`
+        original_extension : str
             The file name extension of the original data.
 
-        ``kwargs``
-            The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
+        kwargs
+            The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
+            base class constructor.
         """
 
         from bob.db.replay import Database as LowLevelDatabase
 
         self.db = LowLevelDatabase()
 
-        # Since the high level API expects different group names than what the low
-        # level API offers, you need to convert them when necessary
+        # Since the high level API expects different group names than what the
+        # low level API offers, you need to convert them when necessary
         self.low_level_group_names = (
             'train', 'devel',
             'test')  # group names in the low-level database interface
@@ -110,7 +109,6 @@ class ReplayPadDatabase(PadDatabase):
     def original_directory(self, value):
         self.db.original_directory = value
 
-    #==========================================================================
     def objects(self,
                 groups=None,
                 protocol=None,
@@ -118,31 +116,32 @@ class ReplayPadDatabase(PadDatabase):
                 model_ids=None,
                 **kwargs):
         """
-        This function returns lists of ReplayPadFile objects, which fulfill the given restrictions.
+        This function returns lists of ReplayPadFile objects, which fulfill the
+        given restrictions.
 
-        Keyword parameters:
-
-        ``groups`` : :py:class:`str`
-            OR a list of strings.
+        Parameters
+        ----------
+        groups : :obj:`str` or [:obj:`str`]
             The groups of which the clients should be returned.
-            Usually, groups are one or more elements of ('train', 'dev', 'eval')
+            Usually, groups are one or more elements of
+            ('train', 'dev', 'eval')
 
-        ``protocol`` : :py:class:`str`
+        protocol : str
             The protocol for which the clients should be retrieved.
             The protocol is dependent on your database.
             If you do not have protocols defined, just ignore this field.
 
-        ``purposes`` : :py:class:`str`
-            OR a list of strings.
+        purposes : :obj:`str` or [:obj:`str`]
             The purposes for which File objects should be retrieved.
             Usually it is either 'real' or 'attack'.
 
-        ``model_ids``
+        model_ids
             This parameter is not supported in PAD databases yet
+        **kwargs
 
-        **Returns:**
-
-        ``files`` : [ReplayPadFile]
+        Returns
+        -------
+        files : [ReplayPadFile]
             A list of ReplayPadFile objects.
         """
 
@@ -156,32 +155,35 @@ class ReplayPadDatabase(PadDatabase):
         files = [ReplayPadFile(f) for f in files]
         return files
 
-    #==========================================================================
     def annotations(self, f):
         """
         Return annotations for a given file object ``f``, which is an instance
-        of ``ReplayPadFile`` defined in the HLDI of the Replay-Attack DB.
-        The ``load()`` method of ``ReplayPadFile`` class (see above)
-        returns a video, therefore this method returns bounding-box annotations
-        for each video frame. The annotations are returned as dictionary of dictionaries.
+        of ``ReplayPadFile`` defined in the HLDI of the Replay-Attack DB. The
+        ``load()`` method of ``ReplayPadFile`` class (see above) returns a
+        video, therefore this method returns bounding-box annotations for each
+        video frame. The annotations are returned as a dictionary of
+        dictionaries.
 
-        **Parameters:**
+        Parameters
+        ----------
+        f : :any:`ReplayPadFile`
+            An instance of :any:`ReplayPadFile`.
 
-        ``f`` : :py:class:`object`
-            An instance of ``ReplayPadFile`` defined above.
-
-        **Returns:**
-
-        ``annotations`` : :py:class:`dict`
-            A dictionary containing the annotations for each frame in the video.
-            Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
-            Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
-            is the dictionary defining the coordinates of the face bounding box in frame N.
+        Returns
+        -------
+        annotations : :py:class:`dict`
+            A dictionary containing the annotations for each frame in the
+            video. Dictionary structure:
+            ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.Where
+            ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
+            is the dictionary defining the coordinates of the face bounding box
+            in frame N.
         """
 
-        annots = f.f.bbx(
-            directory=self.original_directory
-        )  # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
+        # numpy array containing the face bounding box data for each video
+        # frame, returned data format described in the f.bbx() method of the
+        # low level interface
+        annots = f.f.bbx(directory=self.original_directory)
 
         annotations = {}  # dictionary to return
 
@@ -197,3 +199,51 @@ class ReplayPadDatabase(PadDatabase):
             }
 
         return annotations
+
+    def frames(self, padfile):
+        """Yields the frames of the padfile one by one.
+
+        Parameters
+        ----------
+        padfile : :any:`ReplayPadFile`
+            The high-level replay pad file
+
+        Yields
+        ------
+        :any:`numpy.array`
+            A frame of the video. The size is (3, 240, 320).
+        """
+        vfilename = padfile.make_path(
+            directory=self.original_directory,
+            extension=self.original_extension)
+        for retval in frames(vfilename):
+            yield retval
+
+    def number_of_frames(self, padfile):
+        """Returns the number of frames in a video file.
+
+        Parameters
+        ----------
+        padfile : :any:`ReplayPadFile`
+            The high-level pad file
+
+        Returns
+        -------
+        int
+            The number of frames.
+        """
+        vfilename = padfile.make_path(
+            directory=self.original_directory,
+            extension=self.original_extension)
+        return number_of_frames(vfilename)
+
+    @property
+    def frame_shape(self):
+        """Returns the size of each frame in this database.
+
+        Returns
+        -------
+        (int, int, int)
+            The (#Channels, Height, Width) which is (3, 240, 320).
+        """
+        return (3, 240, 320)
