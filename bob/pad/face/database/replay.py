@@ -1,12 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-
 # Used in ReplayMobilePadFile class
-from bob.bio.video import FrameSelector, FrameContainer
 from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile  # Used in ReplayPadFile class
 from bob.pad.face.utils import frames, number_of_frames
+from bob.extension import rc
 
 
 class ReplayPadFile(VideoPadFile):
@@ -58,8 +57,8 @@ class ReplayPadDatabase(PadDatabase):
             self,
             # grandtest is the default protocol for this database
             protocol='grandtest',
-            original_directory=None,
-            original_extension=None,
+            original_directory=rc['bob.db.replay.directory'],
+            original_extension='.mov',
             **kwargs):
         """
         Parameters

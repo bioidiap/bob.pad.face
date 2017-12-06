@@ -7,6 +7,7 @@ from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
 from bob.pad.face.utils import frames, number_of_frames
 import numpy
+from bob.extension import rc
 # documentation imports
 import bob.bio.video
 
@@ -89,8 +90,8 @@ class ReplayMobilePadDatabase(PadDatabase):
             self,
             # grandtest is the default protocol for this database
             protocol='grandtest',
-            original_directory=None,
-            original_extension=None,
+            original_directory=rc['bob.db.replaymobile.directory'],
+            original_extension='.mov',
             **kwargs):
         """
         Parameters
@@ -251,7 +252,7 @@ class ReplayMobilePadDatabase(PadDatabase):
         vfilename = padfile.make_path(
             directory=self.original_directory,
             extension=self.original_extension)
-        is_not_tablet = not padfile._f.is_tablet()
+        is_not_tablet = not padfile.f.is_tablet()
         for frame in frames(vfilename):
             frame = numpy.rollaxis(frame, 2, 1)
             if is_not_tablet:
