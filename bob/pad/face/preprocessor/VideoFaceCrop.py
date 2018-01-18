@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 12 14:14:23 2017
+Created on Thu Jan 18 12:03:12 2018
 
-@author: Olegs Nikisins
+@author: Anjith George
 """
 #==============================================================================
 # Import what is needed here:
@@ -18,7 +18,9 @@ import numpy as np
 
 from bob.pad.face.preprocessor.ImageFaceCrop import ImageFaceCrop
 
-from ..utils.face_detection_utils import detect_faces_in_video
+
+#TODO: Only one is needed
+from ..utils.face_detection_utils import detect_faces_in_video, detect_face_landmarks_in_video
 
 #==============================================================================
 # Main body:
@@ -91,6 +93,11 @@ class VideoFaceCrop(Preprocessor, object):
         is installed in your system you can use it as-well (bob.ip.mtcnn is NOT
         a dependency of this package).
 
+    ``use_face_alignment`` : :py:class:`bool`
+        If set to ``True`` the face will be aligned aligned using the facial landmarks 
+        detected locally. Works only when 'detect_faces_flag==True' and use_local_cropper_flag==True
+        Default: ``False``.
+
     ``kwargs``
         Remaining keyword parameters passed to the Base constructor, such as ``color_channel`` or ``dtype``.
     """
@@ -105,10 +112,11 @@ class VideoFaceCrop(Preprocessor, object):
                  mask_seed=None,
                  check_face_size_flag=False,
                  min_face_size=50,
-                 use_local_cropper_flag=False,
-                 rgb_output_flag=False,
-                 detect_faces_flag=False,
+                 use_local_cropper_flag=False,#TODO
+                 rgb_output_flag=False, #TODO: Needs RGB output->config
+                 detect_faces_flag=False, #TODO
                  face_detection_method="dlib",
+                 use_face_alignment=False, #TODO: uses aligncrop if true
                  **kwargs):
 
         super(VideoFaceCrop, self).__init__(
@@ -124,6 +132,7 @@ class VideoFaceCrop(Preprocessor, object):
             rgb_output_flag=rgb_output_flag,
             detect_faces_flag=detect_faces_flag,
             face_detection_method=face_detection_method,
+            use_face_alignment=use_face_alignment,
             **kwargs)
 
         self.cropped_image_size = cropped_image_size
@@ -138,6 +147,7 @@ class VideoFaceCrop(Preprocessor, object):
         self.rgb_output_flag = rgb_output_flag
         self.detect_faces_flag = detect_faces_flag
         self.face_detection_method = face_detection_method
+        self.use_face_alignment=use_face_alignment
 
         # Save also the data stored in the kwargs:
         for (k, v) in kwargs.items():
@@ -145,9 +155,10 @@ class VideoFaceCrop(Preprocessor, object):
 
         if self.use_local_cropper_flag:
 
+
             preprocessor = ImageFaceCrop(
-                face_size=self.cropped_image_size[0],
-                rgb_output_flag=self.rgb_output_flag)
+                face_size=self.cropped_image_size[0],rgb_output_flag=self.rgb_output_flag, use_face_alignment=self.use_face_alignment)
+            
 
         else:
 
@@ -303,8 +314,8 @@ class VideoFaceCrop(Preprocessor, object):
 
         if self.detect_faces_flag:
 
-            annotations = detect_faces_in_video(frames,
-                                                self.face_detection_method)
+            annotations = detect_face_landmarks_in_video(frames,
+                                                self.face_detection_method) #TODO: new dicts
 
         if len(frames) != len(annotations):  # if some annotations are missing
 
