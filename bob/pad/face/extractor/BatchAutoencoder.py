@@ -167,6 +167,33 @@ class BatchAutoencoder(Extractor, object):
 
         return video_tnsr
 
+    def convert_arr_to_frame_cont(self, data):
+        """
+        This function converts an array of samples into a FrameContainer, where
+        each frame stores features of a particular sample.
+
+        **Parameters:**
+
+        ``data`` : 2D :py:class:`numpy.ndarray`
+            An input array of features of the size
+            (Nr. of samples X Nr. of features).
+
+        **Returns:**
+
+        ``frames`` : FrameContainer
+            Resulting FrameContainer, where each frame stores features of
+            a particular sample.
+        """
+
+        frames = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
+
+        for idx, sample in enumerate(data):
+
+            frames.add(idx, sample)
+
+        return frames
+
 
     #==========================================================================
     def __call__(self, frames):
@@ -208,8 +235,8 @@ class BatchAutoencoder(Extractor, object):
 
         # Above data can now be passed through the model:
         ## Model running, encoding and reconstruction
-        reconstructed = model.forward(Variable(video_tnsr))
-        encoded = model.encoder(Variable(video_tnsr))
+        reconstructed = self.model.forward(Variable(video_tnsr))
+        encoded = self.model.encoder(Variable(video_tnsr))
 
         ## Getting numpy arrays for feature extraction 
 
@@ -234,19 +261,17 @@ class BatchAutoencoder(Extractor, object):
 
 
         # TODO:Convert to framecontainer?
+        # Needs to be tested with bob
+        features = self.convert_arr_to_frame_cont(features)
 
 
 
-
-
-
-
-
-#        TODO: Compute features: OLEGS
 
         return features
 
     #==========================================================================
+    # Changed , DEBUG
+
     def write_feature(self, frames, file_name):
         """
         Writes the given data (that has been generated using the __call__ function of this class) to file.
@@ -261,7 +286,8 @@ class BatchAutoencoder(Extractor, object):
             Name of the file.
         """
 
-        self.video_extractor.write_feature(frames, file_name)
+        bob.bio.video.extractor.Wrapper(Extractor()).write_feature(
+            frames, file_name)
 
     #==========================================================================
     def read_feature(self, file_name):
@@ -280,6 +306,8 @@ class BatchAutoencoder(Extractor, object):
             Frames stored in the frame container.
         """
 
-        frames = self.video_extractor.read_feature(file_name)
+        frames = bob.bio.video.extractor.Wrapper(
+            Extractor()).read_feature(file_name)
 
         return frames
+
