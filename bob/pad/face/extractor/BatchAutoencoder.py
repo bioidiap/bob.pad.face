@@ -17,9 +17,20 @@ from bob.pad.face.extractor import VideoDataLoader
 
 import six
 
+import numpy as np
+
+import torch
+
+import torchvision
+
+import PIL
+
+from torchvision import transforms
+
+from torch.autograd import Variable
+
 #==============================================================================
 # Main body:
-
 
 class BatchAutoencoder(Extractor, object):
     """
@@ -50,6 +61,73 @@ class BatchAutoencoder(Extractor, object):
         self.b = b
         self.c = c
 
+        self.img_transform = transforms.Compose([transforms.Resize((64, 64)),
+                                                 transforms.ToTensor(),
+                                                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+                                                 ])
+
+
+    #==========================================================================
+    def convert_and_swap_color_frames_to_array(self, frames):
+        """
+        Convert FrameContainer containing color video to the 4D numpy array.
+        Also, the dimensionality of the data is chenged to the following format:
+        num_frames x width x hight x color_channels (RGB order).
+
+        **Parameters:**
+
+        ``frames`` : FrameContainer.
+            Video data stored in the FrameContainer,
+            see ``bob.bio.video.utils.FrameContainer`` for further details.
+
+        **Returns:**
+
+        ``video_data_array_plt`` : 4D :py:class:`numpy.ndarray`
+            Output 4D array of the size:
+            num_frames x width x hight x color_channels (RGB order).
+        """
+
+        video_data_array = frames.as_array()
+
+        video_data_array_plt = np.swapaxes(video_data_array, 1, 2)
+        video_data_array_plt = np.swapaxes(video_data_array_plt, 2, 3)
+
+        return video_data_array_plt
+
+
+    #==========================================================================
+    def apply_transforms(self, video_data_array, img_transform):
+        """
+        Apply composed transformation to each frame in the input 4D array.
+
+        **Parameters:**
+
+        ``video_data_array`` : 4D :py:class:`numpy.ndarray`
+            A 4D array containing the color video. The size is:
+            num_frames x width x hight x color_channels (RGB order).
+
+        **Returns:**
+
+        ``video_tnsr`` : torch FloatTensor
+            Tensor containing normalized color video. The shape is:
+            num_frames x color_channels (RGB order) x width x hight .
+        """
+
+        tnsr_img_list = []
+
+        for color_img_plt in video_data_array:
+
+            pil_img = PIL.Image.fromarray(color_img_plt)
+
+            tnsr_img_transf = img_transform(pil_img)
+
+            tnsr_img_list.append(tnsr_img_transf)
+
+        video_tnsr = torch.stack(tnsr_img_list)
+
+        return video_tnsr
+
+
     #==========================================================================
     def __call__(self, frames):
         """
@@ -79,11 +157,18 @@ class BatchAutoencoder(Extractor, object):
             frames = video_loader(frames)  # frames is now a FrameContainer
 
 
-#        import ipdb; ipdb.set_trace()
+#        DONE: OLEGS - added a conversion of the frame container to the normalized torch tensor
+        video_data_array = self.convert_and_swap_color_frames_to_array(frames)
 
-#        TODO: OLEGS - will add a conversion of the frame container to the normalized torch tensor
+        video_tnsr = self.apply_transforms(video_data_array = video_data_array,
+                                           img_transform = self.img_transform)
+
 
 #        TODO: ANJITH - loading of the Autoencoder model, passing above data through the model
+
+        # Above data can now be passed through the model:
+        output = model(Variable(video_tnsr))
+
 
 #        TODO: Compute features: OLEGS
 
