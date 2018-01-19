@@ -57,14 +57,54 @@ class BatchAutoencoder(Extractor, object):
         super(BatchAutoencoder, self).__init__(
             a=a, b=b, c=c)
 
-        self.a = a
-        self.b = b
+        self.bottleneck_feature = a
+        self.mse = b
         self.c = c
 
         self.img_transform = transforms.Compose([transforms.Resize((64, 64)),
                                                  transforms.ToTensor(),
                                                  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                                  ])
+        ## Model loading ANJITH, 
+        # TODO: Move the model file to a suitable folder ?, 
+
+        # Define model
+
+        class autoencoder(nn.Module):
+
+            def __init__(self):
+                super(autoencoder, self).__init__()
+                self.encoder = nn.Sequential(
+                    nn.Conv2d(3, 64, 3, stride=3, padding=1),  # b, 16, 10, 10
+                    nn.ReLU(True),
+                    nn.MaxPool2d(2, stride=2),  # b, 16, 5, 5
+                    nn.Conv2d(64, 8, 3, stride=2, padding=1),  # b, 8, 3, 3
+                    nn.ReLU(True),
+                    nn.MaxPool2d(2, stride=1)  # b, 8, 2, 2
+                )
+                self.decoder = nn.Sequential(
+                    nn.ConvTranspose2d(8, 64, 3, stride=2),  # b, 16, 5, 5
+                    nn.ReLU(True),
+                    nn.ConvTranspose2d(64, 8, 5, stride=3, padding=1),  # b, 8, 15, 15
+                    nn.ReLU(True),
+                    nn.ConvTranspose2d(8, 3, 2, stride=2, padding=1),  # b, 1, 28, 28
+                    nn.Tanh()
+                )
+
+            def forward(self, x):
+                x = self.encoder(x)
+                x = self.decoder(x)
+                return x
+
+
+        self.model = autoencoder()
+
+        # Load model
+        # Move the model to some reasobable place
+
+        model_state=torch.load("conv_autoencoder119.pth")
+        self.model.load_state_dict(model_state)
+
 
 
     #==========================================================================
@@ -167,7 +207,39 @@ class BatchAutoencoder(Extractor, object):
 #        TODO: ANJITH - loading of the Autoencoder model, passing above data through the model
 
         # Above data can now be passed through the model:
-        output = model(Variable(video_tnsr))
+        ## Model running, encoding and reconstruction
+        reconstructed = model.forward(Variable(video_tnsr))
+        encoded = model.encoder(Variable(video_tnsr))
+
+        ## Getting numpy arrays for feature extraction 
+
+        reconstructed_numpy=reconstructed.data.numpy()
+        encoded_numpy=encoded.data.numpy()
+        orig_numpy=video_tnsr.data.numpy() #Check
+
+        ## Feature extraction
+
+        if self.bottleneck_feature:
+
+            # 1. Bottleneck feature
+
+            features=np.reshape(encoded_numpy,(encoded_numpy.shape[0],encoded_numpy.shape[1]*encoded_numpy.shape[2]*encoded_numpy.shape[3]))
+
+            # 2. MSE with original and reconstruction
+
+        if self.mse:
+
+            features = ((orig_numpy - reconstructed_numpy) ** 2).mean(axis=None)
+
+
+
+        # TODO:Convert to framecontainer?
+
+
+
+
+
+
 
 
 #        TODO: Compute features: OLEGS
