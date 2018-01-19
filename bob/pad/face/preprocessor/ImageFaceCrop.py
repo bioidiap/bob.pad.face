@@ -42,16 +42,17 @@ class ImageFaceCrop(Preprocessor):
     """
 
     #==========================================================================
-    def __init__(self, face_size, rgb_output_flag=False):
+    def __init__(self, face_size, rgb_output_flag=False,use_face_alignment=False):
 
         Preprocessor.__init__(
-            self, face_size=face_size, rgb_output_flag=rgb_output_flag)
+            self, face_size=face_size, rgb_output_flag=rgb_output_flag,use_face_alignment=use_face_alignment)
 
         self.face_size = face_size
         self.rgb_output_flag = rgb_output_flag
+        self.use_face_alignment=use_face_alignment
 
     #==========================================================================
-    def normalize_image_size_in_grayscale(self, image, annotations, face_size):
+    def normalize_image_size_in_grayscale(self, image, annotations, face_size,use_face_alignment):
         """
         This function crops the face in the input Gray-scale image given annotations
         defining the face bounding box. The size of the face is also normalized to the
@@ -78,21 +79,33 @@ class ImageFaceCrop(Preprocessor):
             An image of the cropped face of the size (self.face_size, self.face_size).
         """
 
-        cutframe = image[annotations['topleft'][0]:annotations['bottomright'][
-            0], annotations['topleft'][1]:annotations['bottomright'][1]]
 
-        tempbbx = np.ndarray((face_size, face_size), 'float64')
-        normbbx = np.ndarray((face_size, face_size), 'uint8')
-        bob.ip.base.scale(cutframe, tempbbx)  # normalization
-        tempbbx_ = tempbbx + 0.5
-        tempbbx_ = np.floor(tempbbx_)
-        normbbx = np.cast['uint8'](tempbbx_)
+        if not use_face_alignment:
+
+            cutframe = image[annotations['topleft'][0]:annotations['bottomright'][
+                0], annotations['topleft'][1]:annotations['bottomright'][1]]
+
+            tempbbx = np.ndarray((face_size, face_size), 'float64')
+            normbbx = np.ndarray((face_size, face_size), 'uint8')
+            bob.ip.base.scale(cutframe, tempbbx)  # normalization
+            tempbbx_ = tempbbx + 0.5
+            tempbbx_ = np.floor(tempbbx_)
+            normbbx = np.cast['uint8'](tempbbx_)
+        else:
+            face_eyes_norm = bob.ip.base.FaceEyesNorm(eyes_distance = 32.5, crop_size = (face_size, face_size), eyes_center = (16, 31.75)) # Add more params, 
+            right_eye,left_eye=annotations['right_eye'],annotations['left_eye']
+
+
+            normalized_image = face_eyes_norm( image, right_eye = right_eye, left_eye = left_eye )
+            
+            normbbx=normalized_image.astype('uint8')
+
 
         return normbbx
 
     #==========================================================================
     def normalize_image_size(self, image, annotations, face_size,
-                             rgb_output_flag):
+                             rgb_output_flag,use_face_alignment):
         """
         This function crops the face in the input image given annotations defining
         the face bounding box. The size of the face is also normalized to the
@@ -140,7 +153,7 @@ class ImageFaceCrop(Preprocessor):
         for image_channel in image:  # for all color channels in the input image
 
             cropped_face = self.normalize_image_size_in_grayscale(
-                image_channel, annotations, face_size)
+                image_channel, annotations, face_size,use_face_alignment)
 
             result.append(cropped_face)
 
@@ -172,6 +185,6 @@ class ImageFaceCrop(Preprocessor):
         """
 
         norm_face_image = self.normalize_image_size(
-            image, annotations, self.face_size, self.rgb_output_flag)
+            image, annotations, self.face_size, self.rgb_output_flag,self.use_face_alignment)
 
         return norm_face_image
