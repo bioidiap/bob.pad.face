@@ -103,6 +103,8 @@ setup(
             'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor',  # no preprocessing
             'rgb-face-detect-dlib = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_dlib',  # detect faces locally replacing database annotations
             'rgb-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_mtcnn',  # detect faces locally replacing database annotations
+            'rgb-face-detect-dlib-align = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_dlib_align',  # detect faces locally replacing database annotations and align them
+            'rgb-face-detect-mtcnn-align = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_mtcnn_align',  # detect faces locally replacing database annotations and align them
         ],
 
         # registered extractors:
