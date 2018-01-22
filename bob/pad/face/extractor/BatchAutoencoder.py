@@ -21,7 +21,7 @@ import numpy as np
 
 import torch
 
-import torchvision
+#import torchvision
 
 import PIL
 
@@ -29,47 +29,45 @@ from torchvision import transforms
 
 from torch.autograd import Variable
 
+from torch import nn
+
+import pkg_resources
+
+
 #==============================================================================
 # Main body:
 
 class BatchAutoencoder(Extractor, object):
     """
-    TODO: Doc......
+    This class is designed to pass the input batch of images through the
+    autoencoder, and compute the feature vector. Feature vectors of the
+    following types can be computed for each sample in the batch:
+    1. features of the code layer,
+    2. reconstruction error.
 
     **Parameters:**
 
-    ``a`` : :py:class:`bool`
-        If ``True``, galbally features will be added to the features.
-        Default: ``True``.
-
-    ``b`` : :py:class:`bool`
-        If ``True``, MSU features will be added to the features.
-        Default: ``True``.
-
-    ``c`` : numpy.dtype
-        The data type of the resulting feature vector.
-        Default: ``None``.
+    ``code_layer_features_flag`` : :py:class:`bool`
+        If ``True``, features of the code layer will be computed for each
+        sample in the batch. Otherwise, MSE reconstruction error will be
+        computed per sample.
     """
 
     #==========================================================================
-    def __init__(self, a=True, b=True, c=None, **kwargs):
+    def __init__(self, code_layer_features_flag=True, **kwargs):
 
         super(BatchAutoencoder, self).__init__(
-            a=a, b=b, c=c)
+                code_layer_features_flag = code_layer_features_flag)
 
-        self.bottleneck_feature = a
-        self.mse = b
-        self.c = c
+        self.code_layer_features_flag = code_layer_features_flag
 
         self.img_transform = transforms.Compose([transforms.Resize((64, 64)),
                                                  transforms.ToTensor(),
                                                  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                                  ])
-        ## Model loading ANJITH, 
-        # TODO: Move the model file to a suitable folder ?, 
 
-        # Define model
-
+        # The model class is defined here:
+        # TODO: move this class to different place/config file.
         class autoencoder(nn.Module):
 
             def __init__(self):
@@ -96,15 +94,16 @@ class BatchAutoencoder(Extractor, object):
                 x = self.decoder(x)
                 return x
 
-
+        # Initialize the model
         self.model = autoencoder()
 
-        # Load model
-        # Move the model to some reasobable place
+        # TODO: move the model to different place:
+        model_file = pkg_resources.resource_filename('bob.pad.face', 'extractor/conv_autoencoder119.pth')
 
-        model_state=torch.load("conv_autoencoder119.pth")
+        model_state=torch.load(model_file)
+
+        # Initialize the state of the model:
         self.model.load_state_dict(model_state)
-
 
 
     #==========================================================================
@@ -167,6 +166,8 @@ class BatchAutoencoder(Extractor, object):
 
         return video_tnsr
 
+
+    #==========================================================================
     def convert_arr_to_frame_cont(self, data):
         """
         This function converts an array of samples into a FrameContainer, where
@@ -198,9 +199,10 @@ class BatchAutoencoder(Extractor, object):
     #==========================================================================
     def __call__(self, frames):
         """
-        TODO: Extract feature vectors containing ...... for each frame
-        in the input color video sequence/container. The resulting features
-        will be saved to the FrameContainer too.
+        Extract feature vectors containing either code layer features, or
+        reconstruction error as a feature, for each frame in the input color
+        video sequence/container. The resulting features will be saved to
+        the FrameContainer too.
 
         **Parameters:**
 
@@ -214,7 +216,9 @@ class BatchAutoencoder(Extractor, object):
         **Returns:**
 
         ``features`` : FrameContainer
-            .....
+            If ``self.code_layer_features_flag=True``, features of the code
+            layer will be returned for each frame in the batch.
+            Otherwise, MSE reconstruction error will be returned per sample.
         """
 
         if isinstance(frames, six.string_types):  # if frames is a path(!)
@@ -223,58 +227,41 @@ class BatchAutoencoder(Extractor, object):
 
             frames = video_loader(frames)  # frames is now a FrameContainer
 
-
-#        DONE: OLEGS - added a conversion of the frame container to the normalized torch tensor
         video_data_array = self.convert_and_swap_color_frames_to_array(frames)
 
         video_tnsr = self.apply_transforms(video_data_array = video_data_array,
                                            img_transform = self.img_transform)
 
-
-#        TODO: ANJITH - loading of the Autoencoder model, passing above data through the model
-
-        # Above data can now be passed through the model:
-        ## Model running, encoding and reconstruction
+        # Above data can now be passed through the model.
+        # Model running, encoding and reconstruction.
         reconstructed = self.model.forward(Variable(video_tnsr))
         encoded = self.model.encoder(Variable(video_tnsr))
 
-        ## Getting numpy arrays for feature extraction 
-
+        # Getting numpy arrays for feature extraction.
         reconstructed_numpy=reconstructed.data.numpy()
         encoded_numpy=encoded.data.numpy()
-        orig_numpy=video_tnsr.data.numpy() #Check
+        orig_numpy=video_tnsr.numpy() #Check
 
-        ## Feature extraction
+        # Feature extraction
 
-        if self.bottleneck_feature:
-
-            # 1. Bottleneck feature
+        if self.code_layer_features_flag: # 1. Code layer features
 
             features=np.reshape(encoded_numpy,(encoded_numpy.shape[0],encoded_numpy.shape[1]*encoded_numpy.shape[2]*encoded_numpy.shape[3]))
 
-            # 2. MSE with original and reconstruction
+        else: # MSE as a feature
 
-        if self.mse:
+            features = ((orig_numpy - reconstructed_numpy) ** 2).mean(axis=1).mean(axis=1).mean(axis=1)
 
-            features = ((orig_numpy - reconstructed_numpy) ** 2).mean(axis=None)
-
-
-
-        # TODO:Convert to framecontainer?
-        # Needs to be tested with bob
         features = self.convert_arr_to_frame_cont(features)
-
-
-
 
         return features
 
-    #==========================================================================
-    # Changed , DEBUG
 
+    #==========================================================================
     def write_feature(self, frames, file_name):
         """
-        Writes the given data (that has been generated using the __call__ function of this class) to file.
+        Writes the given data (that has been generated using the __call__
+        function of this class) to file.
         This method overwrites the write_data() method of the Extractor class.
 
         **Parameters:**
@@ -288,6 +275,7 @@ class BatchAutoencoder(Extractor, object):
 
         bob.bio.video.extractor.Wrapper(Extractor()).write_feature(
             frames, file_name)
+
 
     #==========================================================================
     def read_feature(self, file_name):
