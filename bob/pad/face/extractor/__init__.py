@@ -4,6 +4,7 @@ from .ImageQualityMeasure import ImageQualityMeasure
 from .VideoDataLoader import VideoDataLoader
 from .VideoQualityMeasure import VideoQualityMeasure
 from .FrameDiffFeatures import FrameDiffFeatures
+from .BatchAutoencoder import BatchAutoencoder
 
 
 def __appropriate__(*args):

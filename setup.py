@@ -112,6 +112,8 @@ setup(
             'video-lbp-histogram-extractor-n8r1-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r1_uniform',
             'video-quality-measure-galbally-msu = bob.pad.face.config.extractor.video_quality_measure:video_quality_measure_galbally_msu',
             'frame-diff-feat-extr-w20-over0 = bob.pad.face.config.extractor.frame_diff_features:frame_diff_feat_extr_w20_over0',
+            'autoencoder-code-layer = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer',
+            'autoencoder-mse = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_mse',
         ],
 
         # registered algorithms:
