@@ -104,6 +104,8 @@ class BatchAutoencoder(Extractor, object):
 
         # Initialize the state of the model:
         self.model.load_state_dict(model_state)
+        # Model is used for evaluation only
+        self.model.train(False)
 
 
     #==========================================================================
