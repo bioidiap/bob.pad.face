@@ -228,6 +228,9 @@ class VideoGmmPadAlgorithm(Algorithm):
 
         features_norm = np.vstack(row_norm_list)
 
+        # Address the case when NaN are produced due to zero std values:
+        features_norm = np.nan_to_num(features_norm)
+
         return features_norm, features_mean, features_std
 
     # ==========================================================================
