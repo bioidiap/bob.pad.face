@@ -57,7 +57,7 @@ class BatchAutoencoder(Extractor, object):
     def __init__(self, code_layer_features_flag=True, **kwargs):
 
         super(BatchAutoencoder, self).__init__(
-                code_layer_features_flag = code_layer_features_flag)
+            code_layer_features_flag=code_layer_features_flag)
 
         self.code_layer_features_flag = code_layer_features_flag
 
@@ -73,19 +73,28 @@ class BatchAutoencoder(Extractor, object):
             def __init__(self):
                 super(autoencoder, self).__init__()
                 self.encoder = nn.Sequential(
-                    nn.Conv2d(3, 64, 3, stride=3, padding=1),  # b, 16, 10, 10
+                    nn.Conv2d(3, 16, 3, stride=1, padding=1),  # b, 16, 10, 10
                     nn.ReLU(True),
-                    nn.MaxPool2d(2, stride=2),  # b, 16, 5, 5
-                    nn.Conv2d(64, 8, 3, stride=2, padding=1),  # b, 8, 3, 3
+                    nn.MaxPool2d(2, stride=2),
+                    nn.Conv2d(16, 8, 3, stride=1, padding=1),
                     nn.ReLU(True),
-                    nn.MaxPool2d(2, stride=1)  # b, 8, 2, 2
+                    nn.MaxPool2d(2, stride=2),
+                    nn.Conv2d(8, 8, 3, stride=1, padding=1),
+                    nn.ReLU(True),
+                    nn.MaxPool2d(2, stride=1),
+                    nn.Conv2d(8, 8, 3, stride=1, padding=1),
+                    nn.ReLU(True),
+                    nn.MaxPool2d(2, stride=2)
+
                 )
                 self.decoder = nn.Sequential(
-                    nn.ConvTranspose2d(8, 64, 3, stride=2),  # b, 16, 5, 5
+                    nn.ConvTranspose2d(8, 8, 3, stride=1, padding=0),  # b, 16, 5, 5
                     nn.ReLU(True),
-                    nn.ConvTranspose2d(64, 8, 5, stride=3, padding=1),  # b, 8, 15, 15
+                    nn.ConvTranspose2d(8, 16, 3, stride=2, padding=0),  # b, 8, 15, 15
                     nn.ReLU(True),
-                    nn.ConvTranspose2d(8, 3, 2, stride=2, padding=1),  # b, 1, 28, 28
+                    nn.ConvTranspose2d(16, 8, 3, stride=2, padding=2),  # b, 1, 28, 28
+                    nn.ReLU(True),
+                    nn.ConvTranspose2d(8, 3, 2, stride=2, padding=3),
                     nn.Tanh()
                 )
 
@@ -94,19 +103,20 @@ class BatchAutoencoder(Extractor, object):
                 x = self.decoder(x)
                 return x
 
+        model = autoencoder()
+
         # Initialize the model
         self.model = autoencoder()
 
         # TODO: move the model to different place:
-        model_file = pkg_resources.resource_filename('bob.pad.face', 'extractor/conv_autoencoder119.pth')
+        model_file = pkg_resources.resource_filename('bob.pad.face', 'extractor/conv_autoencoder118.pth')
 
-        model_state=torch.load(model_file)
+        model_state = torch.load(model_file)
 
         # Initialize the state of the model:
         self.model.load_state_dict(model_state)
         # Model is used for evaluation only
         self.model.train(False)
-
 
     #==========================================================================
     def convert_and_swap_color_frames_to_array(self, frames):
@@ -134,7 +144,6 @@ class BatchAutoencoder(Extractor, object):
         video_data_array_plt = np.swapaxes(video_data_array_plt, 2, 3)
 
         return video_data_array_plt
-
 
     #==========================================================================
     def apply_transforms(self, video_data_array, img_transform):
@@ -168,7 +177,6 @@ class BatchAutoencoder(Extractor, object):
 
         return video_tnsr
 
-
     #==========================================================================
     def convert_arr_to_frame_cont(self, data):
         """
@@ -196,7 +204,6 @@ class BatchAutoencoder(Extractor, object):
             frames.add(idx, sample)
 
         return frames
-
 
     #==========================================================================
     def __call__(self, frames):
@@ -231,8 +238,8 @@ class BatchAutoencoder(Extractor, object):
 
         video_data_array = self.convert_and_swap_color_frames_to_array(frames)
 
-        video_tnsr = self.apply_transforms(video_data_array = video_data_array,
-                                           img_transform = self.img_transform)
+        video_tnsr = self.apply_transforms(video_data_array=video_data_array,
+                                           img_transform=self.img_transform)
 
         # Above data can now be passed through the model.
         # Model running, encoding and reconstruction.
@@ -240,24 +247,23 @@ class BatchAutoencoder(Extractor, object):
         encoded = self.model.encoder(Variable(video_tnsr))
 
         # Getting numpy arrays for feature extraction.
-        reconstructed_numpy=reconstructed.data.numpy()
-        encoded_numpy=encoded.data.numpy()
-        orig_numpy=video_tnsr.numpy() #Check
+        reconstructed_numpy = reconstructed.data.numpy()
+        encoded_numpy = encoded.data.numpy()
+        orig_numpy = video_tnsr.numpy()  # Check
 
         # Feature extraction
 
-        if self.code_layer_features_flag: # 1. Code layer features
+        if self.code_layer_features_flag:  # 1. Code layer features
 
-            features=np.reshape(encoded_numpy,(encoded_numpy.shape[0],encoded_numpy.shape[1]*encoded_numpy.shape[2]*encoded_numpy.shape[3]))
+            features = np.reshape(encoded_numpy, (encoded_numpy.shape[0], encoded_numpy.shape[1]*encoded_numpy.shape[2]*encoded_numpy.shape[3]))
 
-        else: # MSE as a feature
+        else:  # MSE as a feature
 
-            features = ((orig_numpy - reconstructed_numpy) ** 2).mean(axis=1).mean(axis=1).mean(axis=1)
+            features = -1*((orig_numpy - reconstructed_numpy) ** 2).mean(axis=1).mean(axis=1).mean(axis=1)
 
         features = self.convert_arr_to_frame_cont(features)
 
         return features
-
 
     #==========================================================================
     def write_feature(self, frames, file_name):
@@ -277,7 +283,6 @@ class BatchAutoencoder(Extractor, object):
 
         bob.bio.video.extractor.Wrapper(Extractor()).write_feature(
             frames, file_name)
-
 
     #==========================================================================
     def read_feature(self, file_name):
@@ -300,4 +305,3 @@ class BatchAutoencoder(Extractor, object):
             Extractor()).read_feature(file_name)
 
         return frames
-

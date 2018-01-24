@@ -16,8 +16,7 @@ setup(
     # information before releasing code publicly.
     name='bob.pad.face',
     version=open("version.txt").read().rstrip(),
-    description=
-    'Implements tools for spoofing or presentation attack detection in face biometrics',
+    description='Implements tools for spoofing or presentation attack detection in face biometrics',
     url='https://gitlab.idiap.ch/bob/bob.pad.face',
     license='GPLv3',
     author='Olegs Nikisins',
@@ -68,6 +67,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
             'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
             'mifs = bob.pad.face.config.database.mifs:database',
+            'celeb-a = bob.pad.face.config.database.celeb-a:database',
         ],
 
         # registered configurations:
@@ -78,6 +78,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'aggregated-db = bob.pad.face.config.aggregated_db',
             'mifs = bob.pad.face.config.mifs',
+            'celeb-a = bob.pad.face.config.celeb-a',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
