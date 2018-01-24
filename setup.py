@@ -67,7 +67,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
             'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
             'mifs = bob.pad.face.config.database.mifs:database',
-            'celeb-a = bob.pad.face.config.database.celeb-a:database',
+            'celeb-a = bob.pad.face.config.database.celeb_a:database',
         ],
 
         # registered configurations:
@@ -78,7 +78,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'aggregated-db = bob.pad.face.config.aggregated_db',
             'mifs = bob.pad.face.config.mifs',
-            'celeb-a = bob.pad.face.config.celeb-a',
+            'celeb-a = bob.pad.face.config.celeb_a',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
