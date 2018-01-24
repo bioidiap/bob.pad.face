@@ -1,7 +1,6 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
 
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 #==============================================================================
 
@@ -19,7 +18,7 @@ from bob.pad.base.database import FileListPadDatabase
 
 class CELEBAPadFile(VideoPadFile):
     """
-    A high level implementation of the File class for the MIFS database.
+    A high level implementation of the File class for the CELEBA database.
     """
 
     def __init__(self, client_id, path, attack_type=None, file_id=None):
@@ -85,36 +84,27 @@ class CELEBAPadDatabase(FileListPadDatabase):
             original_extension=original_extension)
 
     #==========================================================================
-    # No annotations available here
-    # def annotations(self, f):
-    #     """
-    #     Return annotations for a given file object ``f``, which is an instance
-    #     of ``MIFSPadFile``.
+    #No annotations available here
+    # May be add after running through facedetector once
+    def annotations(self, f):
+        """
+        Return annotations for a given file object ``f``, which is an instance
+        of ``MIFSPadFile``.
 
-    #     **Parameters:**
+        **Parameters:**
 
-    #     ``f`` : :py:class:`object`
-    #         An instance of ``MIFSPadFile`` defined above.
+        ``f`` : :py:class:`object`
+            An instance of ``MIFSPadFile`` defined above.
 
-    #     **Returns:**
+        **Returns:**
 
-    #     ``annotations`` : :py:class:`dict`
-    #         A dictionary containing the annotations for each frame in the video.
-    #         Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
-    #         Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
-    #         is the dictionary defining the coordinates of the face bounding box in frame N.
-    #     """
+        ``annotations`` : :py:class:`dict`
+            A dictionary containing the annotations for each frame in the video.
+            Dictionary structure: ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
+            Where ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
+            is the dictionary defining the coordinates of the face bounding box in frame N.
+        """
 
-    #     path_to_file = self.m_base_dir + '/annotations/' + f.path[:-4] + '.face'
-    #     file_handle = open(path_to_file, 'r')
-    #     line = file_handle.readline()
-    #     bbox = [int(x) for x in line.split()]
+        annotations = {}  # dictionary to return
 
-    #     annotations = {}  # dictionary to return
-
-    #     topleft = (bbox[0], bbox[1])
-    #     bottomright = (bbox[0] + bbox[2], bbox[1] + bbox[3])
-
-    #     annotations['0'] = {'topleft': topleft, 'bottomright': bottomright}
-
-    #     return annotations
+        return annotations
