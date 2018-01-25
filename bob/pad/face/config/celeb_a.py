@@ -18,7 +18,6 @@ the link.
 """
 
 from bob.pad.face.database import CELEBAPadDatabase
-
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
 ORIGINAL_DIRECTORY = "[YOUR_CELEB_A_DATABASE_DIRECTORY]"
@@ -30,7 +29,7 @@ database = CELEBAPadDatabase(
     protocol='grandtest',
     original_directory=ORIGINAL_DIRECTORY,
     original_extension=ORIGINAL_EXTENSION,
-    training_depends_on_protocol=True,
+    training_depends_on_protocol=False,
 )
 """The :py:class:`bob.pad.base.database.PadDatabase` derivative with Replayattack
 database settings
@@ -55,7 +54,7 @@ command-line of ``spoof.py`` or using the keyword ``protocol`` on a
 configuration file that is loaded **after** this configuration resource.
 """
 
-groups = ["train", "dev", "eval"]
+groups = ["train", "eval", "dev"]
 """The default groups to use for reproducing the baselines.
 
 You may modify this at runtime by specifying the option ``--groups`` on the

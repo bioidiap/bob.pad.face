@@ -53,6 +53,7 @@ class CELEBAPadFile(VideoPadFile):
         path = self.make_path(
             directory=directory, extension=extension)  # path to the file
 
+        print("path---------------------------------------------------------", path)
         data = bob.io.base.load(path)
         data = np.expand_dims(data, axis=0)  # upgrade to 4D (video)
         video_data = frame_selector(data)  # video data
@@ -70,7 +71,7 @@ class CELEBAPadDatabase(FileListPadDatabase):
             self,
             protocol='grandtest',  # grandtest is the default protocol for this database
             original_directory='[YOUR_CELEB_A_DATABASE_DIRECTORY]',
-            original_extension='.jpg',
+            original_extension='',
             **kwargs):
 
         from pkg_resources import resource_filename
@@ -84,7 +85,7 @@ class CELEBAPadDatabase(FileListPadDatabase):
             original_extension=original_extension)
 
     #==========================================================================
-    #No annotations available here
+    # No annotations available here
     # May be add after running through facedetector once
     def annotations(self, f):
         """

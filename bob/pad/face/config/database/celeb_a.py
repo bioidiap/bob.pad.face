@@ -16,9 +16,9 @@ from bob.pad.face.database.celeb_a import CELEBAPadDatabase
 original_directory = "[YOUR_CELEB_A_DATABASE_DIRECTORY]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
-original_extension = ".jpg"  # extension of the data files
+original_extension = ""  # extension of the data files
 
-database = MIFSPadDatabase(
+database = CELEBAPadDatabase(
     protocol='grandtest',
     original_directory=original_directory,
     original_extension=original_extension,
