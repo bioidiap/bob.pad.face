@@ -186,7 +186,7 @@ class DataFolder(data.Dataset):
 
         video = FrameContainer(bob.io.base.HDF5File(path))
 
-        fn = random.randint(0, len(video))
+        fn = random.randint(0, len(video)-1)
 
         img_array = video[fn][1] # The size now is (3 x W x H)
 

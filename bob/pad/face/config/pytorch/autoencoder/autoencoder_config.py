@@ -54,7 +54,7 @@ Define the network to be trained as a class, named ``Network``.
 class Network(nn.Module):
 
     def __init__(self):
-        super(autoencoder, self).__init__()
+        super(Network, self).__init__()
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 64, 3, stride=3, padding=1),  # b, 16, 10, 10
             nn.ReLU(True),

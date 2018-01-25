@@ -58,7 +58,7 @@ setup(
 
         # scripts should be declared using this entry:
         'console_scripts': [
-            'version.py = bob.pad.face.script.version:main',
+            'pytorch-train-pad-face.py = bob.pad.face.scripts.pytorch.pytorch_train:main',
         ],
 
         # registered databases:

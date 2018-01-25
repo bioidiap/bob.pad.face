@@ -26,16 +26,6 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from torchvision.utils import save_image
 
-
-#import torchvision
-#from torch import nn
-#from torch.autograd import Variable
-#from torchvision import transforms
-#from torchvision.utils import save_image
-#from torchvision.datasets import MNIST
-#import os
-
-
 #==============================================================================
 def parse_arguments(cmd_params=None):
     """
@@ -66,10 +56,10 @@ def parse_arguments(cmd_params=None):
 
     parser = argparse.ArgumentParser(description=__doc__)
 
-    parser.add_argument("data-folder", type=str,
+    parser.add_argument("data_folder", type=str,
                         help="A directory containing the training data.")
 
-    parser.add_argument("save-folder", type=str,
+    parser.add_argument("save_folder", type=str,
                         help="A directory to save the results of training to.")
 
     parser.add_argument("-c", "--config-file", type=str, help="Relative name of the config file defining "
@@ -101,6 +91,9 @@ def parse_arguments(cmd_params=None):
 
 #==============================================================================
 def to_img(x):
+    """
+    TODO: regactor this function
+    """
     x = 0.5 * (x + 1)
     x = x.clamp(0, 1)
     x = x.view(x.size(0), 3, 64, 64)
@@ -108,10 +101,48 @@ def to_img(x):
 
 
 #==============================================================================
-def main(cmd_params=None):
+def process_verbosity(verbosity,
+                      epoch,
+                      num_epochs,
+                      loss_value,
+                      epoch_step,
+                      batch_tensor,
+                      save_folder):
+    """
+    Report results based on the verbose level.
+
+    1. If verbosity level is 1: loss is printed for each epoch.
+
+    2. If verbosity levle is greater than 1: both loss is printed and
+       a reconstructed image is saved efter each ``epoch_step`` epochs.
+
+    **Parameters:**
+
+    ``verbosity``: py:class:`int`
+        Verbosity level.
+
+        TODO: add documentation
     """
 
+    if verbosity > 0:
+
+        print ('epoch [{}/{}], loss:{:.4f}'.format(epoch, num_epochs, loss_value))
+
+        if verbosity > 1:
+
+            if epoch % epoch_step == 0:
+
+                pic = to_img(batch_tensor)
+                save_image( pic, os.path.join(save_folder, 'image_{}.png'.format(epoch)) )
+
+
+#==============================================================================
+def main(cmd_params=None):
     """
+    TODO: add documentation
+    """
+
+    epoch_step = 10 # save images and trained model after each ``epoch_step`` epoch
 
     data_folder, save_folder, relative_mod_name, config_group, verbosity = \
                                 parse_arguments(cmd_params = cmd_params)
@@ -141,9 +172,14 @@ def main(cmd_params=None):
 
     for epoch in range(config_module.NUM_EPOCHS):
 
+        batch_num = 0
+
         for data in dataloader:
 
+            batch_num = batch_num + 1
+
             img, _ = data
+
             img = Variable(img)
             #===================forward========================================
             output = model(img)
@@ -153,64 +189,20 @@ def main(cmd_params=None):
             loss.backward()
             optimizer.step()
 
-        #===================log================================================
-        print('epoch [{}/{}], loss:{:.4f}'
-              .format(epoch+1, config_module.NUM_EPOCHS, loss.data[0]))
-    #    save_name = './conv_autoencoder'+str(epoch)+'.pth'
-    #    torch.save(model.state_dict(), save_name)
-        if epoch % 10 == 0:
-            pic = to_img(output.cpu().data)
-            save_image( pic, os.path.join(save_folder, 'image_{}.png'.format(epoch)) )
+            if batch_num == len(dataloader) - 1: # process verbosity using penultimate batch, because the
+            # last batch can be smaller than BATCH_SIZE.
 
+                process_verbosity(verbosity = verbosity,
+                                  epoch = epoch+1,
+                                  num_epochs = config_module.NUM_EPOCHS,
+                                  loss_value = loss.data[0],
+                                  epoch_step = epoch_step,
+                                  batch_tensor = output.cpu().data,
+                                  save_folder = save_folder)
 
+        if (epoch+1) % epoch_step == 0:
 
-
-#    torch.save(model.state_dict(), os.path.join(save_folder, './conv_autoencoder.pth'))
-
-
-
-
-#transform = transforms.Compose([transforms.Resize((64, 64)),
-#                                transforms.ToTensor(),
-#                                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-#                                ])
-#
-#
-#dataset_kwargs = {}
-#dataset_kwargs["data_folder"] = "WILL BE SET IN THE TRAINING SCRIPT"
-#dataset_kwargs["transform"] = transform
-#dataset_kwargs["extension"] = '.hdf5'
-#dataset_kwargs["bob_hldi_instance"] = bob_hldi_instance
-#dataset_kwargs["hldi_type"] = "pad"
-#dataset_kwargs["groups"] = ['train']
-#dataset_kwargs["protocol"] = 'grandtest'
-#dataset_kwargs["purposes"] = ['real']
-#dataset_kwargs["allow_missing_files"] = True
-#
-#
-#all_data = importlib.import_module(relative_mod_name, config_group)
-#
-#data_folder = '/idiap/temp/onikisins/project/ODIN/experiment_data/face_detect_align_experiments/aggregated_db/experiment_3/preprocessed/'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            torch.save(model.state_dict(), os.path.join(save_folder, 'model_{}.pth'.format(epoch+1)))
 
 
 
