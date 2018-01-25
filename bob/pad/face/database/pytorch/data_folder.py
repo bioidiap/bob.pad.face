@@ -34,7 +34,7 @@ def get_file_names_and_labels(files, data_folder, extension = ".hdf5", hldi_type
         of the particular datbase.
 
     ``data_folder`` : str
-        A directory containing the data.
+        A directory containing the training data.
 
     ``extension`` : str
         Extension of the data files. Default: ".hdf5" .
@@ -90,7 +90,7 @@ class DataFolder(data.Dataset):
         **Parameters:**
 
         ``data_folder`` : str
-            A directory with containing the training data.
+            A directory containing the training data.
 
         ``transform`` : callable
             A function/transform that  takes in a PIL image, and returns a
@@ -186,7 +186,9 @@ class DataFolder(data.Dataset):
 
         video = FrameContainer(bob.io.base.HDF5File(path))
 
-        fn = random.randint(0, len(video))
+        fn = random.randint(0, len(video)-1)
+
+        
 
         img_array = video[fn][1] # The size now is (3 x W x H)
 
