@@ -25,13 +25,13 @@ import torch
 
 import PIL
 
-from torchvision import transforms
-
 from torch.autograd import Variable
 
-from torch import nn
-
 import pkg_resources
+
+import os
+
+import importlib
 
 
 #==============================================================================
@@ -47,71 +47,60 @@ class BatchAutoencoder(Extractor, object):
 
     **Parameters:**
 
+    ``model_file``: py:class:`string`
+        Absolute name of the file, containing pre-trained Network
+        model. If nothing specified here, the default model corresponding to
+        default ``config_file`` will be loaded.
+        Default: "".
+
     ``code_layer_features_flag`` : :py:class:`bool`
         If ``True``, features of the code layer will be computed for each
         sample in the batch. Otherwise, MSE reconstruction error will be
-        computed per sample.
+        computed per sample. Default: True.
+
+    ``config_file``: py:class:`string`
+        Relative name of the config file defining the network, training data,
+        and training parameters. Default: "autoencoder/autoencoder_config.py".
+
+    ``config_group``: py:class:`string`
+        Group/package name containing the configuration file. Usually all
+        configs should be stored in this folder/place and there is no need to
+        change this argument. Default: "bob.pad.face.config.pytorch".
     """
 
     #==========================================================================
-    def __init__(self, code_layer_features_flag=True, **kwargs):
+    def __init__(self, model_file = "",
+                 code_layer_features_flag=True,
+                 config_file = "autoencoder/autoencoder_config.py",
+                 config_group = "bob.pad.face.config.pytorch",
+                 **kwargs):
 
         super(BatchAutoencoder, self).__init__(
-            code_layer_features_flag=code_layer_features_flag)
+            model_file = model_file,
+            code_layer_features_flag=code_layer_features_flag,
+            config_file = config_file,
+            config_group = config_group)
 
         self.code_layer_features_flag = code_layer_features_flag
+        self.config_file = config_file
+        self.config_group = config_group
 
-        self.img_transform = transforms.Compose([transforms.Resize((64, 64)),
-                                                 transforms.ToTensor(),
-                                                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-                                                 ])
+        relative_mod_name = '.' + os.path.splitext(self.config_file)[0].replace(os.path.sep, '.')
 
-        # The model class is defined here:
-        # TODO: move this class to different place/config file.
-        class autoencoder(nn.Module):
+        config_module = importlib.import_module(relative_mod_name, self.config_group)
 
-            def __init__(self):
-                super(autoencoder, self).__init__()
-                self.encoder = nn.Sequential(
-                    nn.Conv2d(3, 16, 3, stride=1, padding=1),  # b, 16, 10, 10
-                    nn.ReLU(True),
-                    nn.MaxPool2d(2, stride=2),
-                    nn.Conv2d(16, 8, 3, stride=1, padding=1),
-                    nn.ReLU(True),
-                    nn.MaxPool2d(2, stride=2),
-                    nn.Conv2d(8, 8, 3, stride=1, padding=1),
-                    nn.ReLU(True),
-                    nn.MaxPool2d(2, stride=1),
-                    nn.Conv2d(8, 8, 3, stride=1, padding=1),
-                    nn.ReLU(True),
-                    nn.MaxPool2d(2, stride=2)
-
-                )
-                self.decoder = nn.Sequential(
-                    nn.ConvTranspose2d(8, 8, 3, stride=1, padding=0),  # b, 16, 5, 5
-                    nn.ReLU(True),
-                    nn.ConvTranspose2d(8, 16, 3, stride=2, padding=0),  # b, 8, 15, 15
-                    nn.ReLU(True),
-                    nn.ConvTranspose2d(16, 8, 3, stride=2, padding=2),  # b, 1, 28, 28
-                    nn.ReLU(True),
-                    nn.ConvTranspose2d(8, 3, 2, stride=2, padding=3),
-                    nn.Tanh()
-                )
-
-            def forward(self, x):
-                x = self.encoder(x)
-                x = self.decoder(x)
-                return x
-
-        model = autoencoder()
+        self.img_transform = config_module.transform
 
         # Initialize the model
-        self.model = autoencoder()
+        self.model = config_module.Network()
 
-        # TODO: move the model to different place:
-        model_file = pkg_resources.resource_filename('bob.pad.face', 'extractor/conv_autoencoder118.pth')
+        if not model_file:
 
-        model_state = torch.load(model_file)
+            model_file = pkg_resources.resource_filename('bob.pad.face.config.pytorch', 'autoencoder/autoencoder_model.pth')
+
+        self.model_file = model_file
+
+        model_state = torch.load(self.model_file)
 
         # Initialize the state of the model:
         self.model.load_state_dict(model_state)

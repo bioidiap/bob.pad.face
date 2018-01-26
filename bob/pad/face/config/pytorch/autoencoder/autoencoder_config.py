@@ -16,6 +16,9 @@ from torch import nn
 #==============================================================================
 # Define parameters here:
 
+"""
+Note: do not change names of the below constants.
+"""
 NUM_EPOCHS = 100 # Maximum number of epochs
 BATCH_SIZE = 4 # Size of the batch
 LEARNING_RATE = 1e-3 # Learning rate
@@ -23,7 +26,7 @@ LEARNING_RATE = 1e-3 # Learning rate
 
 """
 Transformations to be applied sequentially to the input PIL image.
-NOTE: the variable name ``transform`` must be the same in all configuration files.
+Note: the variable name ``transform`` must be the same in all configuration files.
 """
 transform = transforms.Compose([transforms.Resize((64, 64)),
                                 transforms.ToTensor(),
@@ -33,6 +36,7 @@ transform = transforms.Compose([transforms.Resize((64, 64)),
 
 """
 Set the parameters of the DataFolder dataset class.
+Note: do not change the name ``kwargs``.
 """
 bob_hldi_instance = AggregatedDbPadDatabase(original_directory = "", original_extension = "")
 
@@ -50,6 +54,7 @@ kwargs["allow_missing_files"] = True
 
 """
 Define the network to be trained as a class, named ``Network``.
+Note: Do not change the name of the below class.
 """
 class Network(nn.Module):
 
@@ -79,5 +84,6 @@ class Network(nn.Module):
 
 """
 Define the loss to be used for training.
+Note: do not change the name of the below variable.
 """
 loss_type = nn.MSELoss()
