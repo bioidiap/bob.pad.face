@@ -1,16 +1,28 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
+The following steps are performed in this script:
+
+1. The command line arguments are first parsed.
+
+2. Folder to save the results to is created.
+
+3. Configuration file specifying the Network and learning parameters is
+   loaded.
+
+4. A generic data loader compatible with Bob High Level Database
+   Interfaces, namely DataFolder, is initialized.
+
+5. The Network is initialized, can also be initialized with pre-trained
+   model.
+
+6. The training is performed. Verbosity flag can be used to see and save
+   training related outputs. See ``process_verbosity`` function for
+   more details.
+
+7. The model is saved after each 10 epochs.
+
 @author: Olegs Nikisins
-"""
-
-
-"""
-The following steps are performed in this code:
-
-1. ????
-
-2. ????
 """
 #==============================================================================
 # Import here:
@@ -70,7 +82,7 @@ def parse_arguments(cmd_params=None):
                         default = "bob.pad.face.config.pytorch")
 
     parser.add_argument("-v", "--verbosity", action="count", default=0,
-                        help="Increase output verbosity.")
+                        help="Increase output verbosity. For -v loss is printed. For -vv output images are saved.")
 
     if cmd_params is not None:
         args = parser.parse_args(cmd_params)
@@ -90,14 +102,29 @@ def parse_arguments(cmd_params=None):
 
 
 #==============================================================================
-def to_img(x):
+def to_img(batch):
     """
-    TODO: regactor this function
+    Normalize the images in the batch to [0, 1] range for plotting.
+
+    **Parameters:**
+
+    ``batch`` : Tensor
+        A tensor containing a batch of images.
+        The size of the tensor: (num_imgs x num_color_channels x H x W).
+
+    **Returns:**
+
+    ``batch`` : Tensor
+        A tensor containing a normalized batch of images.
+        The size of the tensor: (num_imgs x num_color_channels x H x W).
     """
-    x = 0.5 * (x + 1)
-    x = x.clamp(0, 1)
-    x = x.view(x.size(0), 3, 64, 64)
-    return x
+
+    batch = (batch - batch.min())
+    batch = batch / batch.max()
+
+    batch = batch.clamp(0, 1)
+
+    return batch
 
 
 #==============================================================================
@@ -121,7 +148,24 @@ def process_verbosity(verbosity,
     ``verbosity``: py:class:`int`
         Verbosity level.
 
-        TODO: add documentation
+    ``epoch``: py:class:`int`
+        Current epoch number.
+
+    ``num_epochs``: py:class:`int`
+        Total number of epochs.
+
+    ``loss_value``: py:class:`float`
+        Loss value for the current epoch.
+
+    ``epoch_step``: py:class:`int`
+        Plot the images after each ``epoch_step`` epochs.
+
+    ``batch`` : Tensor
+        A tensor containing a batch NN output of images.
+        The size of the tensor: (num_imgs x num_color_channels x H x W).
+
+    ``save_folder``: py:class:`str`
+        Folder to save images to.
     """
 
     if verbosity > 0:
@@ -139,7 +183,26 @@ def process_verbosity(verbosity,
 #==============================================================================
 def main(cmd_params=None):
     """
-    TODO: add documentation
+    The following steps are performed in this function:
+
+    1. The command line arguments are first parsed.
+
+    2. Folder to save the results to is created.
+
+    3. Configuration file specifying the Network and learning parameters is
+       loaded.
+
+    4. A generic data loader compatible with Bob High Level Database
+       Interfaces, namely DataFolder, is initialized.
+
+    5. The Network is initialized, can also be initialized with pre-trained
+       model.
+
+    6. The training is performed. Verbosity flag can be used to see and save
+       training related outputs. See ``process_verbosity`` function for
+       more details.
+
+    7. The model is saved after each 10 epochs.
     """
 
     epoch_step = 10 # save images and trained model after each ``epoch_step`` epoch
@@ -203,9 +266,6 @@ def main(cmd_params=None):
         if (epoch+1) % epoch_step == 0:
 
             torch.save(model.state_dict(), os.path.join(save_folder, 'model_{}.pth'.format(epoch+1)))
-
-
-
 
 
 
