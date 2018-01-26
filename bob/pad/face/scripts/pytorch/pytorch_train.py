@@ -62,6 +62,10 @@ def parse_arguments(cmd_params=None):
     ``config_group``: py:class:`string`
         Group/package name containing the configuration file.
 
+    ``pretrained_model_path``: py:class:`string`
+        Absolute name of the file, containing pre-trained Network
+        model, to de used for Network initialization before training.
+
     ``verbosity``: py:class:`int`
         Verbosity level.
     """
@@ -81,6 +85,10 @@ def parse_arguments(cmd_params=None):
     parser.add_argument("-cg", "--config-group", type=str, help="Name of the group, where config file is stored.",
                         default = "bob.pad.face.config.pytorch")
 
+    parser.add_argument("-p", "--pretrained-model-path", type=str, help="Absolute name of the file, containing pre-trained Network "
+                        "model, to de used for Network initialization before training.",
+                        default = "")
+
     parser.add_argument("-v", "--verbosity", action="count", default=0,
                         help="Increase output verbosity. For -v loss is printed. For -vv output images are saved.")
 
@@ -94,11 +102,14 @@ def parse_arguments(cmd_params=None):
 
     config_file = args.config_file
     config_group = args.config_group
+
+    pretrained_model_path = args.pretrained_model_path
+
     verbosity = args.verbosity
 
     relative_mod_name = '.' + os.path.splitext(config_file)[0].replace(os.path.sep, '.')
 
-    return data_folder, save_folder, relative_mod_name, config_group, verbosity
+    return data_folder, save_folder, relative_mod_name, config_group, pretrained_model_path, verbosity
 
 
 #==============================================================================
@@ -207,7 +218,7 @@ def main(cmd_params=None):
 
     epoch_step = 10 # save images and trained model after each ``epoch_step`` epoch
 
-    data_folder, save_folder, relative_mod_name, config_group, verbosity = \
+    data_folder, save_folder, relative_mod_name, config_group, pretrained_model_path, verbosity = \
                                 parse_arguments(cmd_params = cmd_params)
 
     if not os.path.exists(save_folder):
@@ -226,6 +237,13 @@ def main(cmd_params=None):
                             shuffle = True)
 
     model = config_module.Network()
+
+    if pretrained_model_path: # initialize with pre-trained model if given
+
+        model_state=torch.load(pretrained_model_path)
+
+        # Initialize the state of the model:
+        model.load_state_dict(model_state)
 
     loss_type = config_module.loss_type
 
@@ -266,11 +284,3 @@ def main(cmd_params=None):
         if (epoch+1) % epoch_step == 0:
 
             torch.save(model.state_dict(), os.path.join(save_folder, 'model_{}.pth'.format(epoch+1)))
-
-
-
-
-
-
-
-
