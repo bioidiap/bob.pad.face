@@ -171,8 +171,8 @@ def process_verbosity(verbosity,
     ``epoch_step``: py:class:`int`
         Plot the images after each ``epoch_step`` epochs.
 
-    ``batch`` : Tensor
-        A tensor containing a batch NN output of images.
+    ``batch_tensor`` : Tensor
+        A tensor containing a batch of NN output images.
         The size of the tensor: (num_imgs x num_color_channels x H x W).
 
     ``save_folder``: py:class:`str`
@@ -216,7 +216,7 @@ def main(cmd_params=None):
     7. The model is saved after each 10 epochs.
     """
 
-    epoch_step = 10 # save images and trained model after each ``epoch_step`` epoch
+    epoch_step = 1 # save images and trained model after each ``epoch_step`` epoch
 
     data_folder, save_folder, relative_mod_name, config_group, pretrained_model_path, verbosity = \
                                 parse_arguments(cmd_params = cmd_params)
