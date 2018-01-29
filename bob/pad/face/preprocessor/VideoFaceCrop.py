@@ -94,9 +94,15 @@ class VideoFaceCrop(Preprocessor, object):
         a dependency of this package).
 
     ``use_face_alignment`` : :py:class:`bool`
-        If set to ``True`` the face will be aligned aligned using the facial landmarks 
+        If set to ``True`` the face will be aligned aligned using the facial landmarks
         detected locally. Works only when 'detect_faces_flag==True' and use_local_cropper_flag==True
         Default: ``False``.
+
+    ``max_image_size`` : :py:class:`int`
+        The maximum size of the image to be processed. Exclude from processing,
+        is larger than max_image_size.
+        Default: ``None``.
+
 
     ``kwargs``
         Remaining keyword parameters passed to the Base constructor, such as ``color_channel`` or ``dtype``.
@@ -117,6 +123,7 @@ class VideoFaceCrop(Preprocessor, object):
                  detect_faces_flag=False, #TODO
                  face_detection_method="dlib",
                  use_face_alignment=False, #TODO: uses aligncrop if true
+                 max_image_size = None,
                  **kwargs):
 
         super(VideoFaceCrop, self).__init__(
@@ -133,6 +140,7 @@ class VideoFaceCrop(Preprocessor, object):
             detect_faces_flag=detect_faces_flag,
             face_detection_method=face_detection_method,
             use_face_alignment=use_face_alignment,
+            max_image_size = max_image_size,
             **kwargs)
 
         self.cropped_image_size = cropped_image_size
@@ -148,6 +156,7 @@ class VideoFaceCrop(Preprocessor, object):
         self.detect_faces_flag = detect_faces_flag
         self.face_detection_method = face_detection_method
         self.use_face_alignment=use_face_alignment
+        self.max_image_size = max_image_size
 
         # Save also the data stored in the kwargs:
         for (k, v) in kwargs.items():
@@ -158,7 +167,7 @@ class VideoFaceCrop(Preprocessor, object):
 
             preprocessor = ImageFaceCrop(
                 face_size=self.cropped_image_size[0],rgb_output_flag=self.rgb_output_flag, use_face_alignment=self.use_face_alignment)
-            
+
 
         else:
 
@@ -313,6 +322,12 @@ class VideoFaceCrop(Preprocessor, object):
         """
 
         if self.detect_faces_flag:
+
+            if self.max_image_size: # max_image_size = 1920
+
+                if np.max(frames[0][1].shape) > self.max_image_size:
+
+                    return bob.bio.video.FrameContainer()
 
             annotations = detect_face_landmarks_in_video(frames,
                                                 self.face_detection_method) #TODO: new dicts

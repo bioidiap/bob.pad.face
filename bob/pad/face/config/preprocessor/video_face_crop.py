@@ -77,6 +77,7 @@ RGB_OUTPUT_FLAG = True  # Return RGB cropped face using local cropper
 DETECT_FACES_FLAG = True  # find annotations locally replacing the database annotations
 FACE_DETECTION_METHOD = "dlib"
 USE_FACE_ALIGNMENT = True # use eye-positions based face alignment
+MAX_IMAGE_SIZE = 1920
 
 rgb_face_detector_dlib_align = VideoFaceCrop(
     cropped_image_size=CROPPED_IMAGE_SIZE,
@@ -91,7 +92,8 @@ rgb_face_detector_dlib_align = VideoFaceCrop(
     rgb_output_flag=RGB_OUTPUT_FLAG,
     detect_faces_flag=DETECT_FACES_FLAG,
     face_detection_method=FACE_DETECTION_METHOD,
-    use_face_alignment=USE_FACE_ALIGNMENT)
+    use_face_alignment=USE_FACE_ALIGNMENT,
+    max_image_size = MAX_IMAGE_SIZE)
 
 CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
 CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
@@ -106,6 +108,7 @@ RGB_OUTPUT_FLAG = True  # Return RGB cropped face using local cropper
 DETECT_FACES_FLAG = True  # find annotations locally replacing the database annotations
 FACE_DETECTION_METHOD = "mtcnn"
 USE_FACE_ALIGNMENT = True # use eye-positions based face alignment
+MAX_IMAGE_SIZE = 1920
 
 rgb_face_detector_mtcnn_align = VideoFaceCrop(
     cropped_image_size=CROPPED_IMAGE_SIZE,
@@ -120,7 +123,8 @@ rgb_face_detector_mtcnn_align = VideoFaceCrop(
     rgb_output_flag=RGB_OUTPUT_FLAG,
     detect_faces_flag=DETECT_FACES_FLAG,
     face_detection_method=FACE_DETECTION_METHOD,
-    use_face_alignment=USE_FACE_ALIGNMENT)
+    use_face_alignment=USE_FACE_ALIGNMENT,
+    max_image_size = MAX_IMAGE_SIZE)
 
 
 
