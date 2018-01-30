@@ -329,8 +329,13 @@ class VideoFaceCrop(Preprocessor, object):
 
                     return bob.bio.video.FrameContainer()
 
-            annotations = detect_face_landmarks_in_video(frames,
-                                                self.face_detection_method) #TODO: new dicts
+            try:
+
+                annotations = detect_face_landmarks_in_video(frames,
+                                                    self.face_detection_method) #TODO: new dicts
+            except:
+
+                return bob.bio.video.FrameContainer()
 
         if len(frames) != len(annotations):  # if some annotations are missing
 
