@@ -20,7 +20,7 @@ from torch import nn
 Note: do not change names of the below constants.
 """
 NUM_EPOCHS = 100 # Maximum number of epochs
-BATCH_SIZE = 4 # Size of the batch
+BATCH_SIZE = 8 # Size of the batch
 LEARNING_RATE = 1e-3 # Learning rate
 
 

@@ -94,7 +94,7 @@ class BatchAutoencoder(Extractor, object):
         # Initialize the model
         self.model = config_module.Network()
 
-        if not model_file:
+        if model_file == "":
 
             model_file = pkg_resources.resource_filename('bob.pad.face.config.pytorch', 'autoencoder/autoencoder_model.pth')
 

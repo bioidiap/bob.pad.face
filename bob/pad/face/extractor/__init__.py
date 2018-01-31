@@ -32,5 +32,6 @@ __appropriate__(
     VideoQualityMeasure,
     VideoDataLoader,
     FrameDiffFeatures,
+    BatchAutoencoder,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

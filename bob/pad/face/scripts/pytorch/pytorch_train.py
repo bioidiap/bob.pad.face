@@ -20,7 +20,7 @@ The following steps are performed in this script:
    training related outputs. See ``process_verbosity`` function for
    more details.
 
-7. The model is saved after each 10 epochs.
+7. The model is saved after each 1 epochs.
 
 @author: Olegs Nikisins
 """
@@ -213,7 +213,7 @@ def main(cmd_params=None):
        training related outputs. See ``process_verbosity`` function for
        more details.
 
-    7. The model is saved after each 10 epochs.
+    7. The model is saved after each 1 epochs.
     """
 
     epoch_step = 1 # save images and trained model after each ``epoch_step`` epoch
@@ -232,6 +232,10 @@ def main(cmd_params=None):
 
     dataset = DataFolder(**dataset_kwargs)
 
+    if verbosity > 0:
+
+        print ( "The number of training samples: {}".format( dataset.__len__() ) )
+
     dataloader = DataLoader(dataset,
                             batch_size = config_module.BATCH_SIZE,
                             shuffle = True)
@@ -239,6 +243,10 @@ def main(cmd_params=None):
     model = config_module.Network()
 
     if pretrained_model_path: # initialize with pre-trained model if given
+
+        if verbosity > 0:
+
+            print ("Initializing the Network with pre-trained model from file: " + pretrained_model_path)
 
         model_state=torch.load(pretrained_model_path)
 

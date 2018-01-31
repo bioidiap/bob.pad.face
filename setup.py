@@ -115,6 +115,14 @@ setup(
             'frame-diff-feat-extr-w20-over0 = bob.pad.face.config.extractor.frame_diff_features:frame_diff_feat_extr_w20_over0',
             'autoencoder-code-layer = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer',
             'autoencoder-mse = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_mse',
+            'autoencoder-code-layer-celeba-100-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_celeba_100_epochs',
+            'autoencoder-code-layer-aggr-db-1-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_aggr_db_1_epochs',
+            'autoencoder-code-layer-aggr-db-10-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_aggr_db_10_epochs',
+            'autoencoder-code-layer-aggr-db-20-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_aggr_db_20_epochs',
+            'autoencoder-code-layer-aggr-db-30-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_aggr_db_30_epochs',
+            'autoencoder-code-layer-aggr-db-40-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_aggr_db_40_epochs',
+            'autoencoder-code-layer-aggr-db-50-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_aggr_db_50_epochs',
+            'autoencoder-code-layer-aggr-db-100-epochs = bob.pad.face.config.extractor.batch_autoencoder:autoencoder_code_layer_aggr_db_100_epochs',
         ],
 
         # registered algorithms:
