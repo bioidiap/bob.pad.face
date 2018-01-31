@@ -8,7 +8,7 @@
 
 from torchvision import transforms
 
-from bob.pad.face.database import AggregatedDbPadDatabase
+from bob.pad.face.database import CELEBAPadDatabase
 
 from torch import nn
 
@@ -20,7 +20,7 @@ from torch import nn
 Note: do not change names of the below constants.
 """
 NUM_EPOCHS = 100 # Maximum number of epochs
-BATCH_SIZE = 4 # Size of the batch
+BATCH_SIZE =  128 # Size of the batch
 LEARNING_RATE = 1e-3 # Learning rate
 
 
@@ -38,7 +38,7 @@ transform = transforms.Compose([transforms.Resize((64, 64)),
 Set the parameters of the DataFolder dataset class.
 Note: do not change the name ``kwargs``.
 """
-bob_hldi_instance = AggregatedDbPadDatabase(original_directory = "", original_extension = "")
+bob_hldi_instance = CELEBAPadDatabase(original_directory = "", original_extension = "")
 
 kwargs = {}
 kwargs["data_folder"] = "NO NEED TO SET HERE, WILL BE SET IN THE TRAINING SCRIPT"
@@ -62,7 +62,7 @@ class Network(nn.Module):
     def __init__(self):
         super(Network, self).__init__()
         self.encoder = nn.Sequential(
-            nn.Conv2d(3, 16, 3, stride=1, padding=1),  
+            nn.Conv2d(3, 16, 3, stride=1, padding=1),
             nn.ReLU(True),
             nn.MaxPool2d(2, stride=2),
             nn.Conv2d(16, 8, 3, stride=1, padding=1),
@@ -77,11 +77,11 @@ class Network(nn.Module):
 
         )
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(8, 8, 3, stride=1, padding=0),  
+            nn.ConvTranspose2d(8, 8, 3, stride=1, padding=0),
             nn.ReLU(True),
-            nn.ConvTranspose2d(8, 16, 3, stride=2, padding=0),  
+            nn.ConvTranspose2d(8, 16, 3, stride=2, padding=0),
             nn.ReLU(True),
-            nn.ConvTranspose2d(16, 8, 3, stride=2, padding=2), 
+            nn.ConvTranspose2d(16, 8, 3, stride=2, padding=2),
             nn.ReLU(True),
             nn.ConvTranspose2d(8, 3, 2, stride=2, padding=3),
             nn.Tanh()
