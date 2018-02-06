@@ -42,7 +42,6 @@ requirements:
     - six
     - sphinx
     - numpy
-    - bob.ip.qualitymeasure
 
 test:
   imports:
