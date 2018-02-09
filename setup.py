@@ -118,6 +118,7 @@ setup(
         'bob.pad.grid': [
             'idiap = bob.pad.face.config.grid:idiap',
             'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
+            'small = bob.pad.face.config.grid:small',
         ],
     },
 
