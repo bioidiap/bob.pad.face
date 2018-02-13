@@ -19,9 +19,9 @@ from sklearn import linear_model
 
 import bob.io.base
 
-
 #==============================================================================
 # Main body :
+
 
 class VideoLRPadAlgorithm(Algorithm):
     """
@@ -63,23 +63,23 @@ class VideoLRPadAlgorithm(Algorithm):
     """
 
     def __init__(self,
-                 C = 1,
-                 frame_level_scores_flag = False,
-                 subsample_train_data_flag = False,
-                 subsampling_step = 10,
-                 subsample_videos_flag = False,
-                 video_subsampling_step = 3):
+                 C=1,
+                 frame_level_scores_flag=False,
+                 subsample_train_data_flag=False,
+                 subsampling_step=10,
+                 subsample_videos_flag=False,
+                 video_subsampling_step=3):
 
-
-        Algorithm.__init__(self,
-                           C = C,
-                           frame_level_scores_flag = frame_level_scores_flag,
-                           subsample_train_data_flag = subsample_train_data_flag,
-                           subsampling_step = subsampling_step,
-                           subsample_videos_flag = subsample_videos_flag,
-                           video_subsampling_step = video_subsampling_step,
-                           performs_projection=True,
-                           requires_projector_training=True)
+        Algorithm.__init__(
+            self,
+            C=C,
+            frame_level_scores_flag=frame_level_scores_flag,
+            subsample_train_data_flag=subsample_train_data_flag,
+            subsampling_step=subsampling_step,
+            subsample_videos_flag=subsample_videos_flag,
+            video_subsampling_step=video_subsampling_step,
+            performs_projection=True,
+            requires_projector_training=True)
 
         self.C = C
 
@@ -93,14 +93,13 @@ class VideoLRPadAlgorithm(Algorithm):
 
         self.video_subsampling_step = video_subsampling_step
 
-        self.lr_machine = None # this argument will be updated with pretrained LR machine
+        self.lr_machine = None  # this argument will be updated with pretrained LR machine
 
-        self.features_mean = None # this argument will be updated with features mean
-        self.features_std = None # this argument will be updated with features std
+        self.features_mean = None  # this argument will be updated with features mean
+        self.features_std = None  # this argument will be updated with features std
 
         # names of the arguments of the pretrained LR machine to be saved/loaded to/from HDF5 file:
         self.lr_param_keys = ["C", "classes_", "coef_", "intercept_"]
-
 
     #==========================================================================
     def convert_frame_cont_to_array(self, frame_container):
@@ -138,7 +137,6 @@ class VideoLRPadAlgorithm(Algorithm):
 
         return features_array
 
-
     #==========================================================================
     def convert_list_of_frame_cont_to_array(self, frame_containers):
         """
@@ -163,17 +161,20 @@ class VideoLRPadAlgorithm(Algorithm):
 
         for frame_container in frame_containers:
 
-            video_features_array = self.convert_frame_cont_to_array(frame_container)
+            video_features_array = self.convert_frame_cont_to_array(
+                frame_container)
 
-            feature_vectors.append( video_features_array )
+            feature_vectors.append(video_features_array)
 
         features_array = np.vstack(feature_vectors)
 
         return features_array
 
-
     #==========================================================================
-    def mean_std_normalize(self, features, features_mean= None, features_std = None):
+    def mean_std_normalize(self,
+                           features,
+                           features_mean=None,
+                           features_std=None):
         """
         The features in the input 2D array are mean-std normalized.
         The rows are samples, the columns are features. If ``features_mean``
@@ -215,7 +216,7 @@ class VideoLRPadAlgorithm(Algorithm):
 
         row_norm_list = []
 
-        for row in features: # row is a sample
+        for row in features:  # row is a sample
 
             row_norm = (row - features_mean) / features_std
 
@@ -224,7 +225,6 @@ class VideoLRPadAlgorithm(Algorithm):
         features_norm = np.vstack(row_norm_list)
 
         return features_norm, features_mean, features_std
-
 
     #==========================================================================
     def norm_train_data(self, real, attack):
@@ -258,10 +258,10 @@ class VideoLRPadAlgorithm(Algorithm):
 
         real_norm, features_mean, features_std = self.mean_std_normalize(real)
 
-        attack_norm, _, _ = self.mean_std_normalize(attack, features_mean, features_std)
+        attack_norm, _, _ = self.mean_std_normalize(attack, features_mean,
+                                                    features_std)
 
         return real_norm, attack_norm, features_mean, features_std
-
 
     #==========================================================================
     def train_lr(self, real, attack, C):
@@ -294,22 +294,23 @@ class VideoLRPadAlgorithm(Algorithm):
             Standart deviation of the features.
         """
 
-        real, attack, features_mean, features_std = self.norm_train_data(real, attack)
+        real, attack, features_mean, features_std = self.norm_train_data(
+            real, attack)
         # real and attack - are now mean-std normalized
 
         X = np.vstack([real, attack])
 
-        Y = np.hstack( [ np.zeros(len(real) ), np.ones(len(attack) ) ] )
+        Y = np.hstack([np.zeros(len(real)), np.ones(len(attack))])
 
-        machine = linear_model.LogisticRegression( C = C )
+        machine = linear_model.LogisticRegression(C=C)
 
         machine.fit(X, Y)
 
         return machine, features_mean, features_std
 
-
     #==========================================================================
-    def save_lr_machine_and_mean_std(self, projector_file, machine, features_mean, features_std):
+    def save_lr_machine_and_mean_std(self, projector_file, machine,
+                                     features_mean, features_std):
         """
         Saves the LR machine, features mean and std to the hdf5 file.
         The absolute name of the file is specified in ``projector_file`` string.
@@ -331,20 +332,20 @@ class VideoLRPadAlgorithm(Algorithm):
             Standart deviation of the features.
         """
 
-        f = bob.io.base.HDF5File(projector_file, 'w') # open hdf5 file to save to
+        f = bob.io.base.HDF5File(projector_file,
+                                 'w')  # open hdf5 file to save to
 
-        for key in self.lr_param_keys: # ["C", "classes_", "coef_", "intercept_"]
+        for key in self.lr_param_keys:  # ["C", "classes_", "coef_", "intercept_"]
 
-            data = getattr( machine, key )
+            data = getattr(machine, key)
 
-            f.set( key, data )
+            f.set(key, data)
 
-        f.set( "features_mean", features_mean )
+        f.set("features_mean", features_mean)
 
-        f.set( "features_std", features_std )
+        f.set("features_std", features_std)
 
         del f
-
 
     #==========================================================================
     def subsample_train_videos(self, training_features, step):
@@ -371,7 +372,6 @@ class VideoLRPadAlgorithm(Algorithm):
 
         return training_features_subset
 
-
     #==========================================================================
     def train_projector(self, training_features, projector_file):
         """
@@ -394,38 +394,45 @@ class VideoLRPadAlgorithm(Algorithm):
         # training_features[0] - training features for the REAL class.
         # training_features[1] - training features for the ATTACK class.
 
-        if self.subsample_videos_flag: # subsample videos of the real class
+        if self.subsample_videos_flag:  # subsample videos of the real class
 
-            real = self.convert_list_of_frame_cont_to_array( self.subsample_train_videos(training_features[0], self.video_subsampling_step) ) # output is array
-
-        else:
-
-            real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
-
-        if self.subsample_train_data_flag:
-
-            real = real[range(0,len(real), self.subsampling_step), :]
-
-        if self.subsample_videos_flag: # subsample videos of the real class
-
-            attack = self.convert_list_of_frame_cont_to_array( self.subsample_train_videos(training_features[1], self.video_subsampling_step) ) # output is array
+            real = self.convert_list_of_frame_cont_to_array(
+                self.subsample_train_videos(
+                    training_features[0],
+                    self.video_subsampling_step))  # output is array
 
         else:
 
-            attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+            real = self.convert_list_of_frame_cont_to_array(
+                training_features[0])  # output is array
 
         if self.subsample_train_data_flag:
 
-            attack = attack[range(0,len(attack), self.subsampling_step), :]
+            real = real[range(0, len(real), self.subsampling_step), :]
+
+        if self.subsample_videos_flag:  # subsample videos of the real class
+
+            attack = self.convert_list_of_frame_cont_to_array(
+                self.subsample_train_videos(
+                    training_features[1],
+                    self.video_subsampling_step))  # output is array
+
+        else:
+
+            attack = self.convert_list_of_frame_cont_to_array(
+                training_features[1])  # output is array
+
+        if self.subsample_train_data_flag:
+
+            attack = attack[range(0, len(attack), self.subsampling_step), :]
 
         # Train the LR machine and get normalizers:
-        machine, features_mean, features_std = self.train_lr(real = real,
-                                                             attack = attack,
-                                                             C = self.C)
+        machine, features_mean, features_std = self.train_lr(
+            real=real, attack=attack, C=self.C)
 
         # Save the LR machine and normalizers:
-        self.save_lr_machine_and_mean_std(projector_file, machine, features_mean, features_std)
-
+        self.save_lr_machine_and_mean_std(projector_file, machine,
+                                          features_mean, features_std)
 
     #==========================================================================
     def load_lr_machine_and_mean_std(self, projector_file):
@@ -451,13 +458,14 @@ class VideoLRPadAlgorithm(Algorithm):
             Standart deviation of the features.
         """
 
-        f = bob.io.base.HDF5File(projector_file, 'r') # file to read the machine from
+        f = bob.io.base.HDF5File(projector_file,
+                                 'r')  # file to read the machine from
 
         # initialize the machine:
         machine = linear_model.LogisticRegression()
 
         # set the params of the machine:
-        for key in self.lr_param_keys: # ["C", "classes_", "coef_", "intercept_"]
+        for key in self.lr_param_keys:  # ["C", "classes_", "coef_", "intercept_"]
 
             data = f.read(key)
 
@@ -470,7 +478,6 @@ class VideoLRPadAlgorithm(Algorithm):
         del f
 
         return machine, features_mean, features_std
-
 
     #==========================================================================
     def load_projector(self, projector_file):
@@ -496,14 +503,14 @@ class VideoLRPadAlgorithm(Algorithm):
             ``load_cascade_of_machines`` methods of this class for more details.
         """
 
-        lr_machine, features_mean, features_std = self.load_lr_machine_and_mean_std(projector_file)
+        lr_machine, features_mean, features_std = self.load_lr_machine_and_mean_std(
+            projector_file)
 
         self.lr_machine = lr_machine
 
         self.features_mean = features_mean
 
         self.features_std = features_std
-
 
     #==========================================================================
     def project(self, feature):
@@ -537,7 +544,9 @@ class VideoLRPadAlgorithm(Algorithm):
         """
 
         # 1. Convert input array to numpy array if necessary.
-        if isinstance(feature, FrameContainer): # if FrameContainer convert to 2D numpy array
+        if isinstance(
+                feature,
+                FrameContainer):  # if FrameContainer convert to 2D numpy array
 
             features_array = self.convert_frame_cont_to_array(feature)
 
@@ -545,12 +554,12 @@ class VideoLRPadAlgorithm(Algorithm):
 
             features_array = feature
 
-        features_array_norm, _, _ = self.mean_std_normalize(features_array, self.features_mean, self.features_std)
+        features_array_norm, _, _ = self.mean_std_normalize(
+            features_array, self.features_mean, self.features_std)
 
-        scores = self.lr_machine.predict_proba( features_array_norm )[:,0]
+        scores = self.lr_machine.predict_proba(features_array_norm)[:, 0]
 
         return scores
-
 
     #==========================================================================
     def score(self, toscore):
@@ -580,10 +589,6 @@ class VideoLRPadAlgorithm(Algorithm):
 
         else:
 
-            score = [np.mean( toscore )] # compute a single score per video
+            score = [np.mean(toscore)]  # compute a single score per video
 
         return score
-
-
-
-

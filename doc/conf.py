@@ -6,7 +6,6 @@ import sys
 import glob
 import pkg_resources
 
-
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -25,15 +24,9 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
     #'matplotlib.sphinxext.plot_directive'
-    ]
-
-import sphinx
-if sphinx.__version__ >= "1.4.1":
-    extensions.append('sphinx.ext.imgmath')
-    imgmath_image_format = 'svg'
-else:
-    extensions.append('sphinx.ext.pngmath')
+]
 
 # Be picky about warnings
 nitpicky = True
@@ -48,7 +41,7 @@ if os.path.exists('nitpick-exceptions.txt'):
             continue
         dtype, target = line.split(None, 1)
         target = target.strip()
-        try: # python 2.x
+        try:  # python 2.x
             target = unicode(target)
         except NameError:
             pass
@@ -135,7 +128,6 @@ project_variable = project.replace('.', '_')
 short_description = u'Presentation Attack Detection in Face Biometrics'
 owner = [u'Idiap Research Institute']
 
-
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -216,7 +208,6 @@ html_favicon = 'img/favicon.ico'
 # Output file base name for HTML help builder.
 htmlhelp_basename = project_variable + u'_doc'
 
-
 # -- Post configuration --------------------------------------------------------
 
 # Included after all input documents
@@ -224,45 +215,46 @@ rst_epilog = """
 .. |project| replace:: Bob
 .. |version| replace:: %s
 .. |current-year| date:: %%Y
-""" % (version,)
+""" % (version, )
 
 # Default processing flags for sphinx
 autoclass_content = 'class'
 autodoc_member_order = 'bysource'
 autodoc_default_flags = [
-  'members',
-  'undoc-members',
-  'show-inheritance',
-  ]
+    'members',
+    'undoc-members',
+    'show-inheritance',
+]
 
 # For inter-documentation mapping:
 from bob.extension.utils import link_documentation, load_requirements
 sphinx_requirements = "extra-intersphinx.txt"
 if os.path.exists(sphinx_requirements):
-  intersphinx_mapping = link_documentation(
-      additional_packages=['python','numpy'] + \
-          load_requirements(sphinx_requirements)
-          )
+    intersphinx_mapping = link_documentation(
+        additional_packages=['python','numpy'] + \
+            load_requirements(sphinx_requirements)
+            )
 else:
-  intersphinx_mapping = link_documentation()
-
+    intersphinx_mapping = link_documentation()
 
 # We want to remove all private (i.e. _. or __.__) members
 # that are not in the list of accepted functions
 accepted_private_functions = ['__array__']
 
+
 def member_function_test(app, what, name, obj, skip, options):
-  # test if we have a private function
-  if len(name) > 1 and name[0] == '_':
-    # test if this private function should be allowed
-    if name not in accepted_private_functions:
-      # omit privat functions that are not in the list of accepted private functions
-      return skip
-    else:
-      # test if the method is documented
-      if not hasattr(obj, '__doc__') or not obj.__doc__:
-        return skip
-  return False
+    # test if we have a private function
+    if len(name) > 1 and name[0] == '_':
+        # test if this private function should be allowed
+        if name not in accepted_private_functions:
+            # omit privat functions that are not in the list of accepted private functions
+            return skip
+        else:
+            # test if the method is documented
+            if not hasattr(obj, '__doc__') or not obj.__doc__:
+                return skip
+    return False
+
 
 def setup(app):
-  app.connect('autodoc-skip-member', member_function_test)
+    app.connect('autodoc-skip-member', member_function_test)

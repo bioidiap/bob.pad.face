@@ -28,6 +28,7 @@ from bob.bio.video.utils import FrameContainer
 #==============================================================================
 # Main body :
 
+
 class VideoCascadeSvmPadAlgorithm(Algorithm):
     """
     This class is designed to train the **cascede** of SVMs given Frame Containers
@@ -83,23 +84,24 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
     """
 
     def __init__(self,
-                 machine_type = 'C_SVC',
-                 kernel_type = 'RBF',
-                 svm_kwargs = {'cost': 1, 'gamma': 0},
-                 N = 2,
-                 pos_scores_slope = 0.01,
-                 frame_level_scores_flag = False):
+                 machine_type='C_SVC',
+                 kernel_type='RBF',
+                 svm_kwargs={'cost': 1,
+                             'gamma': 0},
+                 N=2,
+                 pos_scores_slope=0.01,
+                 frame_level_scores_flag=False):
 
-
-        Algorithm.__init__(self,
-                           machine_type = machine_type,
-                           kernel_type = kernel_type,
-                           svm_kwargs = svm_kwargs,
-                           N = N,
-                           pos_scores_slope = pos_scores_slope,
-                           frame_level_scores_flag = frame_level_scores_flag,
-                           performs_projection=True,
-                           requires_projector_training=True)
+        Algorithm.__init__(
+            self,
+            machine_type=machine_type,
+            kernel_type=kernel_type,
+            svm_kwargs=svm_kwargs,
+            N=N,
+            pos_scores_slope=pos_scores_slope,
+            frame_level_scores_flag=frame_level_scores_flag,
+            performs_projection=True,
+            requires_projector_training=True)
 
         self.machine_type = machine_type
         self.kernel_type = kernel_type
@@ -108,12 +110,11 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         self.pos_scores_slope = pos_scores_slope
         self.frame_level_scores_flag = frame_level_scores_flag
 
-        self.pca_projector_file_name = "pca_projector" # pca machine will be saved to .hdf5 file with this name
-        self.svm_projector_file_name = "svm_projector" # svm machines will be saved to .hdf5 files with this name augumented by machine number
+        self.pca_projector_file_name = "pca_projector"  # pca machine will be saved to .hdf5 file with this name
+        self.svm_projector_file_name = "svm_projector"  # svm machines will be saved to .hdf5 files with this name augumented by machine number
 
         self.pca_machine = None
         self.svm_machines = None
-
 
     #==========================================================================
     def convert_frame_cont_to_array(self, frame_container):
@@ -151,7 +152,6 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         return features_array
 
-
     #==========================================================================
     def convert_list_of_frame_cont_to_array(self, frame_containers):
         """
@@ -176,14 +176,14 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         for frame_container in frame_containers:
 
-            video_features_array = self.convert_frame_cont_to_array(frame_container)
+            video_features_array = self.convert_frame_cont_to_array(
+                frame_container)
 
-            feature_vectors.append( video_features_array )
+            feature_vectors.append(video_features_array)
 
         features_array = np.vstack(feature_vectors)
 
         return features_array
-
 
     #==========================================================================
     def comp_prediction_precision(self, machine, real, attack):
@@ -214,13 +214,16 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         samples_num = len(labels_real) + len(labels_attack)
 
-        precision = ( np.sum(labels_real == 1) + np.sum(labels_attack == -1) ).astype( np.float ) / samples_num
+        precision = (np.sum(labels_real == 1) + np.sum(labels_attack == -1)
+                     ).astype(np.float) / samples_num
 
         return precision
 
-
     #==========================================================================
-    def mean_std_normalize(self, features, features_mean= None, features_std = None):
+    def mean_std_normalize(self,
+                           features,
+                           features_mean=None,
+                           features_std=None):
         """
         The features in the input 2D array are mean-std normalized.
         The rows are samples, the columns are features. If ``features_mean``
@@ -262,7 +265,7 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         row_norm_list = []
 
-        for row in features: # row is a sample
+        for row in features:  # row is a sample
 
             row_norm = (row - features_mean) / features_std
 
@@ -271,7 +274,6 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         features_norm = np.vstack(row_norm_list)
 
         return features_norm, features_mean, features_std
-
 
     #==========================================================================
     def norm_train_data(self, real, attack, one_class_flag):
@@ -308,21 +310,26 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             Standart deviation of the features.
         """
 
-        if not( one_class_flag ): # two-class SVM case
+        if not (one_class_flag):  # two-class SVM case
 
             features = np.vstack([real, attack])
-            features_norm, features_mean, features_std = self.mean_std_normalize(features)
-            real_norm =   features_norm[0:real.shape[0], :] # The array is now normalized
-            attack_norm = features_norm[real.shape[0]:, :] # The array is now normalized
+            features_norm, features_mean, features_std = self.mean_std_normalize(
+                features)
+            real_norm = features_norm[0:real.shape[
+                0], :]  # The array is now normalized
+            attack_norm = features_norm[real.shape[
+                0]:, :]  # The array is now normalized
 
-        else: # one-class SVM case
+        else:  # one-class SVM case
 
-            real_norm, features_mean, features_std = self.mean_std_normalize(real) # use only real class to compute normalizers
+            real_norm, features_mean, features_std = self.mean_std_normalize(
+                real)  # use only real class to compute normalizers
             attack_norm = []
+
+
 #            attack_norm = self.mean_std_normalize(attack, features_mean, features_std)
 
         return real_norm, attack_norm, features_mean, features_std
-
 
     #==========================================================================
     def train_pca(self, data):
@@ -349,16 +356,16 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         # 1. Normalize the training data:
         data_norm, features_mean, features_std = self.mean_std_normalize(data)
 
-        trainer = bob.learn.linear.PCATrainer() # Creates a PCA trainer
+        trainer = bob.learn.linear.PCATrainer()  # Creates a PCA trainer
 
-        [machine, eig_vals] = trainer.train(data_norm)  # Trains the machine with the given data
+        [machine, eig_vals] = trainer.train(
+            data_norm)  # Trains the machine with the given data
 
         # Set the normalizers for the PCA machine, needed to normalize the test samples.
-        machine.input_subtract = features_mean # subtract the mean of train data
-        machine.input_divide   = features_std  # divide by std of train data
+        machine.input_subtract = features_mean  # subtract the mean of train data
+        machine.input_divide = features_std  # divide by std of train data
 
         return machine, eig_vals
-
 
     #==========================================================================
     def train_svm(self, real, attack, machine_type, kernel_type, svm_kwargs):
@@ -394,36 +401,39 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             machine.
         """
 
-        one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
+        one_class_flag = (
+            machine_type == 'ONE_CLASS')  # True if one-class SVM is used
 
         # Mean-std normalize the data before training
-        real, attack, features_mean, features_std = self.norm_train_data(real, attack, one_class_flag)
+        real, attack, features_mean, features_std = self.norm_train_data(
+            real, attack, one_class_flag)
         # real and attack - are now mean-std normalized
 
-        trainer = bob.learn.libsvm.Trainer(machine_type = machine_type,
-                                           kernel_type = kernel_type,
-                                           probability = True)
+        trainer = bob.learn.libsvm.Trainer(
+            machine_type=machine_type,
+            kernel_type=kernel_type,
+            probability=True)
 
         for key in svm_kwargs.keys():
 
-            setattr(trainer, key, svm_kwargs[key]) # set the hyper-parameters of the SVM
+            setattr(trainer, key,
+                    svm_kwargs[key])  # set the hyper-parameters of the SVM
 
-        if not( one_class_flag ): # two-class SVM case
+        if not (one_class_flag):  # two-class SVM case
 
-            data = [real, attack] # data for final training
+            data = [real, attack]  # data for final training
 
-        else: # one-class SVM case
+        else:  # one-class SVM case
 
-            data = [real] # only real class used for training
+            data = [real]  # only real class used for training
 
-        machine = trainer.train(data) # train the machine
+        machine = trainer.train(data)  # train the machine
 
         # add the normalizers to the trained SVM machine
-        machine.input_subtract = features_mean # subtract the mean of train data
-        machine.input_divide   = features_std  # divide by std of train data
+        machine.input_subtract = features_mean  # subtract the mean of train data
+        machine.input_divide = features_std  # divide by std of train data
 
         return machine
-
 
     #==========================================================================
     def get_data_start_end_idx(self, data, N):
@@ -456,19 +466,20 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         n_features = data.shape[1]
 
-        n_machines = np.int(n_features/N)
+        n_machines = np.int(n_features / N)
 
-        if (n_features - n_machines*N) > 1: # if more than one feature remains
+        if (n_features -
+                n_machines * N) > 1:  # if more than one feature remains
 
             machines_num = range(0, n_machines, 1)
 
-            idx_start = [item*N for item in machines_num]
+            idx_start = [item * N for item in machines_num]
 
-            idx_end = [(item+1)*N for item in machines_num]
+            idx_end = [(item + 1) * N for item in machines_num]
 
-            idx_start.append( n_machines*N )
+            idx_start.append(n_machines * N)
 
-            idx_end.append( n_features )
+            idx_end.append(n_features)
 
             n_machines = n_machines + 1
 
@@ -476,15 +487,15 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
             machines_num = range(0, n_machines, 1)
 
-            idx_start = [item*N for item in machines_num]
+            idx_start = [item * N for item in machines_num]
 
-            idx_end = [(item+1)*N for item in machines_num]
+            idx_end = [(item + 1) * N for item in machines_num]
 
         return idx_start, idx_end, n_machines
 
-
     #==========================================================================
-    def train_svm_cascade(self, real, attack, machine_type, kernel_type, svm_kwargs, N):
+    def train_svm_cascade(self, real, attack, machine_type, kernel_type,
+                          svm_kwargs, N):
         """
         Train a cascade of SVMs, one SVM machine per N features. N is usually small
         N = (2, 3). So, if N = 2, the first SVM is trained for features 1 and 2,
@@ -525,7 +536,8 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             A dictionary containing a cascade of trained SVM machines.
         """
 
-        one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
+        one_class_flag = (
+            machine_type == 'ONE_CLASS')  # True if one-class SVM is used
 
         idx_start, idx_end, n_machines = self.get_data_start_end_idx(real, N)
 
@@ -533,27 +545,31 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         for machine_num in range(0, n_machines, 1):
 
-            if not(one_class_flag): # two-class SVM
+            if not (one_class_flag):  # two-class SVM
 
-                real_subset     = real[:, idx_start[machine_num] : idx_end[machine_num] ] # both real and attack classes are used
-                attack_subset = attack[:, idx_start[machine_num] : idx_end[machine_num] ]
+                real_subset = real[:, idx_start[machine_num]:idx_end[
+                    machine_num]]  # both real and attack classes are used
+                attack_subset = attack[:, idx_start[machine_num]:idx_end[
+                    machine_num]]
 
-            else: # one-class SVM case
+            else:  # one-class SVM case
 
-                real_subset     = real[:, idx_start[machine_num] : idx_end[machine_num] ] # only the real class is used
+                real_subset = real[:, idx_start[machine_num]:idx_end[
+                    machine_num]]  # only the real class is used
                 attack_subset = []
 
-            machine = self.train_svm(real_subset, attack_subset, machine_type, kernel_type, svm_kwargs)
+            machine = self.train_svm(real_subset, attack_subset, machine_type,
+                                     kernel_type, svm_kwargs)
 
-            machines[ str(machine_num) ] = machine
+            machines[str(machine_num)] = machine
 
             del machine
 
         return machines
 
-
     #==========================================================================
-    def train_pca_svm_cascade(self, real, attack, machine_type, kernel_type, svm_kwargs, N):
+    def train_pca_svm_cascade(self, real, attack, machine_type, kernel_type,
+                              svm_kwargs, N):
         """
         This function is designed to train the **cascede** of SVMs given
         features of real and attack classes. The procedure is the following:
@@ -606,25 +622,34 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             A cascade of SVM machines.
         """
 
-        one_class_flag = (machine_type == 'ONE_CLASS') # True if one-class SVM is used
+        one_class_flag = (
+            machine_type == 'ONE_CLASS')  # True if one-class SVM is used
 
         # 1. Train PCA using normalized features of the real class:
-        pca_machine, _ = self.train_pca(real) # the mean-std normalizers are already set in this machine
+        pca_machine, _ = self.train_pca(
+            real)  # the mean-std normalizers are already set in this machine
 
         # 2. Project the features given PCA machine:
-        if not(one_class_flag):
-            projected_real = pca_machine(real) # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
-            projected_attack = pca_machine(attack) # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
+        if not (one_class_flag):
+            projected_real = pca_machine(
+                real
+            )  # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
+            projected_attack = pca_machine(
+                attack
+            )  # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
 
         else:
-            projected_real = pca_machine(real) # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
+            projected_real = pca_machine(
+                real
+            )  # the normalizers are already set for the PCA machine, therefore non-normalized data is passed in
             projected_attack = []
 
         # 3. Train a cascade of SVM machines using **projected** data
-        svm_machines = self.train_svm_cascade(projected_real, projected_attack, machine_type, kernel_type, svm_kwargs, N)
+        svm_machines = self.train_svm_cascade(projected_real, projected_attack,
+                                              machine_type, kernel_type,
+                                              svm_kwargs, N)
 
         return pca_machine, svm_machines
-
 
     #==========================================================================
     def save_machine(self, projector_file, projector_file_name, machine):
@@ -650,17 +675,19 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         extension = ".hdf5"
 
-        resulting_file_name = os.path.join( os.path.split(projector_file)[0], projector_file_name + extension )
+        resulting_file_name = os.path.join(
+            os.path.split(projector_file)[0], projector_file_name + extension)
 
-        f = bob.io.base.HDF5File(resulting_file_name, 'w') # open hdf5 file to save to
+        f = bob.io.base.HDF5File(resulting_file_name,
+                                 'w')  # open hdf5 file to save to
 
-        machine.save(f) # save the machine and normalization parameters
+        machine.save(f)  # save the machine and normalization parameters
 
         del f
 
-
     #==========================================================================
-    def save_cascade_of_machines(self, projector_file, projector_file_name, machines):
+    def save_cascade_of_machines(self, projector_file, projector_file_name,
+                                 machines):
         """
         Saves a cascade of machines to the hdf5 files. The name of the file is
         specified in ``projector_file_name`` string and will be augumented with
@@ -689,8 +716,8 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
             machine = machines[key]
 
-            self.save_machine(projector_file, augumented_projector_file_name, machine)
-
+            self.save_machine(projector_file, augumented_projector_file_name,
+                              machine)
 
     #==========================================================================
     def train_projector(self, training_features, projector_file):
@@ -714,24 +741,28 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         """
 
         # training_features[0] - training features for the REAL class.
-        real = self.convert_list_of_frame_cont_to_array(training_features[0]) # output is array
+        real = self.convert_list_of_frame_cont_to_array(
+            training_features[0])  # output is array
         # training_features[1] - training features for the ATTACK class.
-        attack = self.convert_list_of_frame_cont_to_array(training_features[1]) # output is array
+        attack = self.convert_list_of_frame_cont_to_array(
+            training_features[1])  # output is array
 
         # Train the PCA machine and cascade of SVMs
-        pca_machine, svm_machines = self.train_pca_svm_cascade(real = real,
-                                                               attack = attack,
-                                                               machine_type = self.machine_type,
-                                                               kernel_type = self.kernel_type,
-                                                               svm_kwargs = self.svm_kwargs,
-                                                               N = self.N)
+        pca_machine, svm_machines = self.train_pca_svm_cascade(
+            real=real,
+            attack=attack,
+            machine_type=self.machine_type,
+            kernel_type=self.kernel_type,
+            svm_kwargs=self.svm_kwargs,
+            N=self.N)
 
         # Save the PCA machine
-        self.save_machine(projector_file, self.pca_projector_file_name, pca_machine)
+        self.save_machine(projector_file, self.pca_projector_file_name,
+                          pca_machine)
 
         # Save the cascade of SVMs:
-        self.save_cascade_of_machines(projector_file, self.svm_projector_file_name, svm_machines)
-
+        self.save_cascade_of_machines(
+            projector_file, self.svm_projector_file_name, svm_machines)
 
     #==========================================================================
     def load_machine(self, projector_file, projector_file_name):
@@ -759,9 +790,12 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         extension = ".hdf5"
 
-        resulting_file_name = os.path.join( os.path.split(projector_file)[0], projector_file_name + extension ) # name of the file
+        resulting_file_name = os.path.join(
+            os.path.split(projector_file)[0],
+            projector_file_name + extension)  # name of the file
 
-        f = bob.io.base.HDF5File(resulting_file_name, 'r') # file to read the machine from
+        f = bob.io.base.HDF5File(resulting_file_name,
+                                 'r')  # file to read the machine from
 
         if "pca_" in projector_file_name:
 
@@ -774,7 +808,6 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         del f
 
         return machine
-
 
     #==========================================================================
     def get_cascade_file_names(self, projector_file, projector_file_name):
@@ -800,18 +833,18 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             A list of of **relative** file-names storing the cascade of machines.
         """
 
-        path = os.path.split(projector_file)[0] # directory containing files storing the cascade of machines.
+        path = os.path.split(projector_file)[
+            0]  # directory containing files storing the cascade of machines.
 
         files = []
 
-        for f in os.listdir( path ):
+        for f in os.listdir(path):
 
-            if fnmatch.fnmatch( f, projector_file_name + "*" ):
+            if fnmatch.fnmatch(f, projector_file_name + "*"):
 
                 files.append(f)
 
         return files
-
 
     #==========================================================================
     def load_cascade_of_machines(self, projector_file, projector_file_name):
@@ -839,18 +872,19 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
             the machine, value is the machine itself.
         """
 
-        files = self.get_cascade_file_names(projector_file, projector_file_name) # files storing the cascade
+        files = self.get_cascade_file_names(
+            projector_file, projector_file_name)  # files storing the cascade
 
         machines = {}
 
         for idx, _ in enumerate(files):
 
-            machine = self.load_machine( projector_file, projector_file_name + str(idx) )
+            machine = self.load_machine(projector_file,
+                                        projector_file_name + str(idx))
 
-            machines[ str(idx) ] = machine
+            machines[str(idx)] = machine
 
         return machines
-
 
     #==========================================================================
     def load_projector(self, projector_file):
@@ -876,14 +910,15 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         """
 
         # Load the PCA machine
-        pca_machine = self.load_machine(projector_file, self.pca_projector_file_name)
+        pca_machine = self.load_machine(projector_file,
+                                        self.pca_projector_file_name)
 
         # Load the cascade of SVMs:
-        svm_machines = self.load_cascade_of_machines(projector_file, self.svm_projector_file_name)
+        svm_machines = self.load_cascade_of_machines(
+            projector_file, self.svm_projector_file_name)
 
         self.pca_machine = pca_machine
         self.svm_machines = svm_machines
-
 
     #==========================================================================
     def combine_scores_of_svm_cascade(self, scores_array, pos_scores_slope):
@@ -914,18 +949,17 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         for col in scores_array.T:
 
-            idx_vec = np.where(col>=0)
+            idx_vec = np.where(col >= 0)
 
-            col[idx_vec] *= pos_scores_slope # multiply positive scores by the constant
+            col[idx_vec] *= pos_scores_slope  # multiply positive scores by the constant
 
             cols.append(col)
 
         scores_array_modified = np.stack(cols, axis=1)
 
-        scores = np.mean(scores_array_modified, axis = 1)
+        scores = np.mean(scores_array_modified, axis=1)
 
         return scores
-
 
     #==========================================================================
     def project(self, feature):
@@ -963,7 +997,9 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         """
 
         # 1. Convert input array to numpy array if necessary.
-        if isinstance(feature, FrameContainer): # if FrameContainer convert to 2D numpy array
+        if isinstance(
+                feature,
+                FrameContainer):  # if FrameContainer convert to 2D numpy array
 
             features_array = self.convert_frame_cont_to_array(feature)
 
@@ -977,36 +1013,43 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
         # 3. Apply the cascade of SVMs to the preojected features.
         all_scores = []
 
-        idx_start, idx_end, n_machines = self.get_data_start_end_idx(pca_projected_features, self.N)
+        idx_start, idx_end, n_machines = self.get_data_start_end_idx(
+            pca_projected_features, self.N)
 
-        for machine_num in range(0, n_machines, 1): # iterate over SVM machines
+        for machine_num in range(0, n_machines,
+                                 1):  # iterate over SVM machines
 
-            svm_machine = self.svm_machines[ str(machine_num) ] # select a machine
+            svm_machine = self.svm_machines[str(
+                machine_num)]  # select a machine
 
             # subset of PCA projected features to be passed to SVM machine
-            pca_projected_features_subset = pca_projected_features[:, idx_start[machine_num] : idx_end[machine_num] ]
+            pca_projected_features_subset = pca_projected_features[:, idx_start[
+                machine_num]:idx_end[machine_num]]
 
             # for two-class SVM select the scores corresponding to the real class only, done by [:,0]. Index [0] selects the class Index [1] selects the score..
-            single_machine_scores = svm_machine.predict_class_and_scores( pca_projected_features_subset )[1][:,0]
+            single_machine_scores = svm_machine.predict_class_and_scores(
+                pca_projected_features_subset)[1][:, 0]
 
             all_scores.append(single_machine_scores)
 
-        all_scores_array   = np.stack(all_scores, axis = 1).astype(np.float)
+        all_scores_array = np.stack(all_scores, axis=1).astype(np.float)
 
         # 4. Combine the scores:
 
-        one_class_flag = (svm_machine.machine_type == 'ONE_CLASS') # True if one-class SVM is used
+        one_class_flag = (svm_machine.machine_type == 'ONE_CLASS'
+                          )  # True if one-class SVM is used
 
-        if not(one_class_flag):
+        if not (one_class_flag):
 
-            scores = np.mean(all_scores_array, axis = 1) # compute mean for two-class SVM
+            scores = np.mean(
+                all_scores_array, axis=1)  # compute mean for two-class SVM
 
-        else: # one class SVM case
+        else:  # one class SVM case
 
-            scores = self.combine_scores_of_svm_cascade(all_scores_array, self.pos_scores_slope)
+            scores = self.combine_scores_of_svm_cascade(
+                all_scores_array, self.pos_scores_slope)
 
         return scores
-
 
     #==========================================================================
     def score(self, toscore):
@@ -1040,11 +1083,6 @@ class VideoCascadeSvmPadAlgorithm(Algorithm):
 
         else:
 
-            score = [np.mean( toscore )] # compute a single score per video
+            score = [np.mean(toscore)]  # compute a single score per video
 
         return score
-
-
-
-
-

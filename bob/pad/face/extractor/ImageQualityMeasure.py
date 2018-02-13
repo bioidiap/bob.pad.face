@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 #==============================================================================
 # Main body:
 
+
 class ImageQualityMeasure(Extractor):
     """
     This class is designed to extract Image Quality Measures given input RGB
@@ -36,23 +37,16 @@ class ImageQualityMeasure(Extractor):
         The data type of the resulting feature vector.
         Default: ``None``.
     """
-    #==========================================================================
-    def __init__(self,
-                 galbally=True,
-                 msu=True,
-                 dtype=None,
-                 **kwargs):
 
-        Extractor.__init__(self,
-                           galbally=galbally,
-                           msu=msu,
-                           dtype=dtype,
-                           **kwargs)
+    #==========================================================================
+    def __init__(self, galbally=True, msu=True, dtype=None, **kwargs):
+
+        Extractor.__init__(
+            self, galbally=galbally, msu=msu, dtype=dtype, **kwargs)
 
         self.dtype = dtype
         self.galbally = galbally
         self.msu = msu
-
 
     #==========================================================================
     def __call__(self, data):
@@ -110,5 +104,3 @@ class ImageQualityMeasure(Extractor):
             features = features.astype(self.dtype)
 
         return features
-
-

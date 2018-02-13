@@ -22,6 +22,7 @@ import bob.ip.color
 #==============================================================================
 # Main body:
 
+
 class FrameDifference(Preprocessor, object):
     """
     This class is designed to compute frame differences for both facial and
@@ -48,18 +49,18 @@ class FrameDifference(Preprocessor, object):
     """
 
     def __init__(self,
-                 number_of_frames = None,
-                 check_face_size_flag = False,
-                 min_face_size = 50):
+                 number_of_frames=None,
+                 check_face_size_flag=False,
+                 min_face_size=50):
 
-        super(FrameDifference, self).__init__(number_of_frames = number_of_frames,
-                                              check_face_size_flag = check_face_size_flag,
-                                              min_face_size = min_face_size)
+        super(FrameDifference, self).__init__(
+            number_of_frames=number_of_frames,
+            check_face_size_flag=check_face_size_flag,
+            min_face_size=min_face_size)
 
         self.number_of_frames = number_of_frames
         self.check_face_size_flag = check_face_size_flag
         self.min_face_size = min_face_size
-
 
     #==========================================================================
     def eval_face_differences(self, previous, current, annotations):
@@ -87,8 +88,8 @@ class FrameDifference(Preprocessor, object):
             images.
         """
 
-        prev = previous[annotations['topleft'][0]:annotations['bottomright'][0],
-                        annotations['topleft'][1]:annotations['bottomright'][1]]
+        prev = previous[annotations['topleft'][0]:annotations['bottomright'][
+            0], annotations['topleft'][1]:annotations['bottomright'][1]]
 
         curr = current[annotations['topleft'][0]:annotations['bottomright'][0],
                        annotations['topleft'][1]:annotations['bottomright'][1]]
@@ -101,9 +102,12 @@ class FrameDifference(Preprocessor, object):
 
         return face
 
-
     #==========================================================================
-    def eval_background_differences(self, previous, current, annotations, border=None):
+    def eval_background_differences(self,
+                                    previous,
+                                    current,
+                                    annotations,
+                                    border=None):
         """
         Evaluates the normalized frame difference on the background.
 
@@ -147,28 +151,28 @@ class FrameDifference(Preprocessor, object):
             if y1 < 0: y1 = 0
             x1 = annotations['topleft'][1] - border
             if x1 < 0: x1 = 0
-            y2 = y1 + height + (2*border)
+            y2 = y1 + height + (2 * border)
             if y2 > full_diff.shape[0]: y2 = full_diff.shape[0]
-            x2 = x1 + width + (2*border)
+            x2 = x1 + width + (2 * border)
             if x2 > full_diff.shape[1]: x2 = full_diff.shape[1]
             full = full_diff[y1:y2, x1:x2].sum()
             full_size = full_diff[y1:y2, x1:x2].size
 
-        face_diff = full_diff[annotations['topleft'][0]:(annotations['topleft'][0]+height),
-            annotations['topleft'][1]:(annotations['topleft'][1]+width)]
+        face_diff = full_diff[annotations['topleft'][0]:(
+            annotations['topleft'][0] + height), annotations['topleft'][1]:(
+                annotations['topleft'][1] + width)]
 
         # calculates the differences in the face and background areas
         face = face_diff.sum()
         bg = full - face
 
         normalization = float(full_size - face_diff.size)
-        if normalization < 1: #prevents zero division
+        if normalization < 1:  #prevents zero division
             bg = 0.0
         else:
             bg /= float(full_size - face_diff.size)
 
         return bg
-
 
     #==========================================================================
     def check_face_size(self, frame_container, annotations, min_face_size):
@@ -204,34 +208,40 @@ class FrameDifference(Preprocessor, object):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        selected_frames = bob.bio.video.FrameContainer() # initialize the FrameContainer
+        selected_frames = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
 
         selected_annotations = {}
 
         selected_frame_idx = 0
 
-        for idx in range(0, len(annotations)): # idx - frame index
+        for idx in range(0, len(annotations)):  # idx - frame index
 
-            frame_annotations = annotations[str(idx)] # annotations for particular frame
+            frame_annotations = annotations[str(
+                idx)]  # annotations for particular frame
 
             # size of current face
-            face_size = np.min(np.array(frame_annotations['bottomright']) - np.array(frame_annotations['topleft']))
+            face_size = np.min(
+                np.array(frame_annotations['bottomright']) -
+                np.array(frame_annotations['topleft']))
 
-            if face_size >= min_face_size: # check if face size is above the threshold
+            if face_size >= min_face_size:  # check if face size is above the threshold
 
-                selected_frame = frame_container[idx][1] # get current frame
+                selected_frame = frame_container[idx][1]  # get current frame
 
-                selected_frames.add(selected_frame_idx, selected_frame) # add current frame to FrameContainer
+                selected_frames.add(
+                    selected_frame_idx,
+                    selected_frame)  # add current frame to FrameContainer
 
-                selected_annotations[str(selected_frame_idx)] = annotations[str(idx)]
+                selected_annotations[str(selected_frame_idx)] = annotations[
+                    str(idx)]
 
                 selected_frame_idx = selected_frame_idx + 1
 
         return selected_frames, selected_annotations
 
-
     #==========================================================================
-    def comp_face_bg_diff(self, frames, annotations, number_of_frames = None):
+    def comp_face_bg_diff(self, frames, annotations, number_of_frames=None):
         """
         This function computes the frame differences for both facial and background
         regions. These parameters are computed for ``number_of_frames`` frames
@@ -267,9 +277,9 @@ class FrameDifference(Preprocessor, object):
         else:
             number_of_frames = len(frames)
 
-        previous = frames[0][1] # the first frame in the video
+        previous = frames[0][1]  # the first frame in the video
 
-        if len(previous.shape) == 3: # if RGB convert to gray-scale
+        if len(previous.shape) == 3:  # if RGB convert to gray-scale
             previous = bob.ip.color.rgb_to_gray(previous)
 
         diff = []
@@ -278,11 +288,13 @@ class FrameDifference(Preprocessor, object):
 
             current = frames[k][1]
 
-            if len(current.shape) == 3: # if RGB convert to gray-scale
+            if len(current.shape) == 3:  # if RGB convert to gray-scale
                 current = bob.ip.color.rgb_to_gray(current)
 
-            face_diff = self.eval_face_differences(previous, current, annotations[str(k)])
-            bg_diff = self.eval_background_differences(previous, current, annotations[str(k)], None)
+            face_diff = self.eval_face_differences(previous, current,
+                                                   annotations[str(k)])
+            bg_diff = self.eval_background_differences(
+                previous, current, annotations[str(k)], None)
 
             diff.append((face_diff, bg_diff))
 
@@ -291,14 +303,13 @@ class FrameDifference(Preprocessor, object):
             previous = current
             current = tmp
 
-        if not diff: # if list is empty
+        if not diff:  # if list is empty
 
             diff = [(np.NaN, np.NaN)]
 
         diff = np.vstack(diff)
 
         return diff
-
 
     #==========================================================================
     def select_annotated_frames(self, frames, annotations):
@@ -329,27 +340,34 @@ class FrameDifference(Preprocessor, object):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        annotated_frames = np.sort( [np.int(item) for item in annotations.keys()] ) # annotated frame numbers
+        annotated_frames = np.sort([
+            np.int(item) for item in annotations.keys()
+        ])  # annotated frame numbers
 
-        available_frames = range(0,len(frames)) # frame numbers in the input video
+        available_frames = range(
+            0, len(frames))  # frame numbers in the input video
 
-        valid_frames = list(set(annotated_frames).intersection(available_frames)) # valid and annotated frames
+        valid_frames = list(
+            set(annotated_frames).intersection(
+                available_frames))  # valid and annotated frames
 
-        cleaned_frame_container = bob.bio.video.FrameContainer() # initialize the FrameContainer
+        cleaned_frame_container = bob.bio.video.FrameContainer(
+        )  # initialize the FrameContainer
 
         cleaned_annotations = {}
 
         for idx, valid_frame_num in enumerate(valid_frames):
             ## valid_frame_num - is the number of the original frame having annotations
 
-            cleaned_annotations[str(idx)] = annotations[str(valid_frame_num)] # correct the frame numbers
+            cleaned_annotations[str(idx)] = annotations[str(
+                valid_frame_num)]  # correct the frame numbers
 
-            selected_frame = frames[valid_frame_num][1] # get current frame
+            selected_frame = frames[valid_frame_num][1]  # get current frame
 
-            cleaned_frame_container.add(idx, selected_frame) # add current frame to FrameContainer
+            cleaned_frame_container.add(
+                idx, selected_frame)  # add current frame to FrameContainer
 
         return cleaned_frame_container, cleaned_annotations
-
 
     #==========================================================================
     def __call__(self, frames, annotations):
@@ -380,19 +398,20 @@ class FrameDifference(Preprocessor, object):
             The second column contains frame differences of non-facial/background regions.
         """
 
-        if len(frames) != len(annotations): # if some annotations are missing
+        if len(frames) != len(annotations):  # if some annotations are missing
 
             ## Select only annotated frames:
-            frames, annotations = self.select_annotated_frames(frames, annotations)
+            frames, annotations = self.select_annotated_frames(
+                frames, annotations)
 
         if self.check_face_size_flag:
 
-            selected_frames, selected_annotations = self.check_face_size(frames, annotations, self.min_face_size)
+            selected_frames, selected_annotations = self.check_face_size(
+                frames, annotations, self.min_face_size)
 
-        diff = self.comp_face_bg_diff(frames = selected_frames,
-                                      annotations = selected_annotations,
-                                      number_of_frames = self.number_of_frames)
+        diff = self.comp_face_bg_diff(
+            frames=selected_frames,
+            annotations=selected_annotations,
+            number_of_frames=self.number_of_frames)
 
         return diff
-
-

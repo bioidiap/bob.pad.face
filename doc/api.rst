@@ -12,6 +12,11 @@ This section lists all the functionality available in this library allowing to r
 Database Interfaces
 ------------------------------
 
+Base classes
+============
+
+.. autoclass:: bob.pad.face.database.VideoPadFile
+
 
 REPLAY-ATTACK Database
 ========================
@@ -60,3 +65,23 @@ Matching Algorithms
 ------------------------------
 
 .. automodule:: bob.pad.face.algorithm
+
+
+Utilities
+---------
+
+.. autosummary::
+   bob.pad.face.utils.blocks
+   bob.pad.face.utils.detect_face_in_image
+   bob.pad.face.utils.detect_face_landmarks_in_image
+   bob.pad.face.utils.detect_face_landmarks_in_video
+   bob.pad.face.utils.detect_faces_in_video
+   bob.pad.face.utils.frames
+   bob.pad.face.utils.get_eye_pos
+   bob.pad.face.utils.normalize_detections
+   bob.pad.face.utils.number_of_frames
+   bob.pad.face.utils.scale_face
+   bob.pad.face.utils.yield_faces
+   bob.pad.face.utils.yield_frames
+
+.. automodule:: bob.pad.face.utils

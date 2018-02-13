@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """`MIFS`_ is a face makeup spoofing database adapted for face PAD experiments.
 
 Database assembled from a dataset consisting of 107 makeup-transformations taken
@@ -20,14 +19,12 @@ the link.
 
 from bob.pad.face.database.mifs import MIFSPadDatabase
 
-
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
 original_directory = "[YOUR_MIFS_DATABASE_DIRECTORY]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
-original_extension = ".jpg" # extension of the data files
-
+original_extension = ".jpg"  # extension of the data files
 
 database = MIFSPadDatabase(
     protocol='grandtest',

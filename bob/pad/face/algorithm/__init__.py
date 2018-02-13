@@ -3,6 +3,7 @@ from .VideoCascadeSvmPadAlgorithm import VideoCascadeSvmPadAlgorithm
 from .VideoLRPadAlgorithm import VideoLRPadAlgorithm
 from .VideoGmmPadAlgorithm import VideoGmmPadAlgorithm
 
+
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
     Fixing sphinx warnings of not being able to find classes, when path is

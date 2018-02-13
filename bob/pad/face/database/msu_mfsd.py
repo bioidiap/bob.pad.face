@@ -1,11 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-
 #==============================================================================
-import bob.bio.video # Used in MsuMfsdPadFile class
+# Used in ReplayMobilePadFile class
+from bob.bio.video import FrameSelector, FrameContainer
 
-from bob.pad.base.database import PadFile # Used in MsuMfsdPadFile class
+from bob.pad.face.database import VideoPadFile  # Used in MsuMfsdPadFile class
 
 from bob.pad.base.database import PadDatabase
 
@@ -13,8 +13,9 @@ import os
 
 import numpy as np
 
+
 #==============================================================================
-class MsuMfsdPadFile(PadFile):
+class MsuMfsdPadFile(VideoPadFile):
     """
     A high level implementation of the File class for the MSU MFSD database.
     """
@@ -43,42 +44,16 @@ class MsuMfsdPadFile(PadFile):
         # attack_type is a string and I decided to make it like this for this
         # particular database. You can do whatever you want for your own database.
 
-        super(MsuMfsdPadFile, self).__init__(client_id=f.client_id, path=f.path,
-                                            attack_type=attack_type, file_id=f.id)
-
-
-    #==========================================================================
-    def convert_arr_to_frame_cont(self, data):
-        """
-        This function converts an input 4D array with frames into FrameContainer,
-        where each frame is an RGB image. The dimensionality of the input array
-        is [N_frames, 3, N_rows, N_cols].
-
-        **Parameters:**
-
-        ``data`` : 4D :py:class:`numpy.ndarray`
-            An input 4D array with frames of the dimensionality:
-            [N_frames, 3, N_rows, N_cols].
-
-        **Returns:**
-
-        ``frames`` : FrameContainer
-            Resulting FrameContainer containing RGB frames.
-        """
-
-        frames = bob.bio.video.FrameContainer() # initialize the FrameContainer
-
-        for idx, sample in enumerate(data):
-
-            frames.add(idx, sample)
-
-        return frames
-
+        super(MsuMfsdPadFile, self).__init__(
+            client_id=f.client_id,
+            path=f.path,
+            attack_type=attack_type,
+            file_id=f.id)
 
     #==========================================================================
-    def load(self, directory=None, extension=None):
+    def load(self, directory=None, extension=None, frame_selector=FrameSelector(selection_style='all')):
         """
-        Overridden version of the load method defined in the ``PadFile``.
+        Overridden version of the load method defined in the ``VideoPadFile``.
 
         **Parameters:**
 
@@ -91,6 +66,9 @@ class MsuMfsdPadFile(PadFile):
             Note: ``extension`` value is not used in the code of this method.
             Default: None
 
+        ``frame_selector`` : ``FrameSelector``
+            The frame selector to use.
+
         **Returns:**
 
         ``video_data`` : FrameContainer
@@ -98,14 +76,12 @@ class MsuMfsdPadFile(PadFile):
             for further details.
         """
 
-        _, extension = os.path.splitext(self.f.videofile()) # get file extension
+        _, extension = os.path.splitext(
+            self.f.videofile())  # get file extension
 
-        video_data_array = self.f.load(directory = directory,
-                                       extension = extension)
-
-        video_data = self.convert_arr_to_frame_cont(video_data_array) # the result is now a FrameContainer
-
-        return video_data
+        video_data_array = self.f.load(
+            directory=directory, extension=extension)
+        return frame_selector(video_data_array)
 
 
 #==============================================================================
@@ -115,11 +91,11 @@ class MsuMfsdPadDatabase(PadDatabase):
     """
 
     def __init__(
-        self,
-        protocol='grandtest', # grandtest is the default protocol for this database
-        original_directory=None,
-        original_extension=None,
-        **kwargs):
+            self,
+            protocol='grandtest',  # grandtest is the default protocol for this database
+            original_directory=None,
+            original_extension=None,
+            **kwargs):
         """
         **Parameters:**
 
@@ -142,20 +118,36 @@ class MsuMfsdPadDatabase(PadDatabase):
 
         # Since the high level API expects different group names than what the low
         # level API offers, you need to convert them when necessary
-        self.low_level_group_names = ('train', 'devel', 'test') # group names in the low-level database interface
-        self.high_level_group_names = ('train', 'dev', 'eval') # names are expected to be like that in objects() function
+        self.low_level_group_names = (
+            'train', 'devel',
+            'test')  # group names in the low-level database interface
+        self.high_level_group_names = (
+            'train', 'dev',
+            'eval')  # names are expected to be like that in objects() function
 
         # Always use super to call parent class methods.
         super(MsuMfsdPadDatabase, self).__init__(
-            name = 'msu-mfsd',
-            protocol = protocol,
-            original_directory = original_directory,
-            original_extension = original_extension,
+            name='msu-mfsd',
+            protocol=protocol,
+            original_directory=original_directory,
+            original_extension=original_extension,
             **kwargs)
 
+    @property
+    def original_directory(self):
+        return self.db.original_directory
+
+    @original_directory.setter
+    def original_directory(self, value):
+        self.db.original_directory = value
 
     #==========================================================================
-    def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, **kwargs):
+    def objects(self,
+                groups=None,
+                protocol=None,
+                purposes=None,
+                model_ids=None,
+                **kwargs):
         """
         This function returns lists of MsuMfsdPadFile objects, which fulfill the given restrictions.
 
@@ -186,7 +178,8 @@ class MsuMfsdPadDatabase(PadDatabase):
         """
 
         # Convert group names to low-level group names here.
-        groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
+        groups = self.convert_names_to_lowlevel(
+            groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
         files = self.db.objects(group=groups, cls=purposes, **kwargs)
@@ -194,7 +187,6 @@ class MsuMfsdPadDatabase(PadDatabase):
         files = [MsuMfsdPadFile(f) for f in files]
 
         return files
-
 
     #==========================================================================
     def annotations(self, f):
@@ -219,17 +211,21 @@ class MsuMfsdPadDatabase(PadDatabase):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        annots = f.f.bbx(directory=self.original_directory) # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
+        annots = f.f.bbx(
+            directory=self.original_directory
+        )  # numpy array containing the face bounding box data for each video frame, returned data format described in the f.bbx() method of the low level interface
 
-        annotations = {} # dictionary to return
+        annotations = {}  # dictionary to return
 
         for frame_annots in annots:
 
-            topleft = ( np.int( frame_annots[2] ), np.int( frame_annots[1] ) )
-            bottomright = ( np.int( frame_annots[2] + frame_annots[4] ), np.int( frame_annots[1] + frame_annots[3] ) )
+            topleft = (np.int(frame_annots[2]), np.int(frame_annots[1]))
+            bottomright = (np.int(frame_annots[2] + frame_annots[4]),
+                           np.int(frame_annots[1] + frame_annots[3]))
 
-            annotations[str( np.int( frame_annots[0] ) )] = {'topleft': topleft, 'bottomright': bottomright}
+            annotations[str(np.int(frame_annots[0]))] = {
+                'topleft': topleft,
+                'bottomright': bottomright
+            }
 
         return annotations
-
-
