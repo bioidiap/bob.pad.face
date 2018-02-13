@@ -12,3 +12,7 @@ develop-eggs
 sphinx
 dist
 record.txt
+results
+submitted.sql3
+config
+temp*
