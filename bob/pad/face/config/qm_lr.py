@@ -69,12 +69,12 @@ The features to be computed are introduced in the following papers: [WHJ15]_ and
 #=======================================================================================
 # define algorithm:
 
-from ..algorithm import VideoLRPadAlgorithm
+from bob.pad.base.algorithm import LogRegr
 
 C = 1.  # The regularization parameter for the LR classifier
 FRAME_LEVEL_SCORES_FLAG = True  # Return one score per frame
 
-algorithm = VideoLRPadAlgorithm(
+algorithm = LogRegr(
     C=C, frame_level_scores_flag=FRAME_LEVEL_SCORES_FLAG)
 """
 The Logistic Regression is used to classify the data into *real* and *attack* classes.
