@@ -16,7 +16,6 @@ import bob.bio.video
 #==============================================================================
 # Main body of the class
 
-
 class VideoDataLoader(object):
     """
     This class is designed to load video data given name of the file.
@@ -60,14 +59,15 @@ class VideoDataLoader(object):
             filenames.append(os.path.splitext(f)[0])
             extensions.append(os.path.splitext(f)[1])
 
-        idx = filenames.index(filename_no_ext)  # index of the file
 
-        file_extension = extensions[idx]  # get extension of the file
+        idx = filenames.index(filename_no_ext) # index of the file
 
-        filename_complete = os.path.join(path,
-                                         filename_no_ext + file_extension)
+        file_extension = extensions[idx] # get extension of the file
+
+        filename_complete = os.path.join(path, filename_no_ext + file_extension)
 
         return filename_complete
+
 
     #==========================================================================
     def load_video_data(self, filename_complete):
@@ -85,12 +85,12 @@ class VideoDataLoader(object):
             A FrameContainer containing the loaded video data.
         """
 
-        frame_selector = bob.bio.video.FrameSelector(
-            selection_style='all')  # select all frames from the video file
+        frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # select all frames from the video file
 
-        video_data = frame_selector(filename_complete)  # video data
+        video_data = frame_selector(filename_complete) # video data
 
         return video_data
+
 
     #==========================================================================
     def __call__(self, filename):
@@ -113,3 +113,5 @@ class VideoDataLoader(object):
         video_data = self.load_video_data(filename_complete)
 
         return video_data
+
+

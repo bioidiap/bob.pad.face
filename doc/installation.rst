@@ -14,8 +14,8 @@ Package Installation
 --------------------
 
 To install this package, first follow our `installation`_ instructions. Then,
-using the buildout command provided by the distribution, bootstrap this package
-using buildout:
+using the Python interpreter provided by the distribution, bootstrap and
+buildout this package:
 
 
 .. code-block:: sh
