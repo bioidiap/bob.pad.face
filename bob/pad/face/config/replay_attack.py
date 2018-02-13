@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """`Replayattack`_ is a database for face PAD experiments.
 
 The Replay-Attack Database for face spoofing consists of 1300 video clips of photo and video attack attempts to 50 clients,
@@ -18,7 +19,7 @@ from bob.pad.face.database import ReplayPadDatabase
 ORIGINAL_DIRECTORY = "[YOUR_REPLAY_ATTACK_DIRECTORY]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
-ORIGINAL_EXTENSION = ".mov"  # extension of the data files
+ORIGINAL_EXTENSION = ".mov" # extension of the data files
 
 database = ReplayPadDatabase(
     protocol='grandtest',

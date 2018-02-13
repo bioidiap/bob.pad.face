@@ -22,7 +22,6 @@ import six
 #==============================================================================
 # Main body:
 
-
 class VideoQualityMeasure(Extractor, object):
     """
     This class is designed to extract Quality Measures for each frame in the
@@ -45,21 +44,28 @@ class VideoQualityMeasure(Extractor, object):
     """
 
     #==========================================================================
-    def __init__(self, galbally=True, msu=True, dtype=None, **kwargs):
+    def __init__(self,
+                 galbally=True,
+                 msu=True,
+                 dtype=None,
+                 **kwargs):
 
-        super(VideoQualityMeasure, self).__init__(
-            galbally=galbally, msu=msu, dtype=dtype)
+        super(VideoQualityMeasure, self).__init__(galbally = galbally,
+                                                  msu = msu,
+                                                  dtype = dtype)
 
         self.galbally = galbally
         self.msu = msu
         self.dtype = dtype
 
         # extractor to process a single image/frame:
-        extractor = ImageQualityMeasure(
-            galbally=galbally, msu=msu, dtype=dtype)
+        extractor = ImageQualityMeasure(galbally = galbally,
+                                        msu = msu,
+                                        dtype = dtype)
 
         # a wrapper allowing to apply above extractor to the whole video:
         self.video_extractor = bob.bio.video.extractor.Wrapper(extractor)
+
 
     #==========================================================================
     def __call__(self, frames):
@@ -83,18 +89,18 @@ class VideoQualityMeasure(Extractor, object):
             Quality Measures for each frame stored in the FrameContainer.
         """
 
-        if isinstance(frames, six.string_types):  # if frames is a path(!)
+        if isinstance(frames, six.string_types): # if frames is a path(!)
 
             video_loader = VideoDataLoader()
 
-            frames = video_loader(frames)  # frames is now a FrameContainer
-
+            frames = video_loader(frames) # frames is now a FrameContainer
 
 #        import ipdb; ipdb.set_trace()
 
-        quality_measures = self.video_extractor(frames=frames)
+        quality_measures = self.video_extractor(frames = frames)
 
         return quality_measures
+
 
     #==========================================================================
     def write_feature(self, frames, file_name):
@@ -112,6 +118,7 @@ class VideoQualityMeasure(Extractor, object):
         """
 
         self.video_extractor.write_feature(frames, file_name)
+
 
     #==========================================================================
     def read_feature(self, file_name):
@@ -133,3 +140,5 @@ class VideoQualityMeasure(Extractor, object):
         frames = self.video_extractor.read_feature(file_name)
 
         return frames
+
+

@@ -20,7 +20,6 @@ import bob.bio.video
 #==============================================================================
 # Main body:
 
-
 class FrameDiffFeatures(Extractor):
     """
     This class is designed to extract features describing frame differences.
@@ -48,12 +47,17 @@ class FrameDiffFeatures(Extractor):
         0 (no overlapping) and 'window-size'-1. Default: 0.
     """
 
-    def __init__(self, window_size, overlap=0):
+    def __init__(self,
+                 window_size,
+                 overlap = 0):
 
-        Extractor.__init__(self, window_size=window_size, overlap=overlap)
+        Extractor.__init__(self,
+                           window_size = window_size,
+                           overlap = overlap)
 
         self.window_size = window_size
         self.overlap = overlap
+
 
     #==========================================================================
     def dcratio(self, arr):
@@ -94,6 +98,7 @@ class FrameDiffFeatures(Extractor):
 
         return dcratio
 
+
     #==========================================================================
     def remove_nan_rows(self, data):
         """
@@ -116,11 +121,12 @@ class FrameDiffFeatures(Extractor):
 
         ret_arr = d[~np.isnan(d.sum(axis=1)), :]
 
-        if ret_arr.shape[0] == 0:  # if array is empty, return array of ones
+        if ret_arr.shape[0] == 0: # if array is empty, return array of ones
 
             ret_arr = np.ones((1, ret_arr.shape[1]))
 
         return ret_arr
+
 
     #==========================================================================
     def cluster_5quantities(self, arr, window_size, overlap):
@@ -170,8 +176,7 @@ class FrameDiffFeatures(Extractor):
         retval = np.ndarray((arr.shape[0], 5), dtype='float64')
         retval[:] = np.NaN
 
-        for k in range(0, arr.shape[0] - window_size + 1,
-                       window_size - overlap):
+        for k in range(0, arr.shape[0] - window_size + 1, window_size - overlap):
 
             obs = arr[k:k + window_size].copy()
 
@@ -184,9 +189,10 @@ class FrameDiffFeatures(Extractor):
             retval[k + window_size - 1] = \
                 (obs.min(), obs.max(), obs.mean(), obs.std(ddof=1), self.dcratio(obs))
 
-        retval = self.remove_nan_rows(retval)  # clean-up nan's in the array
+        retval = self.remove_nan_rows(retval) # clean-up nan's in the array
 
         return retval
+
 
     #==========================================================================
     def convert_arr_to_frame_cont(self, data):
@@ -207,14 +213,14 @@ class FrameDiffFeatures(Extractor):
             a particular sample.
         """
 
-        frames = bob.bio.video.FrameContainer(
-        )  # initialize the FrameContainer
+        frames = bob.bio.video.FrameContainer() # initialize the FrameContainer
 
         for idx, sample in enumerate(data):
 
             frames.add(idx, sample)
 
         return frames
+
 
     #==========================================================================
     def comp_features(self, data, window_size, overlap):
@@ -242,15 +248,16 @@ class FrameDiffFeatures(Extractor):
             Features describing frame differences, stored in the FrameContainer.
         """
 
-        d_face = self.cluster_5quantities(data[:, 0], window_size, overlap)
+        d_face = self.cluster_5quantities( data[:, 0], window_size, overlap )
 
-        d_bg = self.cluster_5quantities(data[:, 1], window_size, overlap)
+        d_bg = self.cluster_5quantities( data[:, 1], window_size, overlap )
 
         features = np.hstack((d_face, d_bg))
 
         frames = self.convert_arr_to_frame_cont(features)
 
         return frames
+
 
     #==========================================================================
     def __call__(self, data):
@@ -275,6 +282,7 @@ class FrameDiffFeatures(Extractor):
 
         return frames
 
+
     #==========================================================================
     def write_feature(self, frames, file_name):
         """
@@ -290,8 +298,8 @@ class FrameDiffFeatures(Extractor):
             Name of the file.
         """
 
-        bob.bio.video.extractor.Wrapper(Extractor()).write_feature(
-            frames, file_name)
+        bob.bio.video.extractor.Wrapper(Extractor()).write_feature(frames, file_name)
+
 
     #==========================================================================
     def read_feature(self, file_name):
@@ -310,7 +318,9 @@ class FrameDiffFeatures(Extractor):
             Frames stored in the frame container.
         """
 
-        frames = bob.bio.video.extractor.Wrapper(
-            Extractor()).read_feature(file_name)
+        frames = bob.bio.video.extractor.Wrapper(Extractor()).read_feature(file_name)
 
         return frames
+
+
+

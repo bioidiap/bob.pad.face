@@ -48,15 +48,12 @@ class LBPHistogram(Extractor):
             rad=rad,
             neighbors=neighbors,
             circ=circ,
-            dtype=dtype,
-        )
+            dtype=dtype,)
 
-        elbps = {
-            'regular': 'regular',
-            'transitional': 'trainsitional',
-            'direction_coded': 'direction-coded',
-            'modified': 'regular'
-        }
+        elbps = {'regular': 'regular',
+                 'transitional': 'trainsitional',
+                 'direction_coded': 'direction-coded',
+                 'modified': 'regular'}
 
         if elbptype == 'modified':
             mct = True
@@ -66,53 +63,31 @@ class LBPHistogram(Extractor):
         if lbptype == 'uniform':
             if neighbors == 16:
                 lbp = bob.ip.base.LBP(
-                    neighbors=16,
-                    uniform=True,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype])
+                    neighbors=16, uniform=True, circular=circ,
+                    radius=rad, to_average=mct, elbp_type=elbps[elbptype])
             else:  # we assume neighbors==8 in this case
                 lbp = bob.ip.base.LBP(
-                    neighbors=8,
-                    uniform=True,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype])
+                    neighbors=8, uniform=True, circular=circ,
+                    radius=rad, to_average=mct, elbp_type=elbps[elbptype])
         elif lbptype == 'riu2':
             if neighbors == 16:
                 lbp = bob.ip.base.LBP(
-                    neighbors=16,
-                    uniform=True,
-                    rotation_invariant=True,
-                    radius=rad,
-                    circular=circ,
-                    to_average=mct,
+                    neighbors=16, uniform=True, rotation_invariant=True,
+                    radius=rad, circular=circ, to_average=mct,
                     elbp_type=elbps[elbptype])
             else:  # we assume neighbors==8 in this case
                 lbp = bob.ip.base.LBP(
-                    neighbors=8,
-                    uniform=True,
-                    rotation_invariant=True,
-                    radius=rad,
-                    circular=circ,
-                    to_average=mct,
+                    neighbors=8, uniform=True, rotation_invariant=True,
+                    radius=rad, circular=circ, to_average=mct,
                     elbp_type=elbps[elbptype])
         else:  # regular LBP
             if neighbors == 16:
                 lbp = bob.ip.base.LBP(
-                    neighbors=16,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
+                    neighbors=16, circular=circ, radius=rad, to_average=mct,
                     elbp_type=elbps[elbptype])
             else:  # we assume neighbors==8 in this case
                 lbp = bob.ip.base.LBP(
-                    neighbors=8,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
+                    neighbors=8, circular=circ, radius=rad, to_average=mct,
                     elbp_type=elbps[elbptype])
 
         self.dtype = dtype
@@ -142,8 +117,8 @@ class LBPHistogram(Extractor):
         # allocating the image with lbp codes
         lbpimage = numpy.ndarray(self.lbp.lbp_shape(data), 'uint16')
         self.lbp(data, lbpimage)  # calculating the lbp image
-        hist = bob.ip.base.histogram(lbpimage, (0, self.lbp.max_label - 1),
-                                     self.lbp.max_label)
+        hist = bob.ip.base.histogram(
+            lbpimage, (0, self.lbp.max_label - 1), self.lbp.max_label)
         hist = hist / sum(hist)  # histogram normalization
         if self.dtype is not None:
             hist = hist.astype(self.dtype)

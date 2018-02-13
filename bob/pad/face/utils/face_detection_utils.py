@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
+
 """
 This file contains face detection utils.
 """
@@ -12,12 +13,13 @@ import numpy as np
 
 #==============================================================================
 def get_eye_pos(lm):
+
     """
     This function returns the locations of left and right eyes
 
     **Parameters:**
 
-    ``lm`` : :py:class:`numpy.ndarray`
+    ``lm`` : :py:class:`array`
         A numpy array containing the coordinates of facial landmarks, (68X2)
 
     **Returns:**
@@ -32,17 +34,17 @@ def get_eye_pos(lm):
 
     # Mean position of eye corners as eye centers , casted to int()
 
-    left_eye_t = (lm[36, :] + lm[39, :]) / 2.0
-    right_eye_t = (lm[42, :] + lm[45, :]) / 2.0
+    left_eye_t = (lm[36,:] + lm[39,:])/2.0
+    right_eye_t = (lm[42,:] + lm[45,:])/2.0
 
-    right_eye = (int(left_eye_t[1]), int(left_eye_t[0]))
-    left_eye = (int(right_eye_t[1]), int(right_eye_t[0]))
+    right_eye = (int(left_eye_t[1]),int(left_eye_t[0]))
+    left_eye = (int(right_eye_t[1]),int(right_eye_t[0]))
 
-    return right_eye, left_eye
+    return right_eye,left_eye
 
 
 #==============================================================================
-def detect_face_in_image(image, method="dlib"):
+def detect_face_in_image(image, method = "dlib"):
     """
     This function detects a face in the input image.
 
@@ -71,14 +73,13 @@ def detect_face_in_image(image, method="dlib"):
         raise ImportError("No module named bob.ip." + method)
 
     if not hasattr(face_detection_module, 'FaceDetector'):
-        raise AttributeError(
-            "bob.ip." + method + " module has no attribute FaceDetector")
+        raise AttributeError("bob.ip." + method + " module has no attribute FaceDetector")
 
     data = face_detection_module.FaceDetector().detect_single_face(image)
 
     annotations = {}
 
-    if (data is not None) and (not all([x is None for x in data])):
+    if ( data is not None ) and ( not all([x is None for x in data]) ):
 
         bounding_box = data[0]
 
@@ -90,7 +91,7 @@ def detect_face_in_image(image, method="dlib"):
 
 
 #==============================================================================
-def detect_faces_in_video(frame_container, method="dlib"):
+def detect_faces_in_video(frame_container, method = "dlib"):
     """
     This function detects a face in each farme of the input video.
 
@@ -131,7 +132,7 @@ def detect_faces_in_video(frame_container, method="dlib"):
 
 
 #==============================================================================
-def detect_face_landmarks_in_image(image, method="dlib"):
+def detect_face_landmarks_in_image(image, method = "dlib"):
     """
     This function detects a face in the input image. Two oprions for face detector , but landmark detector is always the same
 
@@ -158,12 +159,11 @@ def detect_face_landmarks_in_image(image, method="dlib"):
     ### Face detector
 
     try:
-        face_detection_module = importlib.import_module("bob.ip." + method)
+        face_detection_module = importlib.import_module("bob.ip."+ method)
 
     except ImportError:
 
-        print("No module named bob.ip." + method +
-              " trying to use default method!")
+        print("No module named bob.ip." + method + " trying to use default method!")
 
         try:
             face_detection_module = importlib.import_module("bob.ip.dlib")
@@ -172,22 +172,17 @@ def detect_face_landmarks_in_image(image, method="dlib"):
             raise ImportError("No module named bob.ip.dlib")
 
     if not hasattr(face_detection_module, 'FaceDetector'):
-        raise AttributeError(
-            "bob.ip." + method + " module has no attribute FaceDetector!")
+        raise AttributeError("bob.ip." + method + " module has no attribute FaceDetector!")
 
     #### Landmark detector
 
     try:
-        landmark_detection_module = importlib.import_module(
-            "bob.ip.facelandmarks")
+        landmark_detection_module = importlib.import_module("bob.ip.facelandmarks")
     except ImportError:
         raise ImportError("No module named bob.ip.facelandmarks!!")
 
-    if not hasattr(landmark_detection_module,
-                   'detect_landmarks_on_boundingbox'):
-        raise AttributeError(
-            "bob.ip.facelandmarksmodule has no attribute detect_landmarks_on_boundingbox!"
-        )
+    if not hasattr(landmark_detection_module, 'detect_landmarks_on_boundingbox'):
+        raise AttributeError("bob.ip.facelandmarksmodule has no attribute detect_landmarks_on_boundingbox!")
 
     face_detector = face_detection_module.FaceDetector()
 
@@ -195,30 +190,29 @@ def detect_face_landmarks_in_image(image, method="dlib"):
 
     annotations = {}
 
-    if (data is not None) and (not all([x is None for x in data])):
+    if ( data is not None ) and ( not all([x is None for x in data]) ):
 
         bounding_box = data[0]
 
-        bounding_box_scaled = bounding_box.scale(0.95, True)  # is ok for dlib
+        bounding_box_scaled = bounding_box.scale(0.95, True) # is ok for dlib
 
-        lm = landmark_detection_module.detect_landmarks_on_boundingbox(
-            image, bounding_box_scaled)
+        lm=landmark_detection_module.detect_landmarks_on_boundingbox(image, bounding_box_scaled)
 
         if lm is not None:
 
-            lm = np.array(lm)
+            lm=np.array(lm)
 
-            lm = np.vstack((lm[:, 1], lm[:, 0])).T
+            lm=np.vstack((lm[:,1],lm[:,0])).T
 
             #print("LM",lm)
 
-            right_eye, left_eye = get_eye_pos(lm)
+            right_eye,left_eye = get_eye_pos(lm)
 
             points = []
 
             for i in range(lm.shape[0]):
 
-                points.append((int(lm[i, 0]), int(lm[i, 1])))
+                points.append((int(lm[i,0]),int(lm[i,1])))
 
             annotations['topleft'] = bounding_box.topleft
 
@@ -234,7 +228,7 @@ def detect_face_landmarks_in_image(image, method="dlib"):
 
 
 #==============================================================================
-def detect_face_landmarks_in_video(frame_container, method="dlib"):
+def detect_face_landmarks_in_video(frame_container, method = "dlib"):
     """
     This function detects a face and face landmarks  in each farme of the input video.
 
@@ -265,10 +259,18 @@ def detect_face_landmarks_in_video(frame_container, method="dlib"):
 
         image = frame[1]
 
-        frame_annotations = detect_face_landmarks_in_image(image, method)
+        frame_annotations = detect_face_landmarks_in_image(image, method);
 
         if frame_annotations:
 
             annotations[str(idx)] = frame_annotations
 
     return annotations
+
+
+
+
+
+
+
+
