@@ -654,8 +654,8 @@ class VideoSvmPadAlgorithm(Algorithm):
             del machine
             del trainer
 
-        # best SVM parameters according to CV set
-        selected_params = trainer_grid_search_params_list[np.argmax(precisions_cv)]
+        selected_params = trainer_grid_search_params_list[
+            np.argmax(precisions_cv)]  # best SVM parameters according to CV set
 
         trainer = bob.learn.libsvm.Trainer(machine_type=machine_type,
                                            kernel_type=kernel_type,
@@ -685,8 +685,6 @@ class VideoSvmPadAlgorithm(Algorithm):
         # training_features[1] - training features for the ATTACK class.
         attack = self.convert_and_prepare_features(training_features[1])  # output is array
 
-        features_mean = 0.0
-        features_std = 1.0
         if mean_std_norm_flag:
             # Normalize the data:
             if not (one_class_flag):  # two-class SVM case
@@ -715,10 +713,6 @@ class VideoSvmPadAlgorithm(Algorithm):
         else:  # one-class SVM case
 
             data = [np.copy(real)]  # only real class used for training
-
-        # free the memory of unnecessary data
-        del real
-        del attack
 
         machine = trainer.train(data)  # train the machine
 
