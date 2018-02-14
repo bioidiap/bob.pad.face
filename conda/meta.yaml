@@ -60,6 +60,7 @@ test:
     - scikit-learn
     - bob.ip.dlib
     - bob.ip.facelandmarks
+    - bob.db.replay
 
 about:
   home: https://www.idiap.ch/software/bob/
