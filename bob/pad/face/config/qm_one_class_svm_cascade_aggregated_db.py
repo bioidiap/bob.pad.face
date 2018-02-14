@@ -71,7 +71,7 @@ The features to be computed are introduced in the following papers: [WHJ15]_ and
 #=======================================================================================
 # define algorithm:
 
-from ..algorithm import VideoCascadeSvmPadAlgorithm
+from bob.pad.base.algorithm import SVMCascadePCA
 
 MACHINE_TYPE = 'ONE_CLASS'
 KERNEL_TYPE = 'RBF'
@@ -80,7 +80,7 @@ N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm = VideoCascadeSvmPadAlgorithm(
+algorithm = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from bob.pad.face.algorithm import VideoSvmPadAlgorithm
+from bob.pad.base.algorithm import SVM
 
 #=======================================================================================
 # Define instances here:
@@ -16,7 +16,7 @@ trainer_grid_search_params = {
 mean_std_norm_flag = True
 frame_level_scores_flag = False  # one score per video(!) in this case
 
-video_svm_pad_algorithm_10k_grid_mean_std = VideoSvmPadAlgorithm(
+video_svm_pad_algorithm_10k_grid_mean_std = SVM(
     machine_type=machine_type,
     kernel_type=kernel_type,
     n_samples=n_samples,
@@ -26,7 +26,7 @@ video_svm_pad_algorithm_10k_grid_mean_std = VideoSvmPadAlgorithm(
 
 frame_level_scores_flag = True  # one score per frame(!) in this case
 
-video_svm_pad_algorithm_10k_grid_mean_std_frame_level = VideoSvmPadAlgorithm(
+video_svm_pad_algorithm_10k_grid_mean_std_frame_level = SVM(
     machine_type=machine_type,
     kernel_type=kernel_type,
     n_samples=n_samples,
@@ -39,7 +39,7 @@ trainer_grid_search_params = {
     'gamma': [0]
 }  # set the default LibSVM parameters
 
-video_svm_pad_algorithm_default_svm_param_mean_std_frame_level = VideoSvmPadAlgorithm(
+video_svm_pad_algorithm_default_svm_param_mean_std_frame_level = SVM(
     machine_type=machine_type,
     kernel_type=kernel_type,
     n_samples=n_samples,

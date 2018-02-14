@@ -69,13 +69,13 @@ The features to be computed are introduced in the following papers: [WHJ15]_ and
 #=======================================================================================
 # define algorithm:
 
-from ..algorithm import VideoGmmPadAlgorithm
+from bob.pad.base.algorithm import OneClassGMM
 
 N_COMPONENTS = 50
 RANDOM_STATE = 3
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm = VideoGmmPadAlgorithm(
+algorithm = OneClassGMM(
     n_components=N_COMPONENTS,
     random_state=RANDOM_STATE,
     frame_level_scores_flag=FRAME_LEVEL_SCORES_FLAG)

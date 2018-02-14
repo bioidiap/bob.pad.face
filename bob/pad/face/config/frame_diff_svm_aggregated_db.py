@@ -60,7 +60,7 @@ The features are introduced in the following paper: [AM11]_.
 #=======================================================================================
 # define algorithm:
 
-from ..algorithm import VideoSvmPadAlgorithm
+from bob.pad.base.algorithm import SVM
 
 MACHINE_TYPE = 'C_SVC'
 KERNEL_TYPE = 'RBF'
@@ -75,7 +75,7 @@ SAVE_DEBUG_DATA_FLAG = True  # save the data, which might be useful for debuggin
 REDUCED_TRAIN_DATA_FLAG = True  # reduce the amount of training data in the final training stage
 N_TRAIN_SAMPLES = 50000  # number of training samples per class in the final SVM training stage
 
-algorithm = VideoSvmPadAlgorithm(
+algorithm = SVM(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     n_samples=N_SAMPLES,
