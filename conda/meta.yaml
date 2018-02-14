@@ -58,6 +58,8 @@ test:
     - sphinx_rtd_theme
     - gridtk
     - scikit-learn
+    - bob.ip.dlib
+    - bob.ip.facelandmarks
 
 about:
   home: https://www.idiap.ch/software/bob/
