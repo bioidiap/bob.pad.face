@@ -3,6 +3,7 @@ from .ImageFaceCrop import ImageFaceCrop
 from .FrameDifference import FrameDifference
 from .VideoSparseCoding import VideoSparseCoding
 
+from .CopyVideo import CopyVideo
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
