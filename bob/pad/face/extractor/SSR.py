@@ -15,13 +15,11 @@ import bob.ip.skincolorfilter
 import logging
 logger = logging.getLogger("bob.pad.face")
 
-
 from bob.rppg.base.utils import crop_face
 
 from bob.rppg.ssr.ssr_utils import get_eigen
 from bob.rppg.ssr.ssr_utils import plot_eigenvectors
 from bob.rppg.ssr.ssr_utils import build_P
-
 
 
 class SSR(Extractor, object):
@@ -39,8 +37,11 @@ class SSR(Extractor, object):
   stride: int
     The temporal stride. 
 
+  debug: boolean          
+    Plot some stuff 
+
   """
-  def __init__(self, skin_threshold=0.5, skin_init=False, stride=25, **kwargs):
+  def __init__(self, skin_threshold=0.5, skin_init=False, stride=25, debug=False, **kwargs):
 
     super(SSR, self).__init__()
 
@@ -62,20 +63,20 @@ class SSR(Extractor, object):
       see ``bob.bio.video.utils.FrameContainer`` for further details.
       If string, the name of the file to load the video data from is
       defined in it. String is possible only when empty preprocessor is
-      used. In this case video data is loaded directly from the database.
+      used. In this case video data is loaded directly from the database
+      and not using any high or low-level db packages (so beware).
 
     **Returns:**
 
-      pulse: FrameContainer
-      Quality Measures for each frame stored in the FrameContainer.
+      pulse: numpy.array 
+        The pulse signal 
     """
-
-    # load video based on the filename
-    assert isinstance(frames, six.string_types)
     if isinstance(frames, six.string_types):
       video_loader = VideoDataLoader()
       video = video_loader(frames)
-   
+    else:
+      video = frames
+
     video = video.as_array()
     nb_frames = video.shape[0]
 
@@ -86,16 +87,19 @@ class SSR(Extractor, object):
     eigenvalues = numpy.zeros((3, nb_frames), dtype='float64')
     eigenvectors = numpy.zeros((3, 3, nb_frames), dtype='float64')
 
-    ### LET'S GO
-
-    #XXX 
-    plot = True
-
     counter = 0
     previous_bbox = None
+    previous_skin_pixels = None
+
     for i, frame in enumerate(video):
 
       logger.debug("Processing frame %d/%d...", i, nb_frames)
+
+      if self.debug:
+        from matplotlib import pyplot
+        pyplot.imshow(numpy.rollaxis(numpy.rollaxis(frame, 2),2))
+        pyplot.show()
+
       try:
         bbox, quality = bob.ip.facedetect.detect_single_face(frame)
       except:
@@ -104,43 +108,54 @@ class SSR(Extractor, object):
 
       face = crop_face(frame, bbox, bbox.size[1])
 
-      #from matplotlib import pyplot
-      #pyplot.imshow(numpy.rollaxis(numpy.rollaxis(face, 2),2))
-      #pyplot.show()
+      if self.debug:
+        from matplotlib import pyplot
+        pyplot.imshow(numpy.rollaxis(numpy.rollaxis(face, 2),2))
+        pyplot.show()
 
       # skin filter
       if counter == 0 or self.skin_init:
         self.skin_filter.estimate_gaussian_parameters(face)
         logger.debug("Skin color parameters:\nmean\n{0}\ncovariance\n{1}".format(self.skin_filter.mean, self.skin_filter.covariance))
+      
       skin_mask = self.skin_filter.get_skin_mask(face, self.skin_threshold)
       skin_pixels = face[:, skin_mask]
-
-      #from matplotlib import pyplot
-      #skin_mask_image = numpy.copy(face)
-      #skin_mask_image[:, skin_mask] = 255
-      #pyplot.title("skin pixels in frame {0}".format(i))
-      #pyplot.imshow(numpy.rollaxis(numpy.rollaxis(skin_mask_image, 2),2))
-      #pyplot.show()
-  
       skin_pixels = skin_pixels.astype('float64') / 255.0
+
+      if self.debug:
+        from matplotlib import pyplot
+        skin_mask_image = numpy.copy(face)
+        skin_mask_image[:, skin_mask] = 255
+        pyplot.title("skin pixels in frame {0}".format(i))
+        pyplot.imshow(numpy.rollaxis(numpy.rollaxis(skin_mask_image, 2),2))
+        pyplot.show()
+      
+      # nos skin pixels have ben detected ... using the previous ones
+      if skin_pixels.shape[1] == 0:
+        skin_pixels = previous_skin_pixels 
+        logger.warn("No skin pixels detected, using the previous ones")
 
       # build c matrix and get eigenvectors and eigenvalues
       eigenvalues[:, counter], eigenvectors[:, :, counter] = get_eigen(skin_pixels)
-      #plot_eigenvectors(skin_pixels, eigenvectors[:, :, counter])
+      
+      if self.debug:
+        plot_eigenvectors(skin_pixels, eigenvectors[:, :, counter])
 
       # build P and add it to the pulse signal
       if counter >= self.stride:
         tau = counter - self.stride
         p = build_P(counter, self.stride, eigenvectors, eigenvalues)
         output_data[tau:counter] += (p - numpy.mean(p)) 
-         
+        
+      previous_bbox = bbox
+      previous_skin_pixels = skin_pixels
       counter += 1
 
-    # plot the pulse signal
-    #import matplotlib.pyplot as plt
-    #fig = plt.figure()
-    #ax = fig.add_subplot(111)
-    #ax.plot(range(nb_frames), output_data)
-    #plt.show()
+    if self.debug:
+      import matplotlib.pyplot as plt
+      fig = plt.figure()
+      ax = fig.add_subplot(111)
+      ax.plot(range(nb_frames), output_data)
+      plt.show()
 
     return output_data
