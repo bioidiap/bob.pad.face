@@ -248,12 +248,8 @@ def test_video_face_crop():
     assert len(faces) == 3
     assert faces[0][1].shape == (3, 64, 64)
     assert faces[-1][1].shape == (3, 64, 64)
-
-    print (np.sum(faces[0][1]))
-    print (np.sum(faces[-1][1]))
-
-#    assert np.sum(faces[0][1]) == 1251500
-#    assert np.sum(faces[-1][1]) == 1251500
+    assert np.sum(faces[0][1]) == 1238664
+    assert np.sum(faces[-1][1]) == 1238664
 
 
 #==============================================================================
