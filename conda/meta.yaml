@@ -27,6 +27,7 @@ requirements:
     - bob.bio.base
     - bob.io.base
     - bob.ip.base
+    - scikit-learn
     - bob.pad.base
     - bob.bio.face
     - bob.bio.video
@@ -40,6 +41,9 @@ requirements:
     - six
     - sphinx
     - numpy
+    - scikit-learn
+    - bob.ip.dlib
+    - bob.ip.facelandmarks
 
 test:
   imports:
@@ -57,10 +61,9 @@ test:
     - sphinx
     - sphinx_rtd_theme
     - gridtk
-    - scikit-learn
-    - bob.ip.dlib
-    - bob.ip.facelandmarks
     - bob.db.replay
+    - bob.db.replaymobile
+    - bob.db.msu_mfsd_mod
 
 about:
   home: https://www.idiap.ch/software/bob/
