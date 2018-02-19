@@ -35,6 +35,8 @@ requirements:
     - bob.ip.color
     - bob.ip.qualitymeasure
     - bob.learn.libsvm
+    - bob.ip.dlib
+    - bob.ip.facelandmarks
   run:
     - python
     - setuptools
@@ -42,8 +44,6 @@ requirements:
     - sphinx
     - numpy
     - scikit-learn
-    - bob.ip.dlib
-    - bob.ip.facelandmarks
 
 test:
   imports:
