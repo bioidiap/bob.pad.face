@@ -48,6 +48,7 @@ class SSR(Extractor, object):
     self.skin_threshold = skin_threshold
     self.skin_init = skin_init
     self.stride = stride
+    self.debug = debug
 
     self.skin_filter = bob.ip.skincolorfilter.SkinColorFilter()
 
