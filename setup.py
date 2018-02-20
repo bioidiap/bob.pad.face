@@ -123,6 +123,7 @@ setup(
         'bob.pad.grid': [
             'idiap = bob.pad.face.config.grid:idiap',
             'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
+            'guillaume = bob.pad.face.config.grid:guillaume',
         ],
     },
 
