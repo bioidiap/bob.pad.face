@@ -100,12 +100,36 @@ class Li(Extractor, object):
     for i, frame in enumerate(video):
 
       logger.debug("Processing frame {}/{}".format(counter, nb_frames))
+      if self.debug:
+        from matplotlib import pyplot
+        pyplot.imshow(numpy.rollaxis(numpy.rollaxis(frame, 2),2))
+        pyplot.show()
      
       # detect landmarks
       try:
         ldms = detector(frame)
       except TypeError:
-        ldms = previous_ldms
+        
+        ####################
+        # looks like some images from replay mobile are upside down !
+        # looks like bob.ip.rotate has a color issue
+        ####################
+        
+        #rotated_shape = bob.ip.base.rotated_output_shape(frame, 180)
+        #frame_rotated = numpy.ndarray(rotated_shape, dtype=numpy.float64)
+        #from bob.ip.base import rotate
+        #bob.ip.base.rotate(frame, frame_rotated, 180)
+        #logger.warning("Rotating again ...")
+        #try:
+        #  ldms = detector(frame_rotated)
+        #except TypeError:
+        #  ldms = previous_ldms
+        #frame = frame_rotated
+        
+        # so do nothing ...
+        logger.warning("No mask detected in frame {}".format(i))
+        face_color[i] = 0
+        continue
 
       if self.debug:
         from matplotlib import pyplot
