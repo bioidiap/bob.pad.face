@@ -13,7 +13,6 @@ types and techniques. Please refer to the manual of that package for a thorough
 introduction. In this guide, we focus on details concerning
 face PAD experiments using our plugins.
 
-=============
 Users Guide
 =============
 
