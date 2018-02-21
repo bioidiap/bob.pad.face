@@ -6,8 +6,6 @@ package:
   version: {{ environ.get('BOB_PACKAGE_VERSION', '0.0.1') }}
 
 build:
-  entry_points:
-    - version.py = bob.pad.face.script.version:main
   number: {{ environ.get('BOB_BUILD_NUMBER', 0) }}
   run_exports:
     - {{ pin_subpackage(name) }}
@@ -29,6 +27,7 @@ requirements:
     - bob.bio.base
     - bob.io.base
     - bob.ip.base
+    - scikit-learn
     - bob.pad.base
     - bob.bio.face
     - bob.bio.video
@@ -36,18 +35,20 @@ requirements:
     - bob.ip.color
     - bob.ip.qualitymeasure
     - bob.learn.libsvm
+    - bob.ip.dlib
+    - bob.ip.facelandmarks
   run:
     - python
     - setuptools
     - six
     - sphinx
     - numpy
+    - scikit-learn
 
 test:
   imports:
     - {{ name }}
   commands:
-    - version.py --help
     - nosetests --with-coverage --cover-package={{ name }} -sv {{ name }}
     - sphinx-build -aEW {{ project_dir }}/doc {{ project_dir }}/sphinx
     - sphinx-build -aEb doctest {{ project_dir }}/doc sphinx
@@ -59,6 +60,11 @@ test:
     - coverage
     - sphinx
     - sphinx_rtd_theme
+    - gridtk
+    - bob.db.replay
+    - bob.db.replaymobile
+    - bob.db.msu_mfsd_mod
+    - bob.db.mobio
 
 about:
   home: https://www.idiap.ch/software/bob/

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from bob.pad.face.algorithm import VideoCascadeSvmPadAlgorithm
+from bob.pad.base.algorithm import SVMCascadePCA
 
 #=======================================================================================
 # Define instances here:
@@ -12,7 +12,7 @@ N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n2_gamma_02 = VideoCascadeSvmPadAlgorithm(
+algorithm_n2_gamma_02 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -27,7 +27,7 @@ N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n2_gamma_01 = VideoCascadeSvmPadAlgorithm(
+algorithm_n2_gamma_01 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -42,7 +42,7 @@ N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n2_gamma_005 = VideoCascadeSvmPadAlgorithm(
+algorithm_n2_gamma_005 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -57,7 +57,7 @@ N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n2_gamma_001 = VideoCascadeSvmPadAlgorithm(
+algorithm_n2_gamma_001 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -74,7 +74,7 @@ N = 10
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n10_gamma_01 = VideoCascadeSvmPadAlgorithm(
+algorithm_n10_gamma_01 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -89,7 +89,7 @@ N = 10
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n10_gamma_005 = VideoCascadeSvmPadAlgorithm(
+algorithm_n10_gamma_005 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -104,7 +104,7 @@ N = 10
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n10_gamma_001 = VideoCascadeSvmPadAlgorithm(
+algorithm_n10_gamma_001 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -119,7 +119,7 @@ N = 10
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n10_gamma_0005 = VideoCascadeSvmPadAlgorithm(
+algorithm_n10_gamma_0005 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -136,7 +136,7 @@ N = 20
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n20_gamma_05 = VideoCascadeSvmPadAlgorithm(
+algorithm_n20_gamma_05 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -151,7 +151,7 @@ N = 20
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n20_gamma_02 = VideoCascadeSvmPadAlgorithm(
+algorithm_n20_gamma_02 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -166,7 +166,7 @@ N = 20
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n20_gamma_01 = VideoCascadeSvmPadAlgorithm(
+algorithm_n20_gamma_01 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -181,7 +181,7 @@ N = 20
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n20_gamma_005 = VideoCascadeSvmPadAlgorithm(
+algorithm_n20_gamma_005 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -196,7 +196,7 @@ N = 20
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n20_gamma_001 = VideoCascadeSvmPadAlgorithm(
+algorithm_n20_gamma_001 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -211,7 +211,7 @@ N = 20
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n20_gamma_0005 = VideoCascadeSvmPadAlgorithm(
+algorithm_n20_gamma_0005 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -226,7 +226,7 @@ N = 20
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n20_gamma_0001 = VideoCascadeSvmPadAlgorithm(
+algorithm_n20_gamma_0001 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -243,7 +243,7 @@ N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = False
 
-algorithm_n2_gamma_01_video_level = VideoCascadeSvmPadAlgorithm(
+algorithm_n2_gamma_01_video_level = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=SVM_KWARGS,
@@ -262,7 +262,7 @@ N = 2
 POS_SCORES_SLOPE = 0.01
 FRAME_LEVEL_SCORES_FLAG = True
 
-algorithm_n2_two_class_svm_c1_gamma_001 = VideoCascadeSvmPadAlgorithm(
+algorithm_n2_two_class_svm_c1_gamma_001 = SVMCascadePCA(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     svm_kwargs=TRAINER_GRID_SEARCH_PARAMS,

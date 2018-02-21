@@ -69,7 +69,7 @@ The features to be computed are introduced in the following papers: [WHJ15]_ and
 #=======================================================================================
 # define algorithm:
 
-from ..algorithm import VideoSvmPadAlgorithm
+from bob.pad.base.algorithm import SVM
 
 MACHINE_TYPE = 'C_SVC'
 KERNEL_TYPE = 'RBF'
@@ -81,7 +81,7 @@ TRAINER_GRID_SEARCH_PARAMS = {
 MEAN_STD_NORM_FLAG = True  # enable mean-std normalization
 FRAME_LEVEL_SCORES_FLAG = True  # one score per frame(!) in this case
 
-algorithm = VideoSvmPadAlgorithm(
+algorithm = SVM(
     machine_type=MACHINE_TYPE,
     kernel_type=KERNEL_TYPE,
     n_samples=N_SAMPLES,

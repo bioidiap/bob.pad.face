@@ -56,11 +56,6 @@ setup(
     # the version of bob.
     entry_points={
 
-        # scripts should be declared using this entry:
-        'console_scripts': [
-            'version.py = bob.pad.face.script.version:main',
-        ],
-
         # registered databases:
         'bob.pad.database': [
             'replay-attack = bob.pad.face.config.database.replay_attack:database',
