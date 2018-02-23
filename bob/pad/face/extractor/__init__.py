@@ -5,6 +5,8 @@ from .VideoDataLoader import VideoDataLoader
 from .VideoQualityMeasure import VideoQualityMeasure
 from .FrameDiffFeatures import FrameDiffFeatures
 
+from .FrequencySpectrum import FrequencySpectrum
+
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
     Fixing sphinx warnings of not being able to find classes, when path is
