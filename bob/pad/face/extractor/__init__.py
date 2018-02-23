@@ -6,6 +6,7 @@ from .VideoQualityMeasure import VideoQualityMeasure
 from .FrameDiffFeatures import FrameDiffFeatures
 
 from .FrequencySpectrum import FrequencySpectrum
+from .FreqFeatures import FreqFeatures
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
