@@ -3,7 +3,9 @@ from .ImageFaceCrop import ImageFaceCrop
 from .FrameDifference import FrameDifference
 from .VideoSparseCoding import VideoSparseCoding
 
-from .CopyVideo import CopyVideo
+from .Li import Li
+from .Chrom import Chrom
+from .SSR import SSR
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
