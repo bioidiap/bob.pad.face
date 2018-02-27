@@ -7,6 +7,8 @@ from .FrameDiffFeatures import FrameDiffFeatures
 
 from .FrequencySpectrum import FrequencySpectrum
 from .FreqFeatures import FreqFeatures
+from .NormalizeLength import NormalizeLength
+from .FFTFeatures import FFTFeatures 
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
