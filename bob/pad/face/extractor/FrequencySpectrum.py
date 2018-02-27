@@ -54,6 +54,14 @@ class FrequencySpectrum(Extractor, object):
       freq: numpy.array 
        the frequency spectrum 
     """
+    # sanity check
+    if signal.ndim == 1:
+      if numpy.isnan(numpy.sum(signal)):
+        return
+    if signal.ndim == 2 and (signal.shape[1] == 3):
+      if numpy.isnan(numpy.sum(signal[:, 1])):
+        return
+
     output_dim = int((self.nfft / 2) + 1)
    
     # we have a single pulse signal
