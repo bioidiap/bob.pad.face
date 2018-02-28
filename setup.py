@@ -58,11 +58,11 @@ setup(
 
         # registered databases:
         'bob.pad.database': [
-            'replay-attack = bob.pad.face.config.database.replay_attack:database',
-            'replay-mobile = bob.pad.face.config.database.replay_mobile:database',
-            'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
-            'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
-            'mifs = bob.pad.face.config.database.mifs:database',
+            'replay-attack = bob.pad.face.config.replay_attack:database',
+            'replay-mobile = bob.pad.face.config.replay_mobile:database',
+            'msu-mfsd = bob.pad.face.config.msu_mfsd:database',
+            'aggregated-db = bob.pad.face.config.aggregated_db:database',
+            'mifs = bob.pad.face.config.mifs:database',
         ],
 
         # registered configurations:
