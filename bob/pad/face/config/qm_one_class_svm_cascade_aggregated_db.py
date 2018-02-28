@@ -56,13 +56,15 @@ facial image, which is defined by ``RGB_OUTPUT_FLAG = True``.
 #=======================================================================================
 # define extractor:
 
-from ..extractor import VideoQualityMeasure
+from ..extractor import ImageQualityMeasure
+
+from bob.bio.video.extractor import Wrapper
 
 GALBALLY = True
 MSU = True
 DTYPE = None
 
-extractor = VideoQualityMeasure(galbally=GALBALLY, msu=MSU, dtype=DTYPE)
+extractor = Wrapper(ImageQualityMeasure(galbally=GALBALLY, msu=MSU, dtype=DTYPE))
 """
 In the feature extraction stage the Image Quality Measures are extracted from each frame of the preprocessed RGB video.
 The features to be computed are introduced in the following papers: [WHJ15]_ and [CBVM16]_.
