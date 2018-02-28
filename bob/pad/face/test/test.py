@@ -26,9 +26,9 @@ from ..preprocessor import FrameDifference
 
 from ..extractor import FrameDiffFeatures
 
-from ..extractor import VideoLBPHistogram
+from ..extractor import LBPHistogram
 
-from ..extractor import VideoQualityMeasure
+from ..extractor import ImageQualityMeasure
 
 from ..utils import face_detection_utils
 
@@ -307,7 +307,7 @@ def test_frame_diff_features():
 #==============================================================================
 def test_video_lbp_histogram():
     """
-    Test VideoLBPHistogram extractor.
+    Test LBPHistogram with Wrapper extractor.
     """
 
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
@@ -349,13 +349,13 @@ def test_video_lbp_histogram():
     CIRC = False
     DTYPE = None
 
-    extractor = VideoLBPHistogram(
+    extractor = bob.bio.video.extractor.Wrapper(LBPHistogram(
         lbptype=LBPTYPE,
         elbptype=ELBPTYPE,
         rad=RAD,
         neighbors=NEIGHBORS,
         circ=CIRC,
-        dtype=DTYPE)
+        dtype=DTYPE))
 
     lbp_histograms = extractor(faces)
 
@@ -369,7 +369,7 @@ def test_video_lbp_histogram():
 #==============================================================================
 def test_video_quality_measure():
     """
-    Test VideoQualityMeasure extractor.
+    Test ImageQualityMeasure with Wrapper extractor.
     """
 
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
@@ -381,7 +381,7 @@ def test_video_quality_measure():
     MSU = True
     DTYPE = None
 
-    extractor = VideoQualityMeasure(galbally=GALBALLY, msu=MSU, dtype=DTYPE)
+    extractor = bob.bio.video.extractor.Wrapper(ImageQualityMeasure(galbally=GALBALLY, msu=MSU, dtype=DTYPE))
 
     features = extractor(video)
 
