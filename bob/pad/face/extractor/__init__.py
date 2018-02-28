@@ -1,5 +1,4 @@
 from .LBPHistogram import LBPHistogram
-from .VideoLBPHistogram import VideoLBPHistogram
 from .ImageQualityMeasure import ImageQualityMeasure
 from .VideoDataLoader import VideoDataLoader
 from .FrameDiffFeatures import FrameDiffFeatures
@@ -25,7 +24,6 @@ def __appropriate__(*args):
 
 __appropriate__(
     LBPHistogram,
-    VideoLBPHistogram,
     ImageQualityMeasure,
     VideoDataLoader,
     FrameDiffFeatures,

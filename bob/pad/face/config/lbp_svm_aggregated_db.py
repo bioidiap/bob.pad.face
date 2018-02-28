@@ -56,7 +56,9 @@ below ``min_face_size`` threshold are discarded. The preprocessor is similar to 
 #=======================================================================================
 # define extractor:
 
-from ..extractor import VideoLBPHistogram
+from ..extractor import LBPHistogram
+
+from bob.bio.video.extractor import Wrapper
 
 LBPTYPE = 'uniform'
 ELBPTYPE = 'regular'
@@ -65,13 +67,13 @@ NEIGHBORS = 8
 CIRC = False
 DTYPE = None
 
-extractor = VideoLBPHistogram(
+extractor = Wrapper(LBPHistogram(
     lbptype=LBPTYPE,
     elbptype=ELBPTYPE,
     rad=RAD,
     neighbors=NEIGHBORS,
     circ=CIRC,
-    dtype=DTYPE)
+    dtype=DTYPE))
 """
 In the feature extraction stage the LBP histograms are extracted from each frame of the preprocessed video.
 The parameters are similar to the ones introduced in [CAM12]_.
