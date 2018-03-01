@@ -88,7 +88,11 @@ class ImageFaceCrop(Preprocessor):
 
         if use_face_alignment:
 
-            face_eyes_norm = bob.ip.base.FaceEyesNorm(eyes_distance = 32.5, crop_size = (face_size, face_size), eyes_center = (16, 31.75)) # Add more params,
+            face_eyes_norm = bob.ip.base.FaceEyesNorm(
+                eyes_distance=(face_size / 2.),
+                crop_size=(face_size, face_size),
+                eyes_center=(face_size / 4., (face_size - 0.5) / 2.))
+
             right_eye,left_eye=annotations['right_eye'],annotations['left_eye']
 
             normalized_image = face_eyes_norm( image, right_eye = right_eye, left_eye = left_eye )
