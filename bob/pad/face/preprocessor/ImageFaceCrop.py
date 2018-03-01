@@ -51,14 +51,14 @@ class ImageFaceCrop(Preprocessor):
         self.rgb_output_flag = rgb_output_flag
 
     #==========================================================================
-    def normalize_image_size_in_grayscale(self, image, annotations, face_size):
+    def normalize_image_size_in_grayscale(self, image, annotations, face_size, use_face_alignment):
         """
         This function crops the face in the input Gray-scale image given annotations
-        defining the face bounding box. The size of the face is also normalized to the
-        pre-defined dimensions.
+        defining the face bounding box, and eye positions.
+        The size of the face is also normalized to the pre-defined dimensions.
 
-        The algorithm is identical to the following paper:
-        "On the Effectiveness of Local Binary Patterns in Face Anti-spoofing"
+        Two normalization options are available, which are controlled by
+        ``use_face_alignment`` flag, see below.
 
         **Parameters:**
 
@@ -66,11 +66,19 @@ class ImageFaceCrop(Preprocessor):
             Gray-scale input image.
 
         ``annotations`` : :py:class:`dict`
-            A dictionary containing annotations of the face bounding box.
-            Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col)}``
+            A dictionary containing annotations of the face bounding box,
+            eye locations and facial landmarks.
+            Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col),
+            'left_eye': (row, col), 'right_eye': (row, col)``.
 
         ``face_size`` : :py:class:`int`
             The size of the face after normalization.
+
+        ``use_face_alignment`` : :py:class:`bool`
+            If ``False``, the re-sizing from this publication is used:
+            "On the Effectiveness of Local Binary Patterns in Face Anti-spoofing"
+            If ``True`` the facial image is both re-sized and aligned using
+            positions of the eyes, which are given in the annotations.
 
         **Returns:**
 
@@ -78,15 +86,26 @@ class ImageFaceCrop(Preprocessor):
             An image of the cropped face of the size (self.face_size, self.face_size).
         """
 
-        cutframe = image[annotations['topleft'][0]:annotations['bottomright'][
-            0], annotations['topleft'][1]:annotations['bottomright'][1]]
+        if use_face_alignment:
 
-        tempbbx = np.ndarray((face_size, face_size), 'float64')
-        normbbx = np.ndarray((face_size, face_size), 'uint8')
-        bob.ip.base.scale(cutframe, tempbbx)  # normalization
-        tempbbx_ = tempbbx + 0.5
-        tempbbx_ = np.floor(tempbbx_)
-        normbbx = np.cast['uint8'](tempbbx_)
+            face_eyes_norm = bob.ip.base.FaceEyesNorm(eyes_distance = 32.5, crop_size = (face_size, face_size), eyes_center = (16, 31.75)) # Add more params,
+            right_eye,left_eye=annotations['right_eye'],annotations['left_eye']
+
+            normalized_image = face_eyes_norm( image, right_eye = right_eye, left_eye = left_eye )
+
+            normbbx=normalized_image.astype('uint8')
+
+        else:
+
+            cutframe = image[annotations['topleft'][0]:annotations['bottomright'][
+                0], annotations['topleft'][1]:annotations['bottomright'][1]]
+
+            tempbbx = np.ndarray((face_size, face_size), 'float64')
+            normbbx = np.ndarray((face_size, face_size), 'uint8')
+            bob.ip.base.scale(cutframe, tempbbx)  # normalization
+            tempbbx_ = tempbbx + 0.5
+            tempbbx_ = np.floor(tempbbx_)
+            normbbx = np.cast['uint8'](tempbbx_)
 
         return normbbx
 
