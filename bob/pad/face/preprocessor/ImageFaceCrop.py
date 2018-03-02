@@ -217,9 +217,9 @@ class ImageFaceCrop(Preprocessor):
 
 
 
-
-
-
+#class arguments:
+detect_faces_flag
+max_image_size
 
 
 
