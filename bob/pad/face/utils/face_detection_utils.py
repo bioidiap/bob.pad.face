@@ -3,14 +3,14 @@
 """
 This file contains face detection utils.
 """
-#==============================================================================
+# ==============================================================================
 # Import here:
 
 import importlib
 import numpy as np
 
 
-#==============================================================================
+# ==============================================================================
 def get_eye_pos(lm):
     """
     This function returns the locations of left and right eyes
@@ -41,7 +41,7 @@ def get_eye_pos(lm):
     return right_eye, left_eye
 
 
-#==============================================================================
+# ==============================================================================
 def detect_face_in_image(image, method="dlib"):
     """
     This function detects a face in the input image.
@@ -89,7 +89,7 @@ def detect_face_in_image(image, method="dlib"):
     return annotations
 
 
-#==============================================================================
+# ==============================================================================
 def detect_faces_in_video(frame_container, method="dlib"):
     """
     This function detects a face in each farme of the input video.
@@ -130,7 +130,7 @@ def detect_faces_in_video(frame_container, method="dlib"):
     return annotations
 
 
-#==============================================================================
+# ==============================================================================
 def detect_face_landmarks_in_image(image, method="dlib"):
     """
     This function detects a face in the input image. Two oprions for face detector , but landmark detector is always the same
@@ -233,7 +233,7 @@ def detect_face_landmarks_in_image(image, method="dlib"):
     return annotations
 
 
-#==============================================================================
+# ==============================================================================
 def detect_face_landmarks_in_video(frame_container, method="dlib"):
     """
     This function detects a face and face landmarks  in each farme of the input video.
