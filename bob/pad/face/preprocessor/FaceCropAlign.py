@@ -461,7 +461,7 @@ class FaceCropAlign(Preprocessor):
                 np.array(annotations['bottomright']) -
                 np.array(annotations['topleft']))
 
-            if original_face_size >= self.min_face_size:  # check if face size is above the threshold
+            if original_face_size < self.min_face_size:  # check if face size is above the threshold
 
                 return None
 
