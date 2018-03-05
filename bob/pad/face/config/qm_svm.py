@@ -30,14 +30,14 @@ MAX_IMAGE_SIZE = None # no limiting here
 FACE_DETECTION_METHOD = None # use annotations
 MIN_FACE_SIZE = 50 # skip small faces
 
-image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
+_image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
                                    rgb_output_flag = RGB_OUTPUT_FLAG,
                                    use_face_alignment = USE_FACE_ALIGNMENT,
                                    max_image_size = MAX_IMAGE_SIZE,
                                    face_detection_method = FACE_DETECTION_METHOD,
                                    min_face_size = MIN_FACE_SIZE)
 
-preprocessor = Wrapper(image_preprocessor)
+preprocessor = Wrapper(_image_preprocessor)
 """
 In the preprocessing stage the face is cropped in each frame of the input video given facial annotations.
 The size of the face is normalized to ``FACE_SIZE`` dimensions. The faces of the size
