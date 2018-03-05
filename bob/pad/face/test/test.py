@@ -28,9 +28,9 @@ from ..extractor import LBPHistogram
 
 from ..extractor import ImageQualityMeasure
 
-from ..utils import face_detection_utils
-
 import random
+
+from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.bio.video.preprocessor import Wrapper
 
@@ -39,7 +39,7 @@ def test_detect_face_landmarks_in_image_mtcnn():
 
     img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
     assert len(img) == 3
-    annotations = face_detection_utils.detect_face_landmarks_in_image(
+    annotations = detect_face_landmarks_in_image(
         img, method='mtcnn')
     assert len(annotations['landmarks']) == 68
     assert len(annotations['left_eye']) == 2
@@ -50,25 +50,11 @@ def test_detect_face_landmarks_in_image_mtcnn():
     #assert len(annotations['left_eye']) == (176, 220)
 
 
-def test_detect_face_landmarks_in_video_mtcnn():
-
-    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
-    assert len(img) == 3
-    frame_container = bob.bio.video.FrameContainer()
-    frame_container.add(1, img)
-    frame_container.add(2, img)
-
-    annotations = face_detection_utils.detect_face_landmarks_in_video(
-        frame_container, method='mtcnn')
-    assert len(annotations) == 2
-    assert len(annotations['1']['landmarks']) == 68
-
-
 def test_detect_face_landmarks_in_image_dlib():
 
     img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
     assert len(img) == 3
-    annotations = face_detection_utils.detect_face_landmarks_in_image(
+    annotations = detect_face_landmarks_in_image(
         img, method='dlib')
     assert len(annotations['landmarks']) == 68
     assert len(annotations['left_eye']) == 2
@@ -77,20 +63,6 @@ def test_detect_face_landmarks_in_image_dlib():
     assert len(annotations['bottomright']) == 2
 
     #assert len(annotations['left_eye']) == (176, 220)
-
-
-def test_detect_face_landmarks_in_video_dlib():
-
-    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
-    assert len(img) == 3
-    frame_container = bob.bio.video.FrameContainer()
-    frame_container.add(1, img)
-    frame_container.add(2, img)
-
-    annotations = face_detection_utils.detect_face_landmarks_in_video(
-        frame_container, method='dlib')
-    assert len(annotations) == 2
-    assert len(annotations['1']['landmarks']) == 68
 
 
 #==============================================================================
