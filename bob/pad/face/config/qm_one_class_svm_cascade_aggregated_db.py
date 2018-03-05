@@ -21,35 +21,30 @@ this resource.
 #=======================================================================================
 # define preprocessor:
 
-from ..preprocessor import VideoFaceCrop
+from ..preprocessor import FaceCropAlign
 
-CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
-CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
-FIXED_POSITIONS = None
-MASK_SIGMA = None  # The sigma for random values areas outside image
-MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
-MASK_SEED = None  # The seed for generating random values during extrapolation
-CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
-MIN_FACE_SIZE = 50
-USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
-RGB_OUTPUT_FLAG = True  # Return RGB cropped face using local cropper
+from bob.bio.video.preprocessor import Wrapper
 
-preprocessor = VideoFaceCrop(
-    cropped_image_size=CROPPED_IMAGE_SIZE,
-    cropped_positions=CROPPED_POSITIONS,
-    fixed_positions=FIXED_POSITIONS,
-    mask_sigma=MASK_SIGMA,
-    mask_neighbors=MASK_NEIGHBORS,
-    mask_seed=None,
-    check_face_size_flag=CHECK_FACE_SIZE_FLAG,
-    min_face_size=MIN_FACE_SIZE,
-    use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
-    rgb_output_flag=RGB_OUTPUT_FLAG)
+FACE_SIZE = 64 # The size of the resulting face
+RGB_OUTPUT_FLAG = True # RGB output
+USE_FACE_ALIGNMENT = False # use annotations
+MAX_IMAGE_SIZE = None # no limiting here
+FACE_DETECTION_METHOD = None # use annotations
+MIN_FACE_SIZE = 50 # skip small faces
+
+image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
+                                   rgb_output_flag = RGB_OUTPUT_FLAG,
+                                   use_face_alignment = USE_FACE_ALIGNMENT,
+                                   max_image_size = MAX_IMAGE_SIZE,
+                                   face_detection_method = FACE_DETECTION_METHOD,
+                                   min_face_size = MIN_FACE_SIZE)
+
+preprocessor = Wrapper(image_preprocessor)
 """
 In the preprocessing stage the face is cropped in each frame of the input video given facial annotations.
-The size of the face is normalized to ``cropped_image_size`` dimensions. The faces of the size
-below ``min_face_size`` threshold are discarded. The preprocessor is similar to the one introduced in
-[CAM12]_, which is defined by ``use_local_cropper_flag = True``. The preprocessed frame is the RGB
+The size of the face is normalized to ``FACE_SIZE`` dimensions. The faces of the size
+below ``MIN_FACE_SIZE`` threshold are discarded. The preprocessor is similar to the one introduced in
+[CAM12]_, which is defined by ``FACE_DETECTION_METHOD = None``. The preprocessed frame is the RGB
 facial image, which is defined by ``RGB_OUTPUT_FLAG = True``.
 """
 

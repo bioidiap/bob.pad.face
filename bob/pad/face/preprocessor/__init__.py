@@ -1,4 +1,3 @@
-from .VideoFaceCrop import VideoFaceCrop
 from .FaceCropAlign import FaceCropAlign
 from .FrameDifference import FrameDifference
 from .VideoSparseCoding import VideoSparseCoding
@@ -23,7 +22,6 @@ def __appropriate__(*args):
 
 
 __appropriate__(
-    VideoFaceCrop,
     FaceCropAlign,
     FrameDifference,
     VideoSparseCoding,
