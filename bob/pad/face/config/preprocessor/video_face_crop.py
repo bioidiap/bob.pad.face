@@ -5,6 +5,8 @@ from ..preprocessor import FaceCropAlign
 
 from bob.bio.video.preprocessor import Wrapper
 
+from bob.bio.video.utils import FrameSelector
+
 # =======================================================================================
 # Define instances here:
 
@@ -23,7 +25,10 @@ _image_preprocessor = FaceCropAlign(face_size=FACE_SIZE,
                                     face_detection_method=FACE_DETECTION_METHOD,
                                     min_face_size=MIN_FACE_SIZE)
 
-rgb_face_detector_dlib = Wrapper(_image_preprocessor)
+_frame_selector = FrameSelector(selection_style = "all")
+
+rgb_face_detector_dlib = Wrapper(preprocessor = _image_preprocessor,
+                                 frame_selector = _frame_selector)
 
 # =======================================================================================
 FACE_DETECTION_METHOD = "mtcnn"  # use mtcnn face detection
@@ -35,4 +40,5 @@ _image_preprocessor = FaceCropAlign(face_size=FACE_SIZE,
                                     face_detection_method=FACE_DETECTION_METHOD,
                                     min_face_size=MIN_FACE_SIZE)
 
-rgb_face_detector_mtcnn = Wrapper(_image_preprocessor)
+rgb_face_detector_mtcnn = Wrapper(preprocessor = _image_preprocessor,
+                                  frame_selector = _frame_selector)

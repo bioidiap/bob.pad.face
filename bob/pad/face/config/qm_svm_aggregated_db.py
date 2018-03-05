@@ -25,6 +25,8 @@ from ..preprocessor import FaceCropAlign
 
 from bob.bio.video.preprocessor import Wrapper
 
+from bob.bio.video.utils import FrameSelector
+
 FACE_SIZE = 64 # The size of the resulting face
 RGB_OUTPUT_FLAG = True # RGB output
 USE_FACE_ALIGNMENT = False # use annotations
@@ -39,7 +41,10 @@ _image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
                                    face_detection_method = FACE_DETECTION_METHOD,
                                    min_face_size = MIN_FACE_SIZE)
 
-preprocessor = Wrapper(_image_preprocessor)
+_frame_selector = FrameSelector(selection_style = "all")
+
+preprocessor = Wrapper(preprocessor = _image_preprocessor,
+                       frame_selector = _frame_selector)
 """
 In the preprocessing stage the face is cropped in each frame of the input video given facial annotations.
 The size of the face is normalized to ``FACE_SIZE`` dimensions. The faces of the size
