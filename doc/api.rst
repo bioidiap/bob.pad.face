@@ -72,12 +72,7 @@ Utilities
 
 .. autosummary::
    bob.pad.face.utils.blocks
-   bob.pad.face.utils.detect_face_in_image
-   bob.pad.face.utils.detect_face_landmarks_in_image
-   bob.pad.face.utils.detect_face_landmarks_in_video
-   bob.pad.face.utils.detect_faces_in_video
    bob.pad.face.utils.frames
-   bob.pad.face.utils.get_eye_pos
    bob.pad.face.utils.normalize_detections
    bob.pad.face.utils.number_of_frames
    bob.pad.face.utils.scale_face

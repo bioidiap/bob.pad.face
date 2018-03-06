@@ -22,35 +22,35 @@ this resource.
 #=======================================================================================
 # define preprocessor:
 
-from ..preprocessor import VideoFaceCrop
+from ..preprocessor import FaceCropAlign
 
-CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
-CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
-FIXED_POSITIONS = None
-MASK_SIGMA = None  # The sigma for random values areas outside image
-MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
-MASK_SEED = None  # The seed for generating random values during extrapolation
-CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
-MIN_FACE_SIZE = 50  # Minimal possible size of the face
-USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
-COLOR_CHANNEL = 'gray'  # Convert image to gray-scale format
+from bob.bio.video.preprocessor import Wrapper
 
-preprocessor = VideoFaceCrop(
-    cropped_image_size=CROPPED_IMAGE_SIZE,
-    cropped_positions=CROPPED_POSITIONS,
-    fixed_positions=FIXED_POSITIONS,
-    mask_sigma=MASK_SIGMA,
-    mask_neighbors=MASK_NEIGHBORS,
-    mask_seed=None,
-    check_face_size_flag=CHECK_FACE_SIZE_FLAG,
-    min_face_size=MIN_FACE_SIZE,
-    use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
-    color_channel=COLOR_CHANNEL)
+from bob.bio.video.utils import FrameSelector
+
+FACE_SIZE = 64 # The size of the resulting face
+RGB_OUTPUT_FLAG = False # Gray-scale output
+USE_FACE_ALIGNMENT = False # use annotations
+MAX_IMAGE_SIZE = None # no limiting here
+FACE_DETECTION_METHOD = None # use annotations
+MIN_FACE_SIZE = 50 # skip small faces
+
+_image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
+                                   rgb_output_flag = RGB_OUTPUT_FLAG,
+                                   use_face_alignment = USE_FACE_ALIGNMENT,
+                                   max_image_size = MAX_IMAGE_SIZE,
+                                   face_detection_method = FACE_DETECTION_METHOD,
+                                   min_face_size = MIN_FACE_SIZE)
+
+_frame_selector = FrameSelector(selection_style = "all")
+
+preprocessor = Wrapper(preprocessor = _image_preprocessor,
+                       frame_selector = _frame_selector)
 """
 In the preprocessing stage the face is cropped in each frame of the input video given facial annotations.
-The size of the face is normalized to ``cropped_image_size`` dimensions. The faces with the size
-below ``min_face_size`` threshold are discarded. The preprocessor is similar to the one introduced in
-[CAM12]_, which is defined by ``use_local_cropper_flag = True``.
+The size of the face is normalized to ``FACE_SIZE`` dimensions. The faces with the size
+below ``MIN_FACE_SIZE`` threshold are discarded. The preprocessor is similar to the one introduced in
+[CAM12]_, which is defined by ``FACE_DETECTION_METHOD = None``.
 """
 
 #=======================================================================================

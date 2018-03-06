@@ -187,7 +187,8 @@ class AggregatedDbPadFile(VideoPadFile):
         return file_path
 
     # =========================================================================
-    def load(self, directory=None, extension='.mov'):
+    def load(self, directory=None, extension='.mov',
+             frame_selector=FrameSelector(selection_style='all')):
         """
         Overridden version of the load method defined in the ``VideoPadFile``.
 
@@ -252,9 +253,6 @@ class AggregatedDbPadFile(VideoPadFile):
 
         if isinstance(db_pad_file, bob.bio.video.database.mobio.MobioBioFile):
 
-            frame_selector = FrameSelector(
-                selection_style='all')  # select all frames of the file
-
             video_data = db_pad_file.load(
                 directory=directory,
                 extension='.mp4',
@@ -263,7 +261,9 @@ class AggregatedDbPadFile(VideoPadFile):
         else:
 
             video_data = db_pad_file.load(
-                directory=directory, extension=extension)
+                directory=directory, 
+                extension=extension,
+                frame_selector=frame_selector)
 
         return video_data  # video data
 

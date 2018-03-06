@@ -18,9 +18,7 @@ from bob.ip.color import rgb_to_gray
 
 from ..extractor import LBPHistogram
 
-from ..preprocessor import ImageFaceCrop
-
-from ..preprocessor import VideoFaceCrop
+from ..preprocessor import FaceCropAlign
 
 from ..preprocessor import FrameDifference
 
@@ -30,16 +28,18 @@ from ..extractor import LBPHistogram
 
 from ..extractor import ImageQualityMeasure
 
-from ..utils import face_detection_utils
-
 import random
+
+from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
+
+from bob.bio.video.preprocessor import Wrapper
 
 
 def test_detect_face_landmarks_in_image_mtcnn():
 
     img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
     assert len(img) == 3
-    annotations = face_detection_utils.detect_face_landmarks_in_image(
+    annotations = detect_face_landmarks_in_image(
         img, method='mtcnn')
     assert len(annotations['landmarks']) == 68
     assert len(annotations['left_eye']) == 2
@@ -50,25 +50,11 @@ def test_detect_face_landmarks_in_image_mtcnn():
     #assert len(annotations['left_eye']) == (176, 220)
 
 
-def test_detect_face_landmarks_in_video_mtcnn():
-
-    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
-    assert len(img) == 3
-    frame_container = bob.bio.video.FrameContainer()
-    frame_container.add(1, img)
-    frame_container.add(2, img)
-
-    annotations = face_detection_utils.detect_face_landmarks_in_video(
-        frame_container, method='mtcnn')
-    assert len(annotations) == 2
-    assert len(annotations['1']['landmarks']) == 68
-
-
 def test_detect_face_landmarks_in_image_dlib():
 
     img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
     assert len(img) == 3
-    annotations = face_detection_utils.detect_face_landmarks_in_image(
+    annotations = detect_face_landmarks_in_image(
         img, method='dlib')
     assert len(annotations['landmarks']) == 68
     assert len(annotations['left_eye']) == 2
@@ -77,20 +63,6 @@ def test_detect_face_landmarks_in_image_dlib():
     assert len(annotations['bottomright']) == 2
 
     #assert len(annotations['left_eye']) == (176, 220)
-
-
-def test_detect_face_landmarks_in_video_dlib():
-
-    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
-    assert len(img) == 3
-    frame_container = bob.bio.video.FrameContainer()
-    frame_container.add(1, img)
-    frame_container.add(2, img)
-
-    annotations = face_detection_utils.detect_face_landmarks_in_video(
-        frame_container, method='dlib')
-    assert len(annotations) == 2
-    assert len(annotations['1']['landmarks']) == 68
 
 
 #==============================================================================
@@ -104,21 +76,21 @@ def test_lbp_histogram():
 
 
 #==============================================================================
-def test_image_face_crop():
+def test_face_crop_align():
     """
-    Test ImageFaceCrop preprocessor, which is designed to crop faces in the images.
+    Test FaceCropAlign preprocessor, which is designed to crop faces in the images.
     """
 
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
     annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
 
-    preprocessor = ImageFaceCrop(face_size=64, rgb_output_flag=False)
+    preprocessor = FaceCropAlign(face_size=64, rgb_output_flag=False, use_face_alignment=False)
     face = preprocessor(image, annotations)
 
     assert face.shape == (64, 64)
     assert np.sum(face) == 429158
 
-    preprocessor = ImageFaceCrop(face_size=64, rgb_output_flag=True)
+    preprocessor = FaceCropAlign(face_size=64, rgb_output_flag=True, use_face_alignment=False)
     face = preprocessor(image, annotations)
 
     assert face.shape == (3, 64, 64)
@@ -172,34 +144,27 @@ def convert_image_to_video_data(image, annotations, n_frames):
 #==============================================================================
 def test_video_face_crop():
     """
-    Test VideoFaceCrop preprocessor, which is designed to crop faces in the video.
+    Test FaceCropAlign preprocessor with Wrapper, which is designed to crop faces in the video.
     """
+
+    FACE_SIZE = 64 # The size of the resulting face
+    RGB_OUTPUT_FLAG = False # Gray-scale output
+    USE_FACE_ALIGNMENT = False # use annotations
+    MAX_IMAGE_SIZE = None # no limiting here
+    FACE_DETECTION_METHOD = None # use annotations
+    MIN_FACE_SIZE = 50 # skip small faces
+
+    image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
+                                       rgb_output_flag = RGB_OUTPUT_FLAG,
+                                       use_face_alignment = USE_FACE_ALIGNMENT,
+                                       max_image_size = MAX_IMAGE_SIZE,
+                                       face_detection_method = FACE_DETECTION_METHOD,
+                                       min_face_size = MIN_FACE_SIZE)
+
+    preprocessor = Wrapper(image_preprocessor)
 
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
     annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
-
-    CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
-    CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
-    FIXED_POSITIONS = None
-    MASK_SIGMA = None  # The sigma for random values areas outside image
-    MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
-    MASK_SEED = None  # The seed for generating random values during extrapolation
-    CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
-    MIN_FACE_SIZE = 50  # Minimal possible size of the face
-    USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
-    COLOR_CHANNEL = 'gray'  # Convert image to gray-scale format
-
-    preprocessor = VideoFaceCrop(
-        cropped_image_size=CROPPED_IMAGE_SIZE,
-        cropped_positions=CROPPED_POSITIONS,
-        fixed_positions=FIXED_POSITIONS,
-        mask_sigma=MASK_SIGMA,
-        mask_neighbors=MASK_NEIGHBORS,
-        mask_seed=MASK_SEED,
-        check_face_size_flag=CHECK_FACE_SIZE_FLAG,
-        min_face_size=MIN_FACE_SIZE,
-        use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
-        color_channel=COLOR_CHANNEL)
 
     video, annotations = convert_image_to_video_data(image, annotations, 20)
 
@@ -212,34 +177,23 @@ def test_video_face_crop():
     assert np.sum(faces[-1][1]) == 429158
 
     #==========================================================================
-    # test another configuration of the  VideoFaceCrop preprocessor:
+    # test another configuration of the preprocessor:
 
-    CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
-    CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
-    FIXED_POSITIONS = None
-    MASK_SIGMA = None  # The sigma for random values areas outside image
-    MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
-    MASK_SEED = None  # The seed for generating random values during extrapolation
-    CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
-    MIN_FACE_SIZE = 50
-    USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
-    RGB_OUTPUT_FLAG = True  # Return RGB cropped face using local cropper
-    DETECT_FACES_FLAG = True  # find annotations locally replacing the database annotations
-    FACE_DETECTION_METHOD = "dlib"
+    FACE_SIZE = 64 # The size of the resulting face
+    RGB_OUTPUT_FLAG = True # Gray-scale output
+    USE_FACE_ALIGNMENT = False # use annotations
+    MAX_IMAGE_SIZE = None # no limiting here
+    FACE_DETECTION_METHOD = "dlib" # use annotations
+    MIN_FACE_SIZE = 50 # skip small faces
 
-    preprocessor = VideoFaceCrop(
-        cropped_image_size=CROPPED_IMAGE_SIZE,
-        cropped_positions=CROPPED_POSITIONS,
-        fixed_positions=FIXED_POSITIONS,
-        mask_sigma=MASK_SIGMA,
-        mask_neighbors=MASK_NEIGHBORS,
-        mask_seed=None,
-        check_face_size_flag=CHECK_FACE_SIZE_FLAG,
-        min_face_size=MIN_FACE_SIZE,
-        use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
-        rgb_output_flag=RGB_OUTPUT_FLAG,
-        detect_faces_flag=DETECT_FACES_FLAG,
-        face_detection_method=FACE_DETECTION_METHOD)
+    image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
+                                       rgb_output_flag = RGB_OUTPUT_FLAG,
+                                       use_face_alignment = USE_FACE_ALIGNMENT,
+                                       max_image_size = MAX_IMAGE_SIZE,
+                                       face_detection_method = FACE_DETECTION_METHOD,
+                                       min_face_size = MIN_FACE_SIZE)
+
+    preprocessor = Wrapper(image_preprocessor)
 
     video, _ = convert_image_to_video_data(image, annotations, 3)
 
@@ -310,33 +264,28 @@ def test_video_lbp_histogram():
     Test LBPHistogram with Wrapper extractor.
     """
 
+    from ..preprocessor import FaceCropAlign
+
+    from bob.bio.video.preprocessor import Wrapper
+
+    FACE_SIZE = 64 # The size of the resulting face
+    RGB_OUTPUT_FLAG = False # Gray-scale output
+    USE_FACE_ALIGNMENT = False # use annotations
+    MAX_IMAGE_SIZE = None # no limiting here
+    FACE_DETECTION_METHOD = None # use annotations
+    MIN_FACE_SIZE = 50 # skip small faces
+
+    image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
+                                       rgb_output_flag = RGB_OUTPUT_FLAG,
+                                       use_face_alignment = USE_FACE_ALIGNMENT,
+                                       max_image_size = MAX_IMAGE_SIZE,
+                                       face_detection_method = FACE_DETECTION_METHOD,
+                                       min_face_size = MIN_FACE_SIZE)
+
+    preprocessor = Wrapper(image_preprocessor)
+
     image = load(datafile('test_image.png', 'bob.pad.face.test'))
     annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
-
-    CROPPED_IMAGE_SIZE = (64, 64)  # The size of the resulting face
-    CROPPED_POSITIONS = {'topleft': (0, 0), 'bottomright': CROPPED_IMAGE_SIZE}
-    FIXED_POSITIONS = None
-    MASK_SIGMA = None  # The sigma for random values areas outside image
-    MASK_NEIGHBORS = 5  # The number of neighbors to consider while extrapolating
-    MASK_SEED = None  # The seed for generating random values during extrapolation
-    CHECK_FACE_SIZE_FLAG = True  # Check the size of the face
-    MIN_FACE_SIZE = 50  # Minimal possible size of the face
-    USE_LOCAL_CROPPER_FLAG = True  # Use the local face cropping class (identical to Ivana's paper)
-    RGB_OUTPUT_FLAG = False  # The output is gray-scale
-    COLOR_CHANNEL = 'gray'  # Convert image to gray-scale format
-
-    preprocessor = VideoFaceCrop(
-        cropped_image_size=CROPPED_IMAGE_SIZE,
-        cropped_positions=CROPPED_POSITIONS,
-        fixed_positions=FIXED_POSITIONS,
-        mask_sigma=MASK_SIGMA,
-        mask_neighbors=MASK_NEIGHBORS,
-        mask_seed=MASK_SEED,
-        check_face_size_flag=CHECK_FACE_SIZE_FLAG,
-        min_face_size=MIN_FACE_SIZE,
-        use_local_cropper_flag=USE_LOCAL_CROPPER_FLAG,
-        rgb_output_flag=RGB_OUTPUT_FLAG,
-        color_channel=COLOR_CHANNEL)
 
     video, annotations = convert_image_to_video_data(image, annotations, 20)
 
