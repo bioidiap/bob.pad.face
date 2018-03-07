@@ -9,6 +9,8 @@ from .FrequencySpectrum import FrequencySpectrum
 from .FreqFeatures import FreqFeatures
 from .NormalizeLength import NormalizeLength
 from .FFTFeatures import FFTFeatures 
+from .LTSS import LTSS 
+from .Autocorrelation import Autocorrelation 
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.

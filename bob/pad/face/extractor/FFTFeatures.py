@@ -26,12 +26,13 @@ class FFTFeatures(Extractor, object):
   debug: boolean
     Plot stuff
   """
-  def __init__(self, framerate=25, nfft=256, debug=False, **kwargs):
+  def __init__(self, framerate=25, nfft=256, concat=False, debug=False, **kwargs):
 
     super(FFTFeatures, self).__init__(**kwargs)
     
     self.framerate = framerate
     self.nfft = nfft
+    self.concat = concat
     self.debug = debug
 
 
@@ -72,7 +73,11 @@ class FFTFeatures(Extractor, object):
       ffts = numpy.zeros((3, output_dim))
       for i in range(3):
         ffts[i] = abs(numpy.fft.rfft(signal[:, i], n=self.nfft))
-      fft = ffts[1]
+
+      if self.concat:
+        fft = numpy.concatenate([ffts[0], ffts[1], ffts[2]])
+      else:
+        fft = ffts[1]
       
     if self.debug: 
       from matplotlib import pyplot

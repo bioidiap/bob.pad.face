@@ -8,7 +8,6 @@ from bob.bio.base.extractor import Extractor
 import logging
 logger = logging.getLogger("bob.pad.face")
 
-from scipy.signal import welch
 
 
 class FreqFeatures(Extractor, object):
