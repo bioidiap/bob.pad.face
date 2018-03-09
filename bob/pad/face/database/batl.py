@@ -10,6 +10,8 @@ from bob.db.batl.batl_config import BATL_CONFIG
 import pkg_resources
 from batl.utils.data import load_data_config
 
+from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
+
 class BatlPadFile(PadFile):
     """
     A high level implementation of the File class for the BATL
@@ -84,6 +86,8 @@ class BatlPadDatabase(PadDatabase):
             protocol='grandtest',
             original_directory=rc['bob.db.batl.directory'],
             original_extension='.h5',
+            annotations_temp_dir=None,
+            landmark_detect_method="mtcnn",
             **kwargs):
         """
         Parameters
@@ -130,6 +134,12 @@ class BatlPadDatabase(PadDatabase):
             original_directory=original_directory,
             original_extension=original_extension,
             **kwargs)
+
+        self.protocol = protocol
+        self.original_directory = original_directory
+        self.original_extension = original_extension
+        self.annotations_temp_dir = annotations_temp_dir
+        self.landmark_detect_method = landmark_detect_method
 
     @property
     def original_directory(self):
@@ -222,5 +232,35 @@ class BatlPadDatabase(PadDatabase):
 
     def annotations(self, f):
         pass
+
+#        if annotations_temp_dir is None:
+
+        video = f.load(self, directory=self.original_directory,
+                       extension=self.original_extension,
+                       stream_type="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
+                       reference_stream_type="color",
+                       data_format_config=load_data_config(pkg_resources.resource_filename('batl.utils', 'config/idiap_hdf5_data_config.json')),
+                       warp_to_reference=False,
+                       convert_to_rgb=False,
+                       crop=None,
+                       max_frames=None)
+
+        annotations = {}
+
+        for idx, image in enumerate(video):
+
+            frame_annotations = detect_face_landmarks_in_image(image, method = self.landmark_detect_method)
+
+            if frame_annotations:
+
+                annotations[str(idx)] = frame_annotations
+
+        return annotations
+
+
+
+
+
+
 
 
