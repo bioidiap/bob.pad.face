@@ -12,6 +12,8 @@ from batl.utils.data import load_data_config
 
 from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
+import json
+
 class BatlPadFile(PadFile):
     """
     A high level implementation of the File class for the BATL
@@ -86,7 +88,7 @@ class BatlPadDatabase(PadDatabase):
             protocol='grandtest',
             original_directory=rc['bob.db.batl.directory'],
             original_extension='.h5',
-            annotations_temp_dir=None,
+            annotations_temp_dir="",
             landmark_detect_method="mtcnn",
             **kwargs):
         """
@@ -231,36 +233,44 @@ class BatlPadDatabase(PadDatabase):
         return files
 
     def annotations(self, f):
-        pass
 
-#        if annotations_temp_dir is None:
+        file_path = os.path.join(self.annotations_temp_dir, f.f.path + ".json")
 
-        video = f.load(self, directory=self.original_directory,
-                       extension=self.original_extension,
-                       stream_type="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
-                       reference_stream_type="color",
-                       data_format_config=load_data_config(pkg_resources.resource_filename('batl.utils', 'config/idiap_hdf5_data_config.json')),
-                       warp_to_reference=False,
-                       convert_to_rgb=False,
-                       crop=None,
-                       max_frames=None)
+        if not os.path.isfile(file_path): # no file with annotations
 
-        annotations = {}
+            video = f.load(self, directory=self.original_directory,
+                           extension=self.original_extension,
+                           stream_type="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
+                           reference_stream_type="color",
+                           data_format_config=load_data_config(pkg_resources.resource_filename('batl.utils', 'config/idiap_hdf5_data_config.json')),
+                           warp_to_reference=False,
+                           convert_to_rgb=False,
+                           crop=None,
+                           max_frames=None)
 
-        for idx, image in enumerate(video):
+            annotations = {}
 
-            frame_annotations = detect_face_landmarks_in_image(image, method = self.landmark_detect_method)
+            for idx, image in enumerate(video):
 
-            if frame_annotations:
+                frame_annotations = detect_face_landmarks_in_image(image, method = self.landmark_detect_method)
 
-                annotations[str(idx)] = frame_annotations
+                if frame_annotations:
+
+                    annotations[str(idx)] = frame_annotations
+
+            if self.annotations_temp_dir: # if directory is not an empty string
+
+                with open(file_path, 'w') as json_file:
+
+                    json_file.write(json.dumps(annotations))
+
+        else: # if file with annotations exists load them from file
+
+            with open(file_path, 'r') as json_file:
+
+                annotations = json.load(json_file)
 
         return annotations
-
-
-
-
-
 
 
 
