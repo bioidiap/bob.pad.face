@@ -42,12 +42,12 @@ def test_detect_face_landmarks_in_image_mtcnn():
     annotations = detect_face_landmarks_in_image(
         img, method='mtcnn')
     assert len(annotations['landmarks']) == 68
-    assert len(annotations['left_eye']) == 2
-    assert len(annotations['right_eye']) == 2
+    assert len(annotations['leye']) == 2
+    assert len(annotations['reye']) == 2
     assert len(annotations['topleft']) == 2
     assert len(annotations['bottomright']) == 2
 
-    #assert len(annotations['left_eye']) == (176, 220)
+    #assert len(annotations['leye']) == (176, 220)
 
 
 def test_detect_face_landmarks_in_image_dlib():
@@ -57,12 +57,12 @@ def test_detect_face_landmarks_in_image_dlib():
     annotations = detect_face_landmarks_in_image(
         img, method='dlib')
     assert len(annotations['landmarks']) == 68
-    assert len(annotations['left_eye']) == 2
-    assert len(annotations['right_eye']) == 2
+    assert len(annotations['leye']) == 2
+    assert len(annotations['reye']) == 2
     assert len(annotations['topleft']) == 2
     assert len(annotations['bottomright']) == 2
 
-    #assert len(annotations['left_eye']) == (176, 220)
+    #assert len(annotations['leye']) == (176, 220)
 
 
 #==============================================================================

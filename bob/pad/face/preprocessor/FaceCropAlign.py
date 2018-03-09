@@ -32,10 +32,10 @@ def get_eye_pos(lm):
 
     **Returns:**
 
-    ``right_eye``
+    ``reye``
         A tuple containing the location of right eye,
 
-    ``left_eye``
+    ``leye``
         A tuple containing the location of left eye
 
     """
