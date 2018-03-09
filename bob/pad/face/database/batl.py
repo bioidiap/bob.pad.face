@@ -62,7 +62,7 @@ class BatlPadFile(PadFile):
 
         data = f.load(self, directory=directory,
                       extension=extension,
-                      stream_type=self.stream_type, # TODO: this parameter is currently missing in bob.db.batl, add it there
+                      modality=self.stream_type, # TODO: this parameter is currently missing in bob.db.batl, add it there
                       reference_stream_type=self.reference_stream_type,
                       data_format_config=self.data_format_config,
                       warp_to_reference=self.warp_to_reference,
@@ -238,15 +238,15 @@ class BatlPadDatabase(PadDatabase):
 
         if not os.path.isfile(file_path): # no file with annotations
 
-            video = f.load(self, directory=self.original_directory,
-                           extension=self.original_extension,
-                           stream_type="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
-                           reference_stream_type="color",
-                           data_format_config=load_data_config(pkg_resources.resource_filename('batl.utils', 'config/idiap_hdf5_data_config.json')),
-                           warp_to_reference=False,
-                           convert_to_rgb=False,
-                           crop=None,
-                           max_frames=None)
+            video = f.f.load(self, directory=self.original_directory,
+                             extension=self.original_extension,
+                             modality="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
+                             reference_stream_type="color",
+                             data_format_config=load_data_config(pkg_resources.resource_filename('batl.utils', 'config/idiap_hdf5_data_config.json')),
+                             warp_to_reference=False,
+                             convert_to_rgb=False,
+                             crop=None,
+                             max_frames=None)
 
             annotations = {}
 
