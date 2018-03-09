@@ -32,10 +32,10 @@ def get_eye_pos(lm):
 
     **Returns:**
 
-    ``right_eye``
+    ``reye``
         A tuple containing the location of right eye,
 
-    ``left_eye``
+    ``leye``
         A tuple containing the location of left eye
 
     """
@@ -71,7 +71,7 @@ def detect_face_landmarks_in_image(image, method="dlib"):
 
     ``annotations`` : :py:class:`dict`
         A dictionary containing annotations of the face bounding box, eye locations and facial landmarks.
-        Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col), 'left_eye': (row, col), 'right_eye': (row, col), 'landmarks': [(col1,row1), (col2,row2), ...]}``.
+        Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col), 'leye': (row, col), 'reye': (row, col), 'landmarks': [(col1,row1), (col2,row2), ...]}``.
         If no annotations found an empty dictionary is returned.
         Where (rowK,colK) is the location of Kth facial landmark (K=0,...,67).
     """
@@ -147,9 +147,9 @@ def detect_face_landmarks_in_image(image, method="dlib"):
 
             annotations['landmarks'] = points
 
-            annotations['left_eye'] = left_eye
+            annotations['leye'] = left_eye
 
-            annotations['right_eye'] = right_eye
+            annotations['reye'] = right_eye
 
     return annotations
 
@@ -174,7 +174,7 @@ def normalize_image_size_in_grayscale(image, annotations,
         A dictionary containing annotations of the face bounding box,
         eye locations and facial landmarks.
         Dictionary must be as follows: ``{'topleft': (row, col), 'bottomright': (row, col),
-        'left_eye': (row, col), 'right_eye': (row, col)}``.
+        'leye': (row, col), 'reye': (row, col)}``.
 
     ``face_size`` : :py:class:`int`
         The size of the face after normalization.
@@ -198,7 +198,7 @@ def normalize_image_size_in_grayscale(image, annotations,
             crop_size=(face_size, face_size),
             eyes_center=(face_size / 4., (face_size - 0.5) / 2.))
 
-        right_eye, left_eye = annotations['right_eye'], annotations['left_eye']
+        right_eye, left_eye = annotations['reye'], annotations['leye']
 
         normalized_image = face_eyes_norm( image, right_eye = right_eye, left_eye = left_eye )
 
@@ -240,7 +240,7 @@ def normalize_image_size(image, annotations, face_size,
         A dictionary containing annotations of the face bounding box,
         eye locations and facial landmarks.
         Dictionary must be as follows: ``{'topleft': (row, col), 'bottomright': (row, col),
-        'left_eye': (row, col), 'right_eye': (row, col)}``.
+        'leye': (row, col), 'reye': (row, col)}``.
 
     ``face_size`` : :py:class:`int`
         The size of the face after normalization.
