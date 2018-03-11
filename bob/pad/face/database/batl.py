@@ -40,8 +40,9 @@ class BatlPadFile(PadFile):
 
         self.f = f
         if f.is_attack():
-            attack = BATL_CONFIG[f.type_id]
-            attack_type = '{} : {}'.format(attack['name'], attack['pai'][f.pai_id])
+#            attack = BATL_CONFIG[f.type_id]
+#            attack_type = '{} : {}'.format(attack['name'], attack['pai'][f.pai_id])
+            attack_type = 'attack'
         else:
             attack_type = None
 
