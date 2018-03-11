@@ -192,7 +192,7 @@ class BatlPadDatabase(PadDatabase):
 
     def objects(self,
                 protocol=None,
-                group=None,
+                groups=None,
                 purposes=None,
                 sessions=None,
                 **kwargs):
@@ -229,6 +229,26 @@ class BatlPadDatabase(PadDatabase):
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
         files = self.db.objects(protocol=protocol, groups=groups, purposes=purposes **kwargs)
+
+
+#        files = self.db.objects(protocol=protocol, purposes=groups, **kwargs)
+#
+#        if purposes == ["real", "attack"]:
+#
+#            files = files
+#
+#        if purposes == "real" or purposes == ["real"]:
+#
+#            a = 1
+#
+#
+#        if purposes == "attack" or purposes == ["attack"]:
+#
+#            a = 1
+
+
+
+
         files = [BatlPadFile(f, stream_type, max_frames) for f in files]
         return files
 
