@@ -248,14 +248,15 @@ class BatlPadDatabase(PadDatabase):
 
         if not os.path.isfile(file_path): # no file with annotations
 
-            video = f.f.load(directory=self.original_directory,
-                           extension=self.original_extension,
-                           modality="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
-                           reference_stream_type="color",
-                           warp_to_reference=False,
-                           convert_to_rgb=False,
-                           crop=None,
-                           max_frames=None)['video']
+            f.stream_type = "color"
+            f.reference_stream_type = "color"
+            f.warp_to_reference = False
+            f.convert_to_rgb = False
+            f.crop = None
+            f.video_data_only = True
+
+            video = f.load(directory=self.original_directory,
+                           extension=self.original_extension)
 
             annotations = {}
 
