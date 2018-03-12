@@ -62,14 +62,14 @@ class BatlPadFile(PadFile):
 
     def load(self, directory=None, extension='.hdf5', frame_selector=FrameSelector(selection_style='all')):
 
-        data = self.f.load(self, directory=directory,
-                      extension=extension,
-                      modality=self.stream_type, # TODO: this parameter is currently missing in bob.db.batl, add it there
-                      reference_stream_type=self.reference_stream_type,
-                      warp_to_reference=self.warp_to_reference,
-                      convert_to_rgb=self.convert_to_rgb,
-                      crop=self.crop,
-                      max_frames=self.max_frames)
+        data = self.f.load(directory=directory,
+                           extension=extension,
+                           modality=self.stream_type, # TODO: this parameter is currently missing in bob.db.batl, add it there
+                           reference_stream_type=self.reference_stream_type,
+                           warp_to_reference=self.warp_to_reference,
+                           convert_to_rgb=self.convert_to_rgb,
+                           crop=self.crop,
+                           max_frames=self.max_frames)
 
         for modality in data.keys():
             if modality != 'rppg':
