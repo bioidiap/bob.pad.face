@@ -28,7 +28,8 @@ class BatlPadFile(PadFile):
                  reference_stream_type="color",
                  warp_to_reference=True,
                  convert_to_rgb=False,
-                 crop=None):
+                 crop=None,
+                 video_data_only=True):
 
         """
         Parameters
@@ -58,6 +59,7 @@ class BatlPadFile(PadFile):
         self.warp_to_reference = warp_to_reference  # True
         self.convert_to_rgb = convert_to_rgb  # False
         self.crop = crop  # None
+        self.video_data_only = video_data_only # return video data only if True
 
 
     def load(self, directory=None, extension='.hdf5', frame_selector=FrameSelector(selection_style='all')):
@@ -74,6 +76,11 @@ class BatlPadFile(PadFile):
         for modality in data.keys():
             if modality != 'rppg':
                 data[modality] = frame_selector(data[modality])
+
+        if self.video_data_only:
+
+            data = data['video']
+
         return data
 
 
@@ -241,18 +248,18 @@ class BatlPadDatabase(PadDatabase):
 
         if not os.path.isfile(file_path): # no file with annotations
 
-            video = f.f.load(self, directory=self.original_directory,
-                             extension=self.original_extension,
-                             modality="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
-                             reference_stream_type="color",
-                             warp_to_reference=False,
-                             convert_to_rgb=False,
-                             crop=None,
-                             max_frames=None)
+            video = f.f.load(directory=self.original_directory,
+                           extension=self.original_extension,
+                           modality="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
+                           reference_stream_type="color",
+                           warp_to_reference=False,
+                           convert_to_rgb=False,
+                           crop=None,
+                           max_frames=None)['video']
 
             annotations = {}
 
-            for idx, image in enumerate(video):
+            for idx, image in enumerate(video.as_array()):
 
                 frame_annotations = detect_face_landmarks_in_image(image, method = self.landmark_detect_method)
 
