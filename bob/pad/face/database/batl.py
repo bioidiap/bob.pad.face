@@ -55,7 +55,6 @@ class BatlPadFile(PadFile):
         self.stream_type = stream_type
         self.max_frames = max_frames
         self.reference_stream_type = reference_stream_type  # "color"
-        self.data_format_config = load_data_config(pkg_resources.resource_filename('batl.utils', 'config/idiap_hdf5_data_config.json'))
         self.warp_to_reference = warp_to_reference  # True
         self.convert_to_rgb = convert_to_rgb  # False
         self.crop = crop  # None
@@ -67,7 +66,6 @@ class BatlPadFile(PadFile):
                       extension=extension,
                       modality=self.stream_type, # TODO: this parameter is currently missing in bob.db.batl, add it there
                       reference_stream_type=self.reference_stream_type,
-                      data_format_config=self.data_format_config,
                       warp_to_reference=self.warp_to_reference,
                       convert_to_rgb=self.convert_to_rgb,
                       crop=self.crop,
@@ -247,7 +245,6 @@ class BatlPadDatabase(PadDatabase):
                              extension=self.original_extension,
                              modality="color", # TODO: this parameter is currently missing in bob.db.batl, add it there
                              reference_stream_type="color",
-                             data_format_config=load_data_config(pkg_resources.resource_filename('batl.utils', 'config/idiap_hdf5_data_config.json')),
                              warp_to_reference=False,
                              convert_to_rgb=False,
                              crop=None,
