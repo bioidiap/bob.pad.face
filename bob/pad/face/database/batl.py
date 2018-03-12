@@ -232,7 +232,7 @@ class BatlPadDatabase(PadDatabase):
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
 
-        files = self.db.objects(protocol=protocol, groups=groups, purposes=purposes **kwargs)
+        files = self.db.objects(protocol=protocol, groups=groups, purposes=purposes, **kwargs)
 
         files = [BatlPadFile(f, stream_type, max_frames) for f in files]
         return files
