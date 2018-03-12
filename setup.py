@@ -63,6 +63,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd:database',
             'aggregated-db = bob.pad.face.config.aggregated_db:database',
             'mifs = bob.pad.face.config.mifs:database',
+            'batl-db = bob.pad.face.config.batl_db:database',
         ],
 
         # registered configurations:
@@ -73,6 +74,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'aggregated-db = bob.pad.face.config.aggregated_db',
             'mifs = bob.pad.face.config.mifs',
+            'batl-db = bob.pad.face.config.batl_db',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
