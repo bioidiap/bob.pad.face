@@ -37,5 +37,5 @@ guillaume = Grid(
     number_of_preprocessing_jobs=64,
     preprocessing_queue='4G',
     number_of_extraction_jobs=64,
-    extraction_queue='8G',
+    extraction_queue='4G',
 )
