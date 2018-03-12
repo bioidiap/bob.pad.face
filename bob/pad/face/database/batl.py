@@ -270,7 +270,10 @@ class BatlPadDatabase(PadDatabase):
 
             if self.annotations_temp_dir: # if directory is not an empty string
 
-                with open(file_path, 'w') as json_file:
+                if not os.path.exists( os.path.split(file_path)[0] ):
+                    os.makedirs( os.path.split(file_path)[0] )
+
+                with open(file_path, 'w+') as json_file:
 
                     json_file.write(json.dumps(annotations))
 
