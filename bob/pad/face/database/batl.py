@@ -283,6 +283,10 @@ class BatlPadDatabase(PadDatabase):
 
                 annotations = json.load(json_file)
 
+        if not annotations: # if dictionary is empty
+
+            return None
+
         return annotations
 
 
