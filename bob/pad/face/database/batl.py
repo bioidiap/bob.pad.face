@@ -64,6 +64,8 @@ class BatlPadFile(PadFile):
 
     def load(self, directory=None, extension='.hdf5', frame_selector=FrameSelector(selection_style='all')):
 
+        print (self.f.path)
+
         data = self.f.load(directory=directory,
                            extension=extension,
                            modality=self.stream_type, # TODO: this parameter is currently missing in bob.db.batl, add it there

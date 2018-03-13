@@ -64,6 +64,9 @@ setup(
             'aggregated-db = bob.pad.face.config.aggregated_db:database',
             'mifs = bob.pad.face.config.mifs:database',
             'batl-db = bob.pad.face.config.batl_db:database',
+            'batl-db-infrared = bob.pad.face.config.batl_db_infrared:database',
+            'batl-db-depth = bob.pad.face.config.batl_db_depth:database',
+            'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
         ],
 
         # registered configurations:
@@ -75,6 +78,9 @@ setup(
             'aggregated-db = bob.pad.face.config.aggregated_db',
             'mifs = bob.pad.face.config.mifs',
             'batl-db = bob.pad.face.config.batl_db',
+            'batl-db-infrared = bob.pad.face.config.batl_db_infrared',
+            'batl-db-depth = bob.pad.face.config.batl_db_depth',
+            'batl-db-thermal = bob.pad.face.config.batl_db_thermal',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
@@ -90,6 +96,7 @@ setup(
 
             # baselines using LR:
             'qm-lr = bob.pad.face.config.qm_lr',  # this pipe-line can be used both for individual and Aggregated databases.
+            'lbp-lr-batl-D-T-IR = bob.pad.face.config.lbp_lr_batl_D_T_IR',  # this pipe-line can be used both for BATL databases, Depth, Thermal and Infrared channels.
 
             # baselines using GMM:
             'qm-one-class-gmm = bob.pad.face.config.qm_one_class_gmm',  # this pipe-line can be used both for individual and Aggregated databases.

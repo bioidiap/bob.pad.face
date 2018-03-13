@@ -14,7 +14,7 @@ ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 
 ANNOTATIONS_TEMP_DIR = "/idiap/temp/onikisins/project/ODIN/experiment_data/pad_experiments_using_bob_py36/batl_db/annotations/"
 
-PROTOCOL = 'nowig-color-50'
+PROTOCOL = 'nowig-infrared-50'
 
 database = BatlPadDatabase(
     protocol=PROTOCOL,
