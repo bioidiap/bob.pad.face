@@ -64,6 +64,7 @@ setup(
             'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
             'mifs = bob.pad.face.config.database.mifs:database',
             'maskattack = bob.pad.face.config.database.maskattack:database',
+            'batl = bob.pad.face.config.database.batl:database',
         ],
 
         # registered configurations:

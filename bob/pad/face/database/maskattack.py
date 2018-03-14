@@ -74,7 +74,7 @@ class MaskAttackPadDatabase(PadDatabase):
 
     def __init__(
             self,
-            protocol=None,  # grandtest is the default protocol for this database
+            protocol=None,  
             original_directory=None,
             original_extension='.avi',
             **kwargs):
@@ -101,7 +101,7 @@ class MaskAttackPadDatabase(PadDatabase):
         # Since the high level API expects different group names than what the low
         # level API offers, you need to convert them when necessary
         self.low_level_group_names = (
-            'world', 'devel',
+            'world', 'dev',
             'test')  # group names in the low-level database interface
         self.high_level_group_names = (
             'train', 'dev',
@@ -164,7 +164,28 @@ class MaskAttackPadDatabase(PadDatabase):
             groups, self.low_level_group_names, self.high_level_group_names)
         # Since this database was designed for PAD experiments, nothing special
         # needs to be done here.
-        files = self.db.objects(groups=groups, **kwargs)
+
+        print("Objects method called with groups = {}, protocol = {}, purposes = {}, model_ids = {}".format(groups, protocol, purposes, model_ids))
+        #print("Kwargs -> {}".format(**kwargs))
+        #print("Translated groups = {}".frima)
+        
+        # for training
+
+        # for dev
+
+        # for eval
+        lowlevel_purposes = []
+        if purposes == 'real':
+          lowlevel_purposes = ['trainReal', 'probeReal', 'classifyReal']
+        else:
+          lowlevel_purposes = ['trainMask', 'probeMask', 'classifyMask']
+          
+        #if groups == ['world']:
+        #    lowlevel_purposes = ['trainMask']
+        #  if groups == ['world']:
+        #    lowlevel_purposes = ['trainMask']
+        #print(lowlevel_purposes)
+        files = self.db.objects(sets=groups, purposes=lowlevel_purposes, **kwargs)
 
         files = [MaskAttackPadFile(f) for f in files]
 

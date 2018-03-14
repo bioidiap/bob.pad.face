@@ -5,6 +5,7 @@ from .msu_mfsd import MsuMfsdPadDatabase
 from .aggregated_db import AggregatedDbPadDatabase
 from .mifs import MIFSPadDatabase
 from .maskattack import MaskAttackPadDatabase
+from .batl import BatlPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it

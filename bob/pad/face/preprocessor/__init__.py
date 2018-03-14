@@ -6,6 +6,7 @@ from .VideoSparseCoding import VideoSparseCoding
 from .Li import Li
 from .Chrom import Chrom
 from .SSR import SSR
+from .PPGSecure import PPGSecure
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
