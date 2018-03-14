@@ -63,6 +63,7 @@ setup(
             'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
             'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
             'mifs = bob.pad.face.config.database.mifs:database',
+            'maskattack = bob.pad.face.config.database.maskattack:database',
         ],
 
         # registered configurations:
