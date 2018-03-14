@@ -16,6 +16,8 @@ import json
 
 import os
 
+import bob.io.base
+
 class BatlPadFile(PadFile):
     """
     A high level implementation of the File class for the BATL
@@ -94,8 +96,8 @@ class BatlPadDatabase(PadDatabase):
 
     def __init__(
             self,
-            # grandtest is the default protocol for this database
-            protocol='grandtest',
+            # nowig is the selected default protocol
+            protocol='nowig',
             original_directory=rc['bob.db.batl.directory'],
             original_extension='.h5',
             annotations_temp_dir="",
@@ -110,9 +112,9 @@ class BatlPadDatabase(PadDatabase):
             setup for this database. Also a "complex" protocols can be
             parsed.
             For example:
-            "grandtest-color-5" - grandtest protocol, color data only, use 5 first frames.
-            "grandtest-depth-5" - grandtest protocol, depth data only, use 5 first frames.
-            "grandtest-color" - grandtest protocol, depth data only, use all frames.
+            "nowig-color-5" - nowig protocol, color data only, use 5 first frames.
+            "nowig-depth-5" - nowig protocol, depth data only, use 5 first frames.
+            "nowig-color" - nowig protocol, depth data only, use all frames.
             See the ``parse_protocol`` method of this class.
 
         original_directory : str
@@ -165,14 +167,14 @@ class BatlPadDatabase(PadDatabase):
         """
         Parse the protocol name, which is give as a string.
         An example of protocols it can parse:
-        "grandtest-color-5" - grandtest protocol, color data only, use 5 first frames.
-        "grandtest-depth-5" - grandtest protocol, depth data only, use 5 first frames.
-        "grandtest-color" - grandtest protocol, depth data only, use all frames.
+        "nowig-color-5" - nowig protocol, color data only, use 5 first frames.
+        "nowig-depth-5" - nowig protocol, depth data only, use 5 first frames.
+        "nowig-color" - nowig protocol, depth data only, use all frames.
 
         **Parameters:**
 
         ``protocol`` : str
-            Protocol name to be parsed. Example: "grandtest-depth-5" .
+            Protocol name to be parsed. Example: "nowig-depth-5" .
 
         **Returns:**
 
@@ -231,6 +233,10 @@ class BatlPadDatabase(PadDatabase):
             A list of BATLPadFile objects.
         """
 
+        if protocol is None:
+
+            protocol = self.protocol
+
         protocol, stream_type, max_frames = self.parse_protocol(protocol)
 
         # Convert group names to low-level group names here.
@@ -272,8 +278,7 @@ class BatlPadDatabase(PadDatabase):
 
             if self.annotations_temp_dir: # if directory is not an empty string
 
-                if not os.path.exists( os.path.split(file_path)[0] ):
-                    os.makedirs( os.path.split(file_path)[0] )
+                bob.io.base.create_directories_safe(directory=os.path.split(file_path)[0], dryrun=False)
 
                 with open(file_path, 'w+') as json_file:
 
