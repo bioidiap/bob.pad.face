@@ -5,7 +5,7 @@
 from bob.pad.base.database import PadDatabase, PadFile
 from bob.bio.video import FrameSelector
 from bob.extension import rc
-from bob.db.batl.batl_config import BATL_CONFIG
+# from bob.db.batl.batl_config import BATL_CONFIG
 
 import pkg_resources
 from batl.utils.data import load_data_config
