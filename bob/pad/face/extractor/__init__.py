@@ -10,6 +10,7 @@ from .FreqFeatures import FreqFeatures
 from .NormalizeLength import NormalizeLength
 from .FFTFeatures import FFTFeatures 
 from .LTSS import LTSS 
+from .PPGSecure import PPGSecure 
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
