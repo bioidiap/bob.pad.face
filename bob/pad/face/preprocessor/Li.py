@@ -46,7 +46,7 @@ class Li(Preprocessor):
   """
   def __init__(self, indent = 10, lambda_ = 300, window = 3, framerate = 25, bp_order = 32, debug=False, **kwargs):
 
-    super(Li, self).__init__()
+    super(Li, self).__init__(**kwargs)
     
     self.indent = indent
     self.lambda_ = lambda_
@@ -55,7 +55,7 @@ class Li(Preprocessor):
     self.bp_order = bp_order
     self.debug = debug
 
-  def __call__(self, frames, annotations):
+  def __call__(self, frames, annotations=None):
     """
     Compute the pulse signal for the given frame sequence
 
@@ -81,7 +81,7 @@ class Li(Preprocessor):
     face_color = numpy.zeros((nb_frames, 3), dtype='float64')
 
     # build the bandpass filter one and for all
-    bandpass_filter = build_bandpass_filter(self.framerate, self.bp_order, False)
+    bandpass_filter = build_bandpass_filter(self.framerate, self.bp_order, plot=False)
 
     # landmarks detection
     detector = bob.ip.dlib.DlibLandmarkExtraction()
