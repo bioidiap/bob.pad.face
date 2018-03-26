@@ -404,6 +404,16 @@ class FaceCropAlign(Preprocessor):
     ``min_face_size`` : :py:class:`int`
         The minimal size of the face in pixels to be processed.
         Default: None.
+
+    ``normalization_function`` : function
+        Function to be applied to the input image before cropping and
+        normalization. For  example, type-casting to uint8 format and
+        data normalization, using facial region only (annotations).
+        The expected signature of the function:
+        ``normalization_function(image, annotations, **kwargs)``.
+
+    ``normalization_function_kwargs`` : :py:class:`dict`
+        Key-word arguments for the ``normalization_function``.
     """
 
     # ==========================================================================
