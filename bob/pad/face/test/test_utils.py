@@ -9,6 +9,10 @@ image = padfile.load(Database().original_directory,
                      Database().original_extension)[0][1]
 
 
+def dummy_cropper(frame, annotations=None):
+    return frame
+
+
 def _annotations(self, padfile):
     return {'0': {'topleft': (0, 0), 'bottomright': self.frame_shape}}
 
@@ -24,7 +28,7 @@ def test_yield_frames():
 @raises(ValueError)
 def test_yield_faces_1():
     database = Database()
-    for face in yield_faces(database, padfile):
+    for face in yield_faces(database, padfile, dummy_cropper):
         pass
 
 
@@ -32,7 +36,8 @@ def test_yield_faces_2():
     database = Database()
     database.annotations = MethodType(
         _annotations, database)
-    for face in yield_faces(database, padfile):
+    assert len(list(yield_faces(database, padfile, dummy_cropper)))
+    for face in yield_faces(database, padfile, dummy_cropper):
         assert face.ndim == 2
         assert face.shape == database.frame_shape
 

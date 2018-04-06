@@ -1,6 +1,9 @@
+from bob.bio.face.annotator import min_face_size_validator
+from bob.bio.video.annotator import normalize_annotations
 from bob.io.video import reader
 from bob.ip.base import scale, block, block_output_shape
 from bob.ip.facedetect import bounding_box_from_annotation
+from functools import partial
 import numpy
 import six
 
@@ -19,8 +22,7 @@ def frames(path):
         A frame of the video. The size is (3, 240, 320).
     """
     video = reader(path)
-    for frame in video:
-        yield frame
+    return iter(video)
 
 
 def number_of_frames(path):
@@ -56,55 +58,21 @@ def yield_frames(paddb, padfile):
     :any:`numpy.array`
         Frames of the PAD file one by one.
     """
-    frames = paddb.frames(padfile)
-    for image in frames:
-        yield image
+    return paddb.frames(padfile)
 
 
-def normalize_detections(detections, nframes, max_age=-1, faceSizeFilter=0):
-    """Calculates a list of "nframes" with the best possible detections taking
-    into consideration the ages of the last valid detection on the detections
-    list.
-
-    Parameters
-    ----------
-    detections : dict
-        A dictionary containing keys that indicate the frame number of the
-        detection and a value which is a BoundingBox object.
-
-    nframes : int
-        An integer indicating how many frames has the video that will be
-        analyzed.
-
-    max_age : :obj:`int`, optional
-        An integer indicating for a how many frames a detected face is valid if
-        no detection occurs after such frame. A value of -1 == forever
-
-    faceSizeFilter : :obj:`int`, optional
-        The minimum required size of face height (in pixels)
-
-    Yields
-    ------
-    object
-        The bounding box or None.
-    """
-    curr = None
-    age = 0
-
-    for k in range(nframes):
-        if detections and k in detections and \
-                (detections[k].size[0] > faceSizeFilter):
-            curr = detections[k]
-            age = 0
-        elif max_age < 0 or age < max_age:
-            age += 1
-        else:  # no detections and age is larger than maximum allowed
-            curr = None
-
-        yield curr
+def bbx_cropper(frame, annotations):
+    bbx = bounding_box_from_annotation(**annotations)
+    return frame[..., bbx.top:bbx.bottom, bbx.left:bbx.right]
 
 
-def yield_faces(database, padfile, **kwargs):
+def min_face_size_normalizer(annotations, max_age=15, **kwargs):
+    return normalize_annotations(annotations,
+                                 partial(min_face_size_validator, **kwargs),
+                                 max_age=max_age)
+
+
+def yield_faces(database, padfile, cropper, normalizer=None):
     """Yields face images of a padfile. It uses the annotations from the
     database. The annotations are further normalized.
 
@@ -115,8 +83,12 @@ def yield_faces(database, padfile, **kwargs):
         `frames` method.
     padfile : :any:`bob.pad.base.database.PadFile`
         The padfile to return the faces.
-    **kwargs
-        They are passed to :any:`normalize_detections`.
+    cropper : callable
+        A face image cropper that works with database's annotations.
+    normalizer : callable
+        If not None, it should be a function that takes all the annotations of
+        the whole video and yields normalized annotations frame by frame. It
+        should yield same as ``annotations.items()``.
 
     Yields
     ------
@@ -129,20 +101,25 @@ def yield_faces(database, padfile, **kwargs):
         If the database returns None for annotations.
     """
     frames_gen = database.frames(padfile)
-    nframes = database.number_of_frames(padfile)
+
     # read annotation
-    annots = database.annotations(padfile)
-    if annots is None:
+    annotations = database.annotations(padfile)
+    if annotations is None:
         raise ValueError("No annotations were returned.")
-    # normalize annotations
-    annots = {int(k): bounding_box_from_annotation(**v)
-              for k, v in six.iteritems(annots)}
-    bounding_boxes = normalize_detections(annots, nframes, **kwargs)
-    for frame, bbx in six.moves.zip(frames_gen, bounding_boxes):
-        if bbx is None:
+
+    if normalizer is None:
+        annotations_gen = annotations.items()
+    else:
+        annotations_gen = normalizer(annotations)
+
+    # normalize annotations and crop faces
+    for _, annot in annotations_gen:
+        frame = six.next(frames_gen)
+        if annot is None:
             continue
-        face = frame[..., bbx.top:bbx.bottom, bbx.left:bbx.right]
-        yield face
+        face = cropper(frame, annotations=annot)
+        if face is not None:
+            yield face
 
 
 def scale_face(face, face_height, face_width=None):

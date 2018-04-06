@@ -73,7 +73,6 @@ Utilities
 .. autosummary::
    bob.pad.face.utils.blocks
    bob.pad.face.utils.frames
-   bob.pad.face.utils.normalize_detections
    bob.pad.face.utils.number_of_frames
    bob.pad.face.utils.scale_face
    bob.pad.face.utils.yield_faces
