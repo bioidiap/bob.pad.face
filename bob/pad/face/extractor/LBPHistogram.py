@@ -2,7 +2,7 @@ from __future__ import division
 from bob.bio.base.extractor import Extractor
 import bob.bio.video
 import bob.ip.base
-import numpy
+import numpy as np
 
 
 class LBPHistogram(Extractor):
@@ -24,6 +24,12 @@ class LBPHistogram(Extractor):
         computed (4, 8, 16)
     circ : bool
         True if circular LBP is needed, False otherwise
+    n_hor : int
+        Number of blocks horizontally for spatially-enhanced LBP/MCT
+        histograms. Default: 1
+    n_vert
+        Number of blocks vertically for spatially-enhanced LBP/MCT
+        histograms. Default: 1
 
     Attributes
     ----------
@@ -40,7 +46,9 @@ class LBPHistogram(Extractor):
                  rad=1,
                  neighbors=8,
                  circ=False,
-                 dtype=None):
+                 dtype=None,
+                 n_hor=1,
+                 n_vert=1):
 
         super(LBPHistogram, self).__init__(
             lbptype=lbptype,
@@ -49,7 +57,8 @@ class LBPHistogram(Extractor):
             neighbors=neighbors,
             circ=circ,
             dtype=dtype,
-        )
+            n_hor=n_hor,
+            n_vert=n_vert)
 
         elbps = {
             'regular': 'regular',
@@ -117,9 +126,12 @@ class LBPHistogram(Extractor):
 
         self.dtype = dtype
         self.lbp = lbp
+        self.n_hor = n_hor
+        self.n_vert = n_vert
 
-    def __call__(self, data):
-        """Extracts LBP histograms from a gray-scale image.
+    def comp_block_histogram(self, data):
+        """
+        Extracts LBP/MCT histograms from a gray-scale image/block.
 
         Takes data of arbitrary dimensions and linearizes it into a 1D vector;
         Then, calculates the histogram.
@@ -135,16 +147,47 @@ class LBPHistogram(Extractor):
         1D :py:class:`numpy.ndarray`
             The extracted feature vector, of the desired ``dtype`` (if
             specified)
-
         """
-        assert isinstance(data, numpy.ndarray)
+        assert isinstance(data, np.ndarray)
 
         # allocating the image with lbp codes
-        lbpimage = numpy.ndarray(self.lbp.lbp_shape(data), 'uint16')
+        lbpimage = np.ndarray(self.lbp.lbp_shape(data), 'uint16')
         self.lbp(data, lbpimage)  # calculating the lbp image
         hist = bob.ip.base.histogram(lbpimage, (0, self.lbp.max_label - 1),
                                      self.lbp.max_label)
         hist = hist / sum(hist)  # histogram normalization
         if self.dtype is not None:
             hist = hist.astype(self.dtype)
+        return hist
+
+    def __call__(self, data):
+        """
+        Extracts spatially-enhanced LBP/MCT histograms from a gray-scale image.
+
+        Parameters
+        ----------
+        data : numpy.ndarray
+            The preprocessed data to be transformed into one vector.
+
+        Returns
+        -------
+        1D :py:class:`numpy.ndarray`
+            The extracted feature vector, of the desired ``dtype`` (if
+            specified)
+
+        """
+
+        # Make sure the data can be split into equal blocks:
+        row_max = int(data.shape[0] / self.n_vert) * self.n_vert
+        col_max = int(data.shape[1] / self.n_hor) * self.n_hor
+        data = data[:row_max, :col_max]
+
+        blocks = [sub_block for block in np.hsplit(data, self.n_hor) for sub_block in np.vsplit(block, self.n_vert)]
+
+        hists = [self.comp_block_histogram(block) for block in blocks]
+
+        hist = np.hstack(hists)
+
+        hist = hist / len(blocks)  # histogram normalization
+
         return hist
