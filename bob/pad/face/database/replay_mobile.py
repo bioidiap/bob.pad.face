@@ -6,6 +6,7 @@ from bob.bio.video import FrameSelector
 from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
 from bob.pad.face.utils import frames, number_of_frames
+from bob.db.base.annotations import read_annotation_file
 import numpy
 from bob.extension import rc
 # documentation imports
@@ -88,18 +89,20 @@ class ReplayMobilePadDatabase(PadDatabase):
 
     def __init__(
             self,
-            # grandtest is the default protocol for this database
             protocol='grandtest',
             original_directory=rc['bob.db.replaymobile.directory'],
             original_extension='.mov',
+            annotation_directory=rc['bob.db.replaymobile.annotation_dir'],
+            annotation_extension='.json',
+            annotation_type='json',
             **kwargs):
         """
         Parameters
         ----------
-
         protocol : str or None
             The name of the protocol that defines the default experimental
-            setup for this database.
+            setup for this database. ``grandtest`` is the default protocol for
+            this database.
 
         original_directory : str
             The directory where the original data of the database are stored.
@@ -107,7 +110,14 @@ class ReplayMobilePadDatabase(PadDatabase):
         original_extension : str
             The file name extension of the original data.
 
-        kwargs
+        annotation_directory : str
+            If provided, the annotations will be read from this directory
+            instead of the default annotations that are provided.
+
+        annotation_extension : str
+            The extension of annotations when annotation_extension is provided.
+
+        **kwargs
             The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
             base class constructor.
         """
@@ -131,6 +141,9 @@ class ReplayMobilePadDatabase(PadDatabase):
             protocol=protocol,
             original_directory=original_directory,
             original_extension=original_extension,
+            annotation_directory=annotation_directory,
+            annotation_extension=annotation_extension,
+            annotation_type=annotation_type,
             **kwargs)
 
     @property
@@ -200,6 +213,9 @@ class ReplayMobilePadDatabase(PadDatabase):
         for each video frame. The annotations are returned as dictionary of
         dictionaries.
 
+        If ``self.annotation_directory`` is not None, it will read the
+        annotations from there.
+
         Parameters
         ----------
         f : :any:`ReplayMobilePadFile`
@@ -215,6 +231,14 @@ class ReplayMobilePadDatabase(PadDatabase):
             is the dictionary defining the coordinates of the face bounding box
             in frame N.
         """
+
+        if self.annotation_directory is not None:
+            # return the external annotations
+            annotations = read_annotation_file(
+                f.make_path(self.annotation_directory,
+                            self.annotation_extension),
+                self.annotation_type)
+            return annotations
 
         # numpy array containing the face bounding box data for each video
         # frame, returned data format described in the f.bbx() method of the
