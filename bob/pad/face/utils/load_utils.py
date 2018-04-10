@@ -4,6 +4,7 @@ from bob.io.video import reader
 from bob.ip.base import scale, block, block_output_shape
 from bob.ip.color import rgb_to_yuv, rgb_to_hsv
 from bob.ip.facedetect import bounding_box_from_annotation
+from collections import OrderedDict
 from functools import partial
 import numpy
 import six
@@ -108,14 +109,12 @@ def yield_faces(database, padfile, cropper, normalizer=None):
     if annotations is None:
         raise ValueError("No annotations were returned.")
 
-    if normalizer is None:
-        annotations_gen = annotations.items()
-    else:
-        annotations_gen = normalizer(annotations)
+    if normalizer is not None:
+        annotations = OrderedDict(normalizer(annotations))
 
     # normalize annotations and crop faces
-    for _, annot in annotations_gen:
-        frame = six.next(frames_gen)
+    for frame_id, frame in enumerate(frames_gen):
+        annot = annotations.get(str(frame_id), None)
         if annot is None:
             continue
         face = cropper(frame, annotations=annot)
