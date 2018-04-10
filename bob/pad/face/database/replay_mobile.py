@@ -92,7 +92,7 @@ class ReplayMobilePadDatabase(PadDatabase):
             protocol='grandtest',
             original_directory=rc['bob.db.replaymobile.directory'],
             original_extension='.mov',
-            annotation_directory=rc['bob.db.replaymobile.annotation_dir'],
+            annotation_directory=None,
             annotation_extension='.json',
             annotation_type='json',
             **kwargs):
