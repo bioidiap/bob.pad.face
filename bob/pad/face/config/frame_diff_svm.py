@@ -22,12 +22,10 @@ this resource.
 from ..preprocessor import FrameDifference
 
 NUMBER_OF_FRAMES = None  # process all frames
-CHECK_FACE_SIZE_FLAG = True  # Check size of the face
 MIN_FACE_SIZE = 50  # Minimal size of the face to consider
 
 preprocessor = FrameDifference(
     number_of_frames=NUMBER_OF_FRAMES,
-    check_face_size_flag=CHECK_FACE_SIZE_FLAG,
     min_face_size=MIN_FACE_SIZE)
 """
 In the preprocessing stage the frame differences are computed for both facial and non-facial/background
