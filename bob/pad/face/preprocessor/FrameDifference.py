@@ -19,11 +19,13 @@ import bob.ip.base
 
 import bob.ip.color
 
+import bob.ip.facedetect
+
 #==============================================================================
 # Main body:
 
 
-class FrameDifference(Preprocessor, object):
+class FrameDifference(Preprocessor):
     """
     This class is designed to compute frame differences for both facial and
     background regions. The constraint of minimal size of the face can be
@@ -39,10 +41,6 @@ class FrameDifference(Preprocessor, object):
         The number of frames to extract the frame differences from.
         If ``None``, all frames of the input video are used. Default: ``None``.
 
-    ``check_face_size_flag`` : :py:class:`bool`
-        If True, only return the frames containing faces of the size above the
-        specified threshold ``min_face_size``. Default: ``False``.
-
     ``min_face_size`` : :py:class:`int`
         The minimal size of the face in pixels. Only valid when ``check_face_size_flag``
         is set to True. Default: 50.
@@ -50,16 +48,15 @@ class FrameDifference(Preprocessor, object):
 
     def __init__(self,
                  number_of_frames=None,
-                 check_face_size_flag=False,
-                 min_face_size=50):
+                 min_face_size=50,
+                 **kwargs):
 
         super(FrameDifference, self).__init__(
             number_of_frames=number_of_frames,
-            check_face_size_flag=check_face_size_flag,
-            min_face_size=min_face_size)
+            min_face_size=min_face_size,
+            **kwargs)
 
         self.number_of_frames = number_of_frames
-        self.check_face_size_flag = check_face_size_flag
         self.min_face_size = min_face_size
 
     #==========================================================================
@@ -148,13 +145,17 @@ class FrameDifference(Preprocessor, object):
         else:
 
             y1 = annotations['topleft'][0] - border
-            if y1 < 0: y1 = 0
+            if y1 < 0:
+                y1 = 0
             x1 = annotations['topleft'][1] - border
-            if x1 < 0: x1 = 0
+            if x1 < 0:
+                x1 = 0
             y2 = y1 + height + (2 * border)
-            if y2 > full_diff.shape[0]: y2 = full_diff.shape[0]
+            if y2 > full_diff.shape[0]:
+                y2 = full_diff.shape[0]
             x2 = x1 + width + (2 * border)
-            if x2 > full_diff.shape[1]: x2 = full_diff.shape[1]
+            if x2 > full_diff.shape[1]:
+                x2 = full_diff.shape[1]
             full = full_diff[y1:y2, x1:x2].sum()
             full_size = full_diff[y1:y2, x1:x2].size
 
@@ -167,7 +168,7 @@ class FrameDifference(Preprocessor, object):
         bg = full - face
 
         normalization = float(full_size - face_diff.size)
-        if normalization < 1:  #prevents zero division
+        if normalization < 1:  # prevents zero division
             bg = 0.0
         else:
             bg /= float(full_size - face_diff.size)
@@ -217,8 +218,15 @@ class FrameDifference(Preprocessor, object):
 
         for idx in range(0, len(annotations)):  # idx - frame index
 
-            frame_annotations = annotations[str(
-                idx)]  # annotations for particular frame
+            # annotations for particular frame
+            frame_annotations = annotations[str(idx)]
+
+            # Estimate bottomright and topleft if they are not available:
+            if 'topleft' not in frame_annotations:
+                bbx = bob.ip.facedetect.bounding_box_from_annotation(
+                    **frame_annotations)
+                frame_annotations['topleft'] = bbx.topleft
+                frame_annotations['bottomright'] = bbx.bottomright
 
             # size of current face
             face_size = np.min(
@@ -357,7 +365,7 @@ class FrameDifference(Preprocessor, object):
         cleaned_annotations = {}
 
         for idx, valid_frame_num in enumerate(valid_frames):
-            ## valid_frame_num - is the number of the original frame having annotations
+            # valid_frame_num - is the number of the original frame having annotations
 
             cleaned_annotations[str(idx)] = annotations[str(
                 valid_frame_num)]  # correct the frame numbers
@@ -375,8 +383,7 @@ class FrameDifference(Preprocessor, object):
         This method calls the ``comp_face_bg_diff`` function of this class
         computing the frame differences for both facial and background regions.
         The frame differences are computed for selected frames, which are returned
-        by ``check_face_size`` function of this class. This ``check_face_size`` is
-        done only if ``check_face_size_flag = True``.
+        by ``check_face_size`` function of this class.
 
         **Parameters:**
 
@@ -400,14 +407,12 @@ class FrameDifference(Preprocessor, object):
 
         if len(frames) != len(annotations):  # if some annotations are missing
 
-            ## Select only annotated frames:
+            # Select only annotated frames:
             frames, annotations = self.select_annotated_frames(
                 frames, annotations)
 
-        if self.check_face_size_flag:
-
-            selected_frames, selected_annotations = self.check_face_size(
-                frames, annotations, self.min_face_size)
+        selected_frames, selected_annotations = self.check_face_size(
+            frames, annotations, self.min_face_size)
 
         diff = self.comp_face_bg_diff(
             frames=selected_frames,
