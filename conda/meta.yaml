@@ -20,14 +20,10 @@ requirements:
   host:
     - python {{ python }}
     - setuptools {{ setuptools }}
-    - six {{ six }}
-    - sphinx {{ sphinx }}
-    - numpy {{ numpy }}
     - bob.extension
     - bob.bio.base
     - bob.io.base
     - bob.ip.base
-    - scikit-learn
     - bob.pad.base
     - bob.bio.face
     - bob.bio.video
@@ -41,7 +37,6 @@ requirements:
     - python
     - setuptools
     - six
-    - sphinx
     - numpy
     - scikit-learn
 
