@@ -5,7 +5,6 @@ from bob.ip.base import scale, block, block_output_shape
 from bob.ip.facedetect import bounding_box_from_annotation
 from functools import partial
 import numpy
-import six
 
 
 def frames(path):
@@ -191,3 +190,18 @@ def blocks(data, block_size, block_overlap=(0, 0)):
     else:
         raise ValueError("Unknown data dimension {}".format(data.ndim))
     return output
+
+
+def the_giant_video_loader(paddb, padfile,
+                           region='whole', scaling_factor=None, cropper=None,
+                           normalizer=None):
+    generator = None
+    if region == 'whole':
+        generator = yield_frames(paddb, padfile)
+    elif region == 'crop':
+        generator = yield_faces(
+            paddb, padfile, cropper=cropper, normalizer=normalizer)
+    if scaling_factor is not None:
+        generator = (scale(frame, scaling_factor)
+                     for frame in generator)
+    return generator
