@@ -103,7 +103,8 @@ setup(
 
             # baselines using LR:
             'qm-lr = bob.pad.face.config.qm_lr',  # this pipe-line can be used both for individual and Aggregated databases.
-            'lbp-lr-batl-D-T-IR = bob.pad.face.config.lbp_lr_batl_D_T_IR',  # this pipe-line can be used both for BATL databases, Depth, Thermal and Infrared channels.
+            'lbp-lr-batl-D-T-IR = bob.pad.face.config.lbp_lr_batl_D_T_IR',  # this pipe-line can be used for BATL databases: Depth, Thermal and Infrared channels.
+            'lbp-svm-batl-D-T-IR = bob.pad.face.config.batl_configs.lbp_svm_batl_D_T_IR',  # this pipe-line can be used for BATL databases: Depth, Thermal and Infrared channels.
 
             # baselines using GMM:
             'qm-one-class-gmm = bob.pad.face.config.qm_one_class_gmm',  # this pipe-line can be used both for individual and Aggregated databases.
@@ -122,6 +123,18 @@ setup(
             'video-lbp-histogram-extractor-n8r1-uniform = bob.pad.face.config.extractor.video_lbp_histogram:video_lbp_histogram_extractor_n8r1_uniform',
             'video-quality-measure-galbally-msu = bob.pad.face.config.extractor.video_quality_measure:video_quality_measure_galbally_msu',
             'frame-diff-feat-extr-w20-over0 = bob.pad.face.config.extractor.frame_diff_features:frame_diff_feat_extr_w20_over0',
+            'lbp-histogram-n8r1-uniform-1x1 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_uniform_1x1',
+            'lbp-histogram-n8r1-modified-1x1 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_modified_1x1',
+            'lbp-histogram-n8r1-uniform-2x2 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_uniform_2x2',
+            'lbp-histogram-n8r1-modified-2x2 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_modified_2x2',
+            'lbp-histogram-n8r1-uniform-3x3 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_uniform_3x3',
+            'lbp-histogram-n8r1-modified-3x3 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_modified_3x3',
+            'lbp-histogram-n8r1-uniform-4x4 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_uniform_4x4',
+            'lbp-histogram-n8r1-modified-4x4 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_modified_4x4',
+            'lbp-histogram-n8r1-uniform-3x2 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_uniform_3x2',
+            'lbp-histogram-n8r1-modified-3x2 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_modified_3x2',
+            'lbp-histogram-n8r1-uniform-4x2 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_uniform_4x2',
+            'lbp-histogram-n8r1-modified-4x2 = bob.pad.face.config.extractor.video_lbp_histogram:lbp_histogram_n8r1_modified_4x2',
         ],
 
         # registered algorithms:
@@ -134,6 +147,7 @@ setup(
         # registered grid configurations:
         'bob.pad.grid': [
             'idiap = bob.pad.face.config.grid:idiap',
+            'idiap-big = bob.pad.face.config.grid:idiap_big',
             'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
             'small = bob.pad.face.config.grid:small',
         ],
