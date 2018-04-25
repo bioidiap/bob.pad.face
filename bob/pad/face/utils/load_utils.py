@@ -1,6 +1,10 @@
+from bob.bio.face.annotator import min_face_size_validator
+from bob.bio.video.annotator import normalize_annotations
 from bob.io.video import reader
 from bob.ip.base import scale, block, block_output_shape
+from bob.ip.color import rgb_to_yuv, rgb_to_hsv
 from bob.ip.facedetect import bounding_box_from_annotation
+from functools import partial
 import numpy
 import six
 
@@ -19,8 +23,7 @@ def frames(path):
         A frame of the video. The size is (3, 240, 320).
     """
     video = reader(path)
-    for frame in video:
-        yield frame
+    return iter(video)
 
 
 def number_of_frames(path):
@@ -56,55 +59,21 @@ def yield_frames(paddb, padfile):
     :any:`numpy.array`
         Frames of the PAD file one by one.
     """
-    frames = paddb.frames(padfile)
-    for image in frames:
-        yield image
+    return paddb.frames(padfile)
 
 
-def normalize_detections(detections, nframes, max_age=-1, faceSizeFilter=0):
-    """Calculates a list of "nframes" with the best possible detections taking
-    into consideration the ages of the last valid detection on the detections
-    list.
-
-    Parameters
-    ----------
-    detections : dict
-        A dictionary containing keys that indicate the frame number of the
-        detection and a value which is a BoundingBox object.
-
-    nframes : int
-        An integer indicating how many frames has the video that will be
-        analyzed.
-
-    max_age : :obj:`int`, optional
-        An integer indicating for a how many frames a detected face is valid if
-        no detection occurs after such frame. A value of -1 == forever
-
-    faceSizeFilter : :obj:`int`, optional
-        The minimum required size of face height (in pixels)
-
-    Yields
-    ------
-    object
-        The bounding box or None.
-    """
-    curr = None
-    age = 0
-
-    for k in range(nframes):
-        if detections and k in detections and \
-                (detections[k].size[0] > faceSizeFilter):
-            curr = detections[k]
-            age = 0
-        elif max_age < 0 or age < max_age:
-            age += 1
-        else:  # no detections and age is larger than maximum allowed
-            curr = None
-
-        yield curr
+def bbx_cropper(frame, annotations):
+    bbx = bounding_box_from_annotation(**annotations)
+    return frame[..., bbx.top:bbx.bottom, bbx.left:bbx.right]
 
 
-def yield_faces(database, padfile, **kwargs):
+def min_face_size_normalizer(annotations, max_age=15, **kwargs):
+    return normalize_annotations(annotations,
+                                 partial(min_face_size_validator, **kwargs),
+                                 max_age=max_age)
+
+
+def yield_faces(database, padfile, cropper, normalizer=None):
     """Yields face images of a padfile. It uses the annotations from the
     database. The annotations are further normalized.
 
@@ -115,8 +84,12 @@ def yield_faces(database, padfile, **kwargs):
         `frames` method.
     padfile : :any:`bob.pad.base.database.PadFile`
         The padfile to return the faces.
-    **kwargs
-        They are passed to :any:`normalize_detections`.
+    cropper : callable
+        A face image cropper that works with database's annotations.
+    normalizer : callable
+        If not None, it should be a function that takes all the annotations of
+        the whole video and yields normalized annotations frame by frame. It
+        should yield same as ``annotations.items()``.
 
     Yields
     ------
@@ -129,20 +102,25 @@ def yield_faces(database, padfile, **kwargs):
         If the database returns None for annotations.
     """
     frames_gen = database.frames(padfile)
-    nframes = database.number_of_frames(padfile)
+
     # read annotation
-    annots = database.annotations(padfile)
-    if annots is None:
+    annotations = database.annotations(padfile)
+    if annotations is None:
         raise ValueError("No annotations were returned.")
-    # normalize annotations
-    annots = {int(k): bounding_box_from_annotation(**v)
-              for k, v in six.iteritems(annots)}
-    bounding_boxes = normalize_detections(annots, nframes, **kwargs)
-    for frame, bbx in six.moves.zip(frames_gen, bounding_boxes):
-        if bbx is None:
+
+    if normalizer is None:
+        annotations_gen = annotations.items()
+    else:
+        annotations_gen = normalizer(annotations)
+
+    # normalize annotations and crop faces
+    for _, annot in annotations_gen:
+        frame = six.next(frames_gen)
+        if annot is None:
             continue
-        face = frame[..., bbx.top:bbx.bottom, bbx.left:bbx.right]
-        yield face
+        face = cropper(frame, annotations=annot)
+        if face is not None:
+            yield face
 
 
 def scale_face(face, face_height, face_width=None):
@@ -214,3 +192,75 @@ def blocks(data, block_size, block_overlap=(0, 0)):
     else:
         raise ValueError("Unknown data dimension {}".format(data.ndim))
     return output
+
+
+def color_augmentation(image, channels=('rgb',)):
+    """Converts an RGB image to different color channels.
+
+    Parameters
+    ----------
+    image : numpy.array
+        The image in RGB Bob format.
+    channels : :obj:`tuple`, optional
+        List of channels to convert the image to. It can be any of ``rgb``,
+        ``yuv``, ``hsv``.
+
+    Returns
+    -------
+    numpy.array
+        The image that contains several channels:
+        ``(3*len(channels), height, width)``.
+    """
+    final_image = []
+
+    if 'rgb' in channels:
+        final_image.append(image)
+
+    if 'yuv' in channels:
+        final_image.append(rgb_to_yuv(image))
+
+    if 'hsv' in channels:
+        final_image.append(rgb_to_hsv(image))
+
+    return numpy.concatenate(final_image, axis=0)
+
+
+def _random_sample(A, size):
+    return A[numpy.random.choice(A.shape[0], size, replace=False), ...]
+
+
+def the_giant_video_loader(paddb, padfile,
+                           region='whole', scaling_factor=None, cropper=None,
+                           normalizer=None, patches=False,
+                           block_size=(96, 96), block_overlap=(0, 0),
+                           random_patches_per_frame=None, augment=None,
+                           multiple_bonafide_patches=1):
+    if region == 'whole':
+        generator = yield_frames(paddb, padfile)
+    elif region == 'crop':
+        generator = yield_faces(
+            paddb, padfile, cropper=cropper, normalizer=normalizer)
+    else:
+        raise ValueError("Invalid region value: `{}'".format(region))
+
+    if scaling_factor is not None:
+        generator = (scale(frame, scaling_factor)
+                     for frame in generator)
+    if patches:
+        if random_patches_per_frame is None:
+            generator = (
+                patch for frame in generator
+                for patch in blocks(frame, block_size, block_overlap))
+        else:
+            if padfile.attack_type is None:
+                random_patches_per_frame *= multiple_bonafide_patches
+            generator = (
+                patch for frame in generator
+                for patch in _random_sample(
+                    blocks(frame, block_size, block_overlap),
+                    random_patches_per_frame))
+
+    if augment is not None:
+        generator = (augment(frame) for frame in generator)
+
+    return generator
