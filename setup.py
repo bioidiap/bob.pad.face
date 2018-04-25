@@ -129,6 +129,11 @@ setup(
             'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
             'small = bob.pad.face.config.grid:small',
         ],
+
+        # registered ``bob pad ...`` commands
+        'bob.pad.cli': [
+            'statistics        = bob.pad.face.script.statistics:statistics',
+        ],
     },
 
     # Classifiers are important if you plan to distribute this package through
