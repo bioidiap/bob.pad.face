@@ -7,7 +7,6 @@ from bob.ip.facedetect import bounding_box_from_annotation
 from collections import OrderedDict
 from functools import partial
 import numpy
-import six
 
 
 def frames(path):
