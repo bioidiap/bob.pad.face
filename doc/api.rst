@@ -71,10 +71,14 @@ Utilities
 ---------
 
 .. autosummary::
+   bob.pad.face.utils.bbx_cropper
    bob.pad.face.utils.blocks
+   bob.pad.face.utils.color_augmentation
    bob.pad.face.utils.frames
+   bob.pad.face.utils.min_face_size_normalizer
    bob.pad.face.utils.number_of_frames
    bob.pad.face.utils.scale_face
+   bob.pad.face.utils.the_giant_video_loader
    bob.pad.face.utils.yield_faces
    bob.pad.face.utils.yield_frames
 

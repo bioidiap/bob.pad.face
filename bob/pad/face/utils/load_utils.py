@@ -201,7 +201,7 @@ def color_augmentation(image, channels=('rgb',)):
     ----------
     image : numpy.array
         The image in RGB Bob format.
-    channels : tuple, optional
+    channels : :obj:`tuple`, optional
         List of channels to convert the image to. It can be any of ``rgb``,
         ``yuv``, ``hsv``.
 
