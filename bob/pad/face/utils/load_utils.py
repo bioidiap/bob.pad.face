@@ -6,6 +6,7 @@ from bob.ip.color import rgb_to_yuv, rgb_to_hsv
 from bob.ip.facedetect import bounding_box_from_annotation
 from functools import partial
 import numpy
+import six
 
 
 def frames(path):
