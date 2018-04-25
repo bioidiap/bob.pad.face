@@ -21,8 +21,12 @@ import bob.ip.color
 
 import bob.ip.facedetect
 
+import logging
+
 #==============================================================================
 # Main body:
+
+logger = logging.getLogger(__name__)
 
 
 class FrameDifference(Preprocessor):
@@ -413,6 +417,10 @@ class FrameDifference(Preprocessor):
 
         selected_frames, selected_annotations = self.check_face_size(
             frames, annotations, self.min_face_size)
+
+        if not len(selected_annotations):
+            logger.warn("None of the annotations are valid.")
+            return None
 
         diff = self.comp_face_bg_diff(
             frames=selected_frames,
