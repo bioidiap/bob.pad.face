@@ -2,6 +2,7 @@ from bob.bio.face.annotator import min_face_size_validator
 from bob.bio.video.annotator import normalize_annotations
 from bob.io.video import reader
 from bob.ip.base import scale, block, block_output_shape
+from bob.ip.color import rgb_to_yuv, rgb_to_hsv
 from bob.ip.facedetect import bounding_box_from_annotation
 from functools import partial
 import numpy
@@ -192,16 +193,73 @@ def blocks(data, block_size, block_overlap=(0, 0)):
     return output
 
 
+def color_augmentation(image, channels=('rgb',)):
+    """Converts an RGB image to different color channels.
+
+    Parameters
+    ----------
+    image : numpy.array
+        The image in RGB Bob format.
+    channels : tuple, optional
+        List of channels to convert the image to. It can be any of ``rgb``,
+        ``yuv``, ``hsv``.
+
+    Returns
+    -------
+    numpy.array
+        The image that contains several channels:
+        ``(3*len(channels), height, width)``.
+    """
+    final_image = []
+
+    if 'rgb' in channels:
+        final_image.append(image)
+
+    if 'yuv' in channels:
+        final_image.append(rgb_to_yuv(image))
+
+    if 'hsv' in channels:
+        final_image.append(rgb_to_hsv(image))
+
+    return numpy.concatenate(final_image, axis=0)
+
+
+def _random_sample(A, size):
+    return A[numpy.random.choice(A.shape[0], size, replace=False), ...]
+
+
 def the_giant_video_loader(paddb, padfile,
                            region='whole', scaling_factor=None, cropper=None,
-                           normalizer=None):
-    generator = None
+                           normalizer=None, patches=False,
+                           block_size=(96, 96), block_overlap=(0, 0),
+                           random_patches_per_frame=None, augment=None,
+                           multiple_bonafide_patches=1):
     if region == 'whole':
         generator = yield_frames(paddb, padfile)
     elif region == 'crop':
         generator = yield_faces(
             paddb, padfile, cropper=cropper, normalizer=normalizer)
+    else:
+        raise ValueError("Invalid region value: `{}'".format(region))
+
     if scaling_factor is not None:
         generator = (scale(frame, scaling_factor)
                      for frame in generator)
+    if patches:
+        if random_patches_per_frame is None:
+            generator = (
+                patch for frame in generator
+                for patch in blocks(frame, block_size, block_overlap))
+        else:
+            if padfile.attack_type is None:
+                random_patches_per_frame *= multiple_bonafide_patches
+            generator = (
+                patch for frame in generator
+                for patch in _random_sample(
+                    blocks(frame, block_size, block_overlap),
+                    random_patches_per_frame))
+
+    if augment is not None:
+        generator = (augment(frame) for frame in generator)
+
     return generator
