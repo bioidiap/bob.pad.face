@@ -288,14 +288,14 @@ class BatlPadDatabase(PadDatabase):
         'eval' sets in the following way.
 
         Original (low-level DB) distribution is as follows:
-        'train' = 0
-        'dev' = 27
-        'eval' = 8
+        'train' = N1
+        'dev' = N2
+        'eval' = N3
 
         After this function is applied the distribution is:
-        'train' = 19
-        'dev' = 8
-        'eval' = 8
+        'train' = N1 + 1/2*N2
+        'dev' = N2 - 1/2*N2
+        'eval' = N3
 
         **Parameters:**
 
@@ -333,7 +333,9 @@ class BatlPadDatabase(PadDatabase):
 
             exclude = ["_1_01", "_1_04", "_1_05", "_1_06", "_1_07"] # files ending with these paths relate to FunnyEyes
 
-            files_to_append = [f for f in files_to_append if f.path[-5:] in exclude][0:19] # append 19 files from "dev" to "train" set
+            files_to_append = [f for f in files_to_append if f.path[-5:] in exclude]
+
+            files_to_append = files_to_append[0:int(len(files_to_append)/2)] # append HALF of files from "dev" to "train" set
 
             files_train = files_train + files_to_append
 
@@ -343,7 +345,9 @@ class BatlPadDatabase(PadDatabase):
 
             exclude = ["_1_01", "_1_04", "_1_05", "_1_06", "_1_07"] # files ending with these paths relate to FunnyEyes
 
-            files_to_append_1 = [f for f in files_dev if f.path[-5:] in exclude][-8:] # 8 "dev" files containing FunnyEyes
+            files_to_append_1 = [f for f in files_dev if f.path[-5:] in exclude] # "dev" files containing FunnyEyes
+
+            files_to_append_1 = files_to_append_1[-int(len(files_to_append_1)/2):] # second HALF of "dev" files containing FunnyEyes
 
             files_to_append_2 = [f for f in files_dev if f.path[-5:] not in exclude] # "dev" set without FunnyEyes
 
