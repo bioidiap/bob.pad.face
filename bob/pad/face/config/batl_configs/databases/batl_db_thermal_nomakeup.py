@@ -22,6 +22,7 @@ database = BatlPadDatabase(
     original_extension=ORIGINAL_EXTENSION,
     annotations_temp_dir=ANNOTATIONS_TEMP_DIR,
     landmark_detect_method="mtcnn",
+    exlude_attacks_list = ["makeup"],
     training_depends_on_protocol=True,
 )
 """The :py:class:`bob.pad.base.database.BatlPadDatabase` derivative with BATL Db

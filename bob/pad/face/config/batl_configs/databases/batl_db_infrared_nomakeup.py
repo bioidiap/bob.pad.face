@@ -14,7 +14,7 @@ ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 
 ANNOTATIONS_TEMP_DIR = "/idiap/temp/onikisins/project/ODIN/experiment_data/pad_experiments_using_bob_py36/batl_db/annotations/"
 
-PROTOCOL = 'nowig-thermal-50-join_train_dev'
+PROTOCOL = 'nowig-infrared-50-join_train_dev'
 
 database = BatlPadDatabase(
     protocol=PROTOCOL,
@@ -22,6 +22,7 @@ database = BatlPadDatabase(
     original_extension=ORIGINAL_EXTENSION,
     annotations_temp_dir=ANNOTATIONS_TEMP_DIR,
     landmark_detect_method="mtcnn",
+    exlude_attacks_list = ["makeup"],
     training_depends_on_protocol=True,
 )
 """The :py:class:`bob.pad.base.database.BatlPadDatabase` derivative with BATL Db

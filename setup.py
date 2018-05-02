@@ -73,6 +73,10 @@ setup(
             'batl-db-depth = bob.pad.face.config.batl_db_depth:database',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
             'celeb-a = bob.pad.face.config.celeb_a:database',
+            'batl-db-color-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_color_nomakeup:database',
+            'batl-db-infrared-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_infrared_nomakeup:database',
+            'batl-db-depth-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_depth_nomakeup:database',
+            'batl-db-thermal-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_thermal_nomakeup:database',
         ],
 
         # registered configurations:
@@ -88,6 +92,10 @@ setup(
             'batl-db-depth = bob.pad.face.config.batl_db_depth',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal',
             'celeb-a = bob.pad.face.config.celeb_a',
+            'batl-db-color-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_color_nomakeup',
+            'batl-db-infrared-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_infrared_nomakeup',
+            'batl-db-depth-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_depth_nomakeup',
+            'batl-db-thermal-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_thermal_nomakeup',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
