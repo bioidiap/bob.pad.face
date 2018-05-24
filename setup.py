@@ -67,6 +67,7 @@ setup(
             'batl-db-infrared = bob.pad.face.config.batl_db_infrared:database',
             'batl-db-depth = bob.pad.face.config.batl_db_depth:database',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
+            'celeb-a = bob.pad.face.config.celeb_a:database',
         ],
 
         # registered configurations:
@@ -81,6 +82,7 @@ setup(
             'batl-db-infrared = bob.pad.face.config.batl_db_infrared',
             'batl-db-depth = bob.pad.face.config.batl_db_depth',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal',
+            'celeb-a = bob.pad.face.config.celeb_a',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',

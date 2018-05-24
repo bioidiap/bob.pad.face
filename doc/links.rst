@@ -14,3 +14,4 @@
 .. _dependencies: https://gitlab.idiap.ch/bob/bob/wikis/Dependencies
 .. _MSU MFSD: http://biometrics.cse.msu.edu/Publications/Databases/MSUMobileFaceSpoofing/index.htm
 .. _MIFS: http://www.antitza.com/makeup-datasets.html
+.. _CELEBA: http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html
