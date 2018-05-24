@@ -24,8 +24,9 @@ class CELEBAPadFile(PadFile):
     def __init__(self, client_id, path, attack_type=None, file_id=None):
         super(CELEBAPadFile, self).__init__(client_id, path, attack_type, file_id)
 
-    #==========================================================================
-    def load(self, directory=None, extension=None):
+    # ==========================================================================
+    def load(self, directory=None, extension=None,
+             frame_selector=bob.bio.video.FrameSelector(selection_style='all')):
         """
         Overridden version of the load method defined in the ``PadFile``.
 
@@ -39,6 +40,9 @@ class CELEBAPadFile(PadFile):
             Extension of the video files in the CELEBA database.
             Default: None
 
+        ``frame_selector`` : :any:`bob.bio.video.FrameSelector`, optional
+            Specifying the frames to be selected.
+
         **Returns:**
 
         ``video_data`` : FrameContainer
@@ -47,7 +51,6 @@ class CELEBAPadFile(PadFile):
         """
 
         path = self.make_path(directory=directory, extension=extension) # path to the file
-        frame_selector = bob.bio.video.FrameSelector(selection_style = 'all') # this frame_selector will select all frames from the video file
 
         data = bob.io.base.load(path)
         data = np.expand_dims(data, axis=0) # upgrade to 4D (video)

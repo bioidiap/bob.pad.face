@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-from ..preprocessor import FaceCropAlign
+from bob.pad.face.preprocessor import FaceCropAlign
 
 from bob.bio.video.preprocessor import Wrapper
 
@@ -42,3 +42,25 @@ _image_preprocessor = FaceCropAlign(face_size=FACE_SIZE,
 
 rgb_face_detector_mtcnn = Wrapper(preprocessor = _image_preprocessor,
                                   frame_selector = _frame_selector)
+
+# =======================================================================================
+FACE_SIZE = 64  # The size of the resulting face
+RGB_OUTPUT_FLAG = False  # Gray-scale output
+USE_FACE_ALIGNMENT = True  # detect face landmarks locally and align the face
+MAX_IMAGE_SIZE = 1920  # the largest possible dimension of the input image
+FACE_DETECTION_METHOD = "mtcnn"  # face landmarks detection method
+MIN_FACE_SIZE = 50  # skip faces smaller than this value
+NORMALIZATION_FUNCTION = None  # no normalization
+NORMALIZATION_FUNCTION_KWARGS = None
+
+_image_preprocessor = FaceCropAlign(face_size=FACE_SIZE,
+                                    rgb_output_flag=RGB_OUTPUT_FLAG,
+                                    use_face_alignment=USE_FACE_ALIGNMENT,
+                                    max_image_size=MAX_IMAGE_SIZE,
+                                    face_detection_method=FACE_DETECTION_METHOD,
+                                    min_face_size=MIN_FACE_SIZE,
+                                    normalization_function=NORMALIZATION_FUNCTION,
+                                    normalization_function_kwargs=NORMALIZATION_FUNCTION_KWARGS)
+
+bw_face_detect_mtcnn = Wrapper(preprocessor=_image_preprocessor,
+                               frame_selector=_frame_selector)

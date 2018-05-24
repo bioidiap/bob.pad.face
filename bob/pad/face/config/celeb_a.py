@@ -13,16 +13,16 @@ from bob.pad.face.database.celeb_a import CELEBAPadDatabase
 
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
-original_directory = "[YOUR_CELEB_A_DATABASE_DIRECTORY]"
+ORIGINAL_DIRECTORY = "[YOUR_CELEB_A_DATABASE_DIRECTORY]"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
-original_extension = ""  # extension of the data files
+ORIGINAL_EXTENSION = ""  # extension of the data files
 
 database = CELEBAPadDatabase(
     protocol='grandtest',
-    original_directory=original_directory,
-    original_extension=original_extension,
-    training_depends_on_protocol=True,
+    original_directory=ORIGINAL_DIRECTORY,
+    original_extension=ORIGINAL_EXTENSION,
+    training_depends_on_protocol=True
 )
 """The :py:class:`bob.pad.base.database.PadDatabase` derivative with CELEBA
 database settings.
