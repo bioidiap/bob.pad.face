@@ -8,8 +8,17 @@ according to their quality.
 Good quality data will be copied to ``<save_path>/good_quality_data/`` folder,
 respectively "low"  quality to ``<save_path>/low_quality_data/`` folder.
 
-The function determining the quality of the data must be implemented in the
-config file.
+The data loading and quality assessment functionality are defined in the
+configuration file. The config file MUST contain at least the following
+functions:
+
+``load_datafile(file_name)`` - returns the ``data`` given ``file_name``, and
+
+``assess_quality(data, **assess_quality_kwargs)`` - returns ``True`` for good
+quality ``data``, and ``False`` for low quality data, and
+
+``assess_quality_kwargs`` - a dictionary with kwargs for ``assess_quality()``
+function.
 
 @author: Olegs Nikisins
 """
@@ -77,7 +86,7 @@ def parse_arguments(cmd_params=None):
                         default = "bob.pad.face.config.quality_assessment")
 
     parser.add_argument("-v", "--verbosity", action="count", default=0,
-                        help="Currently not used.")
+                        help="Only -v level is currently supported.")
 
     if cmd_params is not None:
         args = parser.parse_args(cmd_params)
@@ -168,6 +177,24 @@ def main(cmd_params=None):
        functionality, is loaded.
 
     4. All files in data folder with specified extension are obtained.
+
+    5. Data is loaded and quality is computed for each data sample.
+
+    6. Good quality samples are coppied to <save_folder>/good_quality_data
+       folder, low quality to <save_folder>/low_quality_data.
+
+    NOTE:
+    The config file used in this function MUST contain at least the following
+    functions:
+
+    ``load_datafile(file_name)`` - returns the ``data`` given ``file_name``,
+    and
+
+    ``assess_quality(data, **assess_quality_kwargs)`` - returns ``True``
+    for good quality ``data``, and ``False`` for low quality data, and
+
+    ``assess_quality_kwargs`` - a dictionary with kwargs for
+    ``assess_quality()`` function.
     """
 
     # Parse the command line arguments:
@@ -216,5 +243,3 @@ def main(cmd_params=None):
 
     if verbosity > 0:
         print("Done!")
-
-
