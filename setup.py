@@ -56,6 +56,11 @@ setup(
     # the version of bob.
     entry_points={
 
+        # scripts should be declared using this entry:
+        'console_scripts': [
+            'quality-assessment.py = bob.pad.face.script.quality_assessment:main',
+        ],
+
         # registered databases:
         'bob.pad.database': [
             'replay-attack = bob.pad.face.config.replay_attack:database',
