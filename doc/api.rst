@@ -73,6 +73,7 @@ Utilities
 .. autosummary::
    bob.pad.face.utils.bbx_cropper
    bob.pad.face.utils.blocks
+   bob.pad.face.utils.blocks_generator
    bob.pad.face.utils.color_augmentation
    bob.pad.face.utils.frames
    bob.pad.face.utils.min_face_size_normalizer
