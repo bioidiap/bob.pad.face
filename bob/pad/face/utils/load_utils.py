@@ -1,12 +1,13 @@
 from bob.bio.face.annotator import min_face_size_validator
 from bob.bio.video.annotator import normalize_annotations
 from bob.io.video import reader
-from bob.ip.base import scale, block, block_output_shape
+from bob.ip.base import scale, block, block_output_shape, block_generator
 from bob.ip.color import rgb_to_yuv, rgb_to_hsv
 from bob.ip.facedetect import bounding_box_from_annotation
 from collections import OrderedDict
 from functools import partial
 import numpy
+import random
 
 
 def frames(path):
@@ -43,25 +44,6 @@ def number_of_frames(path):
     return video.number_of_frames
 
 
-def yield_frames(paddb, padfile):
-    """Loads the frames of a video PAD database.
-
-    Parameters
-    ----------
-    paddb : :any:`bob.pad.base.database.PadDatabase`
-        The video PAD database. The database needs to have implemented the
-        `.frames()` method.
-    padfile : :any:`bob.pad.face.database.VideoPadFile`
-        The PAD file.
-
-    Yields
-    ------
-    :any:`numpy.array`
-        Frames of the PAD file one by one.
-    """
-    return paddb.frames(padfile)
-
-
 def bbx_cropper(frame, annotations):
     bbx = bounding_box_from_annotation(**annotations)
     return frame[..., bbx.top:bbx.bottom, bbx.left:bbx.right]
@@ -73,15 +55,12 @@ def min_face_size_normalizer(annotations, max_age=15, **kwargs):
                                  max_age=max_age)
 
 
-def yield_faces(database, padfile, cropper, normalizer=None):
+def yield_faces(padfile, cropper, normalizer=None):
     """Yields face images of a padfile. It uses the annotations from the
     database. The annotations are further normalized.
 
     Parameters
     ----------
-    database : :any:`bob.pad.base.database.PadDatabase`
-        A face PAD database. This database needs to have implemented the
-        `frames` method.
     padfile : :any:`bob.pad.base.database.PadFile`
         The padfile to return the faces.
     cropper : callable
@@ -101,10 +80,10 @@ def yield_faces(database, padfile, cropper, normalizer=None):
     ValueError
         If the database returns None for annotations.
     """
-    frames_gen = database.frames(padfile)
+    frames_gen = padfile.frames
 
     # read annotation
-    annotations = database.annotations(padfile)
+    annotations = padfile.annotations
     if annotations is None:
         raise ValueError("No annotations were returned.")
 
@@ -192,6 +171,41 @@ def blocks(data, block_size, block_overlap=(0, 0)):
     return output
 
 
+def blocks_generator(data, block_size, block_overlap=(0, 0)):
+    """Yields patches of an image
+
+    Parameters
+    ----------
+    data : :any:`numpy.array`
+        The image in gray-scale, color, or color video format.
+    block_size : (int, int)
+        The size of patches
+    block_overlap : (:obj:`int`, :obj:`int`), optional
+        The size of overlap of patches
+
+    Yields
+    ------
+    :any:`numpy.array`
+        The patches.
+
+    Raises
+    ------
+    ValueError
+        If data dimension is not between 2 and 4 (inclusive).
+    """
+    data = numpy.asarray(data)
+    if 1 < data.ndim < 4:
+        for patch in block_generator(data, block_size, block_overlap):
+            yield patch
+    # if a color video:
+    elif data.ndim == 4:
+        for frame in data:
+            for patch in block_generator(frame, block_size, block_overlap):
+                yield patch
+    else:
+        raise ValueError("Unknown data dimension {}".format(data.ndim))
+
+
 def color_augmentation(image, channels=('rgb',)):
     """Converts an RGB image to different color channels.
 
@@ -232,12 +246,55 @@ def the_giant_video_loader(paddb, padfile,
                            normalizer=None, patches=False,
                            block_size=(96, 96), block_overlap=(0, 0),
                            random_patches_per_frame=None, augment=None,
-                           multiple_bonafide_patches=1):
+                           multiple_bonafide_patches=1, keep_pa_samples=None):
+    """Loads a video pad file frame by frame and optionally applies
+    transformations.
+
+    Parameters
+    ----------
+    paddb
+        Ignored.
+    padfile
+        The pad file
+    region : str
+        Either `whole` or `crop`. If whole, it will return the whole frame.
+        Otherwise, you need to provide a cropper and a normalizer.
+    scaling_factor : float
+        If given, will scale images to this factor.
+    cropper
+        The cropper to use
+    normalizer
+        The normalizer to use
+    patches : bool
+        If true, will extract patches from images.
+    block_size : tuple
+        Size of the patches
+    block_overlap : tuple
+        Size of overlap of the patches
+    random_patches_per_frame : int
+        If not None, will only take this much patches per frame
+    augment
+        If given, frames will be transformed using this function.
+    multiple_bonafide_patches : int
+        Will use more random patches for bonafide samples
+    keep_pa_samples : float
+        If given, will drop some PA samples.
+
+    Returns
+    -------
+    object
+        A generator that yields the samples.
+
+    Raises
+    ------
+    ValueError
+        If region is not whole or crop.
+    """
     if region == 'whole':
-        generator = yield_frames(paddb, padfile)
+        generator = padfile.frames
     elif region == 'crop':
         generator = yield_faces(
-            paddb, padfile, cropper=cropper, normalizer=normalizer)
+            padfile, cropper=cropper, normalizer=normalizer)
     else:
         raise ValueError("Invalid region value: `{}'".format(region))
 
@@ -248,7 +305,8 @@ def the_giant_video_loader(paddb, padfile,
         if random_patches_per_frame is None:
             generator = (
                 patch for frame in generator
-                for patch in blocks(frame, block_size, block_overlap))
+                for patch in blocks_generator(
+                    frame, block_size, block_overlap))
         else:
             if padfile.attack_type is None:
                 random_patches_per_frame *= multiple_bonafide_patches
@@ -260,5 +318,9 @@ def the_giant_video_loader(paddb, padfile,
 
     if augment is not None:
         generator = (augment(frame) for frame in generator)
+
+    if keep_pa_samples is not None and padfile.attack_type is not None:
+        generator = (frame for frame in generator
+                     if random.random() < keep_pa_samples)
 
     return generator

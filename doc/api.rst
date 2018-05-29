@@ -80,6 +80,6 @@ Utilities
    bob.pad.face.utils.scale_face
    bob.pad.face.utils.the_giant_video_loader
    bob.pad.face.utils.yield_faces
-   bob.pad.face.utils.yield_frames
+
 
 .. automodule:: bob.pad.face.utils
