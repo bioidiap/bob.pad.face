@@ -56,6 +56,11 @@ setup(
     # the version of bob.
     entry_points={
 
+        # scripts should be declared using this entry:
+        'console_scripts': [
+            'quality-assessment.py = bob.pad.face.script.quality_assessment:main',
+        ],
+
         # registered databases:
         'bob.pad.database': [
             'replay-attack = bob.pad.face.config.replay_attack:database',
@@ -67,6 +72,7 @@ setup(
             'batl-db-infrared = bob.pad.face.config.batl_db_infrared:database',
             'batl-db-depth = bob.pad.face.config.batl_db_depth:database',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
+            'celeb-a = bob.pad.face.config.celeb_a:database',
         ],
 
         # registered configurations:
@@ -81,6 +87,7 @@ setup(
             'batl-db-infrared = bob.pad.face.config.batl_db_infrared',
             'batl-db-depth = bob.pad.face.config.batl_db_depth',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal',
+            'celeb-a = bob.pad.face.config.celeb_a',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
@@ -107,6 +114,7 @@ setup(
             'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor',  # no preprocessing
             'rgb-face-detect-dlib = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_dlib',  # detect faces locally replacing database annotations
             'rgb-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_mtcnn',  # detect faces locally replacing database annotations
+            'bw-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:bw_face_detect_mtcnn',  # detect faces locally, return BW image
         ],
 
         # registered extractors:
