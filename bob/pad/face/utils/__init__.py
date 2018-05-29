@@ -1,5 +1,5 @@
 from .load_utils import (
-    frames, number_of_frames, yield_frames, yield_faces, scale_face, blocks,
+    frames, number_of_frames, yield_faces, scale_face, blocks,
     bbx_cropper, min_face_size_normalizer, color_augmentation, block_generator,
     the_giant_video_loader)
 
