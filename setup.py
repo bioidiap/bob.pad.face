@@ -77,6 +77,12 @@ setup(
             'batl-db-infrared-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_infrared_nomakeup:database',
             'batl-db-depth-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_depth_nomakeup:database',
             'batl-db-thermal-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_thermal_nomakeup:database',
+
+            # gov test batl
+            'batl-govt-db-color-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_color_nomakeup:database',
+            'batl-govt-db-infrared-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_infrared_nomakeup:database',
+            'batl-govt-db-depth-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_depth_nomakeup:database',
+            'batl-govt-db-thermal-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_thermal_nomakeup:database',
         ],
 
         # registered configurations:
@@ -96,6 +102,13 @@ setup(
             'batl-db-infrared-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_infrared_nomakeup',
             'batl-db-depth-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_depth_nomakeup',
             'batl-db-thermal-nomakeup = bob.pad.face.config.batl_configs.databases.batl_db_thermal_nomakeup',
+
+            # gov test batl
+            'batl-govt-db-color-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_color_nomakeup:database',
+            'batl-govt-db-infrared-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_infrared_nomakeup:database',
+            'batl-govt-db-depth-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_depth_nomakeup:database',
+            'batl-govt-db-thermal-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_thermal_nomakeup:database',
+
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
@@ -179,3 +192,5 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
 )
+
+
