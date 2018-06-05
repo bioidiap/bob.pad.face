@@ -128,11 +128,11 @@ class BatlAggregatedPadFile(PadFile):
 
 		if isinstance(self.f, bob.db.batl.models.VideoFile):
 
-			directory_sel=directory[0]
+			directory_sel=directory.split(" ")[0]
 
 		if isinstance(self.f, bob.db.batlgovt.models.VideoFile): 
 
-			directory_sel=directory[1]
+			directory_sel=directory.split(" ")[1]
 
 		#print("directory_sel",directory_sel)
 
@@ -200,9 +200,9 @@ class BatlAggregatedPadDatabase(PadDatabase):
 	def __init__(
 			self,
 			protocol='nowig__baseline', # accepts 2 for the time being
-			original_directory=(rc['bob.db.batl.directory'],rc['bob.db.batlgovt.directory']),
+			original_directory=rc['bob.db.batl.directory'],
 			original_extension='.h5',
-			annotations_temp_dir=("",""),
+			annotations_temp_dir="",
 			landmark_detect_method="mtcnn",
 			exlude_attacks_list=None,
 			**kwargs):
@@ -286,14 +286,14 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		self.landmark_detect_method = landmark_detect_method
 		self.exlude_attacks_list = exlude_attacks_list
 
-	@property
-	def original_directory(self):
-		return self.batl_db.original_directory, self.batl_govt_db.original_directory
+	# @property
+	# def original_directory(self):
+	# 	return self.batl_db.original_directory, self.batl_govt_db.original_directory
 
-	@original_directory.setter
-	def original_directory(self, value):
-		self.batl_db.original_directory = value[0]
-		self.batl_govt_db.original_directory = value[1]
+	# @original_directory.setter
+	# def original_directory(self, value):
+	# 	self.batl_db.original_directory = value.split(" ")[0]
+	# 	self.batl_govt_db.original_directory = value.split(" ")[0]
 
 	def parse_protocol(self, protocol):
 		# Handle a single protocol statement here
@@ -722,7 +722,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 	def annotations(self, f):
 
-		#print("annot",f)
+		print("annot",f)
 		"""
 		Computes annotations for a given file object ``f``, which
 		is an instance of the ``BatlPadFile`` class.
@@ -753,9 +753,15 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 		import bob.db.batlgovt
 
-		if isinstance(f, bob.db.batl.models.VideoFile):
+		annotations = {}
 
-			file_path = os.path.join(self.annotations_temp_dir[0], f.f.path + ".json")
+		#print("type",type(f.f)) 
+
+		if isinstance(f.f, bob.db.batl.models.VideoFile):
+
+			#print("Idiap instance")
+
+			file_path = os.path.join(self.annotations_temp_dir.split(" ")[0], f.f.path + ".json")
 
 			if not os.path.isfile(file_path):  # no file with annotations
 
@@ -766,7 +772,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 				f.crop = None
 				f.video_data_only = True
 
-				video = f.load(directory=self.original_directory[0],
+				video = f.load(directory=self.original_directory.split(" ")[0],
 							   extension=self.original_extension)
 
 				annotations = {}
@@ -779,7 +785,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 						annotations[str(idx)] = frame_annotations
 
-				if self.annotations_temp_dir[0]:  # if directory is not an empty string
+				if self.annotations_temp_dir.split(" ")[0]:  # if directory is not an empty string
 
 					bob.io.base.create_directories_safe(directory=os.path.split(file_path)[0], dryrun=False)
 
@@ -795,12 +801,15 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 	
 
-		if isinstance(f, bob.db.batlgovt.models.VideoFile): 
+		if isinstance(f.f, bob.db.batlgovt.models.VideoFile): 
+			#print("Gov instance")
+			#print("self.annotations_temp_dir",self.annotations_temp_dir)
 	  
 
-			file_path = os.path.join(self.annotations_temp_dir[1], f.f.path + ".json")
+			file_path = os.path.join(self.annotations_temp_dir.split(" ")[1], f.f.path + ".json")
 
 			if not os.path.isfile(file_path):  # no file with annotations
+				#print("No annotations found!!")
 
 				f.stream_type = "color"
 				f.reference_stream_type = "color"
@@ -809,10 +818,12 @@ class BatlAggregatedPadDatabase(PadDatabase):
 				f.crop = None
 				f.video_data_only = True
 
-				video = f.load(directory=self.original_directory[1],
+				video = f.load(directory=self.original_directory.split(" ")[1],
 							   extension=self.original_extension)
 
 				annotations = {}
+
+
 
 				for idx, image in enumerate(video.as_array()):
 
@@ -822,7 +833,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 						annotations[str(idx)] = frame_annotations
 
-				if self.annotations_temp_dir[1]:  # if directory is not an empty string
+				if self.annotations_temp_dir.split(" ")[1]:  # if directory is not an empty string
 
 					bob.io.base.create_directories_safe(directory=os.path.split(file_path)[0], dryrun=False)
 
@@ -831,6 +842,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 						json_file.write(json.dumps(annotations))
 
 			else:  # if file with annotations exists load them from file
+				#print("Annotations found!!")
 
 				with open(file_path, 'r') as json_file:
 
@@ -842,8 +854,8 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		if not annotations:  # if dictionary is empty
 
 			return None
-		else:
-			return annotations
+		#else:
+		return annotations
 
 
 		

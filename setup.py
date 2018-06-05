@@ -83,6 +83,14 @@ setup(
             'batl-govt-db-infrared-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_infrared_nomakeup:database',
             'batl-govt-db-depth-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_depth_nomakeup:database',
             'batl-govt-db-thermal-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_thermal_nomakeup:database',
+
+            #aggregated batl
+
+            'batl-aggregated-db-color-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_color_nomakeup:database',
+            'batl-aggregated-db-infrared-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_infrared_nomakeup:database',
+            'batl-aggregated-db-depth-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_depth_nomakeup:database',
+            'batl-aggregated-db-thermal-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_thermal_nomakeup:database',
+
         ],
 
         # registered configurations:
@@ -108,6 +116,15 @@ setup(
             'batl-govt-db-infrared-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_infrared_nomakeup:database',
             'batl-govt-db-depth-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_depth_nomakeup:database',
             'batl-govt-db-thermal-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_thermal_nomakeup:database',
+
+
+            
+            #aggregated batl
+
+            'batl-aggregated-db-color-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_color_nomakeup:database',
+            'batl-aggregated-db-infrared-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_infrared_nomakeup:database',
+            'batl-aggregated-db-depth-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_depth_nomakeup:database',
+            'batl-aggregated-db-thermal-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_thermal_nomakeup:database',
 
 
             # baselines using SVM:
