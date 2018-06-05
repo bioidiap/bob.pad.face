@@ -7,6 +7,7 @@ from .mifs import MIFSPadDatabase
 from .batl import BatlPadDatabase
 from .celeb_a import CELEBAPadDatabase
 from .batlgovt import BatlGovtPadDatabase
+from .batl_aggregated import BatlAggregatedPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -34,7 +35,8 @@ __appropriate__(
     MIFSPadDatabase,
     BatlPadDatabase,
     CELEBAPadDatabase,
-    BatlGovtPadDatabase
+    BatlGovtPadDatabase,
+    BatlAggregatedPadDatabase,
 )
 
 __all__ = [_ for _ in dir() if not _.startswith('_')]
