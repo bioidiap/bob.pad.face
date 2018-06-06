@@ -16,7 +16,7 @@ ANNOTATIONS_TEMP_DIR = '/idiap/temp/ageorge/BATL_aggregated/annotations_idiap_ba
 
 
 
-PROTOCOL = "nowig-color-50-trainon_gov_teston_gov__baseline-color-50-trainon_gov_teston_gov"
+PROTOCOL = "nowig-color-50-trainon_gov_teston_idiap__baseline-color-50-trainon_gov_teston_idiap"
 
 database = BatlAggregatedPadDatabase(
     protocol=PROTOCOL,

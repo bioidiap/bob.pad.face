@@ -15,7 +15,7 @@ ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 ANNOTATIONS_TEMP_DIR = '/idiap/temp/ageorge/BATL_aggregated/annotations_idiap_batl/ /idiap/temp/ageorge/BATL_aggregated/annotations_govtest_backup/'
 
 
-PROTOCOL = "nowig-thermal-50-trainon_gov_teston_gov__baseline-thermal-50-trainon_gov_teston_gov"
+PROTOCOL = "nowig-thermal-50-trainon_gov_teston_idiap__baseline-thermal-50-trainon_gov_teston_idiap"
 
 database = BatlAggregatedPadDatabase(
     protocol=PROTOCOL,

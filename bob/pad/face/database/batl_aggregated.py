@@ -514,6 +514,10 @@ class BatlAggregatedPadDatabase(PadDatabase):
 										groups=self.low_level_group_names,
 										purposes=purposes, **kwargs)
 
+				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
+										groups=self.low_level_group_names,
+										purposes=purposes, **kwargs)
+
 
 			# addresses the cases when groups=['validation'] or ['test'] or ['validation', 'test']:
 			else:
@@ -531,7 +535,10 @@ class BatlAggregatedPadDatabase(PadDatabase):
 			## Train on a db means combining train and validation
 
 
+
+
 			if groups == ['train']: # join "train" and "dev" sets
+				#print("1.train:groups",groups)
 
 				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
 										groups=['train', 'validation'],
@@ -540,14 +547,21 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 			# return ALL data if "train" and "some other" set/sets are requested
 			elif len(groups)>=2 and 'train' in groups:
+				#print("2.train:groups",groups)
 
 
 				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
 										groups=self.low_level_group_names,
 										purposes=purposes, **kwargs)
 
+				batl_files = self.batl_db.objects(protocol=protocol_batl, ## added now AG
+										groups=self.low_level_group_names,
+										purposes=purposes, **kwargs)
+
+
 			# addresses the cases when groups=['validation'] or ['test'] or ['validation', 'test']:
 			else:
+				#print("3.test:groups",groups)
 				batl_files = self.batl_db.objects(protocol=protocol_batl,
 										groups=['test'],
 										purposes=purposes, **kwargs)
@@ -688,7 +702,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 		sfiles=batl_govt_files+batl_files
 
-		#print("LenBATL:",len(batl_files),"LenGOV:",len(batl_govt_files))
+		print("LenBATL:",len(batl_files),"LenGOV:",len(batl_govt_files))
 
 
 		## Exclude makeup only from training set, while it is requested for training
