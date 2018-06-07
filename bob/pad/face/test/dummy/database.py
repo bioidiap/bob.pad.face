@@ -4,7 +4,8 @@ import bob.io.base
 import os
 from bob.pad.face.database import VideoPadFile
 from bob.pad.base.database import PadDatabase
-from bob.db.base.utils import check_parameters_for_validity, convert_names_to_lowlevel
+from bob.db.base.utils import (
+    check_parameters_for_validity, convert_names_to_lowlevel)
 
 
 class DummyPadFile(VideoPadFile):
@@ -13,6 +14,27 @@ class DummyPadFile(VideoPadFile):
         fc = FrameContainer()
         fc.add(os.path.basename(file_name), bob.io.base.load(file_name))
         return fc
+
+    @property
+    def frames(self):
+        fc = self.load(self.original_directory)
+        for _, frame, _ in fc:
+            yield frame
+
+    @property
+    def number_of_frames(self):
+        fc = self.load(self.original_directory)
+        return len(fc)
+
+    @property
+    def frame_shape(self):
+        return (112, 92)
+
+    @property
+    def annotations(self):
+        if self.none_annotations:
+            return None
+        return {'0': {'topleft': (0, 0), 'bottomright': self.frame_shape}}
 
 
 class DummyDatabase(PadDatabase):
@@ -33,9 +55,12 @@ class DummyDatabase(PadDatabase):
         self.high_level_names = ('train', 'dev')
 
     def _make_bio(self, files):
-        return [DummyPadFile(client_id=f.client_id, path=f.path, file_id=f.id,
-                             attack_type=None)
-                for f in files]
+        files = [DummyPadFile(client_id=f.client_id, path=f.path, file_id=f.id,
+                              attack_type=None)
+                 for f in files]
+        for f in files:
+            f.original_directory = self.original_directory
+        return files
 
     def objects(self, groups=None, protocol=None, purposes=None,
                 model_ids=None, **kwargs):
@@ -59,13 +84,10 @@ class DummyDatabase(PadDatabase):
         return None
 
     def frames(self, padfile):
-        fc = padfile.load(self.original_directory)
-        for _, frame, _ in fc:
-            yield frame
+        return padfile.frames
 
     def number_of_frames(self, padfile):
-        fc = padfile.load(self.original_directory)
-        return len(fc)
+        return padfile.number_of_frames
 
     @property
     def frame_shape(self):

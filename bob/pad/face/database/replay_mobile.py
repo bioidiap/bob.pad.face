@@ -9,8 +9,42 @@ from bob.pad.face.utils import frames, number_of_frames
 from bob.db.base.annotations import read_annotation_file
 import numpy
 from bob.extension import rc
-# documentation imports
-import bob.bio.video
+
+REPLAYMOBILE_FRAME_SHAPE = (3, 1280, 720)
+
+
+def replaymobile_annotations(lowlevelfile, original_directory):
+    # numpy array containing the face bounding box data for each video
+    # frame, returned data format described in the f.bbx() method of the
+    # low level interface
+    annots = lowlevelfile.bbx(directory=original_directory)
+
+    annotations = {}  # dictionary to return
+
+    for fn, frame_annots in enumerate(annots):
+
+        topleft = (frame_annots[1], frame_annots[0])
+        bottomright = (frame_annots[1] + frame_annots[3],
+                       frame_annots[0] + frame_annots[2])
+
+        annotations[str(fn)] = {
+            'topleft': topleft,
+            'bottomright': bottomright
+        }
+
+    return annotations
+
+
+def replaymobile_frames(lowlevelfile, original_directory):
+    vfilename = lowlevelfile.make_path(
+        directory=original_directory,
+        extension='.mov')
+    is_not_tablet = not lowlevelfile.is_tablet()
+    for frame in frames(vfilename):
+        frame = numpy.rollaxis(frame, 2, 1)
+        if is_not_tablet:
+            frame = frame[:, ::-1, :]
+        yield frame
 
 
 class ReplayMobilePadFile(VideoPadFile):
@@ -79,6 +113,34 @@ class ReplayMobilePadFile(VideoPadFile):
             directory=directory, extension=extension)
 
         return frame_selector(video_data_array)
+
+    @property
+    def annotations(self):
+        if self.annotation_directory is not None:
+            # return the external annotations
+            annotations = read_annotation_file(
+                self.make_path(self.annotation_directory,
+                               self.annotation_extension),
+                self.annotation_type)
+            return annotations
+
+        # return original annotations
+        return replaymobile_annotations(self.f, self.original_directory)
+
+    @property
+    def frames(self):
+        return replaymobile_frames(self.f, self.original_directory)
+
+    @property
+    def number_of_frames(self):
+        vfilename = self.make_path(
+            directory=self.original_directory,
+            extension='.mov')
+        return number_of_frames(vfilename)
+
+    @property
+    def frame_shape(self):
+        return REPLAYMOBILE_FRAME_SHAPE
 
 
 class ReplayMobilePadDatabase(PadDatabase):
@@ -202,6 +264,12 @@ class ReplayMobilePadDatabase(PadDatabase):
 
         files = [ReplayMobilePadFile(f) for f in files]
 
+        for f in files:
+            f.original_directory = self.original_directory
+            f.annotation_directory = self.annotation_directory
+            f.annotation_extension = self.annotation_extension
+            f.annotation_type = self.annotation_type
+
         return files
 
     def annotations(self, f):
@@ -227,38 +295,11 @@ class ReplayMobilePadDatabase(PadDatabase):
             A dictionary containing the annotations for each frame in the
             video. Dictionary structure:
             ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``. Where
-            ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
+            ``frameN_dict = {'topleft': (row, col),'bottomright': (row, col)}``
             is the dictionary defining the coordinates of the face bounding box
             in frame N.
         """
-
-        if self.annotation_directory is not None:
-            # return the external annotations
-            annotations = read_annotation_file(
-                f.make_path(self.annotation_directory,
-                            self.annotation_extension),
-                self.annotation_type)
-            return annotations
-
-        # numpy array containing the face bounding box data for each video
-        # frame, returned data format described in the f.bbx() method of the
-        # low level interface
-        annots = f.f.bbx(directory=self.original_directory)
-
-        annotations = {}  # dictionary to return
-
-        for fn, frame_annots in enumerate(annots):
-
-            topleft = (frame_annots[1], frame_annots[0])
-            bottomright = (frame_annots[1] + frame_annots[3],
-                           frame_annots[0] + frame_annots[2])
-
-            annotations[str(fn)] = {
-                'topleft': topleft,
-                'bottomright': bottomright
-            }
-
-        return annotations
+        return f.annotations
 
     def frames(self, padfile):
         """Yields the frames of the padfile one by one.
@@ -273,15 +314,7 @@ class ReplayMobilePadDatabase(PadDatabase):
         :any:`numpy.array`
             A frame of the video. The size is (3, 1280, 720).
         """
-        vfilename = padfile.make_path(
-            directory=self.original_directory,
-            extension=self.original_extension)
-        is_not_tablet = not padfile.f.is_tablet()
-        for frame in frames(vfilename):
-            frame = numpy.rollaxis(frame, 2, 1)
-            if is_not_tablet:
-                frame = frame[:, ::-1, :]
-            yield frame
+        return padfile.frames
 
     def number_of_frames(self, padfile):
         """Returns the number of frames in a video file.
@@ -296,10 +329,7 @@ class ReplayMobilePadDatabase(PadDatabase):
         int
             The number of frames.
         """
-        vfilename = padfile.make_path(
-            directory=self.original_directory,
-            extension=self.original_extension)
-        return number_of_frames(vfilename)
+        return padfile.number_of_frames
 
     @property
     def frame_shape(self):
@@ -310,4 +340,4 @@ class ReplayMobilePadDatabase(PadDatabase):
         (int, int, int)
             The (#Channels, Height, Width) which is (3, 1280, 720).
         """
-        return (3, 1280, 720)
+        return REPLAYMOBILE_FRAME_SHAPE

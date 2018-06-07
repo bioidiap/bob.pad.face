@@ -225,6 +225,9 @@ class FrameDifference(Preprocessor):
             # annotations for particular frame
             frame_annotations = annotations[str(idx)]
 
+            if not frame_annotations:
+                continue
+
             # Estimate bottomright and topleft if they are not available:
             if 'topleft' not in frame_annotations:
                 bbx = bob.ip.facedetect.bounding_box_from_annotation(

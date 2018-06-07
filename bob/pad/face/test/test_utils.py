@@ -1,6 +1,5 @@
 from bob.pad.face.test.dummy.database import DummyDatabase as Database
-from bob.pad.face.utils import yield_frames, yield_faces, scale_face, blocks
-from types import MethodType
+from bob.pad.face.utils import yield_faces, scale_face, blocks
 from nose.tools import raises
 import numpy
 
@@ -13,33 +12,28 @@ def dummy_cropper(frame, annotations=None):
     return frame
 
 
-def _annotations(self, padfile):
-    return {'0': {'topleft': (0, 0), 'bottomright': self.frame_shape}}
-
-
 def test_yield_frames():
     database = Database()
-    assert database.number_of_frames(padfile) == 1
-    for frame in yield_frames(database, padfile):
+    nframes = database.number_of_frames(padfile)
+    assert nframes == 1, nframes
+    for frame in padfile.frames:
         assert frame.ndim == 2
         assert frame.shape == database.frame_shape
 
 
 @raises(ValueError)
 def test_yield_faces_1():
-    database = Database()
-    for face in yield_faces(database, padfile, dummy_cropper):
+    padfile.none_annotations = True
+    for face in yield_faces(padfile, dummy_cropper):
         pass
 
 
 def test_yield_faces_2():
-    database = Database()
-    database.annotations = MethodType(
-        _annotations, database)
-    assert len(list(yield_faces(database, padfile, dummy_cropper)))
-    for face in yield_faces(database, padfile, dummy_cropper):
+    padfile.none_annotations = False
+    assert len(list(yield_faces(padfile, dummy_cropper)))
+    for face in yield_faces(padfile, dummy_cropper):
         assert face.ndim == 2
-        assert face.shape == database.frame_shape
+        assert face.shape == padfile.frame_shape
 
 
 def test_scale_face():

@@ -246,7 +246,9 @@ class FrameDiffFeatures(Extractor):
 
         d_bg = self.cluster_5quantities(data[:, 1], window_size, overlap)
 
-        features = np.hstack((d_face, d_bg))
+        min_len = min(len(d_face), len(d_bg))
+
+        features = np.hstack((d_face[:min_len], d_bg[:min_len]))
 
         frames = self.convert_arr_to_frame_cont(features)
 
