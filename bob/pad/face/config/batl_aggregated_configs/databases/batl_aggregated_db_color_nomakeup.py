@@ -15,8 +15,11 @@ ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 ANNOTATIONS_TEMP_DIR = '/idiap/temp/ageorge/BATL_aggregated/annotations_idiap_batl/ /idiap/temp/ageorge/BATL_aggregated/annotations_govtest_backup/'
 
 
+_training_protocol='trainon_both_teston_gov_realgov'
 
-PROTOCOL = "nowig-color-50-trainon_gov_teston_idiap__baseline-color-50-trainon_gov_teston_idiap"
+_stream_type='color'
+
+PROTOCOL = "nowig-{}-50-{}__baseline-{}-50-{}".format(_stream_type,_training_protocol,_stream_type,_training_protocol)
 
 database = BatlAggregatedPadDatabase(
     protocol=PROTOCOL,

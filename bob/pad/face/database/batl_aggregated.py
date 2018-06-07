@@ -330,7 +330,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 			forming a single training set.
 		"""
 
-		possible_extras = ['join_train_dev','trainon_idiap_teston_gov','trainon_gov_teston_idiap','trainon_both_teston_gov','trainon_both_teston_idiap','trainon_idiap_teston_idiap','trainon_gov_teston_gov']
+		possible_extras = ['join_train_dev','trainon_idiap_teston_gov','trainon_gov_teston_idiap','trainon_both_teston_gov','trainon_both_teston_idiap','trainon_idiap_teston_idiap','trainon_gov_teston_gov','trainon_both_teston_gov_realgov','trainon_both_teston_idiap_realgov']
 
 
 		# Here exclusing make up is generally used
@@ -692,6 +692,90 @@ class BatlAggregatedPadDatabase(PadDatabase):
 				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
 										groups=['test'],
 										purposes=purposes, **kwargs)
+
+
+		
+
+		######### PROTOCOL7 ##################################################'','','trainon_both_teston_idiap'
+
+		if extra_gvt_batl is not None and "trainon_both_teston_gov_realgov" in extra_gvt_batl:
+
+			# Train with both but exclude all attacks from training in gov test data
+
+			## Train on a db means combining train and validation
+
+
+			if groups == ['train']: # join "train" and "dev" sets
+				batl_files = self.batl_db.objects(protocol=protocol_batl,
+										groups=['train', 'validation'],
+										purposes=purposes, **kwargs)
+				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
+										groups=['train', 'validation'],
+										purposes=purposes, **kwargs)
+				
+				## use only bonafides from govt for training
+
+				batl_govt_files=[ f for f in batl_govt_files if f.type_id == 0]
+
+
+
+
+			# return ALL data if "train" and "some other" set/sets are requested
+			elif len(groups)>=2 and 'train' in groups:
+				batl_files = self.batl_db.objects(protocol=protocol_batl,
+										groups=self.low_level_group_names,
+										purposes=purposes, **kwargs)
+
+				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
+										groups=self.low_level_group_names,
+										purposes=purposes, **kwargs)
+
+			# addresses the cases when groups=['validation'] or ['test'] or ['validation', 'test']:
+			else:
+
+				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
+										groups=['test'],
+										purposes=purposes, **kwargs)
+		######### PROTOCOL8 ##################################################'','','trainon_both_teston_idiap'
+
+
+		if extra_gvt_batl is not None and "trainon_both_teston_idiap_realgov" in extra_gvt_batl:
+
+			## Train on a db means combining train and validation
+
+
+			if groups == ['train']: # join "train" and "dev" sets
+				batl_files = self.batl_db.objects(protocol=protocol_batl,
+										groups=['train', 'validation'],
+										purposes=purposes, **kwargs)
+				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
+										groups=['train', 'validation'],
+										purposes=purposes, **kwargs)
+				## use only bonafides from govt for training
+				
+				batl_govt_files=[ f for f in batl_govt_files if f.type_id == 0]
+
+
+			# return ALL data if "train" and "some other" set/sets are requested
+			elif len(groups)>=2 and 'train' in groups:
+				batl_files = self.batl_db.objects(protocol=protocol_batl,
+										groups=self.low_level_group_names,
+										purposes=purposes, **kwargs)
+
+				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
+										groups=self.low_level_group_names,
+										purposes=purposes, **kwargs)
+
+			# addresses the cases when groups=['validation'] or ['test'] or ['validation', 'test']:
+			else:
+				batl_files = self.batl_db.objects(protocol=protocol_batl,
+										groups=['test'],
+										purposes=purposes, **kwargs)
+
+
+
+
+
 
 
 		################## PROTOCOL ENDS #################################
