@@ -6,10 +6,6 @@ Created on Mon Jun  4 11:58:03 2018
 @author: ageorge
 """
 
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-
-# Used in BATLMobilePadFile class
 from bob.pad.base.database import PadDatabase, PadFile
 from bob.bio.video import FrameSelector
 from bob.extension import rc
@@ -25,7 +21,7 @@ import bob.io.base
 
 class BatlGovtPadFile(PadFile):
     """
-    A high level implementation of the File class for the BATL G
+    A high level implementation of the File class for the BATL GOV
     database.
     """
 
@@ -43,7 +39,7 @@ class BatlGovtPadFile(PadFile):
 
         ``f`` : :py:class:`object`
             An instance of the File class defined in the low level db interface
-            of the BATL database, in the ``bob.db.batl.models.py`` file.
+            of the BATL database, in the ``bob.db.batlgovt.models.py`` file.
 
         ``stream_type`` : [] or :py:class:`str`
             A types of the streams to be loaded.
@@ -107,11 +103,11 @@ class BatlGovtPadFile(PadFile):
         **Parameters:**
 
         ``directory`` : :py:class:`str`
-            String containing the path to BATL database.
+            String containing the path to BATL GOVT database.
             Default: ``None``.
 
         ``extension`` : :py:class:`str`
-            Extension of the BATL database.
+            Extension of the BATL GOVT database.
             Default: ".h5".
 
         ``frame_selector`` : :any:`bob.bio.video.FrameSelector`, optional
@@ -144,10 +140,9 @@ class BatlGovtPadFile(PadFile):
 
         return data
 
-# done
 class BatlGovtPadDatabase(PadDatabase):
     """
-    A high level implementation of the Database class for the BATL
+    A high level implementation of the Database class for the BATL GOVT
     database.
     """
 
@@ -168,12 +163,12 @@ class BatlGovtPadDatabase(PadDatabase):
             setup for this database. Also a "complex" protocols can be
             parsed.
             For example:
-            "nowig-color-5" - nowig protocol, color data only,
+            "baseline-color-5" - baseline protocol, color data only,
             use 5 first frames.
-            "nowig-depth-5" - nowig protocol, depth data only,
+            "baseline-depth-5" - baseline protocol, depth data only,
             use 5 first frames.
-            "nowig-color" - nowig protocol, depth data only, use all frames.
-            "nowig-infrared-50-join_train_dev" - nowig protocol,
+            "baseline-color" - baseline protocol, depth data only, use all frames.
+            "baseline-infrared-50-join_train_dev" - baseline protocol,
             infrared data only, use 50 frames, join train and dev sets forming
             a single large training set.
             See the ``parse_protocol`` method of this class.
@@ -246,14 +241,14 @@ class BatlGovtPadDatabase(PadDatabase):
         """
         Parse the protocol name, which is give as a string.
         An example of protocols it can parse:
-        "nowig-color-5" - nowig protocol, color data only, use 5 first frames.
-        "nowig-depth-5" - nowig protocol, depth data only, use 5 first frames.
-        "nowig-color" - nowig protocol, depth data only, use all frames.
+        "baseline-color-5" - baseline protocol, color data only, use 5 first frames.
+        "baseline-depth-5" - baseline protocol, depth data only, use 5 first frames.
+        "baseline-color" - baseline protocol, depth data only, use all frames.
 
         **Parameters:**
 
         ``protocol`` : str
-            Protocol name to be parsed. Example: "nowig-depth-5" .
+            Protocol name to be parsed. Example: "baseline-depth-5" .
 
         **Returns:**
 
@@ -306,7 +301,7 @@ class BatlGovtPadDatabase(PadDatabase):
                 model_ids=None,
                 **kwargs):
         """
-        This function returns lists of BatlPadFile objects, which fulfill the
+        This function returns lists of BatlGovtPadFile objects, which fulfill the
         given restrictions.
 
         **Parameters:**
@@ -330,8 +325,8 @@ class BatlGovtPadDatabase(PadDatabase):
 
         **Returns:**
 
-        ``files`` : [BatlPadFile]
-            A list of BATLPadFile objects.
+        ``files`` : [BatlGovtPadFile]
+            A list of BatlGovtPadFile objects.
         """
 
         if protocol is None:
@@ -353,7 +348,6 @@ class BatlGovtPadDatabase(PadDatabase):
             groups = list(groups)
 
         if extra is not None and "join_train_dev" in extra:
-            #print('INSIDE',groups)
 
             if groups == ['train']: # join "train" and "dev" sets
                 files = self.db.objects(protocol=protocol,
@@ -373,7 +367,7 @@ class BatlGovtPadDatabase(PadDatabase):
                                         purposes=purposes, **kwargs)
 
         else:
-            # Added AG instead of _fix funny eyes
+            
             if groups is None:
                 groups = self.low_level_group_names
             files = self.db.objects(protocol=protocol,
@@ -394,7 +388,7 @@ class BatlGovtPadDatabase(PadDatabase):
     def annotations(self, f):
         """
         Computes annotations for a given file object ``f``, which
-        is an instance of the ``BatlPadFile`` class.
+        is an instance of the ``BatlGovtPadFile`` class.
 
         NOTE: you can pre-compute annotation in your first experiment
         and then reuse them in other experiments setting
@@ -404,7 +398,7 @@ class BatlGovtPadDatabase(PadDatabase):
         **Parameters:**
 
         ``f`` : :py:class:`object`
-            An instance of ``BatlPadFile`` defined above.
+            An instance of ``BatlGovtPadFile`` defined above.
 
         **Returns:**
 

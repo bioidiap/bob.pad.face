@@ -40,7 +40,7 @@ class BatlAggregatedPadFile(PadFile):
 
 		``f`` : :py:class:`object`
 			An instance of the File class defined in the low level db interface
-			of the BATL database, in the ``bob.db.batl.models.py`` file.
+			of the BATL databases, it can be either the one defined in ``bob.db.batl.models.py`` or ``bob.db.batlgovt.models.py`` file.
 
 		``stream_type`` : [] or :py:class:`str`
 			A types of the streams to be loaded.
@@ -106,11 +106,12 @@ class BatlAggregatedPadFile(PadFile):
 		**Parameters:**
 
 		``directory`` : :py:class:`str`
-			String containing the path to BATL database.
+			String containing the path to BATL Aggregated database (string with 
+			two individual databse paths separated by ` `).
 			Default: ``None``.
 
 		``extension`` : :py:class:`str`
-			Extension of the BATL database.
+			Extension of the BATL Aggregated database.
 			Default: ".h5".
 
 		``frame_selector`` : :any:`bob.bio.video.FrameSelector`, optional
@@ -124,7 +125,7 @@ class BatlAggregatedPadFile(PadFile):
 			for further details.
 		"""
 
-		# directory is a tuple
+		# directory is a string separated by space.
 
 		if isinstance(self.f, bob.db.batl.models.VideoFile):
 
@@ -134,7 +135,6 @@ class BatlAggregatedPadFile(PadFile):
 
 			directory_sel=directory.split(" ")[1]
 
-		#print("directory_sel",directory_sel)
 
 		data = self.f.load(directory=directory_sel,
 						   extension=extension,
@@ -181,11 +181,12 @@ class BatlAggregatedPadFile(PadFile):
 		import bob.db.batl
 		import bob.db.batlgovt
 
-		if isinstance(f, bob.db.batl.models.VideoFile): # check if instance of File class of LLDI of Replay-Attack
+		if isinstance(f, bob.db.batl.models.VideoFile): # check if instance of File class of LLDI of BATL Idiap DB
 				
 			file_id = f.id
 
-		if isinstance(f, bob.db.batlgovt.models.VideoFile): 
+		if isinstance(f, bob.db.batlgovt.models.VideoFile):  # check if instance of File class of LLDI of BATL GOV DB
+
 			file_id = np.int(f.id + n)
 			
 
@@ -199,7 +200,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 	def __init__(
 			self,
-			protocol='nowig__baseline', # accepts 2 for the time being
+			protocol='nowig__baseline', 
 			original_directory=rc['bob.db.batl.directory'],
 			original_extension='.h5',
 			annotations_temp_dir="",
@@ -214,14 +215,11 @@ class BatlAggregatedPadDatabase(PadDatabase):
 			setup for this database. Also a "complex" protocols can be
 			parsed.
 			For example:
-			"nowig-color-5" - nowig protocol, color data only,
-			use 5 first frames.
-			"nowig-depth-5" - nowig protocol, depth data only,
-			use 5 first frames.
-			"nowig-color" - nowig protocol, depth data only, use all frames.
-			"nowig-infrared-50-join_train_dev" - nowig protocol,
-			infrared data only, use 50 frames, join train and dev sets forming
-			a single large training set.
+			"nowig-color-50-trainon_idiap_teston_gov__baseline-color-50-trainon_idiap_teston_gov" 
+			    - nowig base protocol in BATL idiap data with color channel with 50 frames per file used for training 
+			     and baseline protocol of BATL GOV databse, color channel with 50 frames for testing. Joined train and dev 
+			     sets of these datasets are used for training. The two parts separated by '__' are parsed as BatlIdiap and BatlGov
+			     configurations respectively. The protocol enables various experiments with cross database testing.
 			See the ``parse_protocol`` method of this class.
 
 		``original_directory`` : str
@@ -233,7 +231,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		``annotations_temp_dir`` : str
 			Annotations computed in ``self.annotations(f)`` method of this
 			class will be save to this directory if path is specified /
-			non-empty string.
+			non-empty string. The paths for both the datasets must be specified here.
 			Default: ``""``.
 
 		``landmark_detect_method`` : str
@@ -243,7 +241,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 		``exlude_attacks_list`` : [str]
 			A list of strings defining which attacks should be excluded from
-			the training set. This shoould be handled in ``objects()`` method.
+			the training set. This should be handled in ``objects()`` method.
 			Currently handled attacks: "makeup".
 			Default: ``None``.
 
@@ -278,7 +276,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 			original_extension=original_extension,
 			**kwargs)
 
-		#print("protocolsINIT:",protocol[0],protocol[0])
+
 		self.protocol = protocol #tuple
 		self.original_directory = original_directory #tuple
 		self.original_extension = original_extension
@@ -286,14 +284,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		self.landmark_detect_method = landmark_detect_method
 		self.exlude_attacks_list = exlude_attacks_list
 
-	# @property
-	# def original_directory(self):
-	# 	return self.batl_db.original_directory, self.batl_govt_db.original_directory
-
-	# @original_directory.setter
-	# def original_directory(self, value):
-	# 	self.batl_db.original_directory = value.split(" ")[0]
-	# 	self.batl_govt_db.original_directory = value.split(" ")[0]
 
 	def parse_protocol(self, protocol):
 		# Handle a single protocol statement here
@@ -301,14 +291,13 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		"""
 		Parse the protocol name, which is give as a string.
 		An example of protocols it can parse:
-		"nowig-color-5" - nowig protocol, color data only, use 5 first frames.
-		"nowig-depth-5" - nowig protocol, depth data only, use 5 first frames.
-		"nowig-color" - nowig protocol, depth data only, use all frames.
+		"nowig-color-50-trainon_idiap_teston_gov" - nowig protocol, color data only, use 50 frames.
+		use Idiap (train+dev) for training and 'GOV' database 'eval' set for testing.
 
 		**Parameters:**
 
 		``protocol`` : str
-			Protocol name to be parsed. Example: "nowig-depth-5" .
+			Protocol name to be parsed. Example: "nowig-color-50-trainon_idiap_teston_gov" .
 
 		**Returns:**
 
@@ -333,13 +322,9 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		possible_extras = ['join_train_dev','trainon_idiap_teston_gov','trainon_gov_teston_idiap','trainon_both_teston_gov','trainon_both_teston_idiap','trainon_idiap_teston_idiap','trainon_gov_teston_gov','trainon_both_teston_gov_realgov','trainon_both_teston_idiap_realgov']
 
 
-		# Here exclusing make up is generally used
-
-		#print("protocol:",protocol)
+		# Here excluding make up is generally used
 
 		components = protocol.split("-")
-
-		#print("components:",components)
 
 		extra = [item for item in possible_extras if item in components]
 
@@ -368,7 +353,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 				model_ids=None,
 				**kwargs):
 		"""
-		This function returns lists of BatlPadFile objects, which fulfill the
+		This function returns lists of BatlAggregatedPadFile objects, which fulfill the
 		given restrictions.
 
 		**Parameters:**
@@ -392,8 +377,8 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 		**Returns:**
 
-		``files`` : [BatlPadFile]
-			A list of BATLPadFile objects.
+		``files`` : [BatlAggregatedPadFile]
+			A list of BatlAggregatedPadFile objects.
 		"""
 
 		
@@ -406,8 +391,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 		if purposes is None:
 			purposes = ['real', 'attack']
-
-		#print("protocols:",protocol[0],protocol[1])
 
 		protocol_batl, stream_type, max_frames, extra_batl = self.parse_protocol(protocol.split("__")[0])
 		protocol_gvt_batl, stream_type, max_frames, extra_gvt_batl = self.parse_protocol(protocol.split("__")[1])
@@ -422,13 +405,11 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		
 		###########
 
-		#print("extra_batl:",extra_batl,"extra_gvt_batl:",extra_gvt_batl)
-
 		batl_govt_files=[]
 
 		batl_files=[]
 
-		####### outer as a base
+		# If no extras are defined return all of them .
 
 
 		if extra_batl is None:
@@ -444,7 +425,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 
 		if extra_batl is not None and "join_train_dev" in extra_batl:
-			#print('INSIDE',groups)
 
 			if groups == ['train']: # join "train" and "dev" sets
 				batl_files = self.batl_db.objects(protocol=protocol_batl,
@@ -468,7 +448,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 		########
 		if extra_gvt_batl is not None and "join_train_dev" in extra_gvt_batl:
-			#print('INSIDE',groups)
 
 			if groups == ['train']: # join "train" and "dev" sets
 				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
@@ -489,17 +468,12 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 
 
-
-
-		############## Handling protocols assumes that both have same protocol extra so taking batl one, later implement something instead of tuple to one string as scores go to the stuff
-
-
 		######### PROTOCOL 1##################################################
 
 
 		if extra_gvt_batl is not None and "trainon_idiap_teston_gov" in extra_gvt_batl:
 
-			## Train on a db means combining train and validation
+			## Train on a db indicates combining train and validation
 
 
 			if groups == ['train']: # join "train" and "dev" sets
@@ -534,11 +508,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 			## Train on a db means combining train and validation
 
-
-
-
 			if groups == ['train']: # join "train" and "dev" sets
-				#print("1.train:groups",groups)
 
 				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
 										groups=['train', 'validation'],
@@ -547,7 +517,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 			# return ALL data if "train" and "some other" set/sets are requested
 			elif len(groups)>=2 and 'train' in groups:
-				#print("2.train:groups",groups)
 
 
 				batl_govt_files = self.batl_govt_db.objects(protocol=protocol_gvt_batl,
@@ -561,7 +530,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 			# addresses the cases when groups=['validation'] or ['test'] or ['validation', 'test']:
 			else:
-				#print("3.test:groups",groups)
 				batl_files = self.batl_db.objects(protocol=protocol_batl,
 										groups=['test'],
 										purposes=purposes, **kwargs)
@@ -573,7 +541,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		if extra_gvt_batl is not None and "trainon_both_teston_gov" in extra_gvt_batl:
 
 			## Train on a db means combining train and validation
-
 
 			if groups == ['train']: # join "train" and "dev" sets
 				batl_files = self.batl_db.objects(protocol=protocol_batl,
@@ -718,8 +685,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 				batl_govt_files=[ f for f in batl_govt_files if f.type_id == 0]
 
 
-
-
 			# return ALL data if "train" and "some other" set/sets are requested
 			elif len(groups)>=2 and 'train' in groups:
 				batl_files = self.batl_db.objects(protocol=protocol_batl,
@@ -775,12 +740,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 
 
-
-
-
-		################## PROTOCOL ENDS #################################
-
-
+		################## PROTOCOL #################################
 
 
 
@@ -823,7 +783,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		print("annot",f)
 		"""
 		Computes annotations for a given file object ``f``, which
-		is an instance of the ``BatlPadFile`` class.
+		is an instance of the ``BatlAggregatedPadFile`` class.
 
 		NOTE: you can pre-compute annotation in your first experiment
 		and then reuse them in other experiments setting
@@ -833,7 +793,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		**Parameters:**
 
 		``f`` : :py:class:`object`
-			An instance of ``BatlPadFile`` defined above.
+			An instance of ``BatlAggregatedPadFile`` defined above.
 
 		**Returns:**
 
@@ -853,11 +813,9 @@ class BatlAggregatedPadDatabase(PadDatabase):
 
 		annotations = {}
 
-		#print("type",type(f.f)) 
 
 		if isinstance(f.f, bob.db.batl.models.VideoFile):
 
-			#print("Idiap instance")
 
 			file_path = os.path.join(self.annotations_temp_dir.split(" ")[0], f.f.path + ".json")
 
@@ -900,14 +858,11 @@ class BatlAggregatedPadDatabase(PadDatabase):
 	
 
 		if isinstance(f.f, bob.db.batlgovt.models.VideoFile): 
-			#print("Gov instance")
-			#print("self.annotations_temp_dir",self.annotations_temp_dir)
-	  
 
+	  
 			file_path = os.path.join(self.annotations_temp_dir.split(" ")[1], f.f.path + ".json")
 
 			if not os.path.isfile(file_path):  # no file with annotations
-				#print("No annotations found!!")
 
 				f.stream_type = "color"
 				f.reference_stream_type = "color"
@@ -940,7 +895,6 @@ class BatlAggregatedPadDatabase(PadDatabase):
 						json_file.write(json.dumps(annotations))
 
 			else:  # if file with annotations exists load them from file
-				#print("Annotations found!!")
 
 				with open(file_path, 'r') as json_file:
 
@@ -952,7 +906,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		if not annotations:  # if dictionary is empty
 
 			return None
-		#else:
+			
 		return annotations
 
 

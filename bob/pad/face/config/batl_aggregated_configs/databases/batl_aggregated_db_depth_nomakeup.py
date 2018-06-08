@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 """
-BATL Govt DB is a database for face PAD experiments.
+BATL Aggregated DB is a database for face PAD experiments.
 """
 
 from bob.pad.face.database import BatlAggregatedPadDatabase
 
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
+
 ORIGINAL_DIRECTORY = "[YOUR_BATL_AGGREGATED_DB_DIRECTORY]" 
+
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
 ORIGINAL_EXTENSION = ".h5"  # extension of the data files
@@ -15,7 +17,7 @@ ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 ANNOTATIONS_TEMP_DIR = '/idiap/temp/ageorge/BATL_aggregated/annotations_idiap_batl/ /idiap/temp/ageorge/BATL_aggregated/annotations_govtest_backup/'
 
 
-_training_protocol='trainon_both_teston_gov_realgov'
+_training_protocol='trainon_both_teston_idiap_realgov'
 
 _stream_type='depth'
 
@@ -30,7 +32,7 @@ database = BatlAggregatedPadDatabase(
     exlude_attacks_list = ["makeup"],
     training_depends_on_protocol=True,
 )
-"""The :py:class:`bob.pad.base.database.BatlGovtPadDatabase` derivative with BATL Db
+"""The :py:class:`bob.pad.base.database.BatlAggregatedPadDatabase` derivative with BATL Db
 database settings.
 
 .. warning::
@@ -39,9 +41,12 @@ database settings.
    manner, respecting usage protocols. It does **not** contain the raw
    data files. You should procure those yourself.
 
-Notice that ``original_directory`` is set to ``[BatlGovtPadDatabase]``.
+Notice that ``original_directory`` is set to ``[YOUR_BATL_AGGREGATED_DB_DIRECTORY]``.
 You must make sure to create ``${HOME}/.bob_bio_databases.txt`` file setting this
-value to the places where you actually installed the BATL Govt database.
+value to the places where you actually installed the BATL Aggregated database.
+``[ANNOTATIONS_TEMP_DIR]`` is the location where the annotations would be stores. It is adviced
+to run the configuration for  `color` channel first to generate the annotations for the protocol and
+reuse them for other channels. 
 """
 
 protocol = PROTOCOL
