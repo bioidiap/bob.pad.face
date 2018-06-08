@@ -319,7 +319,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 			forming a single training set.
 		"""
 
-		possible_extras = ['join_train_dev','trainon_idiap_teston_gov','trainon_gov_teston_idiap','trainon_both_teston_gov','trainon_both_teston_idiap','trainon_idiap_teston_idiap','trainon_gov_teston_gov','trainon_both_teston_gov_realgov','trainon_both_teston_idiap_realgov']
+		possible_extras = ['gov_cross_validation_all_vs_valid','gov_cross_validation_part0','gov_cross_validation_part1','gov_cross_validation_part2','gov_cross_validation_part3','gov_cross_validation_part4','gov_cross_validation_part5','gov_cross_validation_part6','gov_cross_validation_part7','gov_cross_validation_part8','gov_cross_validation_part9','gov_cross_validation_parttest','join_train_dev','trainon_idiap_teston_gov','trainon_gov_teston_idiap','trainon_both_teston_gov','trainon_both_teston_idiap','trainon_idiap_teston_idiap','trainon_gov_teston_gov','trainon_both_teston_gov_realgov','trainon_both_teston_idiap_realgov']
 
 
 		# Here excluding make up is generally used
@@ -467,6 +467,42 @@ class BatlAggregatedPadDatabase(PadDatabase):
 										purposes=purposes, **kwargs)
 
 
+
+
+		# gov_cross_validation
+
+		################ Cross validation protocols
+
+
+
+		if extra_gvt_batl is not None and "gov_cross_validation" in extra_gvt_batl:
+
+			_fold=extra_gvt_batl.split("_")[-1]
+
+			if _fold=='valid':
+				_protocol='all_vs_valid' # all vs valid
+			else:
+				_protocol=_fold  ## override the protocol with the fold 
+
+
+			if groups == ['train']: # only the train set , which is the 9 foldes
+				batl_govt_files = self.batl_govt_db.objects(protocol=_protocol,
+										groups=['train'],
+										purposes=purposes, **kwargs)
+
+
+			# return ALL data if "train" and "some other" set/sets are requested
+			elif len(groups)>=2 and 'train' in groups:
+				batl_govt_files = self.batl_govt_db.objects(protocol=_protocol,
+										groups=self.low_level_group_names,
+										purposes=purposes, **kwargs)  ## Validation set not to be used anywhere
+
+
+			# addresses the cases when groups=['validation'] or ['test'] or ['validation', 'test']:
+			else:
+				batl_govt_files = self.batl_govt_db.objects(protocol=_protocol,  ## only the test set
+										groups=['test'],
+										purposes=purposes, **kwargs)
 
 		######### PROTOCOL 1##################################################
 
@@ -906,7 +942,7 @@ class BatlAggregatedPadDatabase(PadDatabase):
 		if not annotations:  # if dictionary is empty
 
 			return None
-			
+
 		return annotations
 
 
