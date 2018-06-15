@@ -17,7 +17,7 @@ ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 ANNOTATIONS_TEMP_DIR = '/idiap/temp/ageorge/BATL_aggregated/annotations_idiap_batl/ /idiap/temp/ageorge/BATL_aggregated/annotations_govtest_backup/'
 
 
-_training_protocol='gov_cross_validation_part0'
+_training_protocol='gov_LOO_M5002'
 
 _stream_type='infrared'
 
