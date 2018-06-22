@@ -84,6 +84,12 @@ setup(
             'batl-govt-db-depth-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_depth_nomakeup:database',
             'batl-govt-db-thermal-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_thermal_nomakeup:database',
 
+            # docker test batl
+            'batl-docker-db-color = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_color:database',
+            'batl-docker-db-infrared = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_depth:database',
+            'batl-docker-db-depth = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_infrared:database',
+            'batl-docker-db-thermal = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_thermal:database',
+
             #aggregated batl
 
             'batl-aggregated-db-color-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_color_nomakeup:database',
@@ -117,8 +123,12 @@ setup(
             'batl-govt-db-depth-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_depth_nomakeup:database',
             'batl-govt-db-thermal-nomakeup = bob.pad.face.config.batl_govt_configs.databases.batl_govt_db_thermal_nomakeup:database',
 
+            # docker test batl
+            'batl-docker-db-color = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_color:database',
+            'batl-docker-db-infrared = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_depth:database',
+            'batl-docker-db-depth = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_infrared:database',
+            'batl-docker-db-thermal = bob.pad.face.config.batl_docker_configs.databases.batl_docker_db_thermal:database',
 
-            
             #aggregated batl
 
             'batl-aggregated-db-color-nomakeup = bob.pad.face.config.batl_aggregated_configs.databases.batl_aggregated_db_color_nomakeup:database',

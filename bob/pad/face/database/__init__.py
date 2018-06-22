@@ -7,6 +7,7 @@ from .mifs import MIFSPadDatabase
 from .batl import BatlPadDatabase
 from .celeb_a import CELEBAPadDatabase
 from .batlgovt import BatlGovtPadDatabase
+from .batldocker import BatlDockerPadDatabase
 from .batl_aggregated import BatlAggregatedPadDatabase
 
 
@@ -36,6 +37,7 @@ __appropriate__(
     BatlPadDatabase,
     CELEBAPadDatabase,
     BatlGovtPadDatabase,
+    BatlDockerPadDatabase,
     BatlAggregatedPadDatabase,
 )
 
