@@ -68,6 +68,7 @@ class LiFeatures(Extractor, object):
     -------
     feature: numpy.ndarray 
      the computed features 
+
     """
     # sanity check
     assert signal.ndim == 2 and signal.shape[1] == 3, "You should provide 3 pulse signals"

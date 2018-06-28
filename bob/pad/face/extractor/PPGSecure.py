@@ -5,13 +5,12 @@ import numpy
 
 from bob.bio.base.extractor import Extractor
 
-import logging
-logger = logging.getLogger("bob.pad.face")
+from bob.core.log import setup
+logger = setup("bob.pad.face")
 
 
 class PPGSecure(Extractor, object):
-  """
-  This class extract the frequency features from pulse signals.
+  """Extract frequency spectra from pulse signals.
   
   The feature are extracted according to what is described in 
   the following article:
@@ -30,39 +29,48 @@ class PPGSecure(Extractor, object):
       year           = 2017
     }
 
-  **Parameters:**
-
+  Attributes
+  ----------
   framerate: int
     The sampling frequency of the signal (i.e the framerate ...) 
-
   nfft: int
     Number of points to compute the FFT
-
-  debug: boolean
+  debug: bool
     Plot stuff
+  
   """
   def __init__(self, framerate=25, nfft=32, debug=False, **kwargs):
+    """Init function
 
-    super(PPGSecure, self).__init__(**kwargs)
+    Parameters
+    ----------
+    framerate: int
+      The sampling frequency of the signal (i.e the framerate ...) 
+    nfft: int
+      Number of points to compute the FFT
+    debug: bool
+      Plot stuff
     
+    """
+    super(PPGSecure, self).__init__(**kwargs)
     self.framerate = framerate
     self.nfft = nfft
     self.debug = debug
 
 
   def __call__(self, signal):
-    """
-    Compute the frequency spectrum for the given signal.
+    """Compute and concatenate frequency spectra for the given signals.
 
-    **Parameters:**
-
-    signal: numpy.array 
+    Parameters
+    ----------
+    signal: numpy.ndarray 
       The signal
 
-    **Returns:**
-
-      freq: numpy.array 
-       the frequency spectrum 
+    Returns
+    -------
+    fft: numpy.ndarray 
+     the computed FFT features 
+    
     """
     # sanity check
     assert signal.shape[1] == 5, "You should provide 5 pulses"
@@ -74,7 +82,7 @@ class PPGSecure(Extractor, object):
     # get the frequencies
     f = numpy.fft.fftfreq(self.nfft) * self.framerate
    
-    # we have 5 pulse signal (Li's preprocessing)
+    # we have 5x3 pulse signals, in different regions across 3 channels
     ffts = numpy.zeros((5, output_dim))
     for i in range(5):
       ffts[i] = abs(numpy.fft.rfft(signal[:, i], n=self.nfft))
@@ -93,6 +101,5 @@ class PPGSecure(Extractor, object):
     if numpy.sum(fft) == 0:
       logger.warn("Feature not extracted")
       return
-
 
     return fft
