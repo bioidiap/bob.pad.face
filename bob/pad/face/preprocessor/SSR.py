@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import numpy
 
-import logging
-logger = logging.getLogger("bob.pad.face")
+from bob.core.log import setup
+logger = setup("bob.pad.face")
 
 from bob.bio.base.preprocessor import Preprocessor
 
@@ -16,55 +19,65 @@ from bob.rppg.ssr.ssr_utils import build_P
 
 
 class SSR(Preprocessor, object):
-  """
-  This class extract the pulse signal from a video sequence.
+  """Extract pulse signal from a video sequence.
+  
   The pulse is extracted according to the SSR algorithm.
 
-  **Parameters:**
+  See the documentation of :py:mod:`bob.rppg.base`
 
+  Attributes
+  ----------
   skin_threshold: float
     The threshold for skin color probability
-
   skin_init: bool
     If you want to re-initailize the skin color distribution at each frame
-
   stride: int
     The temporal stride. 
-
   debug: boolean          
     Plot some stuff 
+  skin_filter: :py:class:`bob.ip.skincolorfilter.SkinColorFilter` 
+    The skin color filter 
 
   """
+  
   def __init__(self, skin_threshold=0.5, skin_init=False, stride=25, debug=False, **kwargs):
+    """Init function
 
+    Parameters
+    ----------
+    skin_threshold: float
+      The threshold for skin color probability
+    skin_init: bool
+      If you want to re-initailize the skin color distribution at each frame
+    stride: int
+      The temporal stride. 
+    debug: boolean          
+      Plot some stuff 
+
+    """
     super(SSR, self).__init__()
-
     self.skin_threshold = skin_threshold
     self.skin_init = skin_init
     self.stride = stride
     self.debug = debug
-
     self.skin_filter = bob.ip.skincolorfilter.SkinColorFilter()
 
 
   def __call__(self, frames, annotations):
-    """
-    Compute the pulse signal for the given frame sequence
+    """Computes the pulse signal for the given frame sequence
 
-    **Parameters:**
-
-    frames: :pyclass: `bob.bio.video.utils.FrameContainer`
-      Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
-      for further details.
-
+    Parameters
+    ----------
+    frames: :py:class:`bob.bio.video.utils.FrameContainer`
+      video data 
     annotations: :py:class:`dict`
-      A dictionary containing annotations of the face bounding box.
-      Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col)}``
+      the face bounding box, as follows: ``{'topleft': (row, col), 'bottomright': (row, col)}``
 
-    **Returns:**
-
-      pulse: numpy.array of size nb_frames 
-        The pulse signal 
+    Returns
+    -------
+    pulse: numpy.ndarray 
+      The pulse signal
+    
     """
     video = frames.as_array()
     nb_frames = video.shape[0]
@@ -88,7 +101,6 @@ class SSR(Preprocessor, object):
         from matplotlib import pyplot
         pyplot.imshow(numpy.rollaxis(numpy.rollaxis(frame, 2),2))
         pyplot.show()
-    
 
       # get the face
       try:
@@ -97,7 +109,7 @@ class SSR(Preprocessor, object):
         size = (bottomright[0]-topleft[0], bottomright[1]-topleft[1])
         bbox = bob.ip.facedetect.BoundingBox(topleft, size)
         face = crop_face(frame, bbox, bbox.size[1])
-      except (KeyError, ZeroDivisionError) as e:
+      except (KeyError, ZeroDivisionError, TypeError) as e:
         logger.warning("No annotations ... running face detection")
         try:
           bbox, quality = bob.ip.facedetect.detect_single_face(frame)
@@ -129,7 +141,7 @@ class SSR(Preprocessor, object):
         pyplot.imshow(numpy.rollaxis(numpy.rollaxis(skin_mask_image, 2),2))
         pyplot.show()
       
-      # nos skin pixels have ben detected ... using the previous ones
+      # no skin pixels have ben detected ... using the previous ones
       if skin_pixels.shape[1] == 0:
         skin_pixels = previous_skin_pixels 
         logger.warn("No skin pixels detected, using the previous ones")

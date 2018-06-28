@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import numpy
 
-import logging
-logger = logging.getLogger("bob.pad.face")
+from bob.core.log import setup
+logger = setup("bob.pad.face")
 
 from bob.bio.base.preprocessor import Preprocessor
 
@@ -33,49 +36,56 @@ class PPGSecure(Preprocessor):
       year           = 2017
     }
 
-  **Parameters:**
-
+  Attributes
+  ----------
   framerate: int
     The framerate of the video sequence.
-
   bp_order: int
     The order of the bandpass filter
-
-  debug: boolean          
+  debug: bool
     Plot some stuff 
+  
   """
+ 
   def __init__(self, framerate=25, bp_order=32, debug=False, **kwargs):
+    """Init function
 
-    super(PPGSecure, self).__init__(**kwargs)
+    Parameters
+    ----------
+    framerate: int
+      The framerate of the video sequence.
+    bp_order: int
+      The order of the bandpass filter
+    debug: bool
+      Plot some stuff 
     
+    """
+    super(PPGSecure, self).__init__(**kwargs)
     self.framerate = framerate
     self.bp_order = bp_order
     self.debug = debug
     
-    # build the bandpass filter one and for all
+    # build the bandpass filter
     self.bandpass_filter = build_bandpass_filter(self.framerate, self.bp_order, min_freq=0.5, max_freq=5, plot=False)
     
-    # landmarks detection
+    # landmarks detector
     self.detector = bob.ip.dlib.DlibLandmarkExtraction()
 
   def __call__(self, frames, annotations):
-    """
-    Compute the pulse signal for the given frame sequence
+    """Compute the pulse signal for the given frame sequence
 
-    **Parameters:**
-
-    frames: :pyclass: `bob.bio.video.utils.FrameContainer`
-      Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
-      for further details.
-
+    Parameters
+    ----------
+    frames: :py:class:`bob.bio.video.utils.FrameContainer`
+      video data 
     annotations: :py:class:`dict`
-      A dictionary containing annotations of the face bounding box.
-      Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col)}``
+      the face bounding box, as follows: ``{'topleft': (row, col), 'bottomright': (row, col)}``
 
-    **Returns:**
-
-      pulses: numpy.array of size (5, nb_frame)
-        The pulse signals from different area of the image 
+    Returns
+    -------
+    pulse: numpy.ndarray 
+      The pulse signal, in each color channel (RGB)  
+    
     """
     video = frames.as_array()
     nb_frames = video.shape[0]
@@ -112,6 +122,11 @@ class PPGSecure(Preprocessor):
           green_mean[i, :] = 0
           continue
         frame = frame_rotated
+
+      # landmarks have not been detected: use the one from previous frame
+      if ldms is None:
+        ldms = previous_ldms
+        logger.warning("Frame {}: no landmarks detected, using the ones from previous frame".format(i))
 
       if self.debug:
         from matplotlib import pyplot
@@ -152,15 +167,17 @@ class PPGSecure(Preprocessor):
 
 
   def _get_masks(self, image, ldms):
-    """ get the 5 masks for rPPG signal extraction
+    """Get the 5 masks for rPPG signal extraction
 
-    **Parameters**
-
-    ldms: numpy.array
+    Parameters
+    ----------
+    ldms: numpy.ndarray
       The landmarks, as retrieved by bob.ip.dlib.DlibLandmarkExtraction()
 
-    **Returns**
-      masks: boolean
+    Returns
+    -------
+      masks: :py:obj:`list` of numpy.ndarray
+        A list containing the different mask as a boolean array
         
     """
     masks = []
@@ -220,5 +237,3 @@ class PPGSecure(Preprocessor):
     masks.append(get_mask(image, mask_points))
 
     return masks
-
-

@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import numpy
 
-import logging
-logger = logging.getLogger("bob.pad.face")
+from bob.core.log import setup
+logger = setup("bob.pad.face")
 
 from bob.bio.base.preprocessor import Preprocessor
 
@@ -15,39 +18,55 @@ from bob.rppg.cvpr14.filter_utils import average
 
 
 class Li(Preprocessor):
-  """
-  This class extract the pulse signal from a video sequence.
+  """Extract pulse signal from a video sequence.
   
   The pulse is extracted according to Li's CVPR 14 algorithm.
+
+  See the documentation of :py:mod:`bob.rppg.base`
+
   Note that this is a simplified version of the original 
   pulse extraction algorithms (mask detection in each 
-  frame instead of tranking, no illumination correction,
+  frame instead of tracking, no illumination correction,
   no motion pruning)
 
-  **Parameters:**
-
+  Attributes
+  ----------
   indent: int
     Indent (in percent of the face width) to apply to keypoints to get the mask.
-
   lamda_: int
     the lamba value of the detrend filter
-
   window: int
     The size of the window of the average filter 
-
   framerate: int
     The framerate of the video sequence.
-
   bp_order: int
     The order of the bandpass filter
-
-  debug: boolean          
+  debug: bool
     Plot some stuff 
+  
   """
+  
   def __init__(self, indent = 10, lambda_ = 300, window = 3, framerate = 25, bp_order = 32, debug=False, **kwargs):
+    """Init function
 
-    super(Li, self).__init__(**kwargs)
+    Parameters
+    ----------
+    indent: int
+      Indent (in percent of the face width) to apply to keypoints to get the mask.
+    lamda_: int
+      the lamba value of the detrend filter
+    window: int
+      The size of the window of the average filter 
+    framerate: int
+      The framerate of the video sequence.
+    bp_order: int
+      The order of the bandpass filter
+    debug: bool
+      Plot some stuff 
     
+
+    """
+    super(Li, self).__init__(**kwargs)
     self.indent = indent
     self.lambda_ = lambda_
     self.window = window
@@ -56,31 +75,28 @@ class Li(Preprocessor):
     self.debug = debug
 
   def __call__(self, frames, annotations=None):
-    """
-    Compute the pulse signal for the given frame sequence
+    """Computes the pulse signal for the given frame sequence
 
-    **Parameters:**
-
-    frames: :pyclass: `bob.bio.video.utils.FrameContainer`
-      Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
-      for further details.
-
+    Parameters
+    ----------
+    frames: :py:class:`bob.bio.video.utils.FrameContainer`
+      video data 
     annotations: :py:class:`dict`
-      A dictionary containing annotations of the face bounding box.
-      Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col)}``
+      the face bounding box, as follows: ``{'topleft': (row, col), 'bottomright': (row, col)}``
 
-    **Returns:**
-
-      pulse: numpy.array of size (nb_frame, 3)
-        The pulse signal in each color channel (RGB)  
+    Returns
+    -------
+    pulse: numpy.ndarray 
+      The pulse signal, in each color channel (RGB)  
+    
     """
     video = frames.as_array()
     nb_frames = video.shape[0]
 
-    # the meancolor of the face along the sequence
+    # the mean color of the face along the sequence
     face_color = numpy.zeros((nb_frames, 3), dtype='float64')
 
-    # build the bandpass filter one and for all
+    # build the bandpass filter
     bandpass_filter = build_bandpass_filter(self.framerate, self.bp_order, plot=False)
 
     # landmarks detection
@@ -100,6 +116,7 @@ class Li(Preprocessor):
       try:
         ldms = detector(frame)
       except TypeError:
+        logger.warning("Exception caught -> problems with landmarks")
         # looks like one video from replay mobile is upside down !
         rotated_shape = bob.ip.base.rotated_output_shape(frame, 180)
         frame_rotated = numpy.ndarray(rotated_shape, dtype=numpy.float64)
@@ -116,6 +133,11 @@ class Li(Preprocessor):
           face_color[i] = 0
           continue
         frame = frame_rotated
+      
+      # landmarks have not been detected: use the one from previous frame
+      if ldms is None:
+        ldms = previous_ldms
+        logger.warning("Frame {}: no landmarks detected, using the ones from previous frame".format(i))
 
       if self.debug:
         from matplotlib import pyplot
@@ -143,12 +165,13 @@ class Li(Preprocessor):
       pulse[:, i] = filtfilt(bandpass_filter, numpy.array([1]), averaged)
 
     if self.debug: 
+      colors = ['r', 'g', 'b']
       from matplotlib import pyplot
       for i in range(3):
         f, ax = pyplot.subplots(2, sharex=True)
-        ax[0].plot(range(face_color.shape[0]), face_color[:, i], 'g')
+        ax[0].plot(range(face_color.shape[0]), face_color[:, i], colors[i])
         ax[0].set_title('Original color signal')
-        ax[1].plot(range(face_color.shape[0]), pulse[:, i], 'g')
+        ax[1].plot(range(face_color.shape[0]), pulse[:, i], colors[i])
         ax[1].set_title('Pulse signal')
         pyplot.show()
 

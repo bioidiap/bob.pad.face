@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import numpy
 
-import logging
-logger = logging.getLogger("bob.pad.face")
+from bob.core.log import setup
+logger = setup("bob.pad.face")
 
 from bob.bio.base.preprocessor import Preprocessor
 
@@ -18,38 +21,58 @@ from bob.rppg.chrom.extract_utils import select_stable_frames
 
 
 class Chrom(Preprocessor, object):
-  """
-  This class extract the pulse signal from a video sequence.
+  """Extract pulse signal from a video sequence.
+  
   The pulse is extracted according to the CHROM algorithm.
 
-  **Parameters:**
-
+  See the documentation of :py:mod:`bob.rppg.base`
+  
+  Attributes
+  ----------
   skin_threshold: float
     The threshold for skin color probability
-
   skin_init: bool
     If you want to re-initailize the skin color distribution at each frame
-
   framerate: int
     The framerate of the video sequence.
-
   bp_order: int
     The order of the bandpass filter
-
   window_size: int
     The size of the window in the overlap-add procedure.
-
   motion: float          
     The percentage of frames you want to select where the 
     signal is "stable". 0 mean all the sequence.
-
   debug: boolean          
     Plot some stuff 
+  skin_filter: :py:class:`bob.ip.skincolorfilter.SkinColorFilter` 
+    The skin color filter 
+
   """
+  
   def __init__(self, skin_threshold=0.5, skin_init=False, framerate=25, bp_order=32, window_size=0, motion=0.0, debug=False, **kwargs):
+    """Init function
+
+    Parameters
+    ----------
+    skin_threshold: float
+      The threshold for skin color probability
+    skin_init: bool
+      If you want to re-initailize the skin color distribution at each frame
+    framerate: int
+      The framerate of the video sequence.
+    bp_order: int
+      The order of the bandpass filter
+    window_size: int
+      The size of the window in the overlap-add procedure.
+    motion: float          
+      The percentage of frames you want to select where the 
+      signal is "stable". 0 mean all the sequence.
+    debug: boolean          
+      Plot some stuff 
+    
+    """
 
     super(Chrom, self).__init__()
-
     self.skin_threshold = skin_threshold
     self.skin_init = skin_init
     self.framerate = framerate
@@ -57,35 +80,32 @@ class Chrom(Preprocessor, object):
     self.window_size = window_size
     self.motion = motion
     self.debug = debug
-
     self.skin_filter = bob.ip.skincolorfilter.SkinColorFilter()
 
   def __call__(self, frames, annotations):
-    """
-    Compute the pulse signal for the given frame sequence
+    """Computes the pulse signal for the given frame sequence
 
-    **Parameters:**
-
-    frames: :pyclass: `bob.bio.video.utils.FrameContainer`
-      Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
-      for further details.
-
+    Parameters
+    ----------
+    frames: :py:class:`bob.bio.video.utils.FrameContainer`
+      video data 
     annotations: :py:class:`dict`
-      A dictionary containing annotations of the face bounding box.
-      Dictionary must be as follows ``{'topleft': (row, col), 'bottomright': (row, col)}``
+      the face bounding box, as follows: ``{'topleft': (row, col), 'bottomright': (row, col)}``
 
-    **Returns:**
-
-      pulse: numpy.array of size nb_frames 
-        The pulse signal 
+    Returns
+    -------
+    pulse: numpy.ndarray 
+      The pulse signal
+    
     """
     video = frames.as_array()
     nb_frames = video.shape[0]
-    
+   
+    # the pulse
     chrom = numpy.zeros((nb_frames, 2), dtype='float64')
 
-    # build the bandpass filter one and for all
-    bandpass_filter = build_bandpass_filter(self.framerate, self.bp_order, False)
+    # build the bandpass filter 
+    bandpass_filter = build_bandpass_filter(self.framerate, self.bp_order, plot=False)
 
     counter = 0
     previous_bbox = None
@@ -105,7 +125,7 @@ class Chrom(Preprocessor, object):
         size = (bottomright[0]-topleft[0], bottomright[1]-topleft[1])
         bbox = bob.ip.facedetect.BoundingBox(topleft, size)
         face = crop_face(frame, bbox, bbox.size[1])
-      except (KeyError, ZeroDivisionError) as e:
+      except (KeyError, ZeroDivisionError, TypeError) as e:
         logger.warning("No annotations ... running face detection")
         try:
           bbox, quality = bob.ip.facedetect.detect_single_face(frame)
