@@ -176,8 +176,8 @@ class PPGSecure(Preprocessor):
 
     Returns
     -------
-      masks: :py:obj:`list` of numpy.ndarray
-        A list containing the different mask as a boolean array
+    masks: :py:obj:`list` of numpy.ndarray
+      A list containing the different mask as a boolean array
         
     """
     masks = []
