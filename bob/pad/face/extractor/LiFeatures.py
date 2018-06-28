@@ -5,14 +5,12 @@ import numpy
 
 from bob.bio.base.extractor import Extractor
 
-import logging
-logger = logging.getLogger("bob.pad.face")
+from bob.core.log import setup
+logger = setup("bob.pad.face")
 
 
-
-class FreqFeatures(Extractor, object):
-  """
-  Compute features from pulse signals in the three color channels.
+class LiFeatures(Extractor, object):
+  """Compute features from pulse signals in the three color channels.
 
   The features are described in the following article:
   
@@ -27,38 +25,49 @@ class FreqFeatures(Extractor, object):
     }
 
 
-  **Parameters:**
-
+  Attributes
+  ----------
   framerate: int
     The sampling frequency of the signal (i.e the framerate ...) 
-
   nfft: int
     Number of points to compute the FFT
-
-  debug: boolean
+  debug: bool
     Plot stuff
+  
   """
-  def __init__(self, framerate=25, nfft=512, debug=False, **kwargs):
 
-    super(FreqFeatures, self).__init__()
+  def __init__(self, framerate=25, nfft=512, debug=False, **kwargs):
+    """Init function
+
+    Parameters
+    ----------
+    framerate: int
+      The sampling frequency of the signal (i.e the framerate ...) 
+    nfft: int
+      Number of points to compute the FFT
+    debug: bool
+      Plot stuff
     
+    """
+
+    super(LiFeatures, self).__init__()
     self.framerate = framerate
     self.nfft = nfft
     self.debug = debug
 
+
   def __call__(self, signal):
-    """
-    Compute the frequency spectrum for the given signal.
+    """Compute the frequency features for the given signal.
 
-    **Parameters:**
-
-    signal: numpy.array 
+    Parameters
+    ----------
+    signal: numpy.ndarray 
       The signal
 
-    **Returns:**
-
-      freq: numpy.array 
-       the frequency spectrum 
+    Returns
+    -------
+    feature: numpy.ndarray 
+     the computed features 
     """
     # sanity check
     assert signal.ndim == 2 and signal.shape[1] == 3, "You should provide 3 pulse signals"
@@ -117,10 +126,8 @@ class FreqFeatures(Extractor, object):
         pyplot.vlines(f[last_index], ymin, ymax, color='green')
         pyplot.show()
     
-
     if numpy.isnan(numpy.sum(feature)):
       logger.warn("Feature not extracted")
       return
     
     return feature
-

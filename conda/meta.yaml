@@ -21,7 +21,7 @@ requirements:
     - python {{ python }}
     - setuptools {{ setuptools }}
     - six {{ six }}
-    - sphinx {{ sphinx }}
+    - sphinx 
     - numpy {{ numpy }}
     - bob.extension
     - bob.bio.base
@@ -37,6 +37,7 @@ requirements:
     - bob.learn.libsvm
     - bob.ip.dlib
     - bob.ip.facelandmarks
+    - bob.rppg.base
   run:
     - python
     - setuptools
