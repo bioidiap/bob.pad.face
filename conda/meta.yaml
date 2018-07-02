@@ -21,8 +21,7 @@ requirements:
     - python {{ python }}
     - setuptools {{ setuptools }}
     - six {{ six }}
-    - sphinx 
-    - numpy {{ numpy }}
+    - numpy >=1.11 
     - bob.extension
     - bob.bio.base
     - bob.io.base
@@ -42,8 +41,7 @@ requirements:
     - python
     - setuptools
     - six
-    - sphinx
-    - numpy
+    - numpy >=1.11 
     - scikit-learn
 
 test:
