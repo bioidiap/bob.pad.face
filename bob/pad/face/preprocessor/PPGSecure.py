@@ -22,41 +22,30 @@ class PPGSecure(Preprocessor):
   The pulse is extracted according to what is described in 
   the following article:
 
-    @InProceedings{nowara-afgr-2017,
-      Author         = {E. M. Nowara and A. Sabharwal and A. Veeraraghavan},
-      Title          = {P{PGS}ecure: {B}iometric {P}resentation {A}ttack
-                       {D}etection {U}sing {P}hotopletysmograms},
-      BookTitle      = {I{EEE} {I}ntl {C}onf on {A}utomatic {F}ace and
-                       {G}esture {R}ecognition ({AFGR})},
-      Volume         = {},
-      Number         = {},
-      Pages          = {56-62},
-      issn           = {},
-      seq-number     = {69},
-      year           = 2017
-    }
+  E.M Nowara, A. Sabharwal and A. Veeraraghavan,
+  "PPGSecure: Biometric Presentation Attack Detection using Photoplethysmograms",
+  IEEE Intl Conf. on Automatic Face and Gesture Recognition, 2017.
 
   Attributes
   ----------
-  framerate: int
+  framerate : :obj:`int`
     The framerate of the video sequence.
-  bp_order: int
+  bp_order : :obj:`int` 
     The order of the bandpass filter
-  debug: bool
+  debug : :obj:`bool` 
     Plot some stuff 
   
   """
- 
   def __init__(self, framerate=25, bp_order=32, debug=False, **kwargs):
     """Init function
 
     Parameters
     ----------
-    framerate: int
+    framerate : :obj:`int`
       The framerate of the video sequence.
-    bp_order: int
+    bp_order : :obj:`int` 
       The order of the bandpass filter
-    debug: bool
+    debug : :obj:`bool` 
       Plot some stuff 
     
     """
@@ -83,7 +72,7 @@ class PPGSecure(Preprocessor):
 
     Returns
     -------
-    pulse: numpy.ndarray 
+    :obj:`numpy.ndarray` 
       The pulse signal, in each color channel (RGB)  
     
     """

@@ -13,43 +13,34 @@ class LiFeatures(Extractor, object):
   """Compute features from pulse signals in the three color channels.
 
   The features are described in the following article:
-  
-    @InProceedings{li-icpr-2016,
-    Author         = {Li, X. and Komulainen, J. and Zhao, G. and Yuen, P-C.
-                     and Pietik\"ainen, M.},
-    Title          = {Generalized {F}ace {A}nti-spoofing by {D}etecting
-                     {P}ulse {F}rom {F}ace {V}ideos},
-    BookTitle      = {Intl {C}onf. on {P}attern {R}ecognition ({ICPR})},
-    Pages          = {4244-4249},
-    year           = 2016
-    }
-
+ 
+  X. Li, J. Komulainen, G. Zhao, P-C Yuen and M. Pietikainen,
+  Generalized Face Anti-spoofing by Detecting Pulse From Face Videos
+  Intl Conf. on Pattern Recognition (ICPR), 2016.
 
   Attributes
   ----------
-  framerate: int
+  framerate : :obj:`int`
     The sampling frequency of the signal (i.e the framerate ...) 
-  nfft: int
+  nfft : :obj:`int`
     Number of points to compute the FFT
-  debug: bool
+  debug : :obj:`bool`
     Plot stuff
   
   """
-
   def __init__(self, framerate=25, nfft=512, debug=False, **kwargs):
     """Init function
 
     Parameters
     ----------
-    framerate: int
+    framerate : :obj:`int`
       The sampling frequency of the signal (i.e the framerate ...) 
-    nfft: int
+    nfft : :obj:`int`
       Number of points to compute the FFT
-    debug: bool
+    debug : :obj:`bool`
       Plot stuff
-    
+  
     """
-
     super(LiFeatures, self).__init__()
     self.framerate = framerate
     self.nfft = nfft
@@ -61,13 +52,13 @@ class LiFeatures(Extractor, object):
 
     Parameters
     ----------
-    signal: numpy.ndarray 
+    signal : :py:class:`numpy.ndarray` 
       The signal
 
     Returns
-    -------
-    feature: numpy.ndarray 
-     the computed features 
+    ------- 
+    :py:class:`numpy.ndarray` 
+      the computed features 
 
     """
     # sanity check

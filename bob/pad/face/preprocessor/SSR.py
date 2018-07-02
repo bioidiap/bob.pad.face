@@ -23,7 +23,7 @@ class SSR(Preprocessor, object):
   
   The pulse is extracted according to the SSR algorithm.
 
-  See the documentation of :py:mod:`bob.rppg.base`
+  See the documentation of :py:module::`bob.rppg.base`
 
   Attributes
   ----------
@@ -35,7 +35,7 @@ class SSR(Preprocessor, object):
     The temporal stride. 
   debug: boolean          
     Plot some stuff 
-  skin_filter: :py:class:`bob.ip.skincolorfilter.SkinColorFilter` 
+  skin_filter: :py:class::`bob.ip.skincolorfilter.SkinColorFilter` 
     The skin color filter 
 
   """

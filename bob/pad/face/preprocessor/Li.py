@@ -22,7 +22,7 @@ class Li(Preprocessor):
   
   The pulse is extracted according to Li's CVPR 14 algorithm.
 
-  See the documentation of :py:mod:`bob.rppg.base`
+  See the documentation of `bob.rppg.base`
 
   Note that this is a simplified version of the original 
   pulse extraction algorithms (mask detection in each 
@@ -31,17 +31,17 @@ class Li(Preprocessor):
 
   Attributes
   ----------
-  indent: int
+  indent : :obj:`int`
     Indent (in percent of the face width) to apply to keypoints to get the mask.
-  lamda_: int
+  lamda_ : :obj:`int`
     the lamba value of the detrend filter
-  window: int
+  window : :obj:`int`
     The size of the window of the average filter 
-  framerate: int
+  framerate : :obj:`int`
     The framerate of the video sequence.
-  bp_order: int
+  bp_order : :obj:`int`
     The order of the bandpass filter
-  debug: bool
+  debug : :obj:`bool`
     Plot some stuff 
   
   """
@@ -51,19 +51,18 @@ class Li(Preprocessor):
 
     Parameters
     ----------
-    indent: int
+    indent : :obj:`int`
       Indent (in percent of the face width) to apply to keypoints to get the mask.
-    lamda_: int
+    lamda_ : :obj:`int`
       the lamba value of the detrend filter
-    window: int
+    window : :obj:`int`
       The size of the window of the average filter 
-    framerate: int
+    framerate : :obj:`int`
       The framerate of the video sequence.
-    bp_order: int
+    bp_order : :obj:`int`
       The order of the bandpass filter
-    debug: bool
+    debug : :obj:`bool`
       Plot some stuff 
-    
 
     """
     super(Li, self).__init__(**kwargs)
@@ -86,7 +85,7 @@ class Li(Preprocessor):
 
     Returns
     -------
-    pulse: numpy.ndarray 
+    :obj:`numpy.ndarray` 
       The pulse signal, in each color channel (RGB)  
     
     """

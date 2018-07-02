@@ -25,26 +25,26 @@ class Chrom(Preprocessor, object):
   
   The pulse is extracted according to the CHROM algorithm.
 
-  See the documentation of :py:mod:`bob.rppg.base`
+  See the documentation of `bob.rppg.base`
   
   Attributes
   ----------
-  skin_threshold: float
+  skin_threshold : :obj:`float`
     The threshold for skin color probability
-  skin_init: bool
+  skin_init : :obj:`bool`
     If you want to re-initailize the skin color distribution at each frame
-  framerate: int
+  framerate : :obj:`int`
     The framerate of the video sequence.
-  bp_order: int
+  bp_order : :obj:`int`
     The order of the bandpass filter
-  window_size: int
+  window_size : :obj:`int`
     The size of the window in the overlap-add procedure.
-  motion: float          
+  motion : :obj:`float`
     The percentage of frames you want to select where the 
     signal is "stable". 0 mean all the sequence.
-  debug: boolean          
+  debug : :obj:`bool`          
     Plot some stuff 
-  skin_filter: :py:class:`bob.ip.skincolorfilter.SkinColorFilter` 
+  skin_filter : :py:class:`bob.ip.skincolorfilter.SkinColorFilter` 
     The skin color filter 
 
   """
@@ -54,24 +54,23 @@ class Chrom(Preprocessor, object):
 
     Parameters
     ----------
-    skin_threshold: float
+    skin_threshold : :obj:`float`
       The threshold for skin color probability
-    skin_init: bool
+    skin_init : :obj:`bool`
       If you want to re-initailize the skin color distribution at each frame
-    framerate: int
+    framerate : :obj:`int`
       The framerate of the video sequence.
-    bp_order: int
+    bp_order : :obj:`int`
       The order of the bandpass filter
-    window_size: int
+    window_size : :obj:`int`
       The size of the window in the overlap-add procedure.
-    motion: float          
+    motion : :obj:`float`
       The percentage of frames you want to select where the 
       signal is "stable". 0 mean all the sequence.
-    debug: boolean          
+    debug : :obj:`bool`          
       Plot some stuff 
     
     """
-
     super(Chrom, self).__init__()
     self.skin_threshold = skin_threshold
     self.skin_init = skin_init
@@ -87,14 +86,14 @@ class Chrom(Preprocessor, object):
 
     Parameters
     ----------
-    frames: :py:class:`bob.bio.video.utils.FrameContainer`
+    frames : :py:class:`bob.bio.video.utils.FrameContainer`
       video data 
-    annotations: :py:class:`dict`
+    annotations : :py:class:`dict`
       the face bounding box, as follows: ``{'topleft': (row, col), 'bottomright': (row, col)}``
 
     Returns
     -------
-    pulse: numpy.ndarray 
+    :obj:`numpy.ndarray` 
       The pulse signal
     
     """
@@ -239,4 +238,3 @@ class Chrom(Preprocessor, object):
       pyplot.show()
 
     return pulse
-

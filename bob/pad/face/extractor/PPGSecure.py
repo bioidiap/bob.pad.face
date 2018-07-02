@@ -15,27 +15,17 @@ class PPGSecure(Extractor, object):
   The feature are extracted according to what is described in 
   the following article:
 
-    @InProceedings{nowara-afgr-2017,
-      Author         = {E. M. Nowara and A. Sabharwal and A. Veeraraghavan},
-      Title          = {P{PGS}ecure: {B}iometric {P}resentation {A}ttack
-                       {D}etection {U}sing {P}hotopletysmograms},
-      BookTitle      = {I{EEE} {I}ntl {C}onf on {A}utomatic {F}ace and
-                       {G}esture {R}ecognition ({AFGR})},
-      Volume         = {},
-      Number         = {},
-      Pages          = {56-62},
-      issn           = {},
-      seq-number     = {69},
-      year           = 2017
-    }
+  E.M Nowara, A. Sabharwal and A. Veeraraghavan,
+  "PPGSecure: Biometric Presentation Attack Detection using Photoplethysmograms",
+  IEEE Intl Conf. on Automatic Face and Gesture Recognition, 2017.
 
   Attributes
   ----------
-  framerate: int
+  framerate : :obj:`int`
     The sampling frequency of the signal (i.e the framerate ...) 
-  nfft: int
+  nfft : :obj:`int`
     Number of points to compute the FFT
-  debug: bool
+  debug : :obj:`bool`
     Plot stuff
   
   """
@@ -44,11 +34,11 @@ class PPGSecure(Extractor, object):
 
     Parameters
     ----------
-    framerate: int
+    framerate : :obj:`int`
       The sampling frequency of the signal (i.e the framerate ...) 
-    nfft: int
+    nfft : :obj:`int`
       Number of points to compute the FFT
-    debug: bool
+    debug : :obj:`bool`
       Plot stuff
     
     """
@@ -63,12 +53,12 @@ class PPGSecure(Extractor, object):
 
     Parameters
     ----------
-    signal: numpy.ndarray 
+    signal : :py:class:`numpy.ndarray` 
       The signal
 
     Returns
     -------
-    fft: numpy.ndarray 
+    :py:class:`numpy.ndarray` 
      the computed FFT features 
     
     """

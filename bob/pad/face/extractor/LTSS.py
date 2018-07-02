@@ -15,29 +15,23 @@ class LTSS(Extractor, object):
   
   The features are described in the following article:
   
-    @Article {
-    Author         = {Muckenhirn, Hannah and Korshunov, Pavel and
-                     Magimai-Doss, Mathew and Marcel, Sebastien }
-    Title          = {Long-Term Spectral Statistics for Voice Presentation
-                     Attack Detection},
-    Journal        = {IEEE/ACM Trans. Audio, Speech and Lang. Proc.},
-    Volume         = {25},
-    Number         = {11},
-    Pages          = {2098--2111},
-    year           = 2017
-    }
+  H. Muckenhirn, P. Korshunov, M. Magimai-Doss, and S. Marcel
+  Long-Term Spectral Statistics for Voice Presentation Attack Detection,
+  IEEE/ACM Trans. Audio, Speech and Language Processing. vol 25, n. 11, 2017
 
   Attributes
   ----------
-  framerate: int
+  window_size : :obj:`int`
+    The size of the window where FFT is computed
+  framerate : :obj:`int`
     The sampling frequency of the signal (i.e the framerate ...) 
-  nfft: int
+  nfft : :obj:`int`
     Number of points to compute the FFT
-  debug: bool
+  debug : :obj:`bool`
     Plot stuff
-  concat: bool
+  concat : :obj:`bool`
     Flag if you would like to concatenate features from the 3 color channels
-  time: int
+  time : :obj:`int`
     The length of the signal to consider (in seconds)
   
   """
@@ -46,19 +40,19 @@ class LTSS(Extractor, object):
 
     Parameters
     ----------
-    window_size: int
+    window_size : :obj:`int`
       The size of the window where FFT is computed
-    framerate: int
+    framerate : :obj:`int`
       The sampling frequency of the signal (i.e the framerate ...) 
-    nfft: int
+    nfft : :obj:`int`
       Number of points to compute the FFT
-    concat: bool
-      Flag if you would like to concatenate features from the 3 color channels
-    debug: bool
+    debug : :obj:`bool`
       Plot stuff
-    time: int
+    concat : :obj:`bool`
+      Flag if you would like to concatenate features from the 3 color channels
+    time : :obj:`int`
       The length of the signal to consider (in seconds)
-
+    
     """
     super(LTSS, self).__init__()
     self.framerate = framerate
@@ -73,12 +67,12 @@ class LTSS(Extractor, object):
 
     Parameters
     ----------
-    signal: numpy.ndarray
+    signal : :py:class:`numpy.ndarray`
       The signal
 
     Returns
     -------
-    ltss: numpy.ndarray
+    :py:class:`numpy.ndarray`
       The spectral statistics of the signal.
 
     """
