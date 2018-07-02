@@ -1,6 +1,5 @@
 setuptools
 six
-sphinx
 numpy
 bob.extension
 bob.bio.base
