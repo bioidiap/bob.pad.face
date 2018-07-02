@@ -1,1 +1,2 @@
 bob.bio.base
+bob.ip.skincolorfilter
