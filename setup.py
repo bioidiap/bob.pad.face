@@ -63,8 +63,6 @@ setup(
             'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
             'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
             'mifs = bob.pad.face.config.database.mifs:database',
-            'maskattack = bob.pad.face.config.database.maskattack:database',
-            'batl = bob.pad.face.config.database.batl:database',
         ],
 
         # registered configurations:
@@ -120,7 +118,6 @@ setup(
         'bob.pad.grid': [
             'idiap = bob.pad.face.config.grid:idiap',
             'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
-            'guillaume = bob.pad.face.config.grid:guillaume',
         ],
     },
 
