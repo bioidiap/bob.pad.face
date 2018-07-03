@@ -32,10 +32,3 @@ idiap_user_machines = Grid(
     number_of_scoring_jobs=1,
     scoring_queue='8G',
 )
-
-guillaume = Grid(
-    number_of_preprocessing_jobs=64,
-    preprocessing_queue='4G',
-    number_of_extraction_jobs=64,
-    extraction_queue='4G',
-)
