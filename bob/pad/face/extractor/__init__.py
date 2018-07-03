@@ -2,6 +2,9 @@ from .LBPHistogram import LBPHistogram
 from .ImageQualityMeasure import ImageQualityMeasure
 from .FrameDiffFeatures import FrameDiffFeatures
 
+from .LiFeatures import LiFeatures 
+from .LTSS import LTSS 
+from .PPGSecure import PPGSecure 
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.

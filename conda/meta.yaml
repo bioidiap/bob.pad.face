@@ -20,6 +20,8 @@ requirements:
   host:
     - python {{ python }}
     - setuptools {{ setuptools }}
+    - six {{ six }}
+    - numpy >=1.11 
     - bob.extension
     - bob.bio.base
     - bob.io.base
@@ -33,12 +35,14 @@ requirements:
     - bob.learn.libsvm
     - bob.ip.dlib
     - bob.ip.facelandmarks
+    - bob.rppg.base
   run:
     - python
     - setuptools
     - six
-    - numpy
+    - numpy >=1.11 
     - scikit-learn
+    - bob.rppg.base
 
 test:
   imports:
@@ -60,6 +64,7 @@ test:
     - bob.db.replaymobile
     - bob.db.msu_mfsd_mod
     - bob.db.mobio
+    - bob.rppg.base
 
 about:
   home: https://www.idiap.ch/software/bob/
