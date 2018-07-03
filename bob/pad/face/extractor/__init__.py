@@ -28,5 +28,8 @@ __appropriate__(
     LBPHistogram,
     ImageQualityMeasure,
     FrameDiffFeatures,
+    LiFeatures,
+    LTSS,
+    PPGSecure,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

@@ -2,7 +2,7 @@ from .FaceCropAlign import FaceCropAlign
 from .FrameDifference import FrameDifference
 from .VideoSparseCoding import VideoSparseCoding
 
-from .Li import Li
+from .LiICPR2016 import LiICPR2016
 from .Chrom import Chrom
 from .SSR import SSR
 from .PPGSecure import PPGSecure
@@ -29,5 +29,9 @@ __appropriate__(
     FaceCropAlign,
     FrameDifference,
     VideoSparseCoding,
+    LiICPR2016,
+    Chrom,
+    SSR,
+    PPGSecure,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

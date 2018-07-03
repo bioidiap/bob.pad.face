@@ -54,7 +54,7 @@ class LTSS(Extractor, object):
       The length of the signal to consider (in seconds)
     
     """
-    super(LTSS, self).__init__()
+    super(LTSS, self).__init__(**kwargs)
     self.framerate = framerate
     self.nfft = nfft
     self.debug = debug
