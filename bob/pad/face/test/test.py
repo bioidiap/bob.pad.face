@@ -28,7 +28,11 @@ from ..extractor import LBPHistogram
 
 from ..extractor import ImageQualityMeasure
 
-import random
+from ..preprocessor import LiICPR2016
+from ..preprocessor import Chrom
+from ..preprocessor import PPGSecure
+from ..preprocessor import SSR
+
 
 from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
@@ -371,3 +375,49 @@ def convert_array_to_list_of_frame_cont(data):
             frame_container)  # add current frame to FrameContainer
 
     return frame_container_list
+
+
+def test_preprocessor_LiICPR2016():
+      preprocessor = LiICPR2016()
+      data = np.random((10, 3, 10, 10))
+      frames = bob.bio.video.FrameContainer()
+      for i in range(data.shape[0])
+          frames.add(i, data[i])
+      pulse = preprocessor(frames)
+
+      assert pulse.shape == (10, 3)
+      assert np.all(pulse == 0)
+
+
+def test_preprocessor_Chrom():
+      preprocessor = Chrom()
+      data = np.random((10, 3, 10, 10))
+      frames = bob.bio.video.FrameContainer()
+      for i in range(data.shape[0])
+          frames.add(i, data[i])
+      pulse = preprocessor(frames)
+
+      assert pulse.shape[0] == 10
+
+
+def test_preprocessor_PPGSecure():
+    preprocessor = PPGSecure()
+    data = np.random((10, 3, 10, 10))
+    frames = bob.bio.video.FrameContainer()
+    for i in range(data.shape[0])
+        frames.add(i, data[i])
+    pulse = preprocessor(frames)
+
+    assert pulse.shape == (5, 10)
+
+
+def test_preprocessor_SSR():
+    preprocessor = SSR()
+    data = np.random((10, 3, 10, 10))
+    frames = bob.bio.video.FrameContainer()
+    for i in range(data.shape[0])
+      frames.add(i, data[i])
+    pulse = preprocessor(frames)
+
+    assert pulse.shape[0] == 10
+
