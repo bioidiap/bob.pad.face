@@ -33,6 +33,10 @@ from ..preprocessor import Chrom
 from ..preprocessor import PPGSecure
 from ..preprocessor import SSR
 
+from ..extractor import LTSS
+from ..extractor import LiFeatures
+from ..extractor import PPGSecure
+
 
 from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
@@ -379,7 +383,7 @@ def convert_array_to_list_of_frame_cont(data):
 
 def test_preprocessor_LiICPR2016():
       preprocessor = LiICPR2016()
-      data = np.random((10, 3, 10, 10))
+      data = np.random.random((10, 3, 10, 10))
       frames = bob.bio.video.FrameContainer()
       for i in range(data.shape[0])
           frames.add(i, data[i])
@@ -391,7 +395,7 @@ def test_preprocessor_LiICPR2016():
 
 def test_preprocessor_Chrom():
       preprocessor = Chrom()
-      data = np.random((10, 3, 10, 10))
+      data = np.random.random((10, 3, 10, 10))
       frames = bob.bio.video.FrameContainer()
       for i in range(data.shape[0])
           frames.add(i, data[i])
@@ -401,23 +405,50 @@ def test_preprocessor_Chrom():
 
 
 def test_preprocessor_PPGSecure():
-    preprocessor = PPGSecure()
-    data = np.random((10, 3, 10, 10))
-    frames = bob.bio.video.FrameContainer()
-    for i in range(data.shape[0])
-        frames.add(i, data[i])
-    pulse = preprocessor(frames)
+      preprocessor = PPGSecure()
+      data = np.random.random((10, 3, 10, 10))
+      frames = bob.bio.video.FrameContainer()
+      for i in range(data.shape[0])
+          frames.add(i, data[i])
+      pulse = preprocessor(frames)
 
-    assert pulse.shape == (5, 10)
+      assert pulse.shape == (5, 10)
 
 
 def test_preprocessor_SSR():
-    preprocessor = SSR()
-    data = np.random((10, 3, 10, 10))
-    frames = bob.bio.video.FrameContainer()
-    for i in range(data.shape[0])
-      frames.add(i, data[i])
-    pulse = preprocessor(frames)
+      preprocessor = SSR()
+      data = np.random.random((10, 3, 10, 10))
+      frames = bob.bio.video.FrameContainer()
+      for i in range(data.shape[0])
+          frames.add(i, data[i])
+      pulse = preprocessor(frames)
 
-    assert pulse.shape[0] == 10
+      assert pulse.shape[0] == 10
 
+
+def test_extractor_LTSS():
+      data = np.random.random((200, 3))
+      
+      extractor = LTSS(concat=True)
+      features = extractor(data)
+      assert features.shape[0] == 32*3
+      
+      extractor = LTSS(concat=False)
+      features = extractor(data)
+      assert features.shape[0] == 32
+
+
+def test_extractor_LiFeatures():
+      data = np.random.random((200, 3))
+      
+      extractor = LiFeatures()
+      features = extractor(data)
+      assert features.shape[0] == 6 
+     
+
+def test_extractor_PPGSecure():
+      data = np.random.random((200, 3))
+      
+      extractor = PPGSecure()
+      features = extractor(data)
+      assert features.shape[0] == 5*16
