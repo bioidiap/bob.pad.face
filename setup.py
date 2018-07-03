@@ -56,13 +56,23 @@ setup(
     # the version of bob.
     entry_points={
 
+        # scripts should be declared using this entry:
+        'console_scripts': [
+            'quality-assessment.py = bob.pad.face.script.quality_assessment:main',
+        ],
+
         # registered databases:
         'bob.pad.database': [
-            'replay-attack = bob.pad.face.config.database.replay_attack:database',
-            'replay-mobile = bob.pad.face.config.database.replay_mobile:database',
-            'msu-mfsd = bob.pad.face.config.database.msu_mfsd:database',
-            'aggregated-db = bob.pad.face.config.database.aggregated_db:database',
-            'mifs = bob.pad.face.config.database.mifs:database',
+            'replay-attack = bob.pad.face.config.replay_attack:database',
+            'replay-mobile = bob.pad.face.config.replay_mobile:database',
+            'msu-mfsd = bob.pad.face.config.msu_mfsd:database',
+            'aggregated-db = bob.pad.face.config.aggregated_db:database',
+            'mifs = bob.pad.face.config.mifs:database',
+            'batl-db = bob.pad.face.config.batl_db:database',
+            'batl-db-infrared = bob.pad.face.config.batl_db_infrared:database',
+            'batl-db-depth = bob.pad.face.config.batl_db_depth:database',
+            'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
+            'celeb-a = bob.pad.face.config.celeb_a:database',
         ],
 
         # registered configurations:
@@ -73,6 +83,11 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'aggregated-db = bob.pad.face.config.aggregated_db',
             'mifs = bob.pad.face.config.mifs',
+            'batl-db = bob.pad.face.config.batl_db',
+            'batl-db-infrared = bob.pad.face.config.batl_db_infrared',
+            'batl-db-depth = bob.pad.face.config.batl_db_depth',
+            'batl-db-thermal = bob.pad.face.config.batl_db_thermal',
+            'celeb-a = bob.pad.face.config.celeb_a',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
@@ -88,6 +103,7 @@ setup(
 
             # baselines using LR:
             'qm-lr = bob.pad.face.config.qm_lr',  # this pipe-line can be used both for individual and Aggregated databases.
+            'lbp-lr-batl-D-T-IR = bob.pad.face.config.lbp_lr_batl_D_T_IR',  # this pipe-line can be used both for BATL databases, Depth, Thermal and Infrared channels.
 
             # baselines using GMM:
             'qm-one-class-gmm = bob.pad.face.config.qm_one_class_gmm',  # this pipe-line can be used both for individual and Aggregated databases.
@@ -98,6 +114,7 @@ setup(
             'empty-preprocessor = bob.pad.face.config.preprocessor.filename:empty_preprocessor',  # no preprocessing
             'rgb-face-detect-dlib = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_dlib',  # detect faces locally replacing database annotations
             'rgb-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_mtcnn',  # detect faces locally replacing database annotations
+            'bw-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:bw_face_detect_mtcnn',  # detect faces locally, return BW image
         ],
 
         # registered extractors:
@@ -118,6 +135,12 @@ setup(
         'bob.pad.grid': [
             'idiap = bob.pad.face.config.grid:idiap',
             'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
+            'small = bob.pad.face.config.grid:small',
+        ],
+
+        # registered ``bob pad ...`` commands
+        'bob.pad.cli': [
+            'statistics        = bob.pad.face.script.statistics:statistics',
         ],
     },
 
