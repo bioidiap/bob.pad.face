@@ -30,12 +30,12 @@ from ..extractor import ImageQualityMeasure
 
 from ..preprocessor import LiICPR2016
 from ..preprocessor import Chrom
-from ..preprocessor import PPGSecure
+from ..preprocessor import PPGSecure as PPGPreprocessor
 from ..preprocessor import SSR
 
 from ..extractor import LTSS
 from ..extractor import LiFeatures
-from ..extractor import PPGSecure
+from ..extractor import PPGSecure as PPGExtractor
 
 
 from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
@@ -382,63 +382,75 @@ def convert_array_to_list_of_frame_cont(data):
 
 
 def test_preprocessor_LiICPR2016():
-      preprocessor = LiICPR2016()
-      data = np.random.random((10, 3, 10, 10))
-      frames = bob.bio.video.FrameContainer()
-      for i in range(data.shape[0])
-          frames.add(i, data[i])
-      pulse = preprocessor(frames)
+      """ Test the pulse extraction using Li's ICPR 2016 algorithm.
+      """
 
-      assert pulse.shape == (10, 3)
-      assert np.all(pulse == 0)
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+      
+      preprocessor = LiICPR2016(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape == (100, 3)
 
 
 def test_preprocessor_Chrom():
-      preprocessor = Chrom()
-      data = np.random.random((10, 3, 10, 10))
-      frames = bob.bio.video.FrameContainer()
-      for i in range(data.shape[0])
-          frames.add(i, data[i])
-      pulse = preprocessor(frames)
+      """ Test the pulse extraction using CHROM algorithm.
+      """
 
-      assert pulse.shape[0] == 10
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+  
+      preprocessor = Chrom(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape[0] == 100
 
 
 def test_preprocessor_PPGSecure():
-      preprocessor = PPGSecure()
-      data = np.random.random((10, 3, 10, 10))
-      frames = bob.bio.video.FrameContainer()
-      for i in range(data.shape[0])
-          frames.add(i, data[i])
-      pulse = preprocessor(frames)
+      """ Test the pulse extraction using PPGSecure algorithm.
+      """
 
-      assert pulse.shape == (5, 10)
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (456, 212), 'bottomright': (770, 500)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+  
+      preprocessor = PPGPreprocessor(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape == (100, 5)
 
 
 def test_preprocessor_SSR():
-      preprocessor = SSR()
-      data = np.random.random((10, 3, 10, 10))
-      frames = bob.bio.video.FrameContainer()
-      for i in range(data.shape[0])
-          frames.add(i, data[i])
-      pulse = preprocessor(frames)
-
-      assert pulse.shape[0] == 10
+      
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+  
+      preprocessor = SSR(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape[0] == 100
 
 
 def test_extractor_LTSS():
+      
+      # "pulse" in 3 color channels
       data = np.random.random((200, 3))
       
       extractor = LTSS(concat=True)
       features = extractor(data)
-      assert features.shape[0] == 32*3
+      # n = number of FFT coefficients (default is 64)
+      # (n/2 + 1) * 2 (mean and std) * 3 (colors channels)
+      assert features.shape[0] == 33*2*3
       
       extractor = LTSS(concat=False)
       features = extractor(data)
-      assert features.shape[0] == 32
+      # only one "channel" is considered
+      assert features.shape[0] == 33*2
 
 
 def test_extractor_LiFeatures():
+      
+      # "pulse" in 3 color channels
       data = np.random.random((200, 3))
       
       extractor = LiFeatures()
@@ -447,8 +459,11 @@ def test_extractor_LiFeatures():
      
 
 def test_extractor_PPGSecure():
-      data = np.random.random((200, 3))
+      # 5 "pulses" 
+      data = np.random.random((200, 5))
       
-      extractor = PPGSecure()
+      extractor = PPGExtractor()
       features = extractor(data)
-      assert features.shape[0] == 5*16
+      # n = number of FFT coefficients (default is 32)
+      # 5 (pulse signals) * (n/2 + 1)
+      assert features.shape[0] == 5*17
