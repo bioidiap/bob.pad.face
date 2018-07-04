@@ -2,7 +2,7 @@ from .LBPHistogram import LBPHistogram
 from .ImageQualityMeasure import ImageQualityMeasure
 from .FrameDiffFeatures import FrameDiffFeatures
 
-from .LiFeatures import LiFeatures 
+from .LiSpectralFeatures import LiSpectralFeatures 
 from .LTSS import LTSS 
 from .PPGSecure import PPGSecure 
 
@@ -28,7 +28,7 @@ __appropriate__(
     LBPHistogram,
     ImageQualityMeasure,
     FrameDiffFeatures,
-    LiFeatures,
+    LiSpectralFeatures,
     LTSS,
     PPGSecure,
 )

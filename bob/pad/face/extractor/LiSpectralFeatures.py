@@ -9,7 +9,7 @@ from bob.core.log import setup
 logger = setup("bob.pad.face")
 
 
-class LiFeatures(Extractor, object):
+class LiSpectralFeatures(Extractor, object):
   """Compute features from pulse signals in the three color channels.
 
   The features are described in the following article:
@@ -41,7 +41,7 @@ class LiFeatures(Extractor, object):
       Plot stuff
   
     """
-    super(LiFeatures, self).__init__()
+    super(LiSpectralFeatures, self).__init__()
     self.framerate = framerate
     self.nfft = nfft
     self.debug = debug

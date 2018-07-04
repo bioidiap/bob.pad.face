@@ -28,13 +28,13 @@ from ..extractor import LBPHistogram
 
 from ..extractor import ImageQualityMeasure
 
-from ..preprocessor import LiICPR2016
+from ..preprocessor import LiPulseExtraction
 from ..preprocessor import Chrom
 from ..preprocessor import PPGSecure as PPGPreprocessor
 from ..preprocessor import SSR
 
 from ..extractor import LTSS
-from ..extractor import LiFeatures
+from ..extractor import LiSpectralFeatures
 from ..extractor import PPGSecure as PPGExtractor
 
 
@@ -381,7 +381,7 @@ def convert_array_to_list_of_frame_cont(data):
     return frame_container_list
 
 
-def test_preprocessor_LiICPR2016():
+def test_preprocessor_LiPulseExtraction():
       """ Test the pulse extraction using Li's ICPR 2016 algorithm.
       """
 
@@ -389,7 +389,7 @@ def test_preprocessor_LiICPR2016():
       annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
       video, annotations = convert_image_to_video_data(image, annotations, 100)
       
-      preprocessor = LiICPR2016(debug=False)
+      preprocessor = LiPulseExtraction(debug=False)
       pulse = preprocessor(video, annotations)
       assert pulse.shape == (100, 3)
 
@@ -421,6 +421,8 @@ def test_preprocessor_PPGSecure():
 
 
 def test_preprocessor_SSR():
+      """ Test the pulse extraction using SSR algorithm.
+      """
       
       image = load(datafile('test_image.png', 'bob.pad.face.test'))
       annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
@@ -432,6 +434,8 @@ def test_preprocessor_SSR():
 
 
 def test_extractor_LTSS():
+      """ Test Long Term Spectrum Statistics (LTSS) Feature Extractor 
+      """
       
       # "pulse" in 3 color channels
       data = np.random.random((200, 3))
@@ -448,17 +452,21 @@ def test_extractor_LTSS():
       assert features.shape[0] == 33*2
 
 
-def test_extractor_LiFeatures():
+def test_extractor_LiSpectralFeatures():
+      """ Test Li's ICPR 2016 Spectral Feature Extractor 
+      """
       
       # "pulse" in 3 color channels
       data = np.random.random((200, 3))
       
-      extractor = LiFeatures()
+      extractor = LiSpectralFeatures()
       features = extractor(data)
       assert features.shape[0] == 6 
      
 
 def test_extractor_PPGSecure():
+      """ Test PPGSecure Spectral Feature Extractor 
+      """
       # 5 "pulses" 
       data = np.random.random((200, 5))
       

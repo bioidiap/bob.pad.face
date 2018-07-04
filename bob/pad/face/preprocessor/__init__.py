@@ -2,7 +2,7 @@ from .FaceCropAlign import FaceCropAlign
 from .FrameDifference import FrameDifference
 from .VideoSparseCoding import VideoSparseCoding
 
-from .LiICPR2016 import LiICPR2016
+from .LiPulseExtraction import LiPulseExtraction
 from .Chrom import Chrom
 from .SSR import SSR
 from .PPGSecure import PPGSecure
@@ -29,7 +29,7 @@ __appropriate__(
     FaceCropAlign,
     FrameDifference,
     VideoSparseCoding,
-    LiICPR2016,
+    LiPulseExtraction,
     Chrom,
     SSR,
     PPGSecure,

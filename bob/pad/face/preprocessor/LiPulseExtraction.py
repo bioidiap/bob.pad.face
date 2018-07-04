@@ -17,7 +17,7 @@ from bob.rppg.cvpr14.filter_utils import detrend
 from bob.rppg.cvpr14.filter_utils import average
 
 
-class LiICPR2016(Preprocessor):
+class LiPulseExtraction(Preprocessor):
   """Extract pulse signal from a video sequence.
   
   The pulse is extracted according to a simplified version of Li's CVPR 14 algorithm.
@@ -70,7 +70,7 @@ class LiICPR2016(Preprocessor):
       Plot some stuff 
 
     """
-    super(LiICPR2016, self).__init__(**kwargs)
+    super(LiPulseExtraction, self).__init__(**kwargs)
     self.indent = indent
     self.lambda_ = lambda_
     self.window = window
