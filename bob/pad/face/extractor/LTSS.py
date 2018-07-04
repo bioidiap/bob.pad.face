@@ -56,7 +56,10 @@ class LTSS(Extractor, object):
     """
     super(LTSS, self).__init__(**kwargs)
     self.framerate = framerate
+    
+    # TODO: try to use window size as NFFT - Guillaume HEUSCH, 04-07-2018
     self.nfft = nfft
+    
     self.debug = debug
     self.window_size = window_size
     self.concat = concat
@@ -80,27 +83,40 @@ class LTSS(Extractor, object):
 
     # log-magnitude of DFT coefficients
     log_mags = []
-   
+
     # go through windows
     for w in range(0, (signal.shape[0] - self.window_size), window_stride):
-      fft = rfft(signal[w:w+self.window_size], n=self.nfft)
-      mags = numpy.zeros(int(self.nfft/2), dtype=numpy.float64)
       
-      # XXX : bug was here (no clipping)
+      # n is even, as a consequence the fft is as follows [y(0), Re(y(1)), Im(y(1)), ..., Re(y(n/2))]
+      # i.e. each coefficient, except first and last, is represented by two numbers (real + imaginary)
+      fft = rfft(signal[w:w+self.window_size], n=self.nfft)
+      
+      # the magnitude is the norm of the complex numbers, so its size is n/2 + 1
+      mags = numpy.zeros((int(self.nfft/2) + 1), dtype=numpy.float64)
+      
+      # first coeff is real
       if abs(fft[0]) < 1:
         mags[0] = 1
       else:
         mags[0] = abs(fft[0])
-      # XXX 
 
+      # go through coeffs 2 to n/2
       index = 1
       for i in range(1, (fft.shape[0]-1), 2):
         mags[index] = numpy.sqrt(fft[i]**2 + fft[i+1]**2)
         if mags[index] < 1:
           mags[index] = 1
         index += 1
+      
+      # last coeff is real too
+      if abs(fft[-1]) < 1:
+        mags[index] = 1
+      else:
+        mags[index] = abs(fft[-1])
+      
       log_mags.append(numpy.log(mags))
 
+    # build final feature
     log_mags = numpy.array(log_mags)
     mean = numpy.mean(log_mags, axis=0)
     std = numpy.std(log_mags, axis=0)
