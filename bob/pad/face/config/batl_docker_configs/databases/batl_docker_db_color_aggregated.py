@@ -2,17 +2,19 @@
 """
 BATL Docker DB is a database for face PAD experiments.
 """
+
 from bob.pad.face.database import BatlDockerPadDatabase
 from .gt_config import GROUND_TRUTH, N_FRAMES
 from .gt_config import ORIGINAL_DIRECTORY, ANNOTATIONS_TEMP_DIR
 
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
+
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
 ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 
-PROTOCOL = 'baseline-infrared-{}'.format(N_FRAMES)
+PROTOCOL = 'baseline-color-{}'.format(N_FRAMES)
 
 database = BatlDockerPadDatabase(
     protocol=PROTOCOL,
@@ -23,6 +25,7 @@ database = BatlDockerPadDatabase(
     exlude_attacks_list = ["makeup"],
     training_depends_on_protocol=True,
     ground_truth=GROUND_TRUTH,
+    retrain=True,
 )
 """The :py:class:`bob.pad.base.database.BatlDockerPadDatabase` derivative with BATL Db
 database settings.
@@ -52,3 +55,4 @@ You may modify this at runtime by specifying the option ``--groups`` on the
 command-line of ``spoof.py`` or using the keyword ``groups`` on a
 configuration file that is loaded **after** this configuration resource.
 """
+

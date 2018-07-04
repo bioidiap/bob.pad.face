@@ -23,6 +23,7 @@ database = BatlDockerPadDatabase(
     exlude_attacks_list = ["makeup"],
     training_depends_on_protocol=True,
     ground_truth=GROUND_TRUTH,
+    retrain=True,
 )
 """The :py:class:`bob.pad.base.database.BatlDockerPadDatabase` derivative with BATL Db
 database settings.

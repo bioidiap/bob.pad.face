@@ -184,8 +184,9 @@ class BatlDockerPadDatabase(PadDatabase):
             annotations_temp_dir="",
             landmark_detect_method="mtcnn",
             exlude_attacks_list=None,
-            ground_truth_path='/tmp/sub_dir/gt.csv',
-            ground_truth_config=DEFAULT_GT_CONFIG,
+            ground_truth={'govt':{'path':'/tmp/sub_dir/gt.csv',
+                                  'config':DEFAULT_GT_CONFIG}},
+            retrain=False,
             **kwargs):
         """
         **Parameters:**
@@ -235,23 +236,49 @@ class BatlDockerPadDatabase(PadDatabase):
 
         file_id = 0
         self.gt_dict = dict()
-        with open(ground_truth_path,'r') as gt:
+
+        # Place input data from govt ground-truth in train set, given without any pai_id
+        with open(ground_truth['govt']['path'],'r') as gt:
+            gt_config = ground_truth['govt']['config']
             for data in gt:
-                file_id = file_id + 1
                 fields = data.strip().split(',')
-                self.gt_dict[(fields[ground_truth_config['client_id']],
-                              int(fields[ground_truth_config['type_id']]),
-                              int(fields[ground_truth_config['pai_id']]),
-                              fields[ground_truth_config['low_level_group']],
+
+                # Keep only face pad trials
+                if fields[gt_config['face']] == "1":
+                    file_id = file_id + 1
+
+                    # remove ".h5" in file_path
+                    (path,ext) = os.path.splitext(fields[gt_config['path']])
+                    fields[gt_config['path']] = path
+
+                    self.gt_dict[(fields[gt_config['path']],
+                                  int(fields[gt_config['type_id']]),
+                                  None,
+                                  "train",
+                                  int(file_id))
+                                  ] = dict(path=fields[gt_config['path']])
+
+        # If retraining, place data from idiap ground-truth in train/eval/dev set
+        if retrain:
+            with open(ground_truth['idiap']['path'],'r') as gt:
+                gt_config = ground_truth['idiap']['config']
+                for data in gt:
+                    file_id = file_id + 1
+                    fields = data.strip().split(',')
+                    self.gt_dict[(fields[gt_config['path']],
+                              int(fields[gt_config['type_id']]),
+                              int(fields[gt_config['pai_id']]),
+                              fields[gt_config['low_level_group']],
                               int(file_id))
-                              ] = dict(path=fields[ground_truth_config['client_id']])
+                              ] = dict(path=fields[gt_config['path']])
 
         def split_by(file_list, field):
             splitted_list = defaultdict(list)
             for data, paths in file_list.items():
-                splitted_list[data[ground_truth_config[field]]]\
+                splitted_list[data[3]]\
                        .append(dict(client_id=data[0], type_id=data[1], pai_id=data[2], group=data[3], file_id=data[4], path=paths['path']))
             return splitted_list
+
         self.gt_list = split_by(self.gt_dict, "low_level_group")
 
         self.low_level_group_names = (

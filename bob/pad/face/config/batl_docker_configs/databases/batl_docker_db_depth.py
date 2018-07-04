@@ -3,18 +3,16 @@
 BATL Docker DB is a database for face PAD experiments.
 """
 from bob.pad.face.database import BatlDockerPadDatabase
-from .gt_config import GT_PATH, GT_CONFIG
+from .gt_config import GROUND_TRUTH, N_FRAMES
+from .gt_config import ORIGINAL_DIRECTORY, ANNOTATIONS_TEMP_DIR
 
 # Directory where the data files are stored.
 # This directory is given in the .bob_bio_databases.txt file located in your home directory
-ORIGINAL_DIRECTORY = "/tmp/sub_dir/data/"
 """Value of ``~/.bob_bio_databases.txt`` for this database"""
 
 ORIGINAL_EXTENSION = ".h5"  # extension of the data files
 
-ANNOTATIONS_TEMP_DIR = "/tmp/sub_dir/train/annotations/"
-
-PROTOCOL = 'baseline-depth-1'
+PROTOCOL = 'baseline-depth-{}'.format(N_FRAMES)
 
 database = BatlDockerPadDatabase(
     protocol=PROTOCOL,
@@ -24,8 +22,7 @@ database = BatlDockerPadDatabase(
     landmark_detect_method="mtcnn",
     exlude_attacks_list = ["makeup"],
     training_depends_on_protocol=True,
-    ground_truth_path=GT_PATH,
-    ground_truth_config=GT_CONFIG,
+    ground_truth=GROUND_TRUTH,
 )
 """The :py:class:`bob.pad.base.database.BatlDockerPadDatabase` derivative with BATL Db
 database settings.
