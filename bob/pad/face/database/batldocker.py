@@ -386,15 +386,12 @@ class BatlDockerPadDatabase(PadDatabase):
         # extra useless
         protocol, stream_type, max_frames, extra = self.parse_protocol(protocol)
         
-        # Convert group names to low-level group names here.
-        groups = self.convert_names_to_lowlevel(
-            groups, self.low_level_group_names, self.high_level_group_names)
 
         if not isinstance(groups, list) and groups is not None:  # if a single group is given make it a list
             groups = list(groups)
 
         if groups is None:
-            groups = self.low_level_group_names
+            groups = self.high_level_group_names
 
         # filter the groups needed
         selected_list = []
