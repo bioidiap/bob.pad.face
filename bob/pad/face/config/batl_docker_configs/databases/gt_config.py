@@ -7,7 +7,7 @@ N_FRAMES = 50
 GT_PATH = '/tmp/sub_dir/gt.csv'
 IDIAP_DATA_GT_PATH = '/tmp/idiap_extracted_data/gt_idiap.csv'
 
-GT_CONFIG = dict(path=0, type_id=1, face=2)
+GT_CONFIG = dict(path=0, any_pa=1, face=2)
 IDIAP_GT_CONFIG = dict(path=0, type_id=1, pai_id=2, low_level_group=4)
 
 GROUND_TRUTH = {'govt' : {'path' : GT_PATH,

@@ -241,22 +241,19 @@ class BatlDockerPadDatabase(PadDatabase):
         with open(ground_truth['govt']['path'],'r') as gt:
             gt_config = ground_truth['govt']['config']
             for data in gt:
+                file_id = file_id + 1
                 fields = data.strip().split(',')
 
-                # Keep only face pad trials
-                if fields[gt_config['face']] == "1":
-                    file_id = file_id + 1
+                # remove ".h5" in file_path
+                (path,ext) = os.path.splitext(fields[gt_config['path']])
+                fields[gt_config['path']] = path
 
-                    # remove ".h5" in file_path
-                    (path,ext) = os.path.splitext(fields[gt_config['path']])
-                    fields[gt_config['path']] = path
-
-                    self.gt_dict[(fields[gt_config['path']],
-                                  int(fields[gt_config['type_id']]),
-                                  None,
-                                  "train",
-                                  int(file_id))
-                                  ] = dict(path=fields[gt_config['path']])
+                self.gt_dict[(fields[gt_config['path']],
+                              int(fields[gt_config['face']]),
+                              None,
+                              "train",
+                              int(file_id))
+                              ] = dict(path=fields[gt_config['path']])
 
         # If retraining, place data from idiap ground-truth in train/eval/dev set
         if retrain:
