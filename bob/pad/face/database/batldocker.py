@@ -134,7 +134,7 @@ class BatlDockerPadFile(PadFile):
         crop=self.crop
         max_frames=self.max_frames
 
-        config_path = pkg_resources.resource_filename('bob.db.batlgovt', 'config/data_config.json')
+        config_path = pkg_resources.resource_filename('bob.pad.face', 'config/batl_docker_configs/databases/data_config.json')
         config = load_data_config(config_path)
         filepath = self.make_path(directory, extension)
         ret = {}
