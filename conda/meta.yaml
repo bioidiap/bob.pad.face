@@ -35,14 +35,14 @@ requirements:
     - bob.learn.libsvm
     - bob.ip.dlib
     - bob.ip.facelandmarks
-    - bob.rppg.base
+    - bob.rppg.base >=2.0.0
   run:
     - python
     - setuptools
     - six
     - numpy >=1.11 
     - scikit-learn
-    - bob.rppg.base
+    - bob.rppg.base >=2.0.0
 
 test:
   imports:
@@ -64,7 +64,7 @@ test:
     - bob.db.replaymobile
     - bob.db.msu_mfsd_mod
     - bob.db.mobio
-    - bob.rppg.base
+    - bob.rppg.base >=2.0.0
 
 about:
   home: https://www.idiap.ch/software/bob/
