@@ -72,13 +72,13 @@ class PPGSecure(Extractor, object):
     # get the frequencies
     f = numpy.fft.fftfreq(self.nfft) * self.framerate
    
-    # we have 5x3 pulse signals, in different regions across 3 channels
+    # we have 5 pulse signals, in different regions 
     ffts = numpy.zeros((5, output_dim))
     for i in range(5):
       ffts[i] = abs(numpy.fft.rfft(signal[:, i], n=self.nfft))
 
     fft = numpy.concatenate([ffts[0], ffts[1], ffts[2], ffts[3], ffts[4]])
-      
+
     if self.debug: 
       from matplotlib import pyplot
       pyplot.plot(range(output_dim*5), fft, 'k')
