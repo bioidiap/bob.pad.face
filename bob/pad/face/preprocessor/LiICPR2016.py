@@ -153,6 +153,8 @@ class LiICPR2016(Preprocessor):
 
       ldms = numpy.array(ldms)
       mask_points, mask = kp66_to_mask(frame, ldms, self.indent, self.debug)
+      
+      #XXX : be sure that the 3 colors are returned !!
       face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
 
       previous_ldms = ldms 

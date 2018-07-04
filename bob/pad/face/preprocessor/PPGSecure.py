@@ -130,7 +130,7 @@ class PPGSecure(Preprocessor):
       # get the mask and the green value in the different ROIs
       masks = self._get_masks(frame, ldms)
       for k in range(5):
-        green_mean[i, k] = compute_average_colors_mask(frame, masks[k], self.debug)[1]
+        green_mean[i, k] = compute_average_colors_mask(frame, masks[k], self.debug)
 
       previous_ldms = ldms 
 
