@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun  4 11:58:03 2018
-
-@author: ageorge
+@author: Guillaume Clivaz
 """
 import json
 import os
@@ -28,7 +26,7 @@ DEFAULT_GT_CONFIG = dict(client_id=0, type_id=1, pai_id=2, low_level_group=3)
 
 class BatlDockerPadFile(PadFile):
     """
-    A high level implementation of the File class for the BATL GOV
+    A high level implementation of the File class for the BATL Docker
     database.
     """
 
@@ -45,8 +43,10 @@ class BatlDockerPadFile(PadFile):
         **Parameters:**
 
         ``f`` : :py:class:`object`
-            An instance of the File class defined in the low level db interface
-            of the BATL database, in the ``bob.db.batlgovt.models.py`` file.
+            A dictionary containing client_id, type_id, path and file_id,
+            replacing the File class instance as no low level db is used,
+            but instead a ground-truth.csv is given as input in
+            BatlDockerPadDatabase
 
         ``stream_type`` : [] or :py:class:`str`
             A types of the streams to be loaded.
@@ -172,14 +172,14 @@ class BatlDockerPadFile(PadFile):
 
 class BatlDockerPadDatabase(PadDatabase):
     """
-    A high level implementation of the Database class for the BATL GOVT
-    database.
+    A high level implementation of the Database class modified to use
+    a ground-truth.csv file instead of a low-level database.
     """
 
     def __init__(
             self,
             protocol='baseline',
-            original_directory=rc['bob.db.batlgovt.directory'],
+            original_directory="/tmp/sub_dir/data/",
             original_extension='.h5',
             annotations_temp_dir="",
             landmark_detect_method="mtcnn",
@@ -207,7 +207,7 @@ class BatlDockerPadDatabase(PadDatabase):
             See the ``parse_protocol`` method of this class.
 
         ``original_directory`` : str
-            The directory where the original data of the database are stored.
+            The directory where the original data of the ground-truth.csv are stored.
 
         ``original_extension`` : str
             The file name extension of the original data.
