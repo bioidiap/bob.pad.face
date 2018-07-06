@@ -61,7 +61,6 @@ References
 
 .. [CHROM] *de Haan, G. & Jeanne, V*. **Robust Pulse Rate from Chrominance based rPPG**, IEEE Transactions on Biomedical Engineering, 2013. `pdf <http://www.es.ele.tue.nl/~dehaan/pdf/169_ChrominanceBasedPPG.pdf>`__
 
-
 .. [SSR] *Wang, W., Stuijk, S. and de Haan, G*. **A Novel Algorithm for Remote Photoplesthymograpy: Spatial Subspace Rotation**, IEEE Trans. On Biomedical Engineering, 2015
 
 .. [NOWARA] *E. M. Nowara, A. Sabharwal, A. Veeraraghavan*. **PPGSecure: Biometric Presentation Attack Detection Using Photopletysmograms**, IEEE International Conference on Automatic Face & Gesture Recognition, 2017
