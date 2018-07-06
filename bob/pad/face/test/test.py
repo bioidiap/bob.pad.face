@@ -28,7 +28,15 @@ from ..extractor import LBPHistogram
 
 from ..extractor import ImageQualityMeasure
 
-import random
+from ..preprocessor import LiPulseExtraction
+from ..preprocessor import Chrom
+from ..preprocessor import PPGSecure as PPGPreprocessor
+from ..preprocessor import SSR
+
+from ..extractor import LTSS
+from ..extractor import LiSpectralFeatures
+from ..extractor import PPGSecure as PPGExtractor
+
 
 from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
@@ -371,3 +379,99 @@ def convert_array_to_list_of_frame_cont(data):
             frame_container)  # add current frame to FrameContainer
 
     return frame_container_list
+
+
+def test_preprocessor_LiPulseExtraction():
+      """ Test the pulse extraction using Li's ICPR 2016 algorithm.
+      """
+
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+      
+      preprocessor = LiPulseExtraction(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape == (100, 3)
+
+
+def test_preprocessor_Chrom():
+      """ Test the pulse extraction using CHROM algorithm.
+      """
+
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+  
+      preprocessor = Chrom(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape[0] == 100
+
+
+def test_preprocessor_PPGSecure():
+      """ Test the pulse extraction using PPGSecure algorithm.
+      """
+
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (456, 212), 'bottomright': (770, 500)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+  
+      preprocessor = PPGPreprocessor(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape == (100, 5)
+
+
+def test_preprocessor_SSR():
+      """ Test the pulse extraction using SSR algorithm.
+      """
+      
+      image = load(datafile('test_image.png', 'bob.pad.face.test'))
+      annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
+      video, annotations = convert_image_to_video_data(image, annotations, 100)
+  
+      preprocessor = SSR(debug=False)
+      pulse = preprocessor(video, annotations)
+      assert pulse.shape[0] == 100
+
+
+def test_extractor_LTSS():
+      """ Test Long Term Spectrum Statistics (LTSS) Feature Extractor 
+      """
+      
+      # "pulse" in 3 color channels
+      data = np.random.random((200, 3))
+      
+      extractor = LTSS(concat=True)
+      features = extractor(data)
+      # n = number of FFT coefficients (default is 64)
+      # (n/2 + 1) * 2 (mean and std) * 3 (colors channels)
+      assert features.shape[0] == 33*2*3
+      
+      extractor = LTSS(concat=False)
+      features = extractor(data)
+      # only one "channel" is considered
+      assert features.shape[0] == 33*2
+
+
+def test_extractor_LiSpectralFeatures():
+      """ Test Li's ICPR 2016 Spectral Feature Extractor 
+      """
+      
+      # "pulse" in 3 color channels
+      data = np.random.random((200, 3))
+      
+      extractor = LiSpectralFeatures()
+      features = extractor(data)
+      assert features.shape[0] == 6 
+     
+
+def test_extractor_PPGSecure():
+      """ Test PPGSecure Spectral Feature Extractor 
+      """
+      # 5 "pulses" 
+      data = np.random.random((200, 5))
+      
+      extractor = PPGExtractor()
+      features = extractor(data)
+      # n = number of FFT coefficients (default is 32)
+      # 5 (pulse signals) * (n/2 + 1)
+      assert features.shape[0] == 5*17

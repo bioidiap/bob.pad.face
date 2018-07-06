@@ -81,7 +81,7 @@ class Chrom(Preprocessor, object):
     self.debug = debug
     self.skin_filter = bob.ip.skincolorfilter.SkinColorFilter()
 
-  def __call__(self, frames, annotations):
+  def __call__(self, frames, annotations=None):
     """Computes the pulse signal for the given frame sequence
 
     Parameters

@@ -35,14 +35,13 @@ requirements:
     - bob.learn.libsvm
     - bob.ip.dlib
     - bob.ip.facelandmarks
-    - bob.rppg.base
+    - bob.rppg.base >=2.0.0
   run:
     - python
     - setuptools
     - six
     - numpy >=1.11 
     - scikit-learn
-    - bob.rppg.base
 
 test:
   imports:

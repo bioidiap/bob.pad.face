@@ -17,10 +17,15 @@ from bob.rppg.cvpr14.filter_utils import detrend
 from bob.rppg.cvpr14.filter_utils import average
 
 
-class Li(Preprocessor):
+class LiPulseExtraction(Preprocessor):
   """Extract pulse signal from a video sequence.
   
-  The pulse is extracted according to Li's CVPR 14 algorithm.
+  The pulse is extracted according to a simplified version of Li's CVPR 14 algorithm.
+
+  It is described in:
+  X. Li, J, Komulainen, G. Zhao, P-C Yuen and M. Pietikäinen
+  "Generalized face anti-spoofing by detecting pulse from face videos"
+  Intl Conf on Pattern Recognition (ICPR), 2016
 
   See the documentation of `bob.rppg.base`
 
@@ -65,7 +70,7 @@ class Li(Preprocessor):
       Plot some stuff 
 
     """
-    super(Li, self).__init__(**kwargs)
+    super(LiPulseExtraction, self).__init__(**kwargs)
     self.indent = indent
     self.lambda_ = lambda_
     self.window = window
@@ -148,6 +153,8 @@ class Li(Preprocessor):
 
       ldms = numpy.array(ldms)
       mask_points, mask = kp66_to_mask(frame, ldms, self.indent, self.debug)
+      
+      #XXX : be sure that the 3 colors are returned !!
       face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
 
       previous_ldms = ldms 
