@@ -22,6 +22,7 @@ Users Guide
    installation
    baselines
    other_pad_algorithms
+   pulse
    references
    resources
    api
