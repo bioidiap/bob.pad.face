@@ -159,7 +159,7 @@ class LiPulseExtraction(Preprocessor):
       
       #face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
       face_color[i] = compute_average_colors_mask(frame, mask, False)
-      logger.debug("Face color in frame {} = {}".format(i, face_color[i])
+      logger.debug("Face color in frame {} = {}".format(i, face_color[i]))
 
       previous_ldms = ldms 
       counter += 1
