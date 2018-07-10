@@ -134,7 +134,7 @@ class LiPulseExtraction(Preprocessor):
           ldms = previous_ldms
           # so do nothing ...
           logger.warning("No mask detected in frame {}".format(i))
-          face_color[i] = 0
+          face_color[i] = [0, 0, 0]
           continue
         frame = frame_rotated
       
@@ -144,6 +144,7 @@ class LiPulseExtraction(Preprocessor):
         logger.warning("Frame {}: no landmarks detected, using the ones from previous frame".format(i))
 
       if self.debug:
+      if False:
         from matplotlib import pyplot
         display = numpy.copy(frame)
         for p in ldms:
@@ -152,10 +153,12 @@ class LiPulseExtraction(Preprocessor):
         pyplot.show()
 
       ldms = numpy.array(ldms)
-      mask_points, mask = kp66_to_mask(frame, ldms, self.indent, self.debug)
+      #mask_points, mask = kp66_to_mask(frame, ldms, self.indent, self.debug)
+      mask_points, mask = kp66_to_mask(frame, ldms, self.indent, False)
       
-      #XXX : be sure that the 3 colors are returned !!
-      face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
+      #face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
+      face_color[i] = compute_average_colors_mask(frame, mask, False)
+      logger.debug("Face color in frame {} = {}".format(i, face_color[i])
 
       previous_ldms = ldms 
       counter += 1
