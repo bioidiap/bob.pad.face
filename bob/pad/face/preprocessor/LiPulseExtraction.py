@@ -134,7 +134,7 @@ class LiPulseExtraction(Preprocessor):
           ldms = previous_ldms
           # so do nothing ...
           logger.warning("No mask detected in frame {}".format(i))
-          face_color[i] = 0
+          face_color[i] = [0, 0, 0]
           continue
         frame = frame_rotated
       
@@ -154,8 +154,8 @@ class LiPulseExtraction(Preprocessor):
       ldms = numpy.array(ldms)
       mask_points, mask = kp66_to_mask(frame, ldms, self.indent, self.debug)
       
-      #XXX : be sure that the 3 colors are returned !!
       face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
+      logger.debug("Face color in frame {} = {}".format(i, face_color[i]))
 
       previous_ldms = ldms 
       counter += 1
