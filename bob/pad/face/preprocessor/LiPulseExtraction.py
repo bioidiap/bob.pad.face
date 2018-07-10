@@ -111,7 +111,8 @@ class LiPulseExtraction(Preprocessor):
     for i, frame in enumerate(video):
 
       logger.debug("Processing frame {}/{}".format(counter, nb_frames))
-      if self.debug:
+      #if self.debug:
+      if False:
         from matplotlib import pyplot
         pyplot.imshow(numpy.rollaxis(numpy.rollaxis(frame, 2),2))
         pyplot.show()
@@ -143,7 +144,7 @@ class LiPulseExtraction(Preprocessor):
         ldms = previous_ldms
         logger.warning("Frame {}: no landmarks detected, using the ones from previous frame".format(i))
 
-      if self.debug:
+      #if self.debug:
       if False:
         from matplotlib import pyplot
         display = numpy.copy(frame)
