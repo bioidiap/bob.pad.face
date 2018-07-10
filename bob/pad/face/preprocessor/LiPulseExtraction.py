@@ -111,8 +111,7 @@ class LiPulseExtraction(Preprocessor):
     for i, frame in enumerate(video):
 
       logger.debug("Processing frame {}/{}".format(counter, nb_frames))
-      #if self.debug:
-      if False:
+      if self.debug:
         from matplotlib import pyplot
         pyplot.imshow(numpy.rollaxis(numpy.rollaxis(frame, 2),2))
         pyplot.show()
@@ -144,8 +143,7 @@ class LiPulseExtraction(Preprocessor):
         ldms = previous_ldms
         logger.warning("Frame {}: no landmarks detected, using the ones from previous frame".format(i))
 
-      #if self.debug:
-      if False:
+      if self.debug:
         from matplotlib import pyplot
         display = numpy.copy(frame)
         for p in ldms:
@@ -154,11 +152,9 @@ class LiPulseExtraction(Preprocessor):
         pyplot.show()
 
       ldms = numpy.array(ldms)
-      #mask_points, mask = kp66_to_mask(frame, ldms, self.indent, self.debug)
-      mask_points, mask = kp66_to_mask(frame, ldms, self.indent, False)
+      mask_points, mask = kp66_to_mask(frame, ldms, self.indent, self.debug)
       
-      #face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
-      face_color[i] = compute_average_colors_mask(frame, mask, False)
+      face_color[i] = compute_average_colors_mask(frame, mask, self.debug)
       logger.debug("Face color in frame {} = {}".format(i, face_color[i]))
 
       previous_ldms = ldms 
