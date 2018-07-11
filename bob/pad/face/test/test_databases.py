@@ -167,3 +167,21 @@ def test_aggregated_db():
         raise SkipTest(
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
             % e)
+
+# Test the Aggregated database, which doesn't have a package
+def test_maskattack_db():
+    aggregated_db = bob.bio.base.load_resource(
+        'maskattack',
+        'database',
+        preferred_package='bob.pad.face',
+        package_prefix='bob.pad.')
+    try:
+
+        assert len(aggregated_db.objects(groups=['train', 'dev', 'eval'])) == 255
+        assert len(aggregated_db.objects(groups=['train', 'dev'])) == 150
+        assert len(aggregated_db.objects(groups=['train'])) == 105
+
+    except IOError as e:
+        raise SkipTest(
+            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
+            % e)
