@@ -92,30 +92,45 @@ class PPGSecure(Preprocessor):
         pyplot.show()
      
       # detect landmarks
-      try:
-        ldms = self.detector(frame)
-      except TypeError:
-        # looks like one video from replay mobile is upside down !
+      ldms = self.detector(frame)
+      
+      if ldms is None:
+        logger.warning("Landmarks not detected ...")
+
+        # looks like some videos from replay mobile are upside down !
         rotated_shape = bob.ip.base.rotated_output_shape(frame, 180)
         frame_rotated = numpy.ndarray(rotated_shape, dtype=numpy.float64)
         from bob.ip.base import rotate
         bob.ip.base.rotate(frame, frame_rotated, 180)
         frame_rotated = frame_rotated.astype(numpy.uint8)
-        logger.warning("Rotating again ...")
-        try:
-          ldms = self.detector(frame_rotated)
-        except TypeError:
+        logger.warning("Rotating 180 degrees ...")
+
+        # check the rotated frame
+        if self.debug:
+          from matplotlib import pyplot
+          pyplot.imshow(numpy.rollaxis(numpy.rollaxis(frame_rotated, 2),2))
+          pyplot.show()
+        
+        ldms = self.detector(frame_rotated)
+        # if landmarks are still not detected, do nothing
+        if ldms is None:
           ldms = previous_ldms
           # so do nothing ...
           logger.warning("No mask detected in frame {}".format(i))
-          green_mean[i, :] = 0
+          green_mean[i] = [0, 0, 0, 0, 0]
           continue
+        
         frame = frame_rotated
-
-      # landmarks have not been detected: use the one from previous frame
+        
+      # if landmarks are still not detected, use the one from previous frame (if any)
       if ldms is None:
-        ldms = previous_ldms
-        logger.warning("Frame {}: no landmarks detected, using the ones from previous frame".format(i))
+        if previous_ldms is None:
+          logger.warning("No mask detected in frame {}".format(i))
+          green_mean[i] = [0, 0, 0, 0, 0]
+          continue
+        else: 
+          ldms = previous_ldms
+          logger.warning("Frame {}: no landmarks detected, using the ones from previous frame".format(i))
 
       if self.debug:
         from matplotlib import pyplot
