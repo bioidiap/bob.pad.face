@@ -73,6 +73,7 @@ setup(
             'batl-db-depth = bob.pad.face.config.batl_db_depth:database',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
             'celeb-a = bob.pad.face.config.celeb_a:database',
+            'maskattack = bob.pad.face.config.maskattack:database',
         ],
 
         # registered configurations:
@@ -88,6 +89,7 @@ setup(
             'batl-db-depth = bob.pad.face.config.batl_db_depth',
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal',
             'celeb-a = bob.pad.face.config.celeb_a',
+            'maskattack = bob.pad.face.config.maskattack',
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',

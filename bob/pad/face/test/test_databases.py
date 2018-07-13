@@ -109,6 +109,38 @@ def test_msu_mfsd():
             % e)
 
 
+# Test the maskattack database
+@db_available('maskattack')
+def test_maskattack():
+    maskattack = bob.bio.base.load_resource(
+        'maskattack',
+        'database',
+        preferred_package='bob.pad.face',
+        package_prefix='bob.pad.')
+    try:
+        # all real sequences: 2 sessions, 5 recordings for 17 individuals
+        assert len(maskattack.objects(groups=['train', 'dev', 'eval'], purposes='real')) == 170
+        # all attacks: 1 session, 5 recordings for 17 individuals
+        assert len(maskattack.objects(groups=['train', 'dev', 'eval'], purposes='attack')) == 85
+        
+        # training real: 7 subjects, 2 sessions, 5 recordings
+        assert len(maskattack.objects(groups=['train'], purposes='real')) == 70
+        # training real: 7 subjects, 1 session, 5 recordings
+        assert len(maskattack.objects(groups=['train'], purposes='attack')) == 35
+
+        # dev and test contains the same number of sequences:
+        # real: 5 subjects, 2 sessions, 5 recordings
+        # attack: 5 subjects, 1 sessions, 5 recordings
+        assert len(maskattack.objects(groups=['dev'], purposes='real')) == 50
+        assert len(maskattack.objects(groups=['eval'], purposes='real')) == 50
+        assert len(maskattack.objects(groups=['dev'], purposes='attack')) == 25
+        assert len(maskattack.objects(groups=['eval'], purposes='attack')) == 25
+
+    except IOError as e:
+        raise SkipTest(
+            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
+            % e)
+
 # Test the Aggregated database, which doesn't have a package
 def test_aggregated_db():
     aggregated_db = bob.bio.base.load_resource(
@@ -167,3 +199,4 @@ def test_aggregated_db():
         raise SkipTest(
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
             % e)
+
