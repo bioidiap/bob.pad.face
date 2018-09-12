@@ -99,7 +99,7 @@ class ImageQualityMeasure(Extractor):
 
                 return None
 
-        elif self.dtype is not None:
+        if self.dtype is not None:
 
             features = features.astype(self.dtype)
 
