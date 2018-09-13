@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
+# =============================================================================
 # Used in BATLMobilePadFile class
 from bob.pad.base.database import PadDatabase, PadFile
 from bob.bio.video import FrameSelector
@@ -14,7 +15,10 @@ import os
 
 import bob.io.base
 
+import pkg_resources
 
+
+# =============================================================================
 class BatlPadFile(PadFile):
     """
     A high level implementation of the File class for the BATL
@@ -91,6 +95,7 @@ class BatlPadFile(PadFile):
         self.crop = crop  # None
         self.video_data_only = video_data_only  # True
 
+
     def load(self, directory=None, extension='.h5',
              frame_selector=FrameSelector(selection_style='all')):
         """
@@ -111,32 +116,52 @@ class BatlPadFile(PadFile):
 
         **Returns:**
 
-        ``data`` : FrameContainer
+        ``data`` : FrameContainer or :py:class:`dict`
             Video data stored in the FrameContainer,
             see ``bob.bio.video.utils.FrameContainer``
             for further details.
+
+            OR Video data for multiple streams stored in the dictionary. The
+            structure of the dictionary:
+            ``data={"stream1_name" : FrameContainer1, "stream2_name" : ...}``
+            Names of the streams are defined in ``self.stream_type``.
         """
 
-        data = self.f.load(directory=directory,
-                           extension=extension,
-                           modality=self.stream_type,
-                           reference_stream_type=self.reference_stream_type,
-                           warp_to_reference=self.warp_to_reference,
-                           convert_to_rgb=self.convert_to_rgb,
-                           crop=self.crop,
-                           max_frames=self.max_frames)
+        if not isinstance(self.stream_type, list): # make stream_type a list, if not already
 
-        for meta_data in data.keys():
-            if meta_data != 'rppg':
-                data[meta_data] = frame_selector(data[meta_data])
+            self.stream_type = [self.stream_type]
 
-        if self.video_data_only:
+        data_all_streams = {}
 
-            data = data['video']
+        for stream in self.stream_type:
 
-        return data
+            data = self.f.load(directory=directory,
+                               extension=extension,
+                               modality=stream,
+                               reference_stream_type=self.reference_stream_type,
+                               warp_to_reference=self.warp_to_reference,
+                               convert_to_rgb=self.convert_to_rgb,
+                               crop=self.crop,
+                               max_frames=self.max_frames)
+
+            for meta_data in data.keys():
+                if meta_data != 'rppg':
+                    data[meta_data] = frame_selector(data[meta_data])
+
+            if self.video_data_only:
+
+                data = data['video']
+
+            if len(self.stream_type) == 1:
+
+                return data
+
+            data_all_streams[stream] = data
+
+        return data_all_streams
 
 
+# =============================================================================
 class BatlPadDatabase(PadDatabase):
     """
     A high level implementation of the Database class for the BATL
@@ -145,13 +170,16 @@ class BatlPadDatabase(PadDatabase):
 
     def __init__(
             self,
-            protocol='nowig',
+            protocol='grandtest',
             original_directory=rc['bob.db.batl.directory'],
             original_extension='.h5',
-            annotations_temp_dir="",
+            annotations_temp_dir=rc['bob.pad.face.database.batl.annotations_temp_dir'],
             landmark_detect_method="mtcnn",
-            exlude_attacks_list=None,
+            exclude_attacks_list=['makeup'],
+            exclude_pai_all_sets=True,
+            append_color_face_roi_annot=False,
             **kwargs):
+
         """
         **Parameters:**
 
@@ -159,15 +187,25 @@ class BatlPadDatabase(PadDatabase):
             The name of the protocol that defines the default experimental
             setup for this database. Also a "complex" protocols can be
             parsed.
+
             For example:
-            "nowig-color-5" - nowig protocol, color data only,
+
+            "grandtest-color-5" - baseline protocol, color data only,
             use 5 first frames.
-            "nowig-depth-5" - nowig protocol, depth data only,
+
+            "grandtest-depth-5" - baseline protocol, depth data only,
             use 5 first frames.
-            "nowig-color" - nowig protocol, depth data only, use all frames.
-            "nowig-infrared-50-join_train_dev" - nowig protocol,
+
+            "grandtest-color" - baseline protocol, depth data only, use all frames.
+
+            "grandtest-infrared-50-join_train_dev" - baseline protocol,
             infrared data only, use 50 frames, join train and dev sets forming
             a single large training set.
+
+            "grandtest-color*infrared-50" - baseline protocol,
+            load both "color" and "infrared" channels,
+            use 50 frames.
+
             See the ``parse_protocol`` method of this class.
 
         ``original_directory`` : str
@@ -187,11 +225,30 @@ class BatlPadDatabase(PadDatabase):
             landmarks. Possible options: "dlib" or "mtcnn".
             Default: ``"mtcnn"``.
 
-        ``exlude_attacks_list`` : [str]
+        ``exclude_attacks_list`` : [str]
             A list of strings defining which attacks should be excluded from
             the training set. This shoould be handled in ``objects()`` method.
             Currently handled attacks: "makeup".
             Default: ``None``.
+
+        ``exclude_pai_all_sets`` : bool
+            If ``True`` attacks (PAI) listed in ``exclude_attacks_list`` will
+            be excluded from all the sets - training, development and
+            evaluation.
+            Otherwise attacks are excluded from the training set, when the
+            training set is requested.
+            Default: ``False``.
+
+        ``append_color_face_roi_annot`` : bool
+            If ``True``, annotations specifying ROI in the facial region of the
+            color channel will be appendended to the annotations dictionary.
+            Annotations to append are located in the
+            ``lists/batl/color_skin_non_skin_annotations/`` folder of this
+            package. See the README in the folder for more details.
+            Annotations will be placed in the ``annotations`` dictionary,
+            in the field named ``face_roi``.
+            See ``self.annotations()`` method for more details.
+            Default: False.
 
         ``kwargs`` : dict
             The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
@@ -224,28 +281,33 @@ class BatlPadDatabase(PadDatabase):
         self.original_extension = original_extension
         self.annotations_temp_dir = annotations_temp_dir
         self.landmark_detect_method = landmark_detect_method
-        self.exlude_attacks_list = exlude_attacks_list
+        self.exclude_attacks_list = exclude_attacks_list
+        self.exclude_pai_all_sets = exclude_pai_all_sets
+        self.append_color_face_roi_annot = append_color_face_roi_annot
+
 
     @property
     def original_directory(self):
         return self.db.original_directory
 
+
     @original_directory.setter
     def original_directory(self, value):
         self.db.original_directory = value
+
 
     def parse_protocol(self, protocol):
         """
         Parse the protocol name, which is give as a string.
         An example of protocols it can parse:
-        "nowig-color-5" - nowig protocol, color data only, use 5 first frames.
-        "nowig-depth-5" - nowig protocol, depth data only, use 5 first frames.
-        "nowig-color" - nowig protocol, depth data only, use all frames.
+        "grandtest-color-5" - grandtest protocol, color data only, use 5 first frames.
+        "grandtest-depth-5" - grandtest protocol, depth data only, use 5 first frames.
+        "grandtest-color" - grandtest protocol, depth data only, use all frames.
 
         **Parameters:**
 
         ``protocol`` : str
-            Protocol name to be parsed. Example: "nowig-depth-5" .
+            Protocol name to be parsed. Example: "grandtest-depth-5" .
 
         **Returns:**
 
@@ -284,11 +346,16 @@ class BatlPadDatabase(PadDatabase):
 
         protocol, stream_type, max_frames = components
 
+        if stream_type is not None and "*" in stream_type: # multiple streams can be separated with * symbol in the protocol name
+
+            stream_type = stream_type.split("*")
+
         if max_frames is not None:
 
             max_frames = int(max_frames)
 
         return protocol, stream_type, max_frames, extra
+
 
     def _fix_funny_eyes_in_objects(self, protocol, groups, purposes):
         """
@@ -325,6 +392,9 @@ class BatlPadDatabase(PadDatabase):
             A list of VideoFile objects defined in BATL Low Level Database
             Interface.
         """
+
+        # "grandtest" in HLDI is actually a "nowig" in LLDI, thus rename if necessary:
+        protocol = 'nowig' if protocol == 'grandtest' else protocol
 
         if groups is None:
             groups = self.low_level_group_names
@@ -368,6 +438,7 @@ class BatlPadDatabase(PadDatabase):
         files = files_train + files_dev + files_eval
 
         return files
+
 
     def objects(self,
                 protocol=None,
@@ -415,6 +486,9 @@ class BatlPadDatabase(PadDatabase):
 
         protocol, stream_type, max_frames, extra = self.parse_protocol(protocol)
 
+        # "grandtest" in HLDI is actually a "nowig" in LLDI, thus rename if necessary:
+        protocol = 'nowig' if protocol == 'grandtest' else protocol
+
         # Convert group names to low-level group names here.
         groups = self.convert_names_to_lowlevel(
             groups, self.low_level_group_names, self.high_level_group_names)
@@ -442,19 +516,31 @@ class BatlPadDatabase(PadDatabase):
                                         purposes=purposes, **kwargs)
 
         else:
-            files = self._fix_funny_eyes_in_objects(protocol=protocol,
-                                                    groups=groups,
-                                                    purposes=purposes, **kwargs)
+#            files = self._fix_funny_eyes_in_objects(protocol=protocol,
+#                                                    groups=groups,
+#                                                    purposes=purposes, **kwargs)
 
-        if groups == 'train' or 'train' in groups and len(groups) == 1:
-            # exclude "makeup" case
-            if self.exlude_attacks_list is not None and "makeup" in self.exlude_attacks_list:
+            # the distribution of funny eyes is not modified anymore:
+            files = self.db.objects(protocol=protocol,
+                                    groups=groups,
+                                    purposes=purposes, **kwargs)
+
+        groups = ['train'] if groups == ['train', 'train'] else groups
+
+        if self.exclude_attacks_list is not None and "makeup" in self.exclude_attacks_list:
+
+            if self.exclude_pai_all_sets:
+
+                files = [f for f in files if os.path.split(f.path)[-1].split("_")[-2:-1][0] != "5"]
+
+            if groups == 'train' or 'train' in groups and len(groups) == 1 and not self.exclude_pai_all_sets:
 
                 files = [f for f in files if os.path.split(f.path)[-1].split("_")[-2:-1][0] != "5"]
 
         files = [BatlPadFile(f, stream_type, max_frames) for f in files]
 
         return files
+
 
     def annotations(self, f):
         """
@@ -525,4 +611,23 @@ class BatlPadDatabase(PadDatabase):
 
             return None
 
+        # If specified append annotations for the roi in the facial region:
+        if self.append_color_face_roi_annot:
+
+            file_path = pkg_resources.resource_filename( 'bob.pad.face', os.path.join('lists/batl/color_skin_non_skin_annotations/', "annotations_train_set" + ".json") )
+
+            with open(file_path, 'r') as json_file: # open the file containing all annotations:
+
+                roi_annotations = json.load(json_file) # load the annotations
+
+            if not f.f.path in roi_annotations: # no annotations for this file
+
+                return None
+
+            else: # annotations are available
+
+                annotations['face_roi'] = roi_annotations[f.f.path]
+
         return annotations
+
+
