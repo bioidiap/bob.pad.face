@@ -19,6 +19,9 @@ import bob.ip.base
 
 import importlib
 
+import bob.bio.face 
+
+
 
 # ==============================================================================
 def auto_norm_image(data, annotations, n_sigma=3.0, norm_method='MAD'):
@@ -76,6 +79,31 @@ def auto_norm_image(data, annotations, n_sigma=3.0, norm_method='MAD'):
 
     return data_n
 
+def get_mouth_center(lm):
+    """
+    This function returns the location of mouth center
+
+    **Parameters:**
+
+    ``lm`` : :py:class:`numpy.ndarray`
+        A numpy array containing the coordinates of facial landmarks, (68X2)
+
+    **Returns:**
+
+
+    ``mouth_center``
+        A tuple containing the location of mouth center
+
+    """
+
+    # Mean position of eye corners as eye centers , casted to int()
+
+    mouth_center_t = (lm[48, :] + lm[54, :]) / 2.0
+
+    mouth_center = (int(mouth_center_t[1]), int(mouth_center_t[0]))
+
+    return mouth_center
+
 
 # ==============================================================================
 def get_eye_pos(lm):
@@ -106,6 +134,32 @@ def get_eye_pos(lm):
     left_eye = (int(right_eye_t[1]), int(right_eye_t[0]))
 
     return right_eye, left_eye
+
+
+def get_eye_center(lm):
+    """
+    This function returns the location of eye_center, midpoint of left and right eye
+
+    **Parameters:**
+
+    ``lm`` : :py:class:`numpy.ndarray`
+        A numpy array containing the coordinates of facial landmarks, (68X2)
+
+    **Returns:**
+
+    ``eye_center``
+        A tuple containing the location of eye_center
+
+    """
+
+    # Mean position of eye corners as eye centers , casted to int()
+
+    left_eye_t = (lm[36, :] + lm[39, :]) / 2.0
+    right_eye_t = (lm[42, :] + lm[45, :]) / 2.0
+
+    eye_center = (int((left_eye_t[1]+right_eye_t[1])/2.0), int((left_eye_t[0]+right_eye_t[0])/2.0))
+
+    return eye_center
 
 
 # ==============================================================================
@@ -213,7 +267,7 @@ def detect_face_landmarks_in_image(image, method="dlib"):
 
 # ==========================================================================
 def normalize_image_size_in_grayscale(image, annotations,
-                                      face_size, use_face_alignment):
+                                      face_size, use_face_alignment,alignment_type='default'):
     """
     This function crops the face in the input Gray-scale image given annotations
     defining the face bounding box, and eye positions.
@@ -250,16 +304,56 @@ def normalize_image_size_in_grayscale(image, annotations,
 
     if use_face_alignment:
 
-        face_eyes_norm = bob.ip.base.FaceEyesNorm(
-            eyes_distance=((face_size + 1) / 2.),
-            crop_size=(face_size, face_size),
-            eyes_center=(face_size / 4., (face_size - 0.5) / 2.))
 
-        right_eye, left_eye = annotations['reye'], annotations['leye']
+        if alignment_type=='default':
 
-        normalized_image = face_eyes_norm( image, right_eye = right_eye, left_eye = left_eye )
+            face_eyes_norm = bob.ip.base.FaceEyesNorm(
+                eyes_distance=((face_size + 1) / 2.),
+                crop_size=(face_size, face_size),
+                eyes_center=(face_size / 4., (face_size - 0.5) / 2.))
 
-        normbbx=normalized_image.astype('uint8')
+            right_eye, left_eye = annotations['reye'], annotations['leye']
+
+            normalized_image = face_eyes_norm( image, right_eye = right_eye, left_eye = left_eye )
+
+            normbbx=normalized_image.astype('uint8')
+
+        elif alignment_type=='lightcnn': # This option overrides the facesize argument
+
+            # This is the size of the image that this model expects
+
+            CROPPED_IMAGE_HEIGHT = 128
+            CROPPED_IMAGE_WIDTH = 128
+
+            # eye positions for frontal images
+            RIGHT_EYE_POS = (32, 44)
+            LEFT_EYE_POS = (32, 84)
+
+            EYE_CENTER_POS = (40, 64)
+            MOUTH_CENTER_POS = (88, 64)
+
+
+            lm=np.array(annotations['landmarks'])
+
+            mouth_center=get_mouth_center(lm)
+
+            eye_center=get_eye_center(lm)
+
+            annotations['eye_center'] =eye_center
+
+            annotations['mouth_center']=mouth_center
+
+            light_cnn_face_cropper=bob.bio.face.preprocessor.FaceCrop(
+                cropped_image_size=(CROPPED_IMAGE_HEIGHT, CROPPED_IMAGE_WIDTH),
+                cropped_positions={'eye_center': EYE_CENTER_POS, 'mouth_center': MOUTH_CENTER_POS})
+
+
+            normalized_image = light_cnn_face_cropper( image, annotations=annotations)
+
+            normbbx=normalized_image.astype('uint8')
+
+        else:
+            print('The specified alignment method {} is not implemented!'.format(alignment_type))
 
     else:
 
@@ -278,7 +372,7 @@ def normalize_image_size_in_grayscale(image, annotations,
 
 # ==========================================================================
 def normalize_image_size(image, annotations, face_size,
-                         rgb_output_flag, use_face_alignment):
+                         rgb_output_flag, use_face_alignment,alignment_type='default'):
     """
     This function crops the face in the input image given annotations defining
     the face bounding box. The size of the face is also normalized to the
@@ -334,7 +428,7 @@ def normalize_image_size(image, annotations, face_size,
     for image_channel in image:  # for all color channels in the input image
 
         cropped_face = normalize_image_size_in_grayscale(
-            image_channel, annotations, face_size, use_face_alignment)
+            image_channel, annotations, face_size, use_face_alignment,alignment_type=alignment_type)
 
         result.append(cropped_face)
 
@@ -388,6 +482,15 @@ class FaceCropAlign(Preprocessor):
         using the facial landmarks detected locally.
         Works only when ``face_detection_method is not None``.
 
+    ``alignment_type`` : :py:class:`str`
+        Specifies the alignment type to use if ``use_face_alignment`` is set to ``True``
+        Two methods are currently implemented:
+        ``default`` which would do alignment by making eyes
+        horizontally
+        ``lightcnn`` which aligns the face such that eye center are mouth centers are aligned to
+        predefined positions. This option overrides the face size option as the output required
+        is always 128x128. This is suitable for use with LightCNN model.
+
     ``max_image_size`` : :py:class:`int`
         The maximum size of the image to be processed.
         ``max_image_size`` is only supported when
@@ -420,6 +523,7 @@ class FaceCropAlign(Preprocessor):
     def __init__(self, face_size,
                  rgb_output_flag,
                  use_face_alignment,
+                 alignment_type='default',
                  max_image_size=None,
                  face_detection_method=None,
                  min_face_size=None,
@@ -429,6 +533,7 @@ class FaceCropAlign(Preprocessor):
         Preprocessor.__init__(self, face_size=face_size,
                               rgb_output_flag=rgb_output_flag,
                               use_face_alignment=use_face_alignment,
+                              alignment_type=alignment_type,
                               max_image_size=max_image_size,
                               face_detection_method=face_detection_method,
                               min_face_size=min_face_size,
@@ -438,6 +543,7 @@ class FaceCropAlign(Preprocessor):
         self.face_size = face_size
         self.rgb_output_flag = rgb_output_flag
         self.use_face_alignment = use_face_alignment
+        self.alignment_type=alignment_type
 
         self.max_image_size = max_image_size
         self.face_detection_method = face_detection_method
@@ -446,6 +552,17 @@ class FaceCropAlign(Preprocessor):
         self.normalization_function_kwargs = normalization_function_kwargs
 
         self.supported_face_detection_method = ["dlib", "mtcnn"]
+
+
+        self.supported_alignment_method = ["default", "lightcnn"]
+
+        if use_face_alignment:
+
+            if self.alignment_type not in self.supported_alignment_method:
+
+                raise ValueError('The alignment type {} is not supported'.format(self.alignment_type))
+
+
 
         if self.face_detection_method is not None:
 
@@ -546,6 +663,7 @@ class FaceCropAlign(Preprocessor):
                                                annotations=annotations,
                                                face_size=self.face_size,
                                                rgb_output_flag=self.rgb_output_flag,
-                                               use_face_alignment=self.use_face_alignment)
+                                               use_face_alignment=self.use_face_alignment,
+                                               alignment_type=self.alignment_type)
 
         return norm_face_image
