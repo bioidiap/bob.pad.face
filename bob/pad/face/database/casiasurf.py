@@ -74,3 +74,100 @@ class CasiaSurfPadFile(VideoPadFile):
           data_to_return[k] = frame_container
 
         return data_to_return
+
+
+class CasiaSurfPadDatabase(PadDatabase): 
+    """High level implementation of the Database class for the 3DMAD database.
+   
+    Note that at the moment, this database only contains a training and validation set.
+
+    The protocol specifies the modality(ies) to load.
+
+    Attributes
+    ----------
+    db : :py:class:`bob.db.casiasurf.Database`
+      the low-level database interface
+    low_level_group_names : list of :py:obj:`str`
+      the group names in the low-level interface (world, dev, test)
+    high_level_group_names : list of :py:obj:`str`
+      the group names in the high-level interface (train, dev, eval)
+
+    """
+        
+    from bob.db.casiasurf import Database as LowLevelDatabase
+    self.db = LowLevelDatabase()
+
+    self.low_level_group_names = ('train', 'validation', 'test')  
+    self.high_level_group_names = ('train', 'dev', 'eval')
+
+    super(CasiaSurfPadDatabase, self).__init__(
+        name='casiasurf',
+        protocol=protocol,
+        original_directory=original_directory,
+        original_extension=original_extension,
+        **kwargs)
+
+     @property
+    def original_directory(self):
+        return self.db.original_directory
+
+
+    @original_directory.setter
+    def original_directory(self, value):
+        self.db.original_directory = value
+
+    def objects(self,
+                groups=None,
+                protocol='all',
+                purposes=None,
+                model_ids=None,
+                **kwargs):
+        """Returns a list of CasiaSurfPadFile objects, which fulfill the given restrictions.
+
+        Parameters
+        ----------
+        groups : list of :py:class:`str`
+          The groups of which the clients should be returned.
+          Usually, groups are one or more elements of ('train', 'dev', 'eval')
+        protocol : :py:class:`str`
+          The protocol for which the samples should be retrieved.
+        purposes : :py:class:`str`
+          The purposes for which Sample objects should be retrieved.
+          Usually it is either 'real' or 'attack', but could be 'unknown' as well
+        model_ids
+          This parameter is not supported in PAD databases yet.
+
+        Returns
+        -------
+        samples : :py:class:`CasiaSurfPadFilePadFile`
+            A list of CasiaSurfPadFile objects.
+        """
+
+        groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
+
+        if groups is not None:
+          
+          # for training
+          lowlevel_purposes = []
+          if 'train' in groups and purposes == 'real':
+            lowlevel_purposes.append('real') 
+          if 'train' in groups and purposes == 'attack':
+            lowlevel_purposes.append('attack') 
+
+          # for dev and eval
+          if ('dev' in groups or 'test' in groups) and purposes == 'real':
+            lowlevel_purposes.append('unknown')
+          if ('dev' in groups or 'test' in groups) and purposes == 'attack':
+            lowlevel_purposes.append('unknown')
+
+        samples = self.db.objects(sets=groups, purposes=lowlevel_purposes, **kwargs)
+        samples = [CasiaSurfPadFile(s) for s in samples]
+
+        return samples
+
+    
+    def annotations(self, file):
+        """No annotations are provided with this DB
+        """
+        return None
+
