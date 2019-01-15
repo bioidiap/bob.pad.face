@@ -573,6 +573,14 @@ class BatlPadDatabase(PadDatabase):
 
         if not os.path.isfile(file_path):  # no file with annotations
 
+            # original values of the arguments of f:
+            stream_type_original = f.stream_type
+            reference_stream_type_original = f.reference_stream_type
+            warp_to_reference_original = f.warp_to_reference
+            convert_to_rgb_original = f.convert_to_rgb
+            crop_original = f.crop
+            video_data_only_original = f.video_data_only
+
             f.stream_type = "color"
             f.reference_stream_type = "color"
             f.warp_to_reference = False
@@ -582,6 +590,14 @@ class BatlPadDatabase(PadDatabase):
 
             video = f.load(directory=self.original_directory,
                            extension=self.original_extension)
+
+            # set arguments of f to the original values:
+            f.stream_type = stream_type_original
+            f.reference_stream_type = reference_stream_type_original
+            f.warp_to_reference = warp_to_reference_original
+            f.convert_to_rgb = convert_to_rgb_original
+            f.crop = crop_original
+            f.video_data_only = video_data_only_original
 
             annotations = {}
 
@@ -614,7 +630,7 @@ class BatlPadDatabase(PadDatabase):
         # If specified append annotations for the roi in the facial region:
         if self.append_color_face_roi_annot:
 
-            file_path = pkg_resources.resource_filename( 'bob.pad.face', os.path.join('lists/batl/color_skin_non_skin_annotations/', "annotations_train_set" + ".json") )
+            file_path = pkg_resources.resource_filename( 'bob.pad.face', os.path.join('lists/batl/color_skin_non_skin_annotations/', "annotations_train_dev_set" + ".json") )
 
             with open(file_path, 'r') as json_file: # open the file containing all annotations:
 
