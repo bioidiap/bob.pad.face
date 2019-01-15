@@ -1,4 +1,4 @@
-Files contain annotations for the color images in the training set of the Idiap BATL database.
+Files contain annotations for the color images in the **training** and **development** sets of the Idiap BATL database.
 
 A region correponding to non-skin pixels is annotated in the "Attack" samples, and
 region corresponding to skin pixels is annotated in the "Bona-fide" samples.
