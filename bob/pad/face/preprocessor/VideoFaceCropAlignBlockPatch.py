@@ -121,10 +121,10 @@ class VideoFaceCropAlignBlockPatch(Preprocessor, object):
     channels, and then to extract patches from the ROI in the cropped faces.
 
     The computation flow is the following:
+
     1. Detect, crop and align facial region in all input channels.
     2. Concatenate all channels forming a single multi-channel video data.
-    3. Extract multi-channel patches from the ROI of the multi-channel video
-       data.
+    3. Extract multi-channel patches from the ROI of the multi-channel video data.
     4. Vectorize extracted patches.
 
     **Parameters:**
