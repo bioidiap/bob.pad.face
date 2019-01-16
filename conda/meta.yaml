@@ -36,14 +36,14 @@ requirements:
     - bob.ip.dlib
     - bob.ip.facelandmarks
     - bob.rppg.base >=2.0.0
-    - scikit-image
-    - opencv
   run:
     - python
     - setuptools
     - six
     - numpy >=1.11 
     - scikit-learn
+    - scikit-image
+    - opencv
 
 test:
   imports:
