@@ -43,7 +43,7 @@ requirements:
     - numpy >=1.11 
     - scikit-learn
     - scikit-image
-    - opencv-python
+    - opencv
 
 test:
   imports:
