@@ -17,3 +17,5 @@ bob.learn.libsvm
 bob.learn.linear
 scikit-learn
 bob.rppg.base >= 2.0.0
+skimage
+cv2
