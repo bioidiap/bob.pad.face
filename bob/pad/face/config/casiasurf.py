@@ -13,7 +13,7 @@ original_directory = "[YOUR_CASIASURF_DB_DIRECTORY]"
 original_extension = ".jpg"  # extension is not used to load the data in the HLDI of this database
 
 database = CasiaSurfPadDatabase(
-    protocol='classification',
+    protocol='color',
     original_directory=original_directory,
     original_extension=original_extension,
 )
