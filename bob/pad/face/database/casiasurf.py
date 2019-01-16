@@ -24,7 +24,7 @@ class CasiaSurfPadFile(VideoPadFile):
     
     """
 
-    def __init__(self, f, stream_type):
+    def __init__(self, f, stream_type, attack_type):
       """ Init
 
       Parameters
@@ -63,7 +63,7 @@ class CasiaSurfPadFile(VideoPadFile):
         """
         
         # get the dict of numpy array
-        data = self.f.load(directory, extension, modality=self.modality)
+        data = self.f.load(directory, extension, modality=self.stream_type)
       
         # convert that to dict of FrameContainer
         data_to_return = {}
@@ -93,21 +93,35 @@ class CasiaSurfPadDatabase(PadDatabase):
       the group names in the high-level interface (train, dev, eval)
 
     """
+       
+    def __init__(self, protocol='all', original_directory=None, original_extension='.jpg', **kwargs):
+      """Init function
+
+        Parameters
+        ----------
+        protocol : :py:class:`str`
+          The name of the protocol that defines the default experimental setup for this database.
+        original_directory : :py:class:`str`
+          The directory where the original data of the database are stored.
+        original_extension : :py:class:`str`
+          The file name extension of the original data.
         
-    from bob.db.casiasurf import Database as LowLevelDatabase
-    self.db = LowLevelDatabase()
+      """
 
-    self.low_level_group_names = ('train', 'validation', 'test')  
-    self.high_level_group_names = ('train', 'dev', 'eval')
+      from bob.db.casiasurf import Database as LowLevelDatabase
+      self.db = LowLevelDatabase()
 
-    super(CasiaSurfPadDatabase, self).__init__(
-        name='casiasurf',
-        protocol=protocol,
-        original_directory=original_directory,
-        original_extension=original_extension,
-        **kwargs)
+      self.low_level_group_names = ('train', 'validation', 'test')  
+      self.high_level_group_names = ('train', 'dev', 'eval')
 
-     @property
+      super(CasiaSurfPadDatabase, self).__init__(
+          name='casiasurf',
+          protocol=protocol,
+          original_directory=original_directory,
+          original_extension=original_extension,
+          **kwargs)
+
+    @property
     def original_directory(self):
         return self.db.original_directory
 
@@ -160,8 +174,8 @@ class CasiaSurfPadDatabase(PadDatabase):
           if ('dev' in groups or 'test' in groups) and purposes == 'attack':
             lowlevel_purposes.append('unknown')
 
-        samples = self.db.objects(sets=groups, purposes=lowlevel_purposes, **kwargs)
-        samples = [CasiaSurfPadFile(s) for s in samples]
+        samples = self.db.objects(groups=groups, purposes=lowlevel_purposes, **kwargs)
+        samples = [CasiaSurfPadFile(s, stream_type=protocol, attack_type=s.attack_type) for s in samples]
 
         return samples
 
