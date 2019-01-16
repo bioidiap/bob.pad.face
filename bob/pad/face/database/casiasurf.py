@@ -24,22 +24,24 @@ class CasiaSurfPadFile(VideoPadFile):
     
     """
 
-    def __init__(self, f, stream_type, attack_type):
+    def __init__(self, s, stream_type):
       """ Init
 
       Parameters
       ----------
-      f : :py:class:`object`
+      s : :py:class:`object`
         An instance of the Sample class defined in the low level db interface
         of the CASIA-SURF database, in the bob.db.casiasurf.models.py file.
       stream_type: str of list of str
         The streams to be loaded.
       """
-      self.f = f
+      self.path = None
+      self.s = s
       self.stream_type = stream_type
       super(CasiaSurfPadFile, self).__init__(
-            client_id=f.id,
-            attack_type=attack_type)
+            client_id=s.id,
+            attack_type=s.attack_type,
+            path=None)
 
 
     def load(self, directory=None, extension='.jpg', frame_selector=FrameSelector(selection_style='all')):
@@ -175,7 +177,7 @@ class CasiaSurfPadDatabase(PadDatabase):
             lowlevel_purposes.append('unknown')
 
         samples = self.db.objects(groups=groups, purposes=lowlevel_purposes, **kwargs)
-        samples = [CasiaSurfPadFile(s, stream_type=protocol, attack_type=s.attack_type) for s in samples]
+        samples = [CasiaSurfPadFile(s, stream_type=protocol) for s in samples]
 
         return samples
 
