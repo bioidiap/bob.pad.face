@@ -42,6 +42,12 @@ from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.bio.video.preprocessor import Wrapper
 
+from ..preprocessor import VideoFaceCropAlignBlockPatch
+
+from bob.bio.video.utils import FrameSelector
+
+from ..preprocessor import BlockPatch
+
 
 def test_detect_face_landmarks_in_image_mtcnn():
 
@@ -212,6 +218,95 @@ def test_video_face_crop():
     assert faces[-1][1].shape == (3, 64, 64)
     assert np.sum(faces[0][1]) == 1238664
     assert np.sum(faces[-1][1]) == 1238664
+
+
+# =============================================================================
+def test_video_face_crop_align_block_patch():
+    """
+    Test VideoFaceCropAlignBlockPatch preprocessor.
+    """
+
+    # =========================================================================
+    # prepare the test data:
+
+    image = load(datafile('test_image.png', 'bob.pad.face.test'))
+
+    annotations = None
+
+    video, annotations = convert_image_to_video_data(image, annotations, 2)
+
+    mc_video = {}
+    mc_video["color_1"] = video
+    mc_video["color_2"] = video
+    mc_video["color_3"] = video
+
+    # =========================================================================
+    # Initialize the VideoFaceCropAlignBlockPatch.
+
+    # names of the channels to process:
+    _channel_names = ['color_1', 'color_2', 'color_3']
+
+    # dictionary containing preprocessors for all channels:
+    _preprocessors = {}
+
+    """
+    All channels are color, so preprocessors for all of them are identical.
+    """
+    FACE_SIZE = 128  # The size of the resulting face
+    RGB_OUTPUT_FLAG = False  # BW output
+    USE_FACE_ALIGNMENT = True  # use annotations
+    MAX_IMAGE_SIZE = None  # no limiting here
+    FACE_DETECTION_METHOD = "mtcnn"  # use ANNOTATIONS
+    MIN_FACE_SIZE = 50  # skip small faces
+
+    _image_preprocessor = FaceCropAlign(face_size = FACE_SIZE,
+                                        rgb_output_flag = RGB_OUTPUT_FLAG,
+                                        use_face_alignment = USE_FACE_ALIGNMENT,
+                                        max_image_size = MAX_IMAGE_SIZE,
+                                        face_detection_method = FACE_DETECTION_METHOD,
+                                        min_face_size = MIN_FACE_SIZE)
+
+    _frame_selector = FrameSelector(selection_style = "all")
+
+    _preprocessor_rgb = Wrapper(preprocessor = _image_preprocessor,
+                                frame_selector = _frame_selector)
+
+    _preprocessors[_channel_names[0]] = _preprocessor_rgb
+    _preprocessors[_channel_names[1]] = _preprocessor_rgb
+    _preprocessors[_channel_names[2]] = _preprocessor_rgb
+
+    """
+    The instance of the BlockPatch preprocessor.
+    """
+
+    PATCH_SIZE = 64
+    STEP = 32
+
+    _block_patch = BlockPatch(patch_size = PATCH_SIZE,
+                              step = STEP,
+                              use_annotations_flag = False)
+
+    preprocessor = VideoFaceCropAlignBlockPatch(preprocessors = _preprocessors,
+                                                channel_names = _channel_names,
+                                                return_multi_channel_flag = True,
+                                                block_patch_preprocessor = _block_patch)
+
+    # =========================================================================
+    # pre-process the data and assert the result:
+
+    data_preprocessed = preprocessor(frames = mc_video, annotations = annotations)
+
+    assert len(data_preprocessed) == 2
+    assert data_preprocessed[0][1].shape == (3, 128, 128)
+    assert data_preprocessed[1][1].shape == (3, 128, 128)
+
+    preprocessor.return_multi_channel_flag = False # now extract patches
+
+    data_preprocessed = preprocessor(frames = mc_video, annotations = annotations)
+
+    assert len(data_preprocessed) == 2
+    assert data_preprocessed[0][1].shape == (9, 12288)
+    assert data_preprocessed[1][1].shape == (9, 12288)
 
 
 #==============================================================================
@@ -388,7 +483,7 @@ def test_preprocessor_LiPulseExtraction():
       image = load(datafile('test_image.png', 'bob.pad.face.test'))
       annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
       video, annotations = convert_image_to_video_data(image, annotations, 100)
-      
+
       preprocessor = LiPulseExtraction(debug=False)
       pulse = preprocessor(video, annotations)
       assert pulse.shape == (100, 3)
@@ -401,7 +496,7 @@ def test_preprocessor_Chrom():
       image = load(datafile('test_image.png', 'bob.pad.face.test'))
       annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
       video, annotations = convert_image_to_video_data(image, annotations, 100)
-  
+
       preprocessor = Chrom(debug=False)
       pulse = preprocessor(video, annotations)
       assert pulse.shape[0] == 100
@@ -414,7 +509,7 @@ def test_preprocessor_PPGSecure():
       image = load(datafile('test_image.png', 'bob.pad.face.test'))
       annotations = {'topleft': (456, 212), 'bottomright': (770, 500)}
       video, annotations = convert_image_to_video_data(image, annotations, 100)
-  
+
       preprocessor = PPGPreprocessor(debug=False)
       pulse = preprocessor(video, annotations)
       assert pulse.shape == (100, 5)
@@ -423,29 +518,29 @@ def test_preprocessor_PPGSecure():
 def test_preprocessor_SSR():
       """ Test the pulse extraction using SSR algorithm.
       """
-      
+
       image = load(datafile('test_image.png', 'bob.pad.face.test'))
       annotations = {'topleft': (95, 155), 'bottomright': (215, 265)}
       video, annotations = convert_image_to_video_data(image, annotations, 100)
-  
+
       preprocessor = SSR(debug=False)
       pulse = preprocessor(video, annotations)
       assert pulse.shape[0] == 100
 
 
 def test_extractor_LTSS():
-      """ Test Long Term Spectrum Statistics (LTSS) Feature Extractor 
+      """ Test Long Term Spectrum Statistics (LTSS) Feature Extractor
       """
-      
+
       # "pulse" in 3 color channels
       data = np.random.random((200, 3))
-      
+
       extractor = LTSS(concat=True)
       features = extractor(data)
       # n = number of FFT coefficients (default is 64)
       # (n/2 + 1) * 2 (mean and std) * 3 (colors channels)
       assert features.shape[0] == 33*2*3
-      
+
       extractor = LTSS(concat=False)
       features = extractor(data)
       # only one "channel" is considered
@@ -453,23 +548,23 @@ def test_extractor_LTSS():
 
 
 def test_extractor_LiSpectralFeatures():
-      """ Test Li's ICPR 2016 Spectral Feature Extractor 
+      """ Test Li's ICPR 2016 Spectral Feature Extractor
       """
-      
+
       # "pulse" in 3 color channels
       data = np.random.random((200, 3))
-      
+
       extractor = LiSpectralFeatures()
       features = extractor(data)
-      assert features.shape[0] == 6 
-     
+      assert features.shape[0] == 6
+
 
 def test_extractor_PPGSecure():
-      """ Test PPGSecure Spectral Feature Extractor 
+      """ Test PPGSecure Spectral Feature Extractor
       """
-      # 5 "pulses" 
+      # 5 "pulses"
       data = np.random.random((200, 5))
-      
+
       extractor = PPGExtractor()
       features = extractor(data)
       # n = number of FFT coefficients (default is 32)

@@ -1,6 +1,8 @@
 from .FaceCropAlign import FaceCropAlign
 from .FrameDifference import FrameDifference
 from .VideoSparseCoding import VideoSparseCoding
+from .VideoFaceCropAlignBlockPatch import VideoFaceCropAlignBlockPatch
+from .BlockPatch import BlockPatch
 
 from .LiPulseExtraction import LiPulseExtraction
 from .Chrom import Chrom
@@ -33,5 +35,7 @@ __appropriate__(
     Chrom,
     SSR,
     PPGSecure,
+    VideoFaceCropAlignBlockPatch,
+    BlockPatch,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]
