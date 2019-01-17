@@ -35,14 +35,20 @@ class CasiaSurfPadFile(VideoPadFile):
       stream_type: str of list of str
         The streams to be loaded.
       """
-      self.path = None
       self.s = s
       self.stream_type = stream_type
+      if not isinstance(s.attack_type, str):
+        attack_type = str(s.attack_type)
+      else:
+        attack_type = s.attack_type
+
       super(CasiaSurfPadFile, self).__init__(
             client_id=s.id,
-            attack_type=s.attack_type,
-            path=None)
+            file_id=s.id,
+            attack_type=attack_type,
+            path='')
 
+      
 
     def load(self, directory=None, extension='.jpg', frame_selector=FrameSelector(selection_style='all')):
         """Overridden version of the load method defined in ``VideoPadFile``.
@@ -65,7 +71,7 @@ class CasiaSurfPadFile(VideoPadFile):
         """
         
         # get the dict of numpy array
-        data = self.f.load(directory, extension, modality=self.stream_type)
+        data = self.s.load(directory, extension, modality=self.stream_type)
       
         # convert that to dict of FrameContainer
         data_to_return = {}
@@ -159,7 +165,9 @@ class CasiaSurfPadDatabase(PadDatabase):
             A list of CasiaSurfPadFile objects.
         """
 
+        print(groups)
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
+        print(groups)
 
         if groups is not None:
           
@@ -171,11 +179,14 @@ class CasiaSurfPadDatabase(PadDatabase):
             lowlevel_purposes.append('attack') 
 
           # for dev and eval
-          if ('dev' in groups or 'test' in groups) and purposes == 'real':
+          if ('validation' in groups or 'test' in groups) and purposes == 'real':
             lowlevel_purposes.append('unknown')
-          if ('dev' in groups or 'test' in groups) and purposes == 'attack':
+          if ('validation' in groups or 'test' in groups) and purposes == 'attack':
             lowlevel_purposes.append('unknown')
 
+        print("In high-level DB: groups = {}".format(groups))
+        print("In high-level DB: purposes = {}".format(lowlevel_purposes))
+        print(lowlevel_purposes)
         samples = self.db.objects(groups=groups, purposes=lowlevel_purposes, **kwargs)
         samples = [CasiaSurfPadFile(s, stream_type=protocol) for s in samples]
 
