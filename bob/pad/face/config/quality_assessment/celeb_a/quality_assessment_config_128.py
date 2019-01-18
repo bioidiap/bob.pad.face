@@ -109,7 +109,7 @@ assess_quality_kwargs["threshold"] = 10
 def assess_quality(data, eyes_expected, threshold):
     """
     Assess the quality of the data sample, which in this case is an image of
-    the face of the size 128x128 pixels. The quality assessment is based on the
+    the face of the size (face_size x face_size) pixels. The quality assessment is based on the
     eye detection. If two eyes are detected, and they are located in the
     pre-defined positions, then quality is good, otherwise the quality is low.
 
@@ -117,7 +117,7 @@ def assess_quality(data, eyes_expected, threshold):
 
     ``data`` : 2D :py:class:`numpy.ndarray`
         Data array containing the image of the facial region. The size of the
-        image is 128x128.
+        image is (face_size x face_size).
 
     ``eyes_expected`` : list
         A list containing expected coordinates of the eyes. The format is
