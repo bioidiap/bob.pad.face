@@ -45,16 +45,10 @@ def reshape_flat_patches(patches, patch_reshape_parameters = None):
 
         if patch_reshape_parameters is not None:
 
-            if len(patch_reshape_parameters)==2:
+            # The dimensionality of the reshaped patch:
+            new_shape = [np.int(len(patch)/(patch_reshape_parameters[-2]*patch_reshape_parameters[-1]))] + list(patch_reshape_parameters[-2:])
 
-                patch = patch.reshape(patch_reshape_parameters[0],
-                                      patch_reshape_parameters[1]) # reshape the patch
-
-            elif len(patch_reshape_parameters)==3:
-
-                patch = patch.reshape(patch_reshape_parameters[0],
-                                      patch_reshape_parameters[1],
-                                      patch_reshape_parameters[2]) # reshape the patch
+            patch = np.squeeze(patch.reshape(new_shape))
 
         patches_3d.append(patch)
 
