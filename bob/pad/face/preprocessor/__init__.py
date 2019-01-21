@@ -8,6 +8,8 @@ from .LiPulseExtraction import LiPulseExtraction
 from .Chrom import Chrom
 from .SSR import SSR
 from .PPGSecure import PPGSecure
+from .Patch import ImagePatches, VideoPatches
+
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
@@ -37,5 +39,7 @@ __appropriate__(
     PPGSecure,
     VideoFaceCropAlignBlockPatch,
     BlockPatch,
+    ImagePatches,
+    VideoPatches,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

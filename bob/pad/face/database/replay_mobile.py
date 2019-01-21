@@ -108,7 +108,7 @@ class ReplayMobilePadFile(VideoPadFile):
             Video data stored in the FrameContainer, see
             ``bob.bio.video.utils.FrameContainer`` for further details.
         """
-
+        directory = directory or self.original_directory
         video_data_array = self.f.load(
             directory=directory, extension=extension)
 

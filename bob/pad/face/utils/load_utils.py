@@ -237,8 +237,31 @@ def color_augmentation(image, channels=('rgb',)):
     return numpy.concatenate(final_image, axis=0)
 
 
-def _random_sample(A, size):
+def random_sample(A, size):
+    """Randomly selects ``size`` samples from the array ``A``"""
     return A[numpy.random.choice(A.shape[0], size, replace=False), ...]
+
+
+def random_patches(image, block_size, n_random_patches=1):
+    """Extracts N random patches of block_size from an image"""
+    h, w = image.shape[-2:]
+    bh, bw = block_size
+    if h < block_size[0] or w < block_size[1]:
+        raise ValueError("block_size must be smaller than image shape")
+    hl = numpy.random.randint(0, h - bh, size=n_random_patches)
+    wl = numpy.random.randint(0, w - bw, size=n_random_patches)
+    for ch, cw in zip(hl, wl):
+        yield image[..., ch:ch + bh, cw:cw + bw]
+
+
+def extract_patches(image, block_size, block_overlap=(0, 0),
+                    n_random_patches=None):
+    """Yields either all patches from an image or N random patches."""
+    if n_random_patches is None:
+        return blocks_generator(image, block_size, block_overlap)
+    else:
+        return random_patches(
+            image, block_size, n_random_patches=n_random_patches)
 
 
 def the_giant_video_loader(paddb, padfile,
@@ -246,7 +269,8 @@ def the_giant_video_loader(paddb, padfile,
                            normalizer=None, patches=False,
                            block_size=(96, 96), block_overlap=(0, 0),
                            random_patches_per_frame=None, augment=None,
-                           multiple_bonafide_patches=1, keep_pa_samples=None):
+                           multiple_bonafide_patches=1, keep_pa_samples=None,
+                           keep_bf_samples=None):
     """Loads a video pad file frame by frame and optionally applies
     transformations.
 
@@ -279,6 +303,8 @@ def the_giant_video_loader(paddb, padfile,
         Will use more random patches for bonafide samples
     keep_pa_samples : float
         If given, will drop some PA samples.
+    keep_bf_samples : float
+        If given, will drop some BF samples.
 
     Returns
     -------
@@ -312,7 +338,7 @@ def the_giant_video_loader(paddb, padfile,
                 random_patches_per_frame *= multiple_bonafide_patches
             generator = (
                 patch for frame in generator
-                for patch in _random_sample(
+                for patch in random_sample(
                     blocks(frame, block_size, block_overlap),
                     random_patches_per_frame))
 
@@ -322,5 +348,9 @@ def the_giant_video_loader(paddb, padfile,
     if keep_pa_samples is not None and padfile.attack_type is not None:
         generator = (frame for frame in generator
                      if random.random() < keep_pa_samples)
+
+    if keep_bf_samples is not None and padfile.attack_type is None:
+        generator = (frame for frame in generator
+                     if random.random() < keep_bf_samples)
 
     return generator
