@@ -46,12 +46,11 @@ class CasiaSurfPadFile(VideoPadFile):
             client_id=s.id,
             file_id=s.id,
             attack_type=attack_type,
-            path='')
-
+            path=s.id)
       
 
     def load(self, directory=None, extension='.jpg', frame_selector=FrameSelector(selection_style='all')):
-        """Overridden version of the load method defined in ``VideoPadFile``.
+        """Overloaded version of the load method defined in ``VideoPadFile``.
 
         Parameters
         ----------
@@ -165,9 +164,7 @@ class CasiaSurfPadDatabase(PadDatabase):
             A list of CasiaSurfPadFile objects.
         """
 
-        print(groups)
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
-        print(groups)
 
         if groups is not None:
           
@@ -179,17 +176,11 @@ class CasiaSurfPadDatabase(PadDatabase):
             lowlevel_purposes.append('attack') 
 
           # for dev and eval
-          if ('validation' in groups or 'test' in groups) and purposes == 'real':
-            lowlevel_purposes.append('unknown')
-          if ('validation' in groups or 'test' in groups) and purposes == 'attack':
+          if ('validation' in groups or 'test' in groups) and 'attack' in purposes:
             lowlevel_purposes.append('unknown')
 
-        print("In high-level DB: groups = {}".format(groups))
-        print("In high-level DB: purposes = {}".format(lowlevel_purposes))
-        print(lowlevel_purposes)
         samples = self.db.objects(groups=groups, purposes=lowlevel_purposes, **kwargs)
         samples = [CasiaSurfPadFile(s, stream_type=protocol) for s in samples]
-
         return samples
 
     
@@ -197,4 +188,3 @@ class CasiaSurfPadDatabase(PadDatabase):
         """No annotations are provided with this DB
         """
         return None
-
