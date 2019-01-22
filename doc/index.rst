@@ -23,6 +23,7 @@ Users Guide
    baselines
    other_pad_algorithms
    pulse
+   mc_autoencoder_pad
    references
    resources
    api
