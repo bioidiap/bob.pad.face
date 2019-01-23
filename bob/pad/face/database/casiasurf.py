@@ -9,6 +9,8 @@ from bob.bio.video import FrameSelector, FrameContainer
 from bob.pad.face.database import VideoPadFile  
 from bob.pad.base.database import PadDatabase
 
+from bob.extension import rc
+
 class CasiaSurfPadFile(VideoPadFile):
     """
     A high level implementation of the File class for the CASIA-SURF database.
@@ -49,7 +51,7 @@ class CasiaSurfPadFile(VideoPadFile):
             path=s.id)
       
 
-    def load(self, directory=None, extension='.jpg', frame_selector=FrameSelector(selection_style='all')):
+    def load(self, directory=rc['bob.db.casiasurf.directory'], extension='.jpg', frame_selector=FrameSelector(selection_style='all')):
         """Overloaded version of the load method defined in ``VideoPadFile``.
 
         Parameters

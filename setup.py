@@ -74,7 +74,7 @@ setup(
             'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
             'celeb-a = bob.pad.face.config.celeb_a:database',
             'maskattack = bob.pad.face.config.maskattack:database',
-            'casiasurf = bob.pad.face.config.casiasurf:database',
+            'casiasurf-color = bob.pad.face.config.casiasurf_color:database',
         ],
 
         # registered configurations:
