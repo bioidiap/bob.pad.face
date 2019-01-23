@@ -48,6 +48,10 @@ from bob.bio.video.utils import FrameSelector
 
 from ..preprocessor import BlockPatch
 
+from bob.pad.face.config.preprocessor.face_feature_crop_quality_check import face_feature_0_128x128_crop_rgb
+
+from bob.pad.face.utils.patch_utils import reshape_flat_patches
+
 
 def test_detect_face_landmarks_in_image_mtcnn():
 
@@ -307,6 +311,56 @@ def test_video_face_crop_align_block_patch():
     assert len(data_preprocessed) == 2
     assert data_preprocessed[0][1].shape == (9, 12288)
     assert data_preprocessed[1][1].shape == (9, 12288)
+
+
+# =============================================================================
+def test_preproc_with_quality_check():
+    """
+    Test _Preprocessor cropping the face and checking the quality of the image
+    applying eye detection, and asserting if they are in the expected positions.
+    """
+
+    # =========================================================================
+    # prepare the test data:
+    image = load(datafile('test_image.png', 'bob.pad.face.test'))
+
+    annotations = None
+
+    video, annotations = convert_image_to_video_data(image, annotations, 2)
+
+    # =========================================================================
+    # test the preprocessor:
+    data_preprocessed = face_feature_0_128x128_crop_rgb(video)
+
+    assert data_preprocessed is None
+
+
+# =============================================================================
+def test_reshape_flat_patches():
+    """
+    Test reshape_flat_patches function.
+    """
+
+    image = load(datafile('test_image.png', 'bob.pad.face.test'))
+
+    patch1 = image[0,0:10,0:10]
+    patch2 = image[1,0:10,0:10]
+
+    patches = np.stack([patch1.flatten(), patch2.flatten()])
+    patches_3d = reshape_flat_patches(patches, (10, 10))
+
+    assert np.all(patch1 == patches_3d[0])
+    assert np.all(patch2 == patches_3d[1])
+
+    # =========================================================================
+    patch1 = image[:,0:10,0:10]
+    patch2 = image[:,1:11,1:11]
+
+    patches = np.stack([patch1.flatten(), patch2.flatten()])
+    patches_3d = reshape_flat_patches(patches, (3, 10, 10))
+
+    assert np.all(patch1 == patches_3d[0])
+    assert np.all(patch2 == patches_3d[1])
 
 
 #==============================================================================

@@ -117,6 +117,7 @@ setup(
             'rgb-face-detect-dlib = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_dlib',  # detect faces locally replacing database annotations
             'rgb-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_mtcnn',  # detect faces locally replacing database annotations
             'bw-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:bw_face_detect_mtcnn',  # detect faces locally, return BW image
+            'rgb-face-detect-check-quality-128x128 = bob.pad.face.config.preprocessor.face_feature_crop_quality_check:face_feature_0_128x128_crop_rgb',  # detect faces locally replacing database annotations, also check face quality by trying to detect the eyes in cropped face.
         ],
 
         # registered extractors:

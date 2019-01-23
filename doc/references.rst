@@ -18,3 +18,6 @@ References
 
 .. [CDSR17] *C. Chen, A. Dantcheva, T. Swearingen, A. Ross*, **Spoofing Faces Using Makeup: An Investigative Study**,
             in: Proc. of 3rd IEEE International Conference on Identity, Security and Behavior Analysis (ISBA), (New Delhi, India), February 2017.
+
+.. [NGM19] *O. Nikisins, A. George, S. Marcel*, **Domain Adaptation in Multi-Channel Autoencoder based Features for Robust Face Anti-Spoofing**,
+            in: Submitted to: 2019 International Conference on Biometrics (ICB), 2019.
