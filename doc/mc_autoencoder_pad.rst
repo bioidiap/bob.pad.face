@@ -58,18 +58,26 @@ To prepare the training data one can use the following command:
 
 .. code-block:: sh
 
-    ./bin/spoof.py \    # spoof.py is used to run the preprocessor
-    celeb-a \   # run for CelebA database
-    lbp-svm \   # required by spoof.py, but unused
+    ./bin/spoof.py \                                        # spoof.py is used to run the preprocessor
+    celeb-a \                                               # run for CelebA database
+    lbp-svm \                                               # required by spoof.py, but unused
     --skip-extractor-training --skip-extraction --skip-projector-training --skip-projection --skip-score-computation --allow-missing-files \    # execute only preprocessing step
-    --grid idiap \    # use grid, only for Idiap users, remove otherwise
-    --groups train \    # preprocess only training set of CelebA
-    --preprocessor rgb-face-detect-check-quality-128x128 \    # preprocessor entry point
-    --sub-directory <PATH_TO_STORE_THE_RESULTS>   # define your path here
+    --grid idiap \                                          # use grid, only for Idiap users, remove otherwise
+    --groups train \                                        # preprocess only training set of CelebA
+    --preprocessor rgb-face-detect-check-quality-128x128 \  # preprocessor entry point
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>             # define your path here
 
 Running above command, the RGB facial images are aligned and cropped from the training set of the CelebA database. Additionally, a quality assessment is applied to each facial image.
 More specifically, an eye detection algorithm is applied to face images, assuring the deviation of eye coordinates from expected positions is not significant.
 See [NGM19]_ for more details.
+
+Once above script is completed, the data suitable for autoencoder training is located in the folder ``<PATH_TO_STORE_THE_RESULTS>/preprocessed/``. Now the autoencoder can be trained.
+The training procedure is explained in the **Convolutional autoencoder** section in the documentation of the ``bob.learn.pytorch`` package.
+
+.. note::
+
+  Functionality of ``bob.pad.face`` is used to compute the training data. Install and follow the documentation of ``bob.learn.pytorch`` to train the autoencoders. This functional decoupling helps to avoid the dependency of
+  ``bob.pad.face`` from **PyTorch**.
 
 
 .. include:: links.rst
