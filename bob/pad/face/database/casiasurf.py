@@ -103,7 +103,7 @@ class CasiaSurfPadDatabase(PadDatabase):
 
     """
        
-    def __init__(self, protocol='all', original_directory=None, original_extension='.jpg', **kwargs):
+    def __init__(self, protocol='all', original_directory=rc['bob.db.casiasurf.directory'], original_extension='.jpg', **kwargs):
       """Init function
 
         Parameters
