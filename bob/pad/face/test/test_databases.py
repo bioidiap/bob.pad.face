@@ -200,3 +200,22 @@ def test_aggregated_db():
             "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
             % e)
 
+
+# Test the casiasurf database
+@db_available('casiasurf')
+def test_casiasurf():
+    casiasurf = bob.bio.base.load_resource(
+        'casiasurf',
+        'database',
+        preferred_package='bob.pad.face',
+        package_prefix='bob.pad.')
+    try:
+        assert len(casiasurf.objects(groups=['train', 'dev'], purposes='real')) == 8942 
+        assert len(casiasurf.objects(groups=['train'], purposes='attack')) == 20324
+        assert len(casiasurf.objects(groups=['dev'], purposes='real')) == 0
+        assert len(casiasurf.objects(groups=['dev'], purposes='attack')) == 9608 
+        
+    except IOError as e:
+        raise SkipTest(
+            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
+            % e)
