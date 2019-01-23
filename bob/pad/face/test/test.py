@@ -52,6 +52,8 @@ from bob.pad.face.config.preprocessor.face_feature_crop_quality_check import fac
 
 from bob.pad.face.utils.patch_utils import reshape_flat_patches
 
+from bob.pad.face.config.preprocessor.video_face_crop_align_block_patch import video_face_crop_align_bw_ir_d_channels_3x128x128 as mc_preprocessor
+
 
 def test_detect_face_landmarks_in_image_mtcnn():
 
@@ -333,6 +335,42 @@ def test_preproc_with_quality_check():
     data_preprocessed = face_feature_0_128x128_crop_rgb(video)
 
     assert data_preprocessed is None
+
+
+# =============================================================================
+def test_multi_channel_preprocessing():
+    """
+    Test video_face_crop_align_bw_ir_d_channels_3x128x128 preprocessor.
+    """
+
+    # =========================================================================
+    # prepare the test data:
+
+    image = load(datafile('test_image.png', 'bob.pad.face.test'))
+
+    # annotations must be known for this preprocessor, so compute them:
+    annotations = detect_face_landmarks_in_image(image, method="mtcnn")
+
+    video_color, annotations = convert_image_to_video_data(image, annotations, 2)
+
+    video_bw, _ = convert_image_to_video_data(image[0], annotations, 2)
+
+    mc_video = {}
+    mc_video["color"] = video_color
+    mc_video["infrared"] = video_bw
+    mc_video["depth"] = video_bw
+
+    # =========================================================================
+    # test the preprocessor:
+
+    data_preprocessed = mc_preprocessor(mc_video, annotations)
+
+    assert len(data_preprocessed) == 2
+    assert data_preprocessed[0][1].shape == (3, 128, 128)
+
+    # chanenls are preprocessed differently, thus this should apply:
+    assert np.any(data_preprocessed[0][1][0] != data_preprocessed[0][1][1])
+    assert np.any(data_preprocessed[0][1][0] != data_preprocessed[0][1][2])
 
 
 # =============================================================================
