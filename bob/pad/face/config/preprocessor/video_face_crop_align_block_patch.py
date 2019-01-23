@@ -121,6 +121,6 @@ Define an instance for extraction of one (**whole face**) multi-channel
 """
 video_face_crop_align_bw_ir_d_channels_3x128x128 = VideoFaceCropAlignBlockPatch(preprocessors = _preprocessors,
                                                                                 channel_names = _channel_names,
-                                                                                return_multi_channel_flag = False,
+                                                                                return_multi_channel_flag = True,
                                                                                 block_patch_preprocessor = _block_patch_128x128)
 
