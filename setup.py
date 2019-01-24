@@ -75,6 +75,7 @@ setup(
             'celeb-a = bob.pad.face.config.celeb_a:database',
             'maskattack = bob.pad.face.config.maskattack:database',
             'casiasurf-color = bob.pad.face.config.casiasurf_color:database',
+            'casiasurf = bob.pad.face.config.casiasurf:database',
         ],
 
         # registered configurations:
