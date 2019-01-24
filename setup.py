@@ -68,10 +68,11 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd:database',
             'aggregated-db = bob.pad.face.config.aggregated_db:database',
             'mifs = bob.pad.face.config.mifs:database',
-            'batl-db = bob.pad.face.config.batl_db:database',
-            'batl-db-infrared = bob.pad.face.config.batl_db_infrared:database',
-            'batl-db-depth = bob.pad.face.config.batl_db_depth:database',
-            'batl-db-thermal = bob.pad.face.config.batl_db_thermal:database',
+            'batl-db = bob.pad.face.config.database.batl.batl_db:database',
+            'batl-db-infrared = bob.pad.face.config.database.batl.batl_db_infrared:database',
+            'batl-db-depth = bob.pad.face.config.database.batl.batl_db_depth:database',
+            'batl-db-thermal = bob.pad.face.config.database.batl.batl_db_thermal:database',
+            'batl-db-rgb-ir-d-grandtest = bob.pad.face.config.database.batl.batl_db_rgb_ir_d_grandtest:database',
             'celeb-a = bob.pad.face.config.celeb_a:database',
             'maskattack = bob.pad.face.config.maskattack:database',
         ],
@@ -84,10 +85,11 @@ setup(
             'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'aggregated-db = bob.pad.face.config.aggregated_db',
             'mifs = bob.pad.face.config.mifs',
-            'batl-db = bob.pad.face.config.batl_db',
-            'batl-db-infrared = bob.pad.face.config.batl_db_infrared',
-            'batl-db-depth = bob.pad.face.config.batl_db_depth',
-            'batl-db-thermal = bob.pad.face.config.batl_db_thermal',
+            'batl-db = bob.pad.face.config.database.batl.batl_db',
+            'batl-db-infrared = bob.pad.face.config.database.batl.batl_db_infrared',
+            'batl-db-depth = bob.pad.face.config.database.batl.batl_db_depth',
+            'batl-db-thermal = bob.pad.face.config.database.batl.batl_db_thermal',
+            'batl-db-rgb-ir-d-grandtest = bob.pad.face.config.database.batl.batl_db_rgb_ir_d_grandtest',
             'celeb-a = bob.pad.face.config.celeb_a',
             'maskattack = bob.pad.face.config.maskattack',
 
@@ -118,9 +120,6 @@ setup(
             'rgb-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:rgb_face_detector_mtcnn',  # detect faces locally replacing database annotations
             'bw-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:bw_face_detect_mtcnn',  # detect faces locally, return BW image
             'rgb-face-detect-check-quality-128x128 = bob.pad.face.config.preprocessor.face_feature_crop_quality_check:face_feature_0_128x128_crop_rgb',  # detect faces locally replacing database annotations, also check face quality by trying to detect the eyes in cropped face.
-
-
-
             'video-face-crop-align-bw-ir-d-channels-3x128x128 = bob.pad.face.config.preprocessor.video_face_crop_align_block_patch:video_face_crop_align_bw_ir_d_channels_3x128x128', # Extract a BW-NIR-D patch of size (3 x 128 x 128) containing aligned face
         ],
 
