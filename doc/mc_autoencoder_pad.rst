@@ -103,6 +103,5 @@ To prepare the training data one can use the following command:
     --sub-directory <PATH_TO_STORE_THE_RESULTS>                         # define your path here
 
 Once above script is completed, the MC data suitable for autoencoder fine-tuning is located in the folder ``<PATH_TO_STORE_THE_RESULTS>/preprocessed/``.
-
-
+Now the autoencoder can be fine-tuned. Again, the fine-tuning procedure is explained in the **Convolutional autoencoder** section in the documentation of the ``bob.learn.pytorch`` package.
 
