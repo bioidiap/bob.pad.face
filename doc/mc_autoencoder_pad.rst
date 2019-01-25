@@ -83,6 +83,25 @@ The training procedure is explained in the **Convolutional autoencoder** section
 .. include:: links.rst
 
 
+2. Fine-tune N AEs on multi-channel data from WMCA (legacy name BATL) database
+=================================================================================
+
+Following the training procedure of [NGM19]_, the autoencoders are next fine-tuned on the multi-channel (**MC**) data from WMCA.
+In this example, MC training data is a stack of gray-scale, NIR, and Depth (BW-NIR-D) facial images.
+
+To prepare the training data one can use the following command:
 
 
+.. code-block:: sh
+
+    ./bin/spoof.py \                                                    # spoof.py is used to run the preprocessor
+    batl-db-rgb-ir-d-grandtest \                                        # WMCA database instance allowing to load RGB-NIR-D channels
+    lbp-svm \                                                           # required by spoof.py, but unused
+    --skip-extractor-training --skip-extraction --skip-projector-training --skip-projection --skip-score-computation --allow-missing-files \    # execute only preprocessing step
+    --grid idiap \                                                      # use grid, only for Idiap users, remove otherwise
+    --preprocessor video-face-crop-align-bw-ir-d-channels-3x128x128 \   # preprocessor entry point
+    --sub-directory <PATH_TO_STORE_THE_RESULTS>                         # define your path here
+
+Once above script is completed, the MC data suitable for autoencoder fine-tuning is located in the folder ``<PATH_TO_STORE_THE_RESULTS>/preprocessed/``.
+Now the autoencoder can be fine-tuned. Again, the fine-tuning procedure is explained in the **Convolutional autoencoder** section in the documentation of the ``bob.learn.pytorch`` package.
 

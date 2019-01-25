@@ -240,6 +240,8 @@ class VideoFaceCropAlignBlockPatch(Preprocessor, object):
             facial region. ROI is annotated as follows:
             ``annotations['face_roi'][0] = [x_top_left, y_top_left]``
             ``annotations['face_roi'][1] = [x_bottom_right, y_bottom_right]``
+            If ``face_roi`` annotations are undefined, the patches will be
+            extracted from an entire cropped facial image.
 
         **Returns:**
 
