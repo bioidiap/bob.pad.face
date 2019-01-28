@@ -66,23 +66,11 @@ class CasiaSurfPadFile(VideoPadFile):
         Returns
         -------
         dict:
-        "video" data (i.e. one frame) for multiple streams stored in the dictionary. 
-        The structure of the dictionary: ``data={"stream1_name" : FrameContainer1, "stream2_name" : ...}``
-        Names of the streams are defined in ``self.stream_type``.
+          image data for multiple streams stored in the dictionary. 
+          The structure of the dictionary: ``data={"stream1_name" : numpy array, "stream2_name" : numpy array}``
+          Names of the streams are defined in ``self.stream_type``.
         """
-        
-        # get the dict of numpy array
-        data = self.s.load(directory, extension, modality=self.stream_type)
-      
-        # convert that to dict of FrameContainer
-        data_to_return = {}
-        for k in data.keys():
-          frame_container = FrameContainer()  
-          for idx, item in enumerate(data[k]):
-            frame_container.add(idx, item)  # add frame to FrameContainer
-          data_to_return[k] = frame_container
-
-        return data_to_return
+        return self.s.load(directory, extension, modality=self.stream_type)
 
 
 class CasiaSurfPadDatabase(PadDatabase): 
