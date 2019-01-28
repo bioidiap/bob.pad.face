@@ -65,6 +65,8 @@ test:
     - bob.db.replaymobile
     - bob.db.msu_mfsd_mod
     - bob.db.mobio
+    - bob.db.maskattack
+    - bob.db.casiasurf
     - bob.rppg.base
 
 about:

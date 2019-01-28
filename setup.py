@@ -75,6 +75,8 @@ setup(
             'batl-db-rgb-ir-d-grandtest = bob.pad.face.config.database.batl.batl_db_rgb_ir_d_grandtest:database',
             'celeb-a = bob.pad.face.config.celeb_a:database',
             'maskattack = bob.pad.face.config.maskattack:database',
+            'casiasurf-color = bob.pad.face.config.casiasurf_color:database',
+            'casiasurf = bob.pad.face.config.casiasurf:database',
         ],
 
         # registered configurations:
