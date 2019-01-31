@@ -561,10 +561,11 @@ class BatlPadDatabase(PadDatabase):
         protocol = 'nowig' if protocol == 'grandtest' else protocol
 
         # Convert group names to low-level group names here.
-        groups = self.convert_names_to_lowlevel(
-            groups, self.low_level_group_names, self.high_level_group_names)
+        groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
 
-        if not isinstance(groups, list) and groups is not None:  # if a single group is given make it a list
+            
+
+        if not isinstance(groups, list) and groups is not None and not isinstance(groups,str):  # if a single group is given make it a list
             groups = list(groups)
 
         if extra is not None and "join_train_dev" in extra:
