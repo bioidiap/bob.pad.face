@@ -202,6 +202,14 @@ class BatlPadDatabase(PadDatabase):
             infrared data only, use 50 frames, join train and dev sets forming
             a single large training set.
 
+            "grandtest-infrared-50-LOO_<unseen_attack>", for example "grandtest-infrared-50-LOO_fakehead"
+            - Leave One Out (LOO) protocol with fakehead attacks present only in the `test` set. The original partitioning
+            in the `grandtest` protocol is queried first and subselects the file list such
+            that the specified `unknown_attack` is removed from both `train` and `dev` sets. 
+            The `test` set will consist of only the selected `unknown_attack` and `bonafide` files.
+            This protocol is used to evaluate the robustness against attacks unseen in training. 
+            .
+
             "grandtest-color*infrared-50" - baseline protocol,
             load both "color" and "infrared" channels,
             use 50 frames.
@@ -605,7 +613,7 @@ class BatlPadDatabase(PadDatabase):
 
 
                 batl_files=batl_files+tbatl_files
-                
+
             if 'test' in groups:
                 tbatl_files = self.db.objects(protocol=protocol,
                                         groups=['test'],
