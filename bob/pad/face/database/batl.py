@@ -286,6 +286,16 @@ class BatlPadDatabase(PadDatabase):
         self.append_color_face_roi_annot = append_color_face_roi_annot
 
 
+        #map file to identify attack grouping
+        map_file = pkg_resources.resource_filename('bob.pad.face', 'lists/batl/idiap_converter_v2.json')
+
+        with open(map_file, 'r') as fp:
+            map_dict=json.load(fp)
+
+        self.map_dict=map_dict
+
+
+
     @property
     def original_directory(self):
         return self.db.original_directory
@@ -294,6 +304,59 @@ class BatlPadDatabase(PadDatabase):
     @original_directory.setter
     def original_directory(self, value):
         self.db.original_directory = value
+
+    def unseen_attack_list_maker(self,files,unknown_attack,train=True):
+        """
+        Selects and returns a list of files for Leave One Out (LOO) protocols. 
+        This utilizes the original partitioning in the `grandtest` protocol and subselects 
+        the file list such that the specified `unknown_attack` is removed from both `train` and `dev` sets. 
+        The `test` set will consist of only the selected `unknown_attack` and `bonafide` files.
+
+        **Parameters:**
+
+        ``files`` : pyclass::list
+            A list of files, db.objects()
+        ``unknown_attack`` : str
+            The unknown attack protocol name example:'rigidmask' .
+        ``train`` : bool
+            Denotes whether files are from training or development partition
+
+        **Returns:**
+
+        ``mod_files`` : pyclass::list
+            A list of files selected for the protocol
+
+        """
+
+
+        mod_files=[]
+
+
+        for file in files:
+
+            attack_category=self.map_dict["_"+"_".join(os.path.split(file.path)[-1].split("_")[-2:])].split("_")[-1]
+
+            if train:
+                if  attack_category==unknown_attack:
+                    pass
+                else:
+                    mod_files.append(file) # everything except the attack specified is there 
+
+            if not train:
+
+                if  attack_category==unknown_attack or attack_category=='bonafide':
+                    mod_files.append(file) # only the attack mentioned and bonafides in testing
+                else:
+                    pass
+
+
+        return mod_files
+
+
+
+
+
+
 
 
     def parse_protocol(self, protocol):
@@ -329,7 +392,7 @@ class BatlPadDatabase(PadDatabase):
             forming a single training set.
         """
 
-        possible_extras = ['join_train_dev']
+        possible_extras = ['join_train_dev','LOO_fakehead','LOO_flexiblemask','LOO_glasses','LOO_papermask','LOO_prints','LOO_replay','LOO_rigidmask','LOO_makeup']
 
         components = protocol.split("-")
 
@@ -514,6 +577,48 @@ class BatlPadDatabase(PadDatabase):
                 files = self.db.objects(protocol=protocol,
                                         groups=['test'],
                                         purposes=purposes, **kwargs)
+
+
+        # for the LOO protocols
+        elif extra is not None and "LOO_" in extra:
+
+            batl_files=[]
+
+            unknown_attack=extra.split("_")[-1]
+
+            if 'train' in groups:
+                tbatl_files = self.db.objects(protocol=protocol,
+                                        groups=['train'],
+                                        purposes=purposes, **kwargs)
+
+                tbatl_files=self.unseen_attack_list_maker(tbatl_files,unknown_attack,train=True)
+
+                batl_files=batl_files+tbatl_files
+
+
+            if 'validation' in groups: 
+                tbatl_files = self.db.objects(protocol=protocol,
+                                        groups=['validation'],
+                                        purposes=purposes, **kwargs)
+
+                tbatl_files=self.unseen_attack_list_maker(tbatl_files,unknown_attack,train=True)
+
+
+                batl_files=batl_files+tbatl_files
+                
+            if 'test' in groups:
+                tbatl_files = self.db.objects(protocol=protocol,
+                                        groups=['test'],
+                                        purposes=purposes, **kwargs)
+
+                tbatl_files=self.unseen_attack_list_maker(tbatl_files,unknown_attack,train=False)
+
+                batl_files=batl_files+tbatl_files
+
+
+            files=batl_files
+
+
 
         else:
 #            files = self._fix_funny_eyes_in_objects(protocol=protocol,
