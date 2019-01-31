@@ -67,7 +67,6 @@ test:
     - bob.db.mobio
     - bob.db.maskattack
     - bob.db.casiasurf
-    - bob.db.batl
     - bob.rppg.base
 
 about:

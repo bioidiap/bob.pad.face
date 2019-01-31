@@ -303,7 +303,6 @@ class BatlPadDatabase(PadDatabase):
         self.map_dict=map_dict
 
 
-
     @property
     def original_directory(self):
         return self.db.original_directory
@@ -359,13 +358,6 @@ class BatlPadDatabase(PadDatabase):
 
 
         return mod_files
-
-
-
-
-
-
-
 
     def parse_protocol(self, protocol):
         """
