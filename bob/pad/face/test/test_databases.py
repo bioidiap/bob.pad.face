@@ -223,7 +223,7 @@ def test_casiasurf():
 # Test the BATL database
 def test_aggregated_db():
     batl_db = bob.bio.base.load_resource(
-        'batl',
+        'batl-db',
         'database',
         preferred_package='bob.pad.face',
         package_prefix='bob.pad.')
@@ -273,6 +273,78 @@ def test_aggregated_db():
         assert len(
             batl_db.objects(groups='eval',
                                   protocol='grandtest-color-50-LOO_fakehead')) == 132
+
+        # test for LOO_flexiblemask
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev', 'eval'],
+                protocol='grandtest-color-50-LOO_flexiblemask')) == 1132
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev'], protocol='grandtest-color-50-LOO_flexiblemask')) == 880
+        assert len(
+            batl_db.objects(groups='eval',
+                                  protocol='grandtest-color-50-LOO_flexiblemask')) == 252
+
+        # test for LOO_glasses
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev', 'eval'],
+                protocol='grandtest-color-50-LOO_glasses')) == 1206
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev'], protocol='grandtest-color-50-LOO_glasses')) == 1069
+        assert len(
+            batl_db.objects(groups='eval',
+                                  protocol='grandtest-color-50-LOO_glasses')) == 137
+
+        # test for LOO_papermask
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev', 'eval'],
+                protocol='grandtest-color-50-LOO_papermask')) == 1308
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev'], protocol='grandtest-color-50-LOO_papermask')) == 1122
+        assert len(
+            batl_db.objects(groups='eval',
+                                  protocol='grandtest-color-50-LOO_papermask')) == 186
+
+        # test for LOO_prints
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev', 'eval'],
+                protocol='grandtest-color-50-LOO_prints')) == 1169
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev'], protocol='grandtest-color-50-LOO_prints')) == 988
+        assert len(
+            batl_db.objects(groups='eval',
+                                  protocol='grandtest-color-50-LOO_prints')) == 181
+
+        # test for LOO_replay
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev', 'eval'],
+                protocol='grandtest-color-50-LOO_replay')) == 1049
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev'], protocol='grandtest-color-50-LOO_replay')) == 854
+        assert len(
+            batl_db.objects(groups='eval',
+                                  protocol='grandtest-color-50-LOO_replay')) == 195
+
+        # test for LOO_rigidmask
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev', 'eval'],
+                protocol='grandtest-color-50-LOO_rigidmask')) == 1198
+        assert len(
+            batl_db.objects(
+                groups=['train', 'dev'], protocol='grandtest-color-50-LOO_rigidmask')) == 1034
+        assert len(
+            batl_db.objects(groups='eval',
+                                  protocol='grandtest-color-50-LOO_rigidmask')) == 164
 
 
     except IOError as e:
