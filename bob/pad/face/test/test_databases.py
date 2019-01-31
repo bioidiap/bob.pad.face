@@ -221,6 +221,7 @@ def test_casiasurf():
             % e)
 
 # Test the BATL database
+@db_available('batl-db')
 def test_aggregated_db():
     batl_db = bob.bio.base.load_resource(
         'batl-db',
