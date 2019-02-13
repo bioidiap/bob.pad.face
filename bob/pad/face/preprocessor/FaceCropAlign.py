@@ -19,8 +19,10 @@ import bob.ip.base
 
 import importlib
 
-import bob.bio.face 
+import bob.bio.face
 
+import logging 
+logger = logging.getLogger("bob.pad.face")
 
 
 # ==============================================================================
@@ -528,7 +530,8 @@ class FaceCropAlign(Preprocessor):
                  face_detection_method=None,
                  min_face_size=None,
                  normalization_function=None,
-                 normalization_function_kwargs = None):
+                 normalization_function_kwargs = None,
+                 verbosity_level=2):
 
         Preprocessor.__init__(self, face_size=face_size,
                               rgb_output_flag=rgb_output_flag,
@@ -550,6 +553,8 @@ class FaceCropAlign(Preprocessor):
         self.min_face_size = min_face_size
         self.normalization_function = normalization_function
         self.normalization_function_kwargs = normalization_function_kwargs
+
+        logger.setLevel(verbosity_level)
 
         self.supported_face_detection_method = ["dlib", "mtcnn"]
 
@@ -619,6 +624,15 @@ class FaceCropAlign(Preprocessor):
             (self.face_size, self.face_size), RGB 3D or gray-scale 2D.
         """
 
+        # sanity check:
+        if not self.rgb_output_flag and len(image.shape) != 2:
+          logger.warning("This image has 3 channels")
+          if self.normalization_function is not None:
+            import bob.ip.color
+            image = bob.ip.color.rgb_to_gray(image)
+            logger.warning("Image has been converted to grayscale")
+
+
         if self.face_detection_method is not None:
 
             if self.max_image_size is not None: # max_image_size = 1920, for example
@@ -633,7 +647,7 @@ class FaceCropAlign(Preprocessor):
                     method=self.face_detection_method)
 
             except:
-
+                logger.warning("Face not detected")
                 return None
 
             if not annotations:  # if empty dictionary is returned
@@ -656,7 +670,6 @@ class FaceCropAlign(Preprocessor):
                 return None
 
         if self.normalization_function is not None:
-
             image = self.normalization_function(image, annotations, **self.normalization_function_kwargs)
 
         norm_face_image = normalize_image_size(image=image,
