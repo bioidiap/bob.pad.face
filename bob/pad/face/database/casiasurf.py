@@ -144,7 +144,7 @@ class CasiaSurfPadDatabase(PadDatabase):
           The protocol for which the samples should be retrieved.
         purposes : :py:class:`str`
           The purposes for which Sample objects should be retrieved.
-          Usually it is either 'real' or 'attack', but could be 'unknown' as well
+          Usually it is either 'real' or 'attack'
         model_ids
           This parameter is not supported in PAD databases yet.
 
@@ -160,9 +160,9 @@ class CasiaSurfPadDatabase(PadDatabase):
           
           # for training
           lowlevel_purposes = []
-          if 'train' in groups and purposes == 'real':
+          if 'train' in groups and 'real' in purposes:
             lowlevel_purposes.append('real') 
-          if 'train' in groups and purposes == 'attack':
+          if 'train' in groups and 'attack' in purposes:
             lowlevel_purposes.append('attack') 
 
           # for dev and eval
