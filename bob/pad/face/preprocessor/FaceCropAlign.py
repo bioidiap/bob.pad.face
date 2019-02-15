@@ -19,8 +19,10 @@ import bob.ip.base
 
 import importlib
 
-import bob.bio.face 
+import bob.bio.face
 
+import logging 
+logger = logging.getLogger("bob.pad.face")
 
 
 # ==============================================================================
@@ -551,6 +553,7 @@ class FaceCropAlign(Preprocessor):
         self.normalization_function = normalization_function
         self.normalization_function_kwargs = normalization_function_kwargs
 
+
         self.supported_face_detection_method = ["dlib", "mtcnn"]
 
 
@@ -619,6 +622,15 @@ class FaceCropAlign(Preprocessor):
             (self.face_size, self.face_size), RGB 3D or gray-scale 2D.
         """
 
+        # sanity check:
+        if not self.rgb_output_flag and len(image.shape) != 2:
+          logger.warning("This image has 3 channels")
+          if self.normalization_function is not None:
+            import bob.ip.color
+            image = bob.ip.color.rgb_to_gray(image)
+            logger.warning("Image has been converted to grayscale")
+
+
         if self.face_detection_method is not None:
 
             if self.max_image_size is not None: # max_image_size = 1920, for example
@@ -633,7 +645,7 @@ class FaceCropAlign(Preprocessor):
                     method=self.face_detection_method)
 
             except:
-
+                logger.warning("Face not detected")
                 return None
 
             if not annotations:  # if empty dictionary is returned
@@ -656,7 +668,6 @@ class FaceCropAlign(Preprocessor):
                 return None
 
         if self.normalization_function is not None:
-
             image = self.normalization_function(image, annotations, **self.normalization_function_kwargs)
 
         norm_face_image = normalize_image_size(image=image,
