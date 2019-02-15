@@ -41,6 +41,7 @@ class CasiaSurfPadFile(VideoPadFile):
       self.stream_type = stream_type
       if not isinstance(s.attack_type, str):
         attack_type = str(s.attack_type)
+        attack_type = None
       else:
         attack_type = s.attack_type
 
