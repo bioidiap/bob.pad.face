@@ -554,7 +554,6 @@ class FaceCropAlign(Preprocessor):
         self.normalization_function = normalization_function
         self.normalization_function_kwargs = normalization_function_kwargs
 
-        logger.setLevel(verbosity_level)
 
         self.supported_face_detection_method = ["dlib", "mtcnn"]
 
