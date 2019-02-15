@@ -530,8 +530,7 @@ class FaceCropAlign(Preprocessor):
                  face_detection_method=None,
                  min_face_size=None,
                  normalization_function=None,
-                 normalization_function_kwargs = None,
-                 verbosity_level=2):
+                 normalization_function_kwargs = None):
 
         Preprocessor.__init__(self, face_size=face_size,
                               rgb_output_flag=rgb_output_flag,
