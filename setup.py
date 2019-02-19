@@ -123,6 +123,7 @@ setup(
             'bw-face-detect-mtcnn = bob.pad.face.config.preprocessor.video_face_crop:bw_face_detect_mtcnn',  # detect faces locally, return BW image
             'rgb-face-detect-check-quality-128x128 = bob.pad.face.config.preprocessor.face_feature_crop_quality_check:face_feature_0_128x128_crop_rgb',  # detect faces locally replacing database annotations, also check face quality by trying to detect the eyes in cropped face.
             'video-face-crop-align-bw-ir-d-channels-3x128x128 = bob.pad.face.config.preprocessor.video_face_crop_align_block_patch:video_face_crop_align_bw_ir_d_channels_3x128x128', # Extract a BW-NIR-D patch of size (3 x 128 x 128) containing aligned face
+            'video-face-crop-align-bw-ir-d-channels-3x128x128-vect = bob.pad.face.config.preprocessor.video_face_crop_align_block_patch:video_face_crop_align_bw_ir_d_channels_3x128x128_vect', # Extract a BW-NIR-D **vectorized** patch of size containing aligned face
         ],
 
         # registered extractors:
