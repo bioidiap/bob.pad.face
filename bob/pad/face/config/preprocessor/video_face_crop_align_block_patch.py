@@ -124,3 +124,8 @@ video_face_crop_align_bw_ir_d_channels_3x128x128 = VideoFaceCropAlignBlockPatch(
                                                                                 return_multi_channel_flag = True,
                                                                                 block_patch_preprocessor = _block_patch_128x128)
 
+# This instance is similar to above, but will return a **vectorized** patch:
+video_face_crop_align_bw_ir_d_channels_3x128x128_vect = VideoFaceCropAlignBlockPatch(preprocessors = _preprocessors,
+                                                                                     channel_names = _channel_names,
+                                                                                     return_multi_channel_flag = False,
+                                                                                     block_patch_preprocessor = _block_patch_128x128)
