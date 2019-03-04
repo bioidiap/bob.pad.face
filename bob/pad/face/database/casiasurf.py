@@ -44,6 +44,9 @@ class CasiaSurfPadFile(VideoPadFile):
       else:
         attack_type = s.attack_type
 
+      if attack_type == '0':
+        attack_type = None
+
       super(CasiaSurfPadFile, self).__init__(
             client_id=s.id,
             file_id=s.id,
