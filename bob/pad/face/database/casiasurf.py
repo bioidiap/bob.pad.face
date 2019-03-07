@@ -168,8 +168,14 @@ class CasiaSurfPadDatabase(PadDatabase):
           if 'train' in groups and 'attack' in purposes:
             lowlevel_purposes.append('attack') 
 
-          # for dev and eval
-          if ('validation' in groups or 'test' in groups) and 'attack' in purposes:
+          # for dev
+          if 'validation' in groups and 'real' in purposes:
+            lowlevel_purposes.append('real') 
+          if 'validation' in groups and 'attack' in purposes:
+            lowlevel_purposes.append('attack') 
+          
+          # for eval
+          if 'test' in groups and 'attack' in purposes:
             lowlevel_purposes.append('unknown')
 
         samples = self.db.objects(groups=groups, purposes=lowlevel_purposes, **kwargs)
