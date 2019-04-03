@@ -624,7 +624,6 @@ class FaceCropAlign(Preprocessor):
 
         # sanity check:
         if not self.rgb_output_flag and len(image.shape) != 2:
-          logger.warning("This image has 3 channels")
           if self.normalization_function is not None:
             import bob.ip.color
             image = bob.ip.color.rgb_to_gray(image)
