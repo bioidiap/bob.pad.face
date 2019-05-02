@@ -34,6 +34,9 @@ requirements:
     - bob.ip.qualitymeasure
     - bob.learn.libsvm
     - bob.rppg.base >=2.0.0
+    - bob.ip.dlib
+    - bob.ip.facelandmarks
+    - bob.ip.mtcnn  # [linux]
     - opencv
     - scikit-learn
     - scikit-image
@@ -67,9 +70,6 @@ test:
     - bob.db.mobio
     - bob.db.maskattack
     - bob.db.casiasurf
-    - bob.ip.dlib
-    - bob.ip.facelandmarks
-    - bob.ip.mtcnn  # [linux]
 
 about:
   home: https://www.idiap.ch/software/bob/
