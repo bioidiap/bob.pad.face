@@ -8,6 +8,8 @@ from .batl import BatlPadDatabase
 from .celeb_a import CELEBAPadDatabase
 from .maskattack import MaskAttackPadDatabase
 from .casiasurf import CasiaSurfPadDatabase
+from .casiafasd import CasiaFasdPadDatabase
+
 
 # gets sphinx autodoc done right - don't remove it
 def __appropriate__(*args):
@@ -35,7 +37,8 @@ __appropriate__(
     BatlPadDatabase,
     CELEBAPadDatabase,
     MaskAttackPadDatabase,
-    CasiaSurfPadDatabase
+    CasiaSurfPadDatabase,
+    CasiaFasdPadDatabase,
 )
 
 __all__ = [_ for _ in dir() if not _.startswith('_')]

@@ -2,6 +2,7 @@ nose
 bob.db.replay
 bob.db.replaymobile
 bob.db.msu_mfsd_mod
+bob.db.casia_fasd
 bob.db.mobio
 bob.db.maskattack
 bob.db.casiasurf
