@@ -140,7 +140,8 @@ class BRSUPadDatabase(PadDatabase):
         samples : :py:class:`BRSUPadFile`
             A list of BRSUPadFile objects.
         """
-        if groups is not None:
+        lowlevel_purposes = None
+        if groups is not None and purposes is not None:
           
           # for training
           lowlevel_purposes = []
@@ -153,6 +154,13 @@ class BRSUPadDatabase(PadDatabase):
           if 'test' in groups and 'real' in purposes:
             lowlevel_purposes.append('real') 
           if 'test' in groups and 'attack' in purposes:
+            lowlevel_purposes.append('attack')
+
+        if groups is None and purposes is not None:
+          lowlevel_purposes = []
+          if 'real' in purposes:
+            lowlevel_purposes.append('real')
+          if 'attack' in purposes:
             lowlevel_purposes.append('attack')
 
         samples = self.db.objects(groups=groups, purposes=lowlevel_purposes, **kwargs)
