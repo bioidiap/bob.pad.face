@@ -36,10 +36,7 @@ class BRSUPadFile(VideoPadFile):
         of the BRSU database, in the bob.db.brsu.models.py file.
       """
       self.s = s
-      if not isinstance(s.attack_type, str):
-        attack_type = str(s.attack_type)
-      else:
-        attack_type = s.attack_type
+      attack_type = str(s.attack_type)
 
       if attack_type == '0':
         attack_type = None
@@ -81,7 +78,7 @@ class BRSUPadDatabase(PadDatabase):
 
     """
        
-    def __init__(self, protocol='train', original_directory=rc['bob.db.brsu.directory'], original_extension=None, **kwargs):
+    def __init__(self, protocol='test', original_directory=rc['bob.db.brsu.directory'], original_extension=None, **kwargs):
       """Init function
 
         Parameters
@@ -116,7 +113,7 @@ class BRSUPadDatabase(PadDatabase):
 
     def objects(self,
                 groups=None,
-                protocol='train',
+                protocol='test',
                 purposes=None,
                 model_ids=None,
                 **kwargs):
