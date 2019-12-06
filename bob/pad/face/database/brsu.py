@@ -2,10 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-import os
-import numpy as np
-import bob.io.video
-from bob.bio.video import FrameSelector, FrameContainer
 from bob.pad.face.database import VideoPadFile  
 from bob.pad.base.database import PadDatabase
 
