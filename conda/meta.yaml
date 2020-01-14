@@ -36,7 +36,6 @@ requirements:
     - bob.rppg.base >=2.0.0
     - bob.ip.dlib
     - bob.ip.facelandmarks
-    - bob.ip.mtcnn  # [linux]
     - opencv
     - scikit-learn
     - scikit-image
