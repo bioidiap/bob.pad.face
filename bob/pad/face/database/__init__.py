@@ -10,6 +10,7 @@ from .maskattack import MaskAttackPadDatabase
 from .casiasurf import CasiaSurfPadDatabase
 from .casiafasd import CasiaFasdPadDatabase
 from .brsu import BRSUPadDatabase
+from .hqwmca import HQWMCAPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
