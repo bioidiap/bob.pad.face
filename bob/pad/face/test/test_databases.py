@@ -224,7 +224,9 @@ def test_casiasurf():
         assert len(casiasurf.objects(groups=('dev',), purposes=('real',))) == 2994
         assert len(casiasurf.objects(groups=('dev',), purposes=('attack',))) == 6614
         assert len(casiasurf.objects(groups=('dev',), purposes=('real','attack'))) == 9608
-        assert len(casiasurf.objects(groups=('eval',), purposes=('attack',))) == 57710
+        assert len(casiasurf.objects(groups=('eval',), purposes=('real',))) == 17458 
+        assert len(casiasurf.objects(groups=('eval',), purposes=('attack',))) == 40252
+        assert len(casiasurf.objects(groups=('eval',), purposes=('real','attack'))) == 57710
 
     except IOError as e:
         raise SkipTest(

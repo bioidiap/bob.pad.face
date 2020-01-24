@@ -175,8 +175,10 @@ class CasiaSurfPadDatabase(PadDatabase):
             lowlevel_purposes.append('attack') 
           
           # for eval
+          if 'test' in groups and 'real' in purposes:
+            lowlevel_purposes.append('real') 
           if 'test' in groups and 'attack' in purposes:
-            lowlevel_purposes.append('unknown')
+            lowlevel_purposes.append('attack') 
 
         samples = self.db.objects(groups=groups, purposes=lowlevel_purposes, **kwargs)
         samples = [CasiaSurfPadFile(s, stream_type=protocol) for s in samples]
