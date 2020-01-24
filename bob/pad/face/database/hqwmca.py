@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import json
 
 from bob.pad.base.database import PadDatabase, PadFile
 from bob.extension import rc
@@ -185,19 +186,11 @@ class HQWMCAPadDatabase(PadDatabase):
         Otherwise, it will generate them using the MTCNN landmarks detector.  
         
         """
-        print(file)
         if self.annotations_dir is not None:
-
           annotations_file = os.path.join(self.annotations_dir, file.path + ".json")
-          print(annotations_file)
-          #with open(file_path, 'r') as json_file:
-          #  annotations = json.load(json_file)
-
-          # load annotations
-          print("I'm supposed to load annotations")
-          pass
+          with open(annotations_file, 'r') as json_file:
+            annotations = json.load(annotations_file)
+          return annotations
         else:
-          logger.error("No annotations are provided to crop the face")
-          import sys
-          sys.exit()
+          return None
 
