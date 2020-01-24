@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 
 from bob.pad.base.database import PadDatabase, PadFile
 from bob.extension import rc
@@ -83,7 +84,7 @@ class HQWMCAPadDatabase(PadDatabase):
     """
        
     def __init__(self, protocol='grand_test', original_directory=rc['bob.db.hqwmca.directory'], 
-                 original_extension='.h5', load_function=None, n_frames=10, **kwargs):
+                 original_extension='.h5', annotations_dir=None, load_function=None, n_frames=10, **kwargs):
       """Init function
 
         Parameters
@@ -94,6 +95,8 @@ class HQWMCAPadDatabase(PadDatabase):
           The directory where the original data of the database are stored.
         original_extension : :py:class:`str`
           The file name extension of the original data.
+        annotations_dir: str
+          Path to the annotations
         load_function: :py:func:
           Function used to load data. Should be defined in a configuration file
         n_frames: int:
@@ -104,6 +107,7 @@ class HQWMCAPadDatabase(PadDatabase):
       self.db = LowLevelDatabase()
       self.load_function = load_function
       self.n_frames = n_frames
+      self.annotations_dir = annotations_dir
 
       super(HQWMCAPadDatabase, self).__init__(
           name='hqwmca',
@@ -175,6 +179,25 @@ class HQWMCAPadDatabase(PadDatabase):
 
 
     def annotations(self, file):
-        """No annotations are provided with this DB
+        """ Generate / retrieve annotations
+        
+        This function will retrieve annotations (if exisiting and provided).
+        Otherwise, it will generate them using the MTCNN landmarks detector.  
+        
         """
-        return None
+        print(file)
+        if self.annotations_dir is not None:
+
+          annotations_file = os.path.join(self.annotations_dir, file.path + ".json")
+          print(annotations_file)
+          #with open(file_path, 'r') as json_file:
+          #  annotations = json.load(json_file)
+
+          # load annotations
+          print("I'm supposed to load annotations")
+          pass
+        else:
+          logger.error("No annotations are provided to crop the face")
+          import sys
+          sys.exit()
+
