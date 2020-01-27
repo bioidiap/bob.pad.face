@@ -189,7 +189,9 @@ class HQWMCAPadDatabase(PadDatabase):
         if self.annotations_dir is not None:
           annotations_file = os.path.join(self.annotations_dir, file.path + ".json")
           with open(annotations_file, 'r') as json_file:
-            annotations = json.load(annotations_file)
+            annotations = json.load(json_file)
+          if not annotations:
+            return None
           return annotations
         else:
           return None
