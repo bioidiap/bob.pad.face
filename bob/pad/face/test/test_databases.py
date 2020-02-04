@@ -232,6 +232,37 @@ def test_casiasurf():
             % e)
 
 
+# Test the HQ-WMCA database
+@db_available('hqwmca')
+def test_hqwmca():
+    hqwmca = bob.bio.base.load_resource(
+        'hqwmca',
+        'database',
+        preferred_package='bob.pad.face',
+        package_prefix='bob.pad.')
+    try:
+        assert len(hqwmca.objects(protocol='grand_test')) == 2904 
+        assert len(hqwmca.objects(protocol='impersonation')) == 1843
+        assert len(hqwmca.objects(protocol='obfuscation')) == 1616
+
+        assert len(hqwmca.objects(protocol='grand_test', groups=('train',))) == 970
+        assert len(hqwmca.objects(protocol='grand_test', groups=('dev',))) == 968
+        assert len(hqwmca.objects(protocol='grand_test', groups=('eval',))) == 966
+
+        assert len(hqwmca.objects(protocol='impersonation', groups=('train',))) == 612
+        assert len(hqwmca.objects(protocol='impersonation', groups=('dev',))) == 609
+        assert len(hqwmca.objects(protocol='impersonation', groups=('eval',))) == 622
+
+        assert len(hqwmca.objects(protocol='obfuscation', groups=('train',))) == 586
+        assert len(hqwmca.objects(protocol='obfuscation', groups=('dev',))) == 504
+        assert len(hqwmca.objects(protocol='obfuscation', groups=('eval',))) == 526
+
+    except IOError as e:
+        raise SkipTest(
+            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
+            % e)
+
+
 @db_available('brsu')
 def test_brsu():
     brsu = bob.bio.base.load_resource(

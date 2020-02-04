@@ -79,6 +79,7 @@ setup(
             'casiasurf-color = bob.pad.face.config.casiasurf_color:database',
             'casiasurf = bob.pad.face.config.casiasurf:database',
             'brsu = bob.pad.face.config.brsu:database',
+            'hqwmca = bob.pad.face.config.hqwmca:database',
         ],
 
         # registered configurations:

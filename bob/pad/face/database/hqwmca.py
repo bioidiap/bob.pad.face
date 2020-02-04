@@ -131,7 +131,7 @@ class HQWMCAPadDatabase(PadDatabase):
 
     def objects(self,
                 groups=None,
-                protocol='grand_test',
+                protocol=None,
                 purposes=None,
                 model_ids=None,
                 attack_types=None,
@@ -170,7 +170,7 @@ class HQWMCAPadDatabase(PadDatabase):
         if not isinstance(groups, list) and groups is not None and groups is not str: 
           groups = list(groups)
 
-        files = self.db.objects(protocol=self.protocol,
+        files = self.db.objects(protocol=protocol,
                                 groups=groups,
                                 purposes=purposes,
                                 attacks=attack_types,
@@ -180,10 +180,9 @@ class HQWMCAPadDatabase(PadDatabase):
 
 
     def annotations(self, file):
-        """ Generate / retrieve annotations
+        """ retrieve annotations
         
         This function will retrieve annotations (if exisiting and provided).
-        Otherwise, it will generate them using the MTCNN landmarks detector.  
         
         """
         if self.annotations_dir is not None:
