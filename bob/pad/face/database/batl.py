@@ -17,6 +17,14 @@ import bob.io.base
 
 import pkg_resources
 
+map_file = pkg_resources.resource_filename('bob.pad.face', 'lists/batl/idiap_converter_v2.json')
+
+with open(map_file, 'r') as fp:
+    map_dict=json.load(fp)
+
+two_d_attacks=['prints','replay']
+three_d_attacks=['fakehead','glasses','flexiblemask','papermask','rigidmask','makeup']
+BATL_FRAME_SHAPE = (3, 1920, 1080)
 
 # =============================================================================
 class BatlPadFile(PadFile):
@@ -77,7 +85,16 @@ class BatlPadFile(PadFile):
 
         self.f = f
         if f.is_attack():
-            attack_type = 'attack'
+            pai_desc=map_dict["_"+"_".join(os.path.split(f.path)[-1].split("_")[-2:])].split("_")[-1]
+
+            if pai_desc in two_d_attacks:
+                category='2D'
+            elif pai_desc in three_d_attacks:
+                category='3D'
+            else:
+                category='Unknown'
+
+            attack_type = 'attack/' + category +'/'+pai_desc
         else:
             attack_type = None
 
@@ -160,6 +177,99 @@ class BatlPadFile(PadFile):
 
         return data_all_streams
 
+    @property
+    def annotations(self):
+        file_path = os.path.join(self.annotations_temp_dir, self.f.path + ".json")
+
+        if not os.path.isfile(file_path):  # no file with annotations
+
+            try:
+                # original values of the arguments of f:
+                stream_type_original = self.stream_type
+                reference_stream_type_original = self.reference_stream_type
+                warp_to_reference_original = self.warp_to_reference
+                convert_to_rgb_original = self.convert_to_rgb
+                crop_original = self.crop
+                video_data_only_original = self.video_data_only
+                self.stream_type = "color"
+                self.reference_stream_type = "color"
+                self.warp_to_reference = False
+                self.convert_to_rgb = False
+                self.crop = None
+                self.video_data_only = True
+
+                video = self.load(directory=self.original_directory,
+                                  extension=self.original_extension)
+
+            finally:
+                # set arguments of f to the original values:
+                self.stream_type = stream_type_original
+                self.reference_stream_type = reference_stream_type_original
+                self.warp_to_reference = warp_to_reference_original
+                self.convert_to_rgb = convert_to_rgb_original
+                self.crop = crop_original
+                self.video_data_only = video_data_only_original
+
+            annotations = {}
+
+            for idx, image in enumerate(video.as_array()):
+
+                frame_annotations = detect_face_landmarks_in_image(image, method=self.landmark_detect_method)
+
+                if frame_annotations:
+
+                    annotations[str(idx)] = frame_annotations
+
+            if self.annotations_temp_dir:  # if directory is not an empty string
+
+                bob.io.base.create_directories_safe(directory=os.path.split(file_path)[0], dryrun=False)
+
+                with open(file_path, 'w+') as json_file:
+
+                    json_file.write(json.dumps(annotations))
+
+        else:  # if file with annotations exists load them from file
+
+            with open(file_path, 'r') as json_file:
+
+                annotations = json.load(json_file)
+
+        if not annotations:  # if dictionary is empty
+
+            return None
+
+        # If specified append annotations for the roi in the facial region:
+        if self.append_color_face_roi_annot:
+
+            file_path = pkg_resources.resource_filename('bob.pad.face', os.path.join('lists/batl/color_skin_non_skin_annotations/', "annotations_train_dev_set" + ".json"))
+
+            with open(file_path, 'r') as json_file: # open the file containing all annotations:
+
+                roi_annotations = json.load(json_file) # load the annotations
+
+            if not self.f.path in roi_annotations: # no annotations for this file
+
+                return None
+
+            else: # annotations are available
+
+                annotations['face_roi'] = roi_annotations[self.f.path]
+
+        return annotations
+
+    @property
+    def frames(self):
+        frame_container = self.load(directory=self.original_directory, extension=self.original_extension)
+        return frame_container.as_array()
+
+    @property
+    def number_of_frames(self):
+        return len(self.frames)
+
+    @property
+    def frame_shape(self):
+        return BATL_FRAME_SHAPE
+
 
 # =============================================================================
 class BatlPadDatabase(PadDatabase):
@@ -173,7 +283,8 @@ class BatlPadDatabase(PadDatabase):
             protocol='grandtest',
             original_directory=rc['bob.db.batl.directory'],
             original_extension='.h5',
-            annotations_temp_dir=rc['bob.pad.face.database.batl.annotations_temp_dir'],
+            # annotations_temp_dir=rc['bob.pad.face.database.batl.annotations_temp_dir'],
+            annotations_temp_dir=None,
             landmark_detect_method="mtcnn",
             exclude_attacks_list=['makeup'],
             exclude_pai_all_sets=True,
@@ -196,7 +307,7 @@ class BatlPadDatabase(PadDatabase):
             "grandtest-depth-5" - baseline protocol, depth data only,
             use 5 first frames.
 
-            "grandtest-color" - baseline protocol, depth data only, use all frames.
+            "grandtest-color" - baseline protocol, color data only, use all frames.
 
             "grandtest-infrared-50-join_train_dev" - baseline protocol,
             infrared data only, use 50 frames, join train and dev sets forming
@@ -205,9 +316,9 @@ class BatlPadDatabase(PadDatabase):
             "grandtest-infrared-50-LOO_<unseen_attack>", for example "grandtest-infrared-50-LOO_fakehead"
             - Leave One Out (LOO) protocol with fakehead attacks present only in the `test` set. The original partitioning
             in the `grandtest` protocol is queried first and subselects the file list such
-            that the specified `unknown_attack` is removed from both `train` and `dev` sets. 
+            that the specified `unknown_attack` is removed from both `train` and `dev` sets.
             The `test` set will consist of only the selected `unknown_attack` and `bonafide` files.
-            This protocol is used to evaluate the robustness against attacks unseen in training. 
+            This protocol is used to evaluate the robustness against attacks unseen in training.
             .
 
             "grandtest-color*infrared-50" - baseline protocol,
@@ -314,9 +425,9 @@ class BatlPadDatabase(PadDatabase):
 
     def unseen_attack_list_maker(self,files,unknown_attack,train=True):
         """
-        Selects and returns a list of files for Leave One Out (LOO) protocols. 
-        This utilizes the original partitioning in the `grandtest` protocol and subselects 
-        the file list such that the specified `unknown_attack` is removed from both `train` and `dev` sets. 
+        Selects and returns a list of files for Leave One Out (LOO) protocols.
+        This utilizes the original partitioning in the `grandtest` protocol and subselects
+        the file list such that the specified `unknown_attack` is removed from both `train` and `dev` sets.
         The `test` set will consist of only the selected `unknown_attack` and `bonafide` files.
 
         **Parameters:**
@@ -344,14 +455,14 @@ class BatlPadDatabase(PadDatabase):
             attack_category=self.map_dict["_"+"_".join(os.path.split(file.path)[-1].split("_")[-2:])].split("_")[-1]
 
             if train:
-                if  attack_category==unknown_attack:
+                if  attack_category in unknown_attack:
                     pass
                 else:
-                    mod_files.append(file) # everything except the attack specified is there 
+                    mod_files.append(file) # everything except the attack specified is there
 
             if not train:
 
-                if  attack_category==unknown_attack or attack_category=='bonafide':
+                if  attack_category in unknown_attack or attack_category=='bonafide':
                     mod_files.append(file) # only the attack mentioned and bonafides in testing
                 else:
                     pass
@@ -365,7 +476,7 @@ class BatlPadDatabase(PadDatabase):
         An example of protocols it can parse:
         "grandtest-color-5" - grandtest protocol, color data only, use 5 first frames.
         "grandtest-depth-5" - grandtest protocol, depth data only, use 5 first frames.
-        "grandtest-color" - grandtest protocol, depth data only, use all frames.
+        "grandtest-color" - grandtest protocol, color data only, use all frames.
 
         **Parameters:**
 
@@ -392,7 +503,7 @@ class BatlPadDatabase(PadDatabase):
             forming a single training set.
         """
 
-        possible_extras = ['join_train_dev','LOO_fakehead','LOO_flexiblemask','LOO_glasses','LOO_papermask','LOO_prints','LOO_replay','LOO_rigidmask','LOO_makeup']
+        possible_extras = ['join_train_dev','LOO_fakehead','LOO_flexiblemask','LOO_glasses','LOO_papermask','LOO_prints','LOO_replay','LOO_rigidmask','LOO_makeup','PrintReplay']
 
         components = protocol.split("-")
 
@@ -537,7 +648,6 @@ class BatlPadDatabase(PadDatabase):
         ``files`` : [BatlPadFile]
             A list of BATLPadFile objects.
         """
-
         if protocol is None:
             protocol = self.protocol
 
@@ -555,7 +665,6 @@ class BatlPadDatabase(PadDatabase):
         # Convert group names to low-level group names here.
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
 
-            
 
         if not isinstance(groups, list) and groups is not None and not isinstance(groups,str):  # if a single group is given make it a list
             groups = list(groups)
@@ -597,7 +706,7 @@ class BatlPadDatabase(PadDatabase):
                 batl_files=batl_files+tbatl_files
 
 
-            if 'validation' in groups: 
+            if 'validation' in groups:
                 tbatl_files = self.db.objects(protocol=protocol,
                                         groups=['validation'],
                                         purposes=purposes, **kwargs)
@@ -613,6 +722,49 @@ class BatlPadDatabase(PadDatabase):
                                         purposes=purposes, **kwargs)
 
                 tbatl_files=self.unseen_attack_list_maker(tbatl_files,unknown_attack,train=False)
+
+                batl_files=batl_files+tbatl_files
+
+
+            files=batl_files
+
+
+
+        # for the PrintReplay protocol
+        elif extra == "PrintReplay":
+
+            batl_files=[]
+
+            # remove all attacks except replay and print
+            unknown_attack=["fakehead","flexiblemask","glasses","papermask","rigidmask","makeup"]
+
+            if 'train' in groups:
+                tbatl_files = self.db.objects(protocol=protocol,
+                                        groups=['train'],
+                                        purposes=purposes, **kwargs)
+
+                tbatl_files=self.unseen_attack_list_maker(tbatl_files,unknown_attack,train=True)
+
+                batl_files=batl_files+tbatl_files
+
+
+            if 'validation' in groups:
+                tbatl_files = self.db.objects(protocol=protocol,
+                                        groups=['validation'],
+                                        purposes=purposes, **kwargs)
+
+                tbatl_files=self.unseen_attack_list_maker(tbatl_files,unknown_attack,train=True)
+
+
+                batl_files=batl_files+tbatl_files
+
+            if 'test' in groups:
+                tbatl_files = self.db.objects(protocol=protocol,
+                                        groups=['test'],
+                                        purposes=purposes, **kwargs)
+
+                # train=True since we want to remove all attacks except replay and print
+                tbatl_files=self.unseen_attack_list_maker(tbatl_files,unknown_attack,train=True)
 
                 batl_files=batl_files+tbatl_files
 
@@ -644,9 +796,14 @@ class BatlPadDatabase(PadDatabase):
                 files = [f for f in files if os.path.split(f.path)[-1].split("_")[-2:-1][0] != "5"]
 
         files = [BatlPadFile(f, stream_type, max_frames) for f in files]
+        for f in files:
+            f.original_directory = self.original_directory
+            f.original_extension = self.original_extension
+            f.annotations_temp_dir = self.annotations_temp_dir
+            f.append_color_face_roi_annot = self.append_color_face_roi_annot
+            f.landmark_detect_method = self.landmark_detect_method
 
         return files
-
 
     def annotations(self, f):
         """
@@ -674,82 +831,4 @@ class BatlPadDatabase(PadDatabase):
             ``frameN_dict`` contains coordinates of the
             face bounding box and landmarks in frame N.
         """
-
-        file_path = os.path.join(self.annotations_temp_dir, f.f.path + ".json")
-
-        if not os.path.isfile(file_path):  # no file with annotations
-
-            # original values of the arguments of f:
-            stream_type_original = f.stream_type
-            reference_stream_type_original = f.reference_stream_type
-            warp_to_reference_original = f.warp_to_reference
-            convert_to_rgb_original = f.convert_to_rgb
-            crop_original = f.crop
-            video_data_only_original = f.video_data_only
-
-            f.stream_type = "color"
-            f.reference_stream_type = "color"
-            f.warp_to_reference = False
-            f.convert_to_rgb = False
-            f.crop = None
-            f.video_data_only = True
-
-            video = f.load(directory=self.original_directory,
-                           extension=self.original_extension)
-
-            # set arguments of f to the original values:
-            f.stream_type = stream_type_original
-            f.reference_stream_type = reference_stream_type_original
-            f.warp_to_reference = warp_to_reference_original
-            f.convert_to_rgb = convert_to_rgb_original
-            f.crop = crop_original
-            f.video_data_only = video_data_only_original
-
-            annotations = {}
-
-            for idx, image in enumerate(video.as_array()):
-
-                frame_annotations = detect_face_landmarks_in_image(image, method=self.landmark_detect_method)
-
-                if frame_annotations:
-
-                    annotations[str(idx)] = frame_annotations
-
-            if self.annotations_temp_dir:  # if directory is not an empty string
-
-                bob.io.base.create_directories_safe(directory=os.path.split(file_path)[0], dryrun=False)
-
-                with open(file_path, 'w+') as json_file:
-
-                    json_file.write(json.dumps(annotations))
-
-        else:  # if file with annotations exists load them from file
-
-            with open(file_path, 'r') as json_file:
-
-                annotations = json.load(json_file)
-
-        if not annotations:  # if dictionary is empty
-
-            return None
-
-        # If specified append annotations for the roi in the facial region:
-        if self.append_color_face_roi_annot:
-
-            file_path = pkg_resources.resource_filename( 'bob.pad.face', os.path.join('lists/batl/color_skin_non_skin_annotations/', "annotations_train_dev_set" + ".json") )
-
-            with open(file_path, 'r') as json_file: # open the file containing all annotations:
-
-                roi_annotations = json.load(json_file) # load the annotations
-
-            if not f.f.path in roi_annotations: # no annotations for this file
-
-                return None
-
-            else: # annotations are available
-
-                annotations['face_roi'] = roi_annotations[f.f.path]
-
-        return annotations
-
-
+        return f.annotations
