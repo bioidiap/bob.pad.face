@@ -45,14 +45,20 @@ def number_of_frames(path):
 
 
 def bbx_cropper(frame, annotations):
-    bbx = bounding_box_from_annotation(**annotations)
-    return frame[..., bbx.top:bbx.bottom, bbx.left:bbx.right]
+    for source in ("direct", "eyes", None):
+        try:
+            bbx = bounding_box_from_annotation(source=source, **annotations)
+            break
+        except Exception:
+            if source is None:
+                raise
+    return frame[..., bbx.top : bbx.bottom, bbx.left : bbx.right]
 
 
 def min_face_size_normalizer(annotations, max_age=15, **kwargs):
-    return normalize_annotations(annotations,
-                                 partial(min_face_size_validator, **kwargs),
-                                 max_age=max_age)
+    return normalize_annotations(
+        annotations, partial(min_face_size_validator, **kwargs), max_age=max_age
+    )
 
 
 def yield_faces(padfile, cropper, normalizer=None):
@@ -120,7 +126,7 @@ def scale_face(face, face_height, face_width=None):
     face_width = face_height if face_width is None else face_width
     shape = list(face.shape)
     shape[-2:] = (face_height, face_width)
-    scaled_face = numpy.empty(shape, dtype='float64')
+    scaled_face = numpy.empty(shape, dtype="float64")
     scale(face, scaled_face)
     return scaled_face
 
@@ -150,12 +156,12 @@ def blocks(data, block_size, block_overlap=(0, 0)):
     data = numpy.asarray(data)
     # if a gray scale image:
     if data.ndim == 2:
-        output = block(data, block_size, block_overlap,
-                       flat=True)
+        output = block(data, block_size, block_overlap, flat=True)
     # if a color image:
     elif data.ndim == 3:
-        out_shape = list(data.shape[0:1]) + list(block_output_shape(
-            data[0], block_size, block_overlap, flat=True))
+        out_shape = list(data.shape[0:1]) + list(
+            block_output_shape(data[0], block_size, block_overlap, flat=True)
+        )
 
         output = numpy.empty(out_shape, dtype=data.dtype)
         for i, img2d in enumerate(data):
@@ -163,8 +169,7 @@ def blocks(data, block_size, block_overlap=(0, 0)):
         output = numpy.moveaxis(output, 0, 1)
     # if a color video:
     elif data.ndim == 4:
-        output = [blocks(img3d, block_size, block_overlap)
-                  for img3d in data]
+        output = [blocks(img3d, block_size, block_overlap) for img3d in data]
         output = numpy.concatenate(output, axis=0)
     else:
         raise ValueError("Unknown data dimension {}".format(data.ndim))
@@ -206,7 +211,7 @@ def blocks_generator(data, block_size, block_overlap=(0, 0)):
         raise ValueError("Unknown data dimension {}".format(data.ndim))
 
 
-def color_augmentation(image, channels=('rgb',)):
+def color_augmentation(image, channels=("rgb",)):
     """Converts an RGB image to different color channels.
 
     Parameters
@@ -225,13 +230,13 @@ def color_augmentation(image, channels=('rgb',)):
     """
     final_image = []
 
-    if 'rgb' in channels:
+    if "rgb" in channels:
         final_image.append(image)
 
-    if 'yuv' in channels:
+    if "yuv" in channels:
         final_image.append(rgb_to_yuv(image))
 
-    if 'hsv' in channels:
+    if "hsv" in channels:
         final_image.append(rgb_to_hsv(image))
 
     return numpy.concatenate(final_image, axis=0)
@@ -251,26 +256,33 @@ def random_patches(image, block_size, n_random_patches=1):
     hl = numpy.random.randint(0, h - bh, size=n_random_patches)
     wl = numpy.random.randint(0, w - bw, size=n_random_patches)
     for ch, cw in zip(hl, wl):
-        yield image[..., ch:ch + bh, cw:cw + bw]
+        yield image[..., ch : ch + bh, cw : cw + bw]
 
 
-def extract_patches(image, block_size, block_overlap=(0, 0),
-                    n_random_patches=None):
+def extract_patches(image, block_size, block_overlap=(0, 0), n_random_patches=None):
     """Yields either all patches from an image or N random patches."""
     if n_random_patches is None:
         return blocks_generator(image, block_size, block_overlap)
     else:
-        return random_patches(
-            image, block_size, n_random_patches=n_random_patches)
+        return random_patches(image, block_size, n_random_patches=n_random_patches)
 
 
-def the_giant_video_loader(paddb, padfile,
-                           region='whole', scaling_factor=None, cropper=None,
-                           normalizer=None, patches=False,
-                           block_size=(96, 96), block_overlap=(0, 0),
-                           random_patches_per_frame=None, augment=None,
-                           multiple_bonafide_patches=1, keep_pa_samples=None,
-                           keep_bf_samples=None):
+def the_giant_video_loader(
+    paddb,
+    padfile,
+    region="whole",
+    scaling_factor=None,
+    cropper=None,
+    normalizer=None,
+    patches=False,
+    block_size=(96, 96),
+    block_overlap=(0, 0),
+    random_patches_per_frame=None,
+    augment=None,
+    multiple_bonafide_patches=1,
+    keep_pa_samples=None,
+    keep_bf_samples=None,
+):
     """Loads a video pad file frame by frame and optionally applies
     transformations.
 
@@ -316,41 +328,40 @@ def the_giant_video_loader(paddb, padfile,
     ValueError
         If region is not whole or crop.
     """
-    if region == 'whole':
+    if region == "whole":
         generator = padfile.frames
-    elif region == 'crop':
-        generator = yield_faces(
-            padfile, cropper=cropper, normalizer=normalizer)
+    elif region == "crop":
+        generator = yield_faces(padfile, cropper=cropper, normalizer=normalizer)
     else:
         raise ValueError("Invalid region value: `{}'".format(region))
 
     if scaling_factor is not None:
-        generator = (scale(frame, scaling_factor)
-                     for frame in generator)
+        generator = (scale(frame, scaling_factor) for frame in generator)
     if patches:
         if random_patches_per_frame is None:
             generator = (
-                patch for frame in generator
-                for patch in blocks_generator(
-                    frame, block_size, block_overlap))
+                patch
+                for frame in generator
+                for patch in blocks_generator(frame, block_size, block_overlap)
+            )
         else:
             if padfile.attack_type is None:
                 random_patches_per_frame *= multiple_bonafide_patches
             generator = (
-                patch for frame in generator
+                patch
+                for frame in generator
                 for patch in random_sample(
-                    blocks(frame, block_size, block_overlap),
-                    random_patches_per_frame))
+                    blocks(frame, block_size, block_overlap), random_patches_per_frame
+                )
+            )
 
     if augment is not None:
         generator = (augment(frame) for frame in generator)
 
     if keep_pa_samples is not None and padfile.attack_type is not None:
-        generator = (frame for frame in generator
-                     if random.random() < keep_pa_samples)
+        generator = (frame for frame in generator if random.random() < keep_pa_samples)
 
     if keep_bf_samples is not None and padfile.attack_type is None:
-        generator = (frame for frame in generator
-                     if random.random() < keep_bf_samples)
+        generator = (frame for frame in generator if random.random() < keep_bf_samples)
 
     return generator
