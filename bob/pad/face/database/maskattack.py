@@ -5,7 +5,7 @@ import os
 import numpy as np
 import bob.io.video
 from bob.bio.video import FrameSelector, FrameContainer
-from bob.pad.face.database import VideoPadFile  
+from bob.pad.face.database import VideoPadFile
 from bob.pad.base.database import PadDatabase
 
 class MaskAttackPadFile(VideoPadFile):
@@ -17,18 +17,18 @@ class MaskAttackPadFile(VideoPadFile):
     f : :py:class:`object`
       An instance of the File class defined in the low level db interface
       of the 3DMAD database, in the bob.db.maskattack.models.py file.
-    
+
     """
 
     def __init__(self, f):
         """Init function
-        
+
         Parameters
         ----------
         f : :py:class:`object`
           An instance of the File class defined in the low level db interface
           of the 3DMAD database, in the bob.db.maskattack.models.py file.
-        
+
         """
         self.f = f
         if f.is_real():
@@ -48,10 +48,10 @@ class MaskAttackPadFile(VideoPadFile):
         Parameters
         ----------
         directory : :py:class:`str`
-          String containing the path to the 3DMAD database 
+          String containing the path to the 3DMAD database
           (generated sequences from original data).
         extension : :py:class:`str`
-          Extension of the video files 
+          Extension of the video files
         frame_selector : :py:class:`bob.bio.video.FrameSelector`
             The frame selector to use.
 
@@ -59,7 +59,7 @@ class MaskAttackPadFile(VideoPadFile):
         -------
         video_data : :py:class:`bob.bio.video.utils.FrameContainer`
           video data stored in a FrameContainer
-        
+
         """
         vfilename = self.make_path(directory, extension)
         video = bob.io.video.reader(vfilename)
@@ -69,7 +69,7 @@ class MaskAttackPadFile(VideoPadFile):
 
 class MaskAttackPadDatabase(PadDatabase):
     """High level implementation of the Database class for the 3DMAD database.
-    
+
     Attributes
     ----------
     db : :py:class:`bob.db.maskattack.Database`
@@ -92,12 +92,12 @@ class MaskAttackPadDatabase(PadDatabase):
           The directory where the original data of the database are stored.
         original_extension : :py:class:`str`
           The file name extension of the original data.
-        
+
         """
         from bob.db.maskattack import Database as LowLevelDatabase
         self.db = LowLevelDatabase()
 
-        self.low_level_group_names = ('world', 'dev', 'test')  
+        self.low_level_group_names = ('world', 'dev', 'test')
         self.high_level_group_names = ('train', 'dev', 'eval')
 
         super(MaskAttackPadDatabase, self).__init__(
@@ -147,13 +147,13 @@ class MaskAttackPadDatabase(PadDatabase):
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
 
         if groups is not None:
-          
+
           # for training
           lowlevel_purposes = []
           if 'world' in groups and purposes == 'real':
-            lowlevel_purposes.append('trainReal') 
+            lowlevel_purposes.append('trainReal')
           if 'world' in groups and purposes == 'attack':
-            lowlevel_purposes.append('trainMask') 
+            lowlevel_purposes.append('trainMask')
 
           # for dev and eval
           if ('dev' in groups or 'test' in groups) and purposes == 'real':
@@ -163,10 +163,14 @@ class MaskAttackPadDatabase(PadDatabase):
 
         files = self.db.objects(sets=groups, purposes=lowlevel_purposes, **kwargs)
         files = [MaskAttackPadFile(f) for f in files]
+        # set the attributes
+        for f in files:
+          f.original_directory = self.original_directory
+          f.original_extension = self.original_extension
 
         return files
 
-    
+
     def annotations(self, file):
         """Return annotations for a given file object.
 

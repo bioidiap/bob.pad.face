@@ -8,6 +8,8 @@ from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
 from bob.db.base.utils import (
     check_parameter_for_validity, check_parameters_for_validity)
+from bob.db.base.annotations import read_annotation_file
+from bob.ip.facedetect import expected_eye_positions, BoundingBox
 import numpy
 import os
 
@@ -20,7 +22,7 @@ class CasiaFasdPadFile(VideoPadFile):
     A high level implementation of the File class for the CASIA_FASD database.
     """
 
-    def __init__(self, f, original_directory=None):
+    def __init__(self, f, original_directory=None, annotation_directory=None):
         """
         Parameters
         ----------
@@ -31,6 +33,7 @@ class CasiaFasdPadFile(VideoPadFile):
 
         self.f = f
         self.original_directory = original_directory
+        self.annotation_directory = annotation_directory
 
         if f.is_real():
             attack_type = None
@@ -93,6 +96,10 @@ class CasiaFasdPadFile(VideoPadFile):
     def annotations(self):
         """Reads the annotations
 
+        If the file object has an attribute of annotation_directory, it will read
+        annotations from there instead of loading annotations that are shipped with the
+        database.
+
         Returns
         -------
         annotations : :py:class:`dict`
@@ -103,6 +110,10 @@ class CasiaFasdPadFile(VideoPadFile):
             is the dictionary defining the coordinates of the face bounding box
             in frame N.
         """
+        if self.annotation_directory is not None:
+            path = self.make_path(self.annotation_directory, extension=".json")
+            return read_annotation_file(path, annotation_type="json")
+
         annots = self.f.bbx()
         annotations = {}
         for i, v in enumerate(annots):
@@ -110,6 +121,9 @@ class CasiaFasdPadFile(VideoPadFile):
             bottomright = (v[2] + v[4], v[1] + v[3])
             annotations[str(i)] = {'topleft': topleft,
                                    'bottomright': bottomright}
+            size = (bottomright[0] - topleft[0], bottomright[1] - topleft[1])
+            bounding_box = BoundingBox(topleft, size)
+            annotations[str(i)].update(expected_eye_positions(bounding_box))
         return annotations
 
     def load(self, directory=None, extension='.avi',
@@ -149,6 +163,7 @@ class CasiaFasdPadDatabase(PadDatabase):
             # grandtest is the new modified protocol for this database
             protocol='grandtest',
             original_directory=rc['bob.db.casia_fasd.directory'],
+            annotation_directory=None,
             **kwargs):
         """
         Parameters
@@ -169,6 +184,7 @@ class CasiaFasdPadDatabase(PadDatabase):
             protocol=protocol,
             original_directory=original_directory,
             original_extension='.avi',
+            annotation_directory=annotation_directory,
             training_depends_on_protocol=True,
             **kwargs)
 
@@ -280,7 +296,8 @@ class CasiaFasdPadDatabase(PadDatabase):
                                     db_mappings[t + '_' + q])
                                 files.append(CasiaFasdPadFile(
                                     File(filename, c, grp),
-                                    self.original_directory))
+                                    original_directory=self.original_directory,
+                                    annotation_directory=self.annotation_directory))
         return files
 
     def annotations(self, padfile):

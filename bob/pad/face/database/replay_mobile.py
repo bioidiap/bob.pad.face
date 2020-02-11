@@ -5,46 +5,11 @@
 from bob.bio.video import FrameSelector
 from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
-from bob.pad.face.utils import frames, number_of_frames
+from bob.pad.face.utils import number_of_frames
 from bob.db.base.annotations import read_annotation_file
-import numpy
 from bob.extension import rc
 
 REPLAYMOBILE_FRAME_SHAPE = (3, 1280, 720)
-
-
-def replaymobile_annotations(lowlevelfile, original_directory):
-    # numpy array containing the face bounding box data for each video
-    # frame, returned data format described in the f.bbx() method of the
-    # low level interface
-    annots = lowlevelfile.bbx(directory=original_directory)
-
-    annotations = {}  # dictionary to return
-
-    for fn, frame_annots in enumerate(annots):
-
-        topleft = (frame_annots[1], frame_annots[0])
-        bottomright = (frame_annots[1] + frame_annots[3],
-                       frame_annots[0] + frame_annots[2])
-
-        annotations[str(fn)] = {
-            'topleft': topleft,
-            'bottomright': bottomright
-        }
-
-    return annotations
-
-
-def replaymobile_frames(lowlevelfile, original_directory):
-    vfilename = lowlevelfile.make_path(
-        directory=original_directory,
-        extension='.mov')
-    is_not_tablet = not lowlevelfile.is_tablet()
-    for frame in frames(vfilename):
-        frame = numpy.rollaxis(frame, 2, 1)
-        if is_not_tablet:
-            frame = frame[:, ::-1, :]
-        yield frame
 
 
 class ReplayMobilePadFile(VideoPadFile):
@@ -116,6 +81,7 @@ class ReplayMobilePadFile(VideoPadFile):
 
     @property
     def annotations(self):
+        from bob.db.replaymobile.models import replaymobile_annotations
         if self.annotation_directory is not None:
             # return the external annotations
             annotations = read_annotation_file(
@@ -129,6 +95,7 @@ class ReplayMobilePadFile(VideoPadFile):
 
     @property
     def frames(self):
+        from bob.db.replaymobile.models import replaymobile_frames
         return replaymobile_frames(self.f, self.original_directory)
 
     @property

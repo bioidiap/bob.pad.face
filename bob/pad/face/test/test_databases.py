@@ -224,7 +224,7 @@ def test_casiasurf():
         assert len(casiasurf.objects(groups=('dev',), purposes=('real',))) == 2994
         assert len(casiasurf.objects(groups=('dev',), purposes=('attack',))) == 6614
         assert len(casiasurf.objects(groups=('dev',), purposes=('real','attack'))) == 9608
-        assert len(casiasurf.objects(groups=('eval',), purposes=('real',))) == 17458 
+        assert len(casiasurf.objects(groups=('eval',), purposes=('real',))) == 17458
         assert len(casiasurf.objects(groups=('eval',), purposes=('attack',))) == 40252
         assert len(casiasurf.objects(groups=('eval',), purposes=('real','attack'))) == 57710
 
@@ -270,8 +270,10 @@ def test_casia_fasd():
     # test annotations since they are shipped with bob.db.casia_fasd
     f = [f for f in casia_fasd.objects() if f.path == 'train_release/1/2'][0]
     assert len(f.annotations) == 132
-    assert f.annotations['0'] == \
-        {'topleft': (102, 214), 'bottomright': (242, 354)}
+    a = f.annotations['0']
+    oracle = {'topleft': (102, 214), 'bottomright': (242, 354),
+              'reye': (151.0, 249.0), 'leye': (151.0, 319.0)}
+    assert a == oracle, a
 
 
 @db_available('casia_fasd')
