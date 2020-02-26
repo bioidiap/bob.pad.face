@@ -102,7 +102,8 @@ def get_mouth_center(lm):
 
     mouth_center_t = (lm[48, :] + lm[54, :]) / 2.0
 
-    mouth_center = (int(mouth_center_t[1]), int(mouth_center_t[0]))
+    #mouth_center = (int(mouth_center_t[1]), int(mouth_center_t[0]))
+    mouth_center = (int(mouth_center_t[0]), int(mouth_center_t[1]))
 
     return mouth_center
 
@@ -159,7 +160,8 @@ def get_eye_center(lm):
     left_eye_t = (lm[36, :] + lm[39, :]) / 2.0
     right_eye_t = (lm[42, :] + lm[45, :]) / 2.0
 
-    eye_center = (int((left_eye_t[1]+right_eye_t[1])/2.0), int((left_eye_t[0]+right_eye_t[0])/2.0))
+    # eye_center = (int((left_eye_t[1]+right_eye_t[1])/2.0), int((left_eye_t[0]+right_eye_t[0])/2.0))
+    eye_center = (int((left_eye_t[0]+right_eye_t[0])/2.0), int((left_eye_t[1]+right_eye_t[1])/2.0))
 
     return eye_center
 
@@ -304,6 +306,10 @@ def normalize_image_size_in_grayscale(image, annotations,
         An image of the cropped face of the size (face_size, face_size).
     """
 
+
+    # WARNING : landmarks existing as annotations for BATL2 are (x,y) and not (y,x)
+    # As a consequence, when loading new landmarks, eyes and mouth center are wrong ...
+
     if use_face_alignment:
 
 
@@ -323,7 +329,6 @@ def normalize_image_size_in_grayscale(image, annotations,
         elif alignment_type=='lightcnn': # This option overrides the facesize argument
 
             # This is the size of the image that this model expects
-
             CROPPED_IMAGE_HEIGHT = 128
             CROPPED_IMAGE_WIDTH = 128
 
@@ -344,6 +349,7 @@ def normalize_image_size_in_grayscale(image, annotations,
             annotations['eye_center'] =eye_center
 
             annotations['mouth_center']=mouth_center
+
 
             light_cnn_face_cropper=bob.bio.face.preprocessor.FaceCrop(
                 cropped_image_size=(CROPPED_IMAGE_HEIGHT, CROPPED_IMAGE_WIDTH),
@@ -415,6 +421,7 @@ def normalize_image_size(image, annotations, face_size,
         RGB 3D or gray-scale 2D.
     """
 
+
     if len(image.shape) == 3:
 
         if not (rgb_output_flag):
@@ -426,9 +433,10 @@ def normalize_image_size(image, annotations, face_size,
         image = [image]  # make gray-scale image an iterable
 
     result = []
+    
 
     for image_channel in image:  # for all color channels in the input image
-
+    
         cropped_face = normalize_image_size_in_grayscale(
             image_channel, annotations, face_size, use_face_alignment,alignment_type=alignment_type)
 
@@ -621,7 +629,7 @@ class FaceCropAlign(Preprocessor):
             An image of the cropped / aligned face, of the size:
             (self.face_size, self.face_size), RGB 3D or gray-scale 2D.
         """
-
+        
         # sanity check:
         if not self.rgb_output_flag and len(image.shape) != 2:
           logger.warning("This image has 3 channels")
