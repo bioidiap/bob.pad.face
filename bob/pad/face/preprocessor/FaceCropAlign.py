@@ -538,7 +538,8 @@ class FaceCropAlign(Preprocessor):
                  face_detection_method=None,
                  min_face_size=None,
                  normalization_function=None,
-                 normalization_function_kwargs = None):
+                 normalization_function_kwargs = None,
+                 scale = 1.0):
 
         Preprocessor.__init__(self, face_size=face_size,
                               rgb_output_flag=rgb_output_flag,
@@ -548,7 +549,9 @@ class FaceCropAlign(Preprocessor):
                               face_detection_method=face_detection_method,
                               min_face_size=min_face_size,
                               normalization_function=normalization_function,
-                              normalization_function_kwargs = normalization_function_kwargs)
+                              normalization_function_kwargs = normalization_function_kwargs,
+                              scale =scale,
+                              )
 
         self.face_size = face_size
         self.rgb_output_flag = rgb_output_flag
@@ -560,6 +563,8 @@ class FaceCropAlign(Preprocessor):
         self.min_face_size = min_face_size
         self.normalization_function = normalization_function
         self.normalization_function_kwargs = normalization_function_kwargs
+
+        self.scale = scale
 
 
         self.supported_face_detection_method = ["dlib", "mtcnn"]
@@ -584,6 +589,28 @@ class FaceCropAlign(Preprocessor):
                     format(face_detection_method, self.supported_face_detection_method[0], self.supported_face_detection_method[1]))
 
     # ==========================================================================
+    
+
+
+
+    def scale_annotations(self, annotations):
+        """
+        Scale the annotations by self.scale
+
+        Always save the annotations in the original image size ? so that it can be reused:
+
+        """
+
+        if self.scale!=1:
+            pass
+
+
+
+
+
+
+        return annotations
+
     def __call__(self, image, annotations=None):
         """
         This function is designed to crop / size-normalize / align face
@@ -675,6 +702,10 @@ class FaceCropAlign(Preprocessor):
 
                 return None
 
+        ## scale the image and annotations here:
+
+
+        
         if self.normalization_function is not None:
             image = self.normalization_function(image, annotations, **self.normalization_function_kwargs)
 
