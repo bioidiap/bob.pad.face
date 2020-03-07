@@ -21,6 +21,7 @@ import importlib
 
 import bob.bio.face
 
+
 import logging 
 logger = logging.getLogger("bob.pad.face")
 
@@ -35,6 +36,8 @@ def auto_norm_image(data, annotations, n_sigma=3.0, norm_method='MAD'):
     **n_sigma: The range which is normalized
 
     """
+
+    # print('annotation',annotations)
 
     face = data[annotations['topleft'][0]:annotations['bottomright'][0],
                  annotations['topleft'][1]:annotations['bottomright'][1]]
@@ -81,93 +84,8 @@ def auto_norm_image(data, annotations, n_sigma=3.0, norm_method='MAD'):
 
     return data_n
 
-def get_mouth_center(lm):
-    """
-    This function returns the location of mouth center
-
-    **Parameters:**
-
-    ``lm`` : :py:class:`numpy.ndarray`
-        A numpy array containing the coordinates of facial landmarks, (68X2)
-
-    **Returns:**
-
-
-    ``mouth_center``
-        A tuple containing the location of mouth center
-
-    """
-
-    # Mean position of eye corners as eye centers , casted to int()
-
-    mouth_center_t = (lm[48, :] + lm[54, :]) / 2.0
-
-    #mouth_center = (int(mouth_center_t[1]), int(mouth_center_t[0]))
-    mouth_center = (int(mouth_center_t[0]), int(mouth_center_t[1]))
-
-    return mouth_center
-
-
 # ==============================================================================
-def get_eye_pos(lm):
-    """
-    This function returns the locations of left and right eyes
-
-    **Parameters:**
-
-    ``lm`` : :py:class:`numpy.ndarray`
-        A numpy array containing the coordinates of facial landmarks, (68X2)
-
-    **Returns:**
-
-    ``reye``
-        A tuple containing the location of right eye,
-
-    ``leye``
-        A tuple containing the location of left eye
-
-    """
-
-    # Mean position of eye corners as eye centers , casted to int()
-
-    left_eye_t = (lm[36, :] + lm[39, :]) / 2.0
-    right_eye_t = (lm[42, :] + lm[45, :]) / 2.0
-
-    right_eye = (int(left_eye_t[1]), int(left_eye_t[0]))
-    left_eye = (int(right_eye_t[1]), int(right_eye_t[0]))
-
-    return right_eye, left_eye
-
-
-def get_eye_center(lm):
-    """
-    This function returns the location of eye_center, midpoint of left and right eye
-
-    **Parameters:**
-
-    ``lm`` : :py:class:`numpy.ndarray`
-        A numpy array containing the coordinates of facial landmarks, (68X2)
-
-    **Returns:**
-
-    ``eye_center``
-        A tuple containing the location of eye_center
-
-    """
-
-    # Mean position of eye corners as eye centers , casted to int()
-
-    left_eye_t = (lm[36, :] + lm[39, :]) / 2.0
-    right_eye_t = (lm[42, :] + lm[45, :]) / 2.0
-
-    # eye_center = (int((left_eye_t[1]+right_eye_t[1])/2.0), int((left_eye_t[0]+right_eye_t[0])/2.0))
-    eye_center = (int((left_eye_t[0]+right_eye_t[0])/2.0), int((left_eye_t[1]+right_eye_t[1])/2.0))
-
-    return eye_center
-
-
-# ==============================================================================
-def detect_face_landmarks_in_image(image, method="dlib"):
+def detect_face_landmarks_in_image(image, method="mtcnn"):
     """
     This function detects a face in the input image. Two oprions for face detector , but landmark detector is always the same
 
@@ -193,78 +111,11 @@ def detect_face_landmarks_in_image(image, method="dlib"):
 
     ### Face detector
 
-    try:
-        face_detection_module = importlib.import_module("bob.ip." + method)
+    # if method=='mtcnn': This is the only method which supports mouth centers required for lightCNN alignment
 
-    except ImportError:
+    annotator=bob.bio.face.annotator.BobIpMTCNN()
 
-        print("No module named bob.ip." + method +
-              " trying to use default method!")
-
-        try:
-            face_detection_module = importlib.import_module("bob.ip.dlib")
-            method = "dlib"
-        except ImportError:
-            raise ImportError("No module named bob.ip.dlib")
-
-    if not hasattr(face_detection_module, 'FaceDetector'):
-        raise AttributeError(
-            "bob.ip." + method + " module has no attribute FaceDetector!")
-
-    #### Landmark detector
-
-    try:
-        landmark_detection_module = importlib.import_module(
-            "bob.ip.facelandmarks")
-    except ImportError:
-        raise ImportError("No module named bob.ip.facelandmarks!!")
-
-    if not hasattr(landmark_detection_module,
-                   'detect_landmarks_on_boundingbox'):
-        raise AttributeError(
-            "bob.ip.facelandmarksmodule has no attribute detect_landmarks_on_boundingbox!"
-        )
-
-    face_detector = face_detection_module.FaceDetector()
-
-    data = face_detector.detect_single_face(image)
-
-    annotations = {}
-
-    if (data is not None) and (not all([x is None for x in data])):
-
-        bounding_box = data[0]
-
-        bounding_box_scaled = bounding_box.scale(0.95, True)  # is ok for dlib
-
-        lm = landmark_detection_module.detect_landmarks_on_boundingbox(
-            image, bounding_box_scaled)
-
-        if lm is not None:
-
-            lm = np.array(lm)
-
-            lm = np.vstack((lm[:, 1], lm[:, 0])).T
-
-            #print("LM",lm)
-
-            right_eye, left_eye = get_eye_pos(lm)
-
-            points = []
-
-            for i in range(lm.shape[0]):
-
-                points.append((int(lm[i, 0]), int(lm[i, 1])))
-
-            annotations['topleft'] = bounding_box.topleft
-
-            annotations['bottomright'] = bounding_box.bottomright
-
-            annotations['landmarks'] = points
-
-            annotations['leye'] = left_eye
-
-            annotations['reye'] = right_eye
+    annotations= annotator.annotate(image)
 
     return annotations
 
@@ -306,10 +157,6 @@ def normalize_image_size_in_grayscale(image, annotations,
         An image of the cropped face of the size (face_size, face_size).
     """
 
-
-    # WARNING : landmarks existing as annotations for BATL2 are (x,y) and not (y,x)
-    # As a consequence, when loading new landmarks, eyes and mouth center are wrong ...
-
     if use_face_alignment:
 
 
@@ -329,6 +176,7 @@ def normalize_image_size_in_grayscale(image, annotations,
         elif alignment_type=='lightcnn': # This option overrides the facesize argument
 
             # This is the size of the image that this model expects
+
             CROPPED_IMAGE_HEIGHT = 128
             CROPPED_IMAGE_WIDTH = 128
 
@@ -340,16 +188,13 @@ def normalize_image_size_in_grayscale(image, annotations,
             MOUTH_CENTER_POS = (88, 64)
 
 
-            lm=np.array(annotations['landmarks'])
+            mouth_center=(int((annotations['mouthleft'][0]+annotations['mouthright'][0])/2.0), int((annotations['mouthleft'][1]+annotations['mouthright'][1])/2.0))
 
-            mouth_center=get_mouth_center(lm)
-
-            eye_center=get_eye_center(lm)
+            eye_center=(int((annotations['leye'][0]+annotations['reye'][0])/2.0), int((annotations['leye'][1]+annotations['reye'][1])/2.0))
 
             annotations['eye_center'] =eye_center
 
             annotations['mouth_center']=mouth_center
-
 
             light_cnn_face_cropper=bob.bio.face.preprocessor.FaceCrop(
                 cropped_image_size=(CROPPED_IMAGE_HEIGHT, CROPPED_IMAGE_WIDTH),
@@ -421,7 +266,6 @@ def normalize_image_size(image, annotations, face_size,
         RGB 3D or gray-scale 2D.
     """
 
-
     if len(image.shape) == 3:
 
         if not (rgb_output_flag):
@@ -433,10 +277,9 @@ def normalize_image_size(image, annotations, face_size,
         image = [image]  # make gray-scale image an iterable
 
     result = []
-    
 
     for image_channel in image:  # for all color channels in the input image
-    
+
         cropped_face = normalize_image_size_in_grayscale(
             image_channel, annotations, face_size, use_face_alignment,alignment_type=alignment_type)
 
@@ -538,8 +381,7 @@ class FaceCropAlign(Preprocessor):
                  face_detection_method=None,
                  min_face_size=None,
                  normalization_function=None,
-                 normalization_function_kwargs = None,
-                 scale = 1.0):
+                 normalization_function_kwargs = None):
 
         Preprocessor.__init__(self, face_size=face_size,
                               rgb_output_flag=rgb_output_flag,
@@ -549,9 +391,7 @@ class FaceCropAlign(Preprocessor):
                               face_detection_method=face_detection_method,
                               min_face_size=min_face_size,
                               normalization_function=normalization_function,
-                              normalization_function_kwargs = normalization_function_kwargs,
-                              scale =scale,
-                              )
+                              normalization_function_kwargs = normalization_function_kwargs)
 
         self.face_size = face_size
         self.rgb_output_flag = rgb_output_flag
@@ -564,10 +404,8 @@ class FaceCropAlign(Preprocessor):
         self.normalization_function = normalization_function
         self.normalization_function_kwargs = normalization_function_kwargs
 
-        self.scale = scale
 
-
-        self.supported_face_detection_method = ["dlib", "mtcnn"]
+        self.supported_face_detection_method = ["mtcnn"]
 
 
         self.supported_alignment_method = ["default", "lightcnn"]
@@ -585,32 +423,10 @@ class FaceCropAlign(Preprocessor):
             if self.face_detection_method not in self.supported_face_detection_method:
 
                 raise ValueError('The {0} face detection method is not supported by this class. '
-                    'Currently supported face detectors are: bob.ip.{1}, bob.ip.{2}'.
-                    format(face_detection_method, self.supported_face_detection_method[0], self.supported_face_detection_method[1]))
+                    'Currently supported face detectors are: bob.ip.{1}'.
+                    format(face_detection_method, self.supported_face_detection_method[0]))
 
     # ==========================================================================
-    
-
-
-
-    def scale_annotations(self, annotations):
-        """
-        Scale the annotations by self.scale
-
-        Always save the annotations in the original image size ? so that it can be reused:
-
-        """
-
-        if self.scale!=1:
-            pass
-
-
-
-
-
-
-        return annotations
-
     def __call__(self, image, annotations=None):
         """
         This function is designed to crop / size-normalize / align face
@@ -656,7 +472,7 @@ class FaceCropAlign(Preprocessor):
             An image of the cropped / aligned face, of the size:
             (self.face_size, self.face_size), RGB 3D or gray-scale 2D.
         """
-        
+
         # sanity check:
         if not self.rgb_output_flag and len(image.shape) != 2:
           logger.warning("This image has 3 channels")
@@ -690,6 +506,11 @@ class FaceCropAlign(Preprocessor):
         if annotations is None:  # annotations are missing for this image
 
             return None
+        else:
+            # cast the bounding box labels integers
+            annotations['topleft']=(int(annotations['topleft'][0]),int(annotations['topleft'][1]))
+            annotations['bottomright']=(int(annotations['bottomright'][0]),int(annotations['bottomright'][1]))
+
 
         if self.min_face_size is not None: # quality check
 
@@ -702,10 +523,6 @@ class FaceCropAlign(Preprocessor):
 
                 return None
 
-        ## scale the image and annotations here:
-
-
-        
         if self.normalization_function is not None:
             image = self.normalization_function(image, annotations, **self.normalization_function_kwargs)
 
