@@ -3,11 +3,15 @@
 
 import os
 import json
-
+import bob.io.base
 from bob.pad.base.database import PadDatabase, PadFile
 from bob.extension import rc
+from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config 
+
+def _color(f):
+  return f.stream('color')
 
 class HQWMCAPadFile(PadFile):
     """
@@ -179,25 +183,86 @@ class HQWMCAPadDatabase(PadDatabase):
         return [HQWMCAPadFile(f, self.load_function, self.n_frames) for f in files]
 
 
-    def annotations(self, file):
-        """ retrieve annotations
-        
-        This function will retrieve annotations (if exisiting and provided).
-        
+    def annotations(self, f):
         """
-        if self.annotations_dir is not None:
-          annotations_file = os.path.join(self.annotations_dir, file.path + ".json")
+        Computes annotations for a given file object ``f``, which
+        is an instance of the ``BatlPadFile`` class.
 
-          if os.path.isfile(annotations_file):
-            with open(annotations_file, 'r') as json_file:
-              annotations = json.load(json_file)
-            if not annotations:
-              return None
-            return annotations
+        NOTE: you can pre-compute annotation in your first experiment
+        and then reuse them in other experiments setting
+        ``self.annotations_temp_dir`` path of this class, where
+        precomputed annotations will be saved.
 
-          else:
+        **Parameters:**
+
+        ``f`` : :py:class:`object`
+            An instance of ``BatlPadFile`` defined above.
+
+        **Returns:**
+
+        ``annotations`` : :py:class:`dict`
+            A dictionary containing annotations for
+            each frame in the video.
+            Dictionary structure:
+            ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.
+            Where
+            ``frameN_dict`` contains coordinates of the
+            face bounding box and landmarks in frame N.
+        """
+
+        file_path = os.path.join(self.annotations_dir, f.path + ".json")
+
+        if not os.path.isfile(file_path):  # no file with annotations
+
+            # original values of the arguments of f:
+
+
+            video = f.load(directory=self.original_directory,
+                           extension=self.original_extension)
+
+            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=[_color], n_frames=self.n_frames)['_color']
+
+            annotations = {}
+
+            for idx, image in enumerate(video.as_array()):
+
+                frame_annotations = detect_face_landmarks_in_image(image, method='mtcnn')
+
+
+                print('frame_annotations',frame_annotations)
+
+                if frame_annotations:
+                  for key in frame_annotations.keys():
+                    
+
+                    if key!='quality':
+                      frame_annotations[key]=(int(frame_annotations[key][0]),int(frame_annotations[key][1]))
+                    else:
+                      frame_annotations[key]=int(frame_annotations[key])
+
+
+                  print('frame_annotations AFTER',frame_annotations)
+                  if frame_annotations:
+
+                      annotations[str(idx)] = frame_annotations
+
+            if self.annotations_dir:  # if directory is not an empty string
+
+                bob.io.base.create_directories_safe(directory=os.path.split(file_path)[0], dryrun=False)
+
+                with open(file_path, 'w+') as json_file:
+
+                    json_file.write(json.dumps(annotations))
+
+        else:  # if file with annotations exists load them from file
+
+            with open(file_path, 'r') as json_file:
+
+                annotations = json.load(json_file)
+
+        if not annotations:  # if dictionary is empty
+
             return None
 
-        else:
-          return None
+        return annotations
 
