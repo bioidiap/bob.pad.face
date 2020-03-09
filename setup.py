@@ -149,6 +149,8 @@ setup(
             'idiap = bob.pad.face.config.grid:idiap',
             'idiap-user-machines = bob.pad.face.config.grid:idiap_user_machines',
             'small = bob.pad.face.config.grid:small',
+            'idiap-big = bob.pad.face.config.grid:idiap_big',
+            'idiap-vbig = bob.pad.face.config.grid:idiap_vbig',
         ],
 
         # registered ``bob pad ...`` commands

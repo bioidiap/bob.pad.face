@@ -48,3 +48,31 @@ small = Grid(
     number_of_scoring_jobs=1,
     scoring_queue='4G-io-big',
 )
+
+# Configuration to run on computation cluster:
+idiap_big = Grid(
+    training_queue='8G-io-big',
+    number_of_preprocessing_jobs=32,
+    preprocessing_queue='8G-io-big',
+    number_of_extraction_jobs=32,
+    extraction_queue='4G-io-big',
+    number_of_projection_jobs=32,
+    projection_queue='4G-io-big',
+    number_of_enrollment_jobs=32,
+    enrollment_queue='4G-io-big',
+    number_of_scoring_jobs=1,
+    scoring_queue='4G-io-big',
+)
+idiap_vbig = Grid(
+    training_queue='16G-io-big',
+    number_of_preprocessing_jobs=32,
+    preprocessing_queue='16G-io-big',
+    number_of_extraction_jobs=32,
+    extraction_queue='4G-io-big',
+    number_of_projection_jobs=32,
+    projection_queue='4G-io-big',
+    number_of_enrollment_jobs=32,
+    enrollment_queue='4G-io-big',
+    number_of_scoring_jobs=1,
+    scoring_queue='4G-io-big',
+)
