@@ -8,7 +8,7 @@ from bob.pad.base.database import PadDatabase, PadFile
 from bob.extension import rc
 from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
-from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config 
+from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config, idiap_subtype_id_config
 
 def _color(f):
   return f.stream('color')
@@ -89,7 +89,7 @@ class HQWMCAPadDatabase(PadDatabase):
     """
        
     def __init__(self, protocol='grand_test', original_directory=rc['bob.db.hqwmca.directory'], 
-                 original_extension='.h5', annotations_dir=None, streams=None, n_frames=10, **kwargs):
+                 original_extension='.h5', annotations_dir=None, streams=None, n_frames=10, use_curated_file_list=False, **kwargs):
       """Init function
 
         Parameters
@@ -106,6 +106,9 @@ class HQWMCAPadDatabase(PadDatabase):
           Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
         n_frames: int:
           The number of frames, evenly spread, you would like to retrieve 
+        use_curated_file_list: bool
+          Whether to remove all light makeup, unisex glasses and wigs, which are border case attacks, to create a clean set of attacks
+          Removes these attacks from all folds. This can either be set as argument or as additional '-curated' in the protocol name.
         
       """
       from bob.db.hqwmca import Database as LowLevelDatabase
@@ -113,6 +116,7 @@ class HQWMCAPadDatabase(PadDatabase):
       self.streams = streams
       self.n_frames = n_frames
       self.annotations_dir = annotations_dir
+      self.use_curated_file_list = use_curated_file_list
 
       super(HQWMCAPadDatabase, self).__init__(
           name='hqwmca',
@@ -174,11 +178,30 @@ class HQWMCAPadDatabase(PadDatabase):
         if not isinstance(groups, list) and groups is not None and groups is not str: 
           groups = list(groups)
 
+        
+        if len(protocol.split('-'))>1 and protocol.split('-')[-1]=='curated':
+          self.use_curated_file_list=True
+
+        protocol=protocol.split('-')[0]
+
         files = self.db.objects(protocol=protocol,
                                 groups=groups,
                                 purposes=purposes,
                                 attacks=attack_types,
                                 **kwargs)
+
+
+        
+        if self.use_curated_file_list:
+          # Remove Wigs
+          files = [f for f in files if 'Wig' not in idiap_subtype_id_config[str(f.type_id)][str(f.subtype_id)]]
+          # Remove Make up Level 0
+          files = [f for f in files if 'level 0' not in idiap_subtype_id_config[str(f.type_id)][str(f.subtype_id)]]
+          # Remove Unisex glasses
+          files = [f for f in files if 'Unisex glasses' not in idiap_subtype_id_config[str(f.type_id)][str(f.subtype_id)]]
+
+
+
 
         return [HQWMCAPadFile(f, self.streams, self.n_frames) for f in files]
 
