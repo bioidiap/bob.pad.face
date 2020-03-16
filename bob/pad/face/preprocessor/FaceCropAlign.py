@@ -436,25 +436,32 @@ class FaceCropAlign(Preprocessor):
         """
         Resizes a grayscale/RGB/MC image image with self.scale
         """
+
+        print("Image shape: {}. scale: {}".format(image.shape,self.scale))
         if len(image.shape) == 2: 
             rimg=cv2.resize(image, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_LINEAR)
         else: # TODO This part
             rimg=[]
             for channel in image:
-                timg=cv2.resize(image, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_LINEAR)
+                timg=cv2.resize(channel, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_LINEAR)
                 rimg.append(timg)
 
             rimg=np.stack(rimg)
 
         return rimg
 
-    def scale_annotations(self, frame_annotations):
+    def scale_annotations(self, frame_annotations, down=True):
 
         scaled_annotations = {}
 
+        if down:
+            scale=self.scale
+        else:
+            scale=1.0/self.scale
+
         for key in frame_annotations.keys():
             if key!='quality':
-              scaled_annotations[key]=(int(frame_annotations[key][0]*self.scale),int(frame_annotations[key][1]*self.scale))
+              scaled_annotations[key]=(int(frame_annotations[key][0]*scale),int(frame_annotations[key][1]*scale))
             else:
               scaled_annotations[key]=int(frame_annotations[key])
 
@@ -564,11 +571,13 @@ class FaceCropAlign(Preprocessor):
         
         # TODO: Scale the image and annotations here
 
+        print("Image shape: {}. scale: {}".format(image.shape,self.scale))
+
         if self.scale!=1.0:
 
             image = self.scale_image(image)
 
-            annotations = self.scale_annotations(annotations)
+            annotations = self.scale_annotations(annotations, down=True)
 
 
 
