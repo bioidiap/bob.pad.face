@@ -437,11 +437,11 @@ class FaceCropAlign(Preprocessor):
         Resizes a grayscale/RGB/MC image image with self.scale
         """
         if len(image.shape) == 2: 
-            rimg=cv2.resize(image, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_AREA)
+            rimg=cv2.resize(image, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_LINEAR)
         else: # TODO This part
             rimg=[]
             for channel in image:
-                timg=cv2.resize(image, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_AREA)
+                timg=cv2.resize(image, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_LINEAR)
                 rimg.append(timg)
 
             rimg=np.stack(rimg)
