@@ -21,6 +21,7 @@ import importlib
 
 import bob.bio.face
 
+import cv2
 
 import logging 
 logger = logging.getLogger("bob.pad.face")
@@ -367,6 +368,9 @@ class FaceCropAlign(Preprocessor):
         data normalization, using facial region only (annotations).
         The expected signature of the function:
         ``normalization_function(image, annotations, **kwargs)``.
+    ``scale``: float
+    	A scaling argument ; if ==1 no scaling if <1 image is downsampled
+    	if >1 image is upsampled.
 
     ``normalization_function_kwargs`` : :py:class:`dict`
         Key-word arguments for the ``normalization_function``.
@@ -381,7 +385,7 @@ class FaceCropAlign(Preprocessor):
                  face_detection_method=None,
                  min_face_size=None,
                  normalization_function=None,
-                 normalization_function_kwargs = None):
+                 normalization_function_kwargs = None, scale=1.0):
 
         Preprocessor.__init__(self, face_size=face_size,
                               rgb_output_flag=rgb_output_flag,
@@ -391,12 +395,14 @@ class FaceCropAlign(Preprocessor):
                               face_detection_method=face_detection_method,
                               min_face_size=min_face_size,
                               normalization_function=normalization_function,
-                              normalization_function_kwargs = normalization_function_kwargs)
+                              normalization_function_kwargs = normalization_function_kwargs, 
+                              scale=scale)
 
         self.face_size = face_size
         self.rgb_output_flag = rgb_output_flag
         self.use_face_alignment = use_face_alignment
         self.alignment_type=alignment_type
+        self.scale = scale
 
         self.max_image_size = max_image_size
         self.face_detection_method = face_detection_method
@@ -425,6 +431,35 @@ class FaceCropAlign(Preprocessor):
                 raise ValueError('The {0} face detection method is not supported by this class. '
                     'Currently supported face detectors are: bob.ip.{1}'.
                     format(face_detection_method, self.supported_face_detection_method[0]))
+
+    def scale_image(self, image):
+        """
+        Resizes a grayscale/RGB/MC image image with self.scale
+        """
+        if len(image.shape) == 2: 
+            rimg=cv2.resize(image, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_AREA)
+        else: # TODO This part
+            rimg=[]
+            for channel in image:
+                timg=cv2.resize(image, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_AREA)
+                rimg.append(timg)
+
+            rimg=np.stack(rimg)
+
+        return rimg
+
+    def scale_annotations(self, frame_annotations):
+
+        scaled_annotations = {}
+
+        for key in frame_annotations.keys():
+            if key!='quality':
+              scaled_annotations[key]=(int(frame_annotations[key][0]*self.scale),int(frame_annotations[key][1]*self.scale))
+            else:
+              scaled_annotations[key]=int(frame_annotations[key])
+
+
+        return scaled_annotations
 
     # ==========================================================================
     def __call__(self, image, annotations=None):
@@ -525,6 +560,17 @@ class FaceCropAlign(Preprocessor):
             if original_face_size < self.min_face_size:  # check if face size is above the threshold
 
                 return None
+
+        
+        # TODO: Scale the image and annotations here
+
+        if self.scale!=1.0:
+
+            image = self.scale_image(image)
+
+            annotations = self.scale_annotations(annotations)
+
+
 
         if self.normalization_function is not None:
             image = self.normalization_function(image, annotations, **self.normalization_function_kwargs)
