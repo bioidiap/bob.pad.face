@@ -151,6 +151,7 @@ setup(
             'small = bob.pad.face.config.grid:small',
             'idiap-big = bob.pad.face.config.grid:idiap_big',
             'idiap-vbig = bob.pad.face.config.grid:idiap_vbig',
+            'idiap-vvbig = bob.pad.face.config.grid:idiap_vvbig',
         ],
 
         # registered ``bob pad ...`` commands
