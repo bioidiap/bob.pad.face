@@ -18,12 +18,12 @@ class HQWMCAPadFile(PadFile):
     vf : :py:class:`object`
       An instance of the VideoFile class defined in the low level db interface
       of the HQWMCA database, in the bob.db.hqwmca.models.py file.
-    load_function: :py:func:
-      Function used to load data. Should be defined in a configuration file
+    streams: :py:dict:
+      Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
     
     """
 
-    def __init__(self, vf, load_function=None, n_frames=10):
+    def __init__(self, vf, streams=None, n_frames=10):
       """ Init
 
       Parameters
@@ -31,14 +31,14 @@ class HQWMCAPadFile(PadFile):
       vf : :py:class:`object`
         An instance of the VideoFile class defined in the low level db interface
         of the HQWMCA database, in the bob.db.hqwmca.models.py file.
-      load_function: :py:func:
-        Function used to load data. Should be defined in a configuration file
+      streams: :py:dict:
+        Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
       n_frames: int:
         The number of frames, evenly spread, you would like to retrieve 
       
       """
       self.vf = vf
-      self.load_function = load_function
+      self.streams = streams
       self.n_frames = n_frames
       attack_type = str(vf.type_id)
 
@@ -69,7 +69,7 @@ class HQWMCAPadFile(PadFile):
         -------
         
         """
-        return self.vf.load(directory, extension, streams=self.load_function, n_frames=self.n_frames)
+        return self.vf.load(directory, extension, streams=self.streams, n_frames=self.n_frames)
 
 
 class HQWMCAPadDatabase(PadDatabase): 
@@ -79,13 +79,13 @@ class HQWMCAPadDatabase(PadDatabase):
     ----------
     db : :py:class:`bob.db.hqwmca.Database`
       the low-level database interface
-    load_function: :py:func:
-      Function used to load data. Should be defined in a configuration file
+    streams: :py:dict:
+      Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
 
     """
        
     def __init__(self, protocol='grand_test', original_directory=rc['bob.db.hqwmca.directory'], 
-                 original_extension='.h5', annotations_dir=None, load_function=None, n_frames=10, **kwargs):
+                 original_extension='.h5', annotations_dir=None, streams=None, n_frames=10, **kwargs):
       """Init function
 
         Parameters
@@ -98,15 +98,15 @@ class HQWMCAPadDatabase(PadDatabase):
           The file name extension of the original data.
         annotations_dir: str
           Path to the annotations
-        load_function: :py:func:
-          Function used to load data. Should be defined in a configuration file
+        streams: :py:dict:
+          Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
         n_frames: int:
           The number of frames, evenly spread, you would like to retrieve 
         
       """
       from bob.db.hqwmca import Database as LowLevelDatabase
       self.db = LowLevelDatabase()
-      self.load_function = load_function
+      self.streams = streams
       self.n_frames = n_frames
       self.annotations_dir = annotations_dir
 
@@ -176,7 +176,7 @@ class HQWMCAPadDatabase(PadDatabase):
                                 attacks=attack_types,
                                 **kwargs)
 
-        return [HQWMCAPadFile(f, self.load_function, self.n_frames) for f in files]
+        return [HQWMCAPadFile(f, self.streams, self.n_frames) for f in files]
 
 
     def annotations(self, file):
