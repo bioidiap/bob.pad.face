@@ -54,11 +54,13 @@ stereo_parameters.inpaint   = True  # fill holes
 _map_3d      = nir_left_stereo.stereo(nir_right_stereo, stereo_parameters=stereo_parameters)
 
 
-def dd(a):
-  return a.select(channel=2) 
+# def dd(a):
+#   return a.select(channel=2) 
 
 
-depth       = dd(_map_3d)
+# depth       = dd(_map_3d)
+
+depth = _map_3d.select(channel=2).normalize(tmin=20.0, tmax=100.0, dtype='uint16') 
 
 color       = color.reproject(nir_left_stereo, nir_right_stereo, _map_3d)
 
