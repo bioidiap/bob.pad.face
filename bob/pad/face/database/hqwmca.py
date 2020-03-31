@@ -9,9 +9,63 @@ from bob.extension import rc
 from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config, idiap_subtype_id_config
+from bob.io.stream import stream
 
-def _color(f):
-  return f.stream('color')
+
+# def _color(f):
+#   return f.stream('color')
+
+
+dark_for_stereo     = False
+subtract_dark_nir   = False
+subtract_dark_swir  = True 
+
+color = stream('color')
+
+nir_735nm       = stream('nir_left_735nm').adjust(color)
+nir_850nm       = stream('nir_left_850nm').adjust(color)
+nir_940nm       = stream('nir_left_940nm').adjust(color)
+nir_1050nm      = stream('nir_left_1050nm').adjust(color)
+
+nir_left_dark   = stream('nir_left').adjust(color)
+nir_right_dark  = stream('nir_left').adjust(color)
+nir_left_stereo = stream('nir_left_stereo').adjust(color)
+nir_right_stereo= stream('nir_right_stereo').adjust(color)
+
+if subtract_dark_nir:
+    nir_735nm   = nir_735nm.subtract_dark(nir_left_dark)
+    nir_850nm   = nir_850nm.subtract_dark(nir_left_dark)
+    nir_940nm   = nir_940nm.subtract_dark(nir_left_dark)
+    nir_1050nm  = nir_1050nm.subtract_dark(nir_left_dark)
+
+nir = nir_735nm.stack(nir_850nm).stack(nir_940nm).stack(nir_1050nm)
+
+if dark_for_stereo:
+    nir_left_stereo   = nir_left_dark
+    nir_right_stereo  = nir_right_dark
+
+
+from bob.ip.stereo import StereoParameters
+
+stereo_parameters = StereoParameters()
+
+stereo_parameters.erode   = True  # remove small features
+stereo_parameters.inpaint   = True  # fill holes
+_map_3d      = nir_left_stereo.stereo(nir_right_stereo, stereo_parameters=stereo_parameters)
+
+
+def dd(a):
+  return a.select(channel=2) 
+
+
+depth       = dd(_map_3d)
+
+color       = color.reproject(nir_left_stereo, nir_right_stereo, _map_3d)
+
+
+
+streams = { 'color'     : color}
+
 
 class HQWMCAPadFile(PadFile):
     """
@@ -243,7 +297,7 @@ class HQWMCAPadDatabase(PadDatabase):
             video = f.load(directory=self.original_directory,
                            extension=self.original_extension)
 
-            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=[_color], n_frames=self.n_frames)['_color']
+            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
 
             annotations = {}
 
