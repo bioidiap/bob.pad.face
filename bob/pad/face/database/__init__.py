@@ -11,6 +11,7 @@ from .casiasurf import CasiaSurfPadDatabase
 from .casiafasd import CasiaFasdPadDatabase
 from .brsu import BRSUPadDatabase
 from .hqwmca import HQWMCAPadDatabase
+from .hqwmca_warp import HQWMCAPadDatabase_warp
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -41,7 +42,9 @@ __appropriate__(
     MaskAttackPadDatabase,
     CasiaSurfPadDatabase,
     CasiaFasdPadDatabase,
-    BRSUPadDatabase
+    BRSUPadDatabase,
+    HQWMCAPadDatabase,
+    HQWMCAPadDatabase_warp
 )
 
 __all__ = [_ for _ in dir() if not _.startswith('_')]
