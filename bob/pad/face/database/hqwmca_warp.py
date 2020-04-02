@@ -11,6 +11,9 @@ from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_ima
 from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config, idiap_subtype_id_config
 from bob.io.stream import stream
 
+import cv2
+import bob.io.image
+
 
 # def _color(f):
 #   return f.stream('color')
@@ -261,8 +264,29 @@ class HQWMCAPadDatabase_warp(PadDatabase):
 
                 frame_annotations = detect_face_landmarks_in_image(image, method='mtcnn')
 
+                if frame_annotations is None:
+                  print('No Frame annotations, tring CLAHE')
+                  print('image',image.shape,type(image))
+                  cv_image=bob.io.image.to_matplotlib(image)
 
-                print('frame_annotations',frame_annotations)
+                  clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+                  cv_image[:,:,0] = clahe.apply(cv_image[:,:,0])
+                  cv_image[:,:,1] = clahe.apply(cv_image[:,:,1])
+                  cv_image[:,:,2] = clahe.apply(cv_image[:,:,2])
+                  print('cv_image',cv_image.shape,type(cv_image))
+
+
+                  bob_image=bob.io.image.to_bob(cv_image)
+
+                  print('bob_image',bob_image.shape,type(bob_image))
+
+                  frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
+
+                  if frame_annotations is not None:
+                    print('CLAHE Suceeded................................................................................')
+
+
+                # print('frame_annotations',frame_annotations)
 
                 if frame_annotations:
                   for key in frame_annotations.keys():
@@ -271,10 +295,10 @@ class HQWMCAPadDatabase_warp(PadDatabase):
                     if key!='quality':
                       frame_annotations[key]=(int(frame_annotations[key][0]),int(frame_annotations[key][1]))
                     else:
-                      frame_annotations[key]=int(frame_annotations[key])
+                      frame_annotations[key]=1#int(frame_annotations[key])
 
 
-                  print('frame_annotations AFTER',frame_annotations)
+                  # print('frame_annotations AFTER CHANGE',frame_annotations)
                   if frame_annotations:
 
                       annotations[str(idx)] = frame_annotations

@@ -268,8 +268,12 @@ class VideoFaceCropAlignBlockPatch(Preprocessor, object):
         # Convert arrays of dimensionality 3 to 4 if necessary:
         preprocessed_arrays = [np.expand_dims(item, axis=1) if len(item.shape)==3 else item for item in preprocessed_arrays]
 
+        for pa in preprocessed_arrays:
+            print('PASHAPE:',pa.shape)
         # Concatenate streams channel-wise:
         preprocessed_arrays = np.concatenate(preprocessed_arrays, axis=1)
+
+        print()
 
         # Convert to frame container:
         preprocessed_fc = bob.bio.video.FrameContainer()  # initialize the FrameContainer

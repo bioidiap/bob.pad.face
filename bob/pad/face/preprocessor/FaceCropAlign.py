@@ -554,7 +554,7 @@ class FaceCropAlign(Preprocessor):
             annotations['bottomright']=(int(annotations['bottomright'][0]),int(annotations['bottomright'][1]))
 
 
-            print('annotations',annotations)
+            # print('annotations',annotations)
 
 
         if self.min_face_size is not None: # quality check
