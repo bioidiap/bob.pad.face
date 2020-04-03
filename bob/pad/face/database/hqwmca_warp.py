@@ -259,6 +259,8 @@ class HQWMCAPadDatabase_warp(PadDatabase):
             video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
 
             annotations = {}
+            trial=0
+
 
             for idx, image in enumerate(video.as_array()):
 
@@ -274,6 +276,7 @@ class HQWMCAPadDatabase_warp(PadDatabase):
                   cv_image[:,:,1] = clahe.apply(cv_image[:,:,1])
                   cv_image[:,:,2] = clahe.apply(cv_image[:,:,2])
                   print('cv_image',cv_image.shape,type(cv_image))
+                  trial+=1
 
 
                   bob_image=bob.io.image.to_bob(cv_image)
@@ -282,8 +285,36 @@ class HQWMCAPadDatabase_warp(PadDatabase):
 
                   frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
 
+                  if frame_annotations is None: # Convert RGB2 BGR
+                    trial+=1
+                    cv_image=bob.io.image.to_matplotlib(image)
+
+                    cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
+
+                    bob_image=bob.io.image.to_bob(cv_image)
+
+                    frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
+
+
+                    if frame_annotations is None: # Grayscale and back
+                    
+                        cv_image=bob.io.image.to_matplotlib(image)
+
+                        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
+
+                        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_GRAY2RGB)
+
+                        bob_image=bob.io.image.to_bob(cv_image)
+
+                        frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
+                        trial+=1
+
+
+
+
+
                   if frame_annotations is not None:
-                    print('CLAHE Suceeded................................................................................')
+                    print('CLAHE Suceeded TRIAL {}................................................................................'.format(trial))
 
 
                 # print('frame_annotations',frame_annotations)
