@@ -259,15 +259,17 @@ class HQWMCAPadDatabase_warp(PadDatabase):
             video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
 
             annotations = {}
-            trial=0
+            
 
 
             for idx, image in enumerate(video.as_array()):
 
+            	trial=0
+
                 frame_annotations = detect_face_landmarks_in_image(image, method='mtcnn')
 
                 if frame_annotations is None:
-                  print('No Frame annotations, tring CLAHE')
+                  print('No Frame annotations, trying CLAHE')
                   print('image',image.shape,type(image))
                   cv_image=bob.io.image.to_matplotlib(image)
 
@@ -285,29 +287,29 @@ class HQWMCAPadDatabase_warp(PadDatabase):
 
                   frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
 
-                  if frame_annotations is None: # Convert RGB2 BGR
-                    trial+=1
-                    cv_image=bob.io.image.to_matplotlib(image)
+                  # if frame_annotations is None: # Convert RGB2 BGR
+                  #   trial+=1
+                  #   cv_image=bob.io.image.to_matplotlib(image)
 
-                    cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
+                  #   cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
 
-                    bob_image=bob.io.image.to_bob(cv_image)
+                  #   bob_image=bob.io.image.to_bob(cv_image)
 
-                    frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
+                  #   frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
 
 
-                    if frame_annotations is None: # Grayscale and back
+                  #   if frame_annotations is None: # Grayscale and back
                     
-                        cv_image=bob.io.image.to_matplotlib(image)
+                  #       cv_image=bob.io.image.to_matplotlib(image)
 
-                        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
+                  #       cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
 
-                        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_GRAY2RGB)
+                  #       cv_image = cv2.cvtColor(cv_image, cv2.COLOR_GRAY2RGB)
 
-                        bob_image=bob.io.image.to_bob(cv_image)
+                  #       bob_image=bob.io.image.to_bob(cv_image)
 
-                        frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
-                        trial+=1
+                  #       frame_annotations = detect_face_landmarks_in_image(bob_image, method='mtcnn')
+                  #       trial+=1
 
 
 
