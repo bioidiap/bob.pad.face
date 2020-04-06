@@ -264,7 +264,7 @@ class HQWMCAPadDatabase_warp(PadDatabase):
 
             for idx, image in enumerate(video.as_array()):
 
-            	trial=0
+                trial=0
 
                 frame_annotations = detect_face_landmarks_in_image(image, method='mtcnn')
 
@@ -315,7 +315,7 @@ class HQWMCAPadDatabase_warp(PadDatabase):
 
 
 
-                  if frame_annotations is not None:
+                if frame_annotations is not None:
                     print('CLAHE Suceeded TRIAL {}................................................................................'.format(trial))
 
 
