@@ -83,7 +83,7 @@ class HQWMCAPadFile(PadFile):
     
     """
 
-    def __init__(self, vf, streams=None, n_frames=10):
+    def __init__(self, vf, stream_file=None, streams=None, n_frames=10):
       """ Init
 
       Parameters
@@ -91,6 +91,8 @@ class HQWMCAPadFile(PadFile):
       vf : :py:class:`object`
         An instance of the VideoFile class defined in the low level db interface
         of the HQWMCA database, in the bob.db.hqwmca.models.py file.
+      stream_file: 
+        bob.io.stream StreamFile object from which the stream are derievd from.
       streams: :py:dict:
         Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
       n_frames: int:
@@ -98,6 +100,7 @@ class HQWMCAPadFile(PadFile):
       
       """
       self.vf = vf
+      self.stream_file = stream_file
       self.streams = streams
       self.n_frames = n_frames
       attack_type = str(vf.type_id)
@@ -129,7 +132,7 @@ class HQWMCAPadFile(PadFile):
         -------
         
         """
-        return self.vf.load(directory, extension, streams=self.streams, n_frames=self.n_frames)
+        return self.vf.load(directory, extension, stream_file=self.stream_file, streams=self.streams, n_frames=self.n_frames)
 
 
 class HQWMCAPadDatabase(PadDatabase): 
@@ -139,13 +142,15 @@ class HQWMCAPadDatabase(PadDatabase):
     ----------
     db : :py:class:`bob.db.hqwmca.Database`
       the low-level database interface
+    stream_file: 
+      bob.io.stream StreamFile object from which the stream are derievd from.
     streams: :py:dict:
       Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
 
     """
        
     def __init__(self, protocol='grand_test', original_directory=rc['bob.db.hqwmca.directory'], 
-                 original_extension='.h5', annotations_dir=None, streams=None, n_frames=10, use_curated_file_list=False, **kwargs):
+                 original_extension='.h5', annotations_dir=None, stream_file=None, streams=None, n_frames=10, use_curated_file_list=False, **kwargs):
       """Init function
 
         Parameters
@@ -158,6 +163,8 @@ class HQWMCAPadDatabase(PadDatabase):
           The file name extension of the original data.
         annotations_dir: str
           Path to the annotations
+        stream_file: 
+          bob.io.stream StreamFile object from which the stream are derievd from.
         streams: :py:dict:
           Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
         n_frames: int:
@@ -169,6 +176,7 @@ class HQWMCAPadDatabase(PadDatabase):
       """
       from bob.db.hqwmca import Database as LowLevelDatabase
       self.db = LowLevelDatabase()
+      self.stream_file = stream_file
       self.streams = streams
       self.n_frames = n_frames
       self.annotations_dir = annotations_dir
@@ -259,7 +267,7 @@ class HQWMCAPadDatabase(PadDatabase):
 
 
 
-        return [HQWMCAPadFile(f, self.streams, self.n_frames) for f in files]
+        return [HQWMCAPadFile(f, self.stream_file, self.streams, self.n_frames) for f in files]
 
 
     def annotations(self, f):
