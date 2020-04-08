@@ -9,7 +9,7 @@ from bob.extension import rc
 from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config, idiap_subtype_id_config
-from bob.io.stream import stream
+from bob.io.stream import StreamFile
 
 import cv2
 import bob.io.image
@@ -19,8 +19,9 @@ import bob.io.image
 #   return f.stream('color')
 
 
-color = stream('color')
+f = StreamFile()
 
+color = f.stream('color')
 
 
 streams = { 'color'     : color}
@@ -40,7 +41,7 @@ class HQWMCAPadFile(PadFile):
     
     """
 
-    def __init__(self, vf, streams=None, n_frames=10):
+    def __init__(self, vf, stream_file=None, streams=None, n_frames=10):
       """ Init
 
       Parameters
@@ -48,6 +49,8 @@ class HQWMCAPadFile(PadFile):
       vf : :py:class:`object`
         An instance of the VideoFile class defined in the low level db interface
         of the HQWMCA database, in the bob.db.hqwmca.models.py file.
+      stream_file: 
+        bob.io.stream StreamFile object from which the stream are derievd from.
       streams: :py:dict:
         Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
       n_frames: int:
@@ -55,6 +58,7 @@ class HQWMCAPadFile(PadFile):
       
       """
       self.vf = vf
+      self.stream_file = stream_file
       self.streams = streams
       self.n_frames = n_frames
       attack_type = str(vf.type_id)
@@ -86,7 +90,7 @@ class HQWMCAPadFile(PadFile):
         -------
         
         """
-        return self.vf.load(directory, extension, streams=self.streams, n_frames=self.n_frames)
+        return self.vf.load(directory, extension, stream_file=self.stream_file, streams=self.streams, n_frames=self.n_frames)
 
 
 class HQWMCAPadDatabase_warp(PadDatabase): 
@@ -96,13 +100,15 @@ class HQWMCAPadDatabase_warp(PadDatabase):
     ----------
     db : :py:class:`bob.db.hqwmca.Database`
       the low-level database interface
+    stream_file: 
+      bob.io.stream StreamFile object from which the stream are derievd from.
     streams: :py:dict:
       Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
 
     """
        
     def __init__(self, protocol='grand_test', original_directory=rc['bob.db.hqwmca.directory'], 
-                 original_extension='.h5', annotations_dir=None, streams=None, n_frames=10, use_curated_file_list=False, **kwargs):
+                 original_extension='.h5', annotations_dir=None, stream_file=None, streams=None, n_frames=10, use_curated_file_list=False, **kwargs):
       """Init function
 
         Parameters
@@ -115,6 +121,8 @@ class HQWMCAPadDatabase_warp(PadDatabase):
           The file name extension of the original data.
         annotations_dir: str
           Path to the annotations
+        stream_file: 
+          bob.io.stream StreamFile object from which the stream are derievd from.
         streams: :py:dict:
           Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
         n_frames: int:
@@ -126,6 +134,7 @@ class HQWMCAPadDatabase_warp(PadDatabase):
       """
       from bob.db.hqwmca import Database as LowLevelDatabase
       self.db = LowLevelDatabase()
+      self.stream_file = stream_file
       self.streams = streams
       self.n_frames = n_frames
       self.annotations_dir = annotations_dir
@@ -216,10 +225,12 @@ class HQWMCAPadDatabase_warp(PadDatabase):
 
 
 
-        return [HQWMCAPadFile(f, self.streams, self.n_frames) for f in files]
+        return [HQWMCAPadFile(f, self.stream_file, self.streams, self.n_frames) for f in files]
 
 
-    def annotations(self, f):
+
+
+    def annotations(self, ff):
         """
         Computes annotations for a given file object ``f``, which
         is an instance of the ``BatlPadFile`` class.
@@ -246,17 +257,17 @@ class HQWMCAPadDatabase_warp(PadDatabase):
             face bounding box and landmarks in frame N.
         """
 
-        file_path = os.path.join(self.annotations_dir, f.path + ".json")
+        file_path = os.path.join(self.annotations_dir, ff.path + ".json")
 
         if not os.path.isfile(file_path):  # no file with annotations
 
             # original values of the arguments of f:
 
 
-            video = f.load(directory=self.original_directory,
-                           extension=self.original_extension)
+            # video = f.load(directory=self.original_directory,
+            #                extension=self.original_extension)
 
-            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
+            video = ff.vf.load(directory=self.original_directory, extension=self.original_extension, stream_file=f, streams=streams, n_frames=self.n_frames)['color']
 
             annotations = {}
             
