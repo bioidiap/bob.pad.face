@@ -247,7 +247,7 @@ class HQWMCAPadDatabase_warp(PadDatabase):
             # video = f.load(directory=self.original_directory,
             #                extension=self.original_extension)
 
-            video = ff.vf.load(directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
+            video = ff.vf.load(directory=self.original_directory, extension=self.original_extension, streams=self.streams, n_frames=self.n_frames)['color']
 
             annotations = {}
             

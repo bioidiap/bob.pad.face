@@ -239,10 +239,10 @@ class HQWMCAPadDatabase(PadDatabase):
             # original values of the arguments of f:
 
 
-            video = f.load(directory=self.original_directory,
-                           extension=self.original_extension)
+            # video = f.load(directory=self.original_directory,
+            #                extension=self.original_extension)
 
-            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
+            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=self.streams, n_frames=self.n_frames)['color']
 
             annotations = {}
 
