@@ -9,8 +9,8 @@ from bob.extension import rc
 from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config, idiap_subtype_id_config
-from bob.io.stream import stream
 
+from bob.io.stream import StreamFile
 
 # def _color(f):
 #   return f.stream('color')
@@ -20,17 +20,18 @@ dark_for_stereo     = False
 subtract_dark_nir   = False
 subtract_dark_swir  = True 
 
-color = stream('color')
+f = StreamFile()
 
-nir_735nm       = stream('nir_left_735nm').adjust(color)
-nir_850nm       = stream('nir_left_850nm').adjust(color)
-nir_940nm       = stream('nir_left_940nm').adjust(color)
-nir_1050nm      = stream('nir_left_1050nm').adjust(color)
+color = f.stream('color')
+nir_735nm       = f.stream('nir_left_735nm').adjust(color)
+nir_850nm       = f.stream('nir_left_850nm').adjust(color)
+nir_940nm       = f.stream('nir_left_940nm').adjust(color)
+nir_1050nm      = f.stream('nir_left_1050nm').adjust(color)
 
-nir_left_dark   = stream('nir_left').adjust(color)
-nir_right_dark  = stream('nir_left').adjust(color)
-nir_left_stereo = stream('nir_left_stereo').adjust(color)
-nir_right_stereo= stream('nir_right_stereo').adjust(color)
+nir_left_dark   = f.stream('nir_left').adjust(color)
+nir_right_dark  = f.stream('nir_left').adjust(color)
+nir_left_stereo = f.stream('nir_left_stereo').adjust(color)
+nir_right_stereo= f.stream('nir_right_stereo').adjust(color)
 
 if subtract_dark_nir:
     nir_735nm   = nir_735nm.subtract_dark(nir_left_dark)
@@ -270,7 +271,7 @@ class HQWMCAPadDatabase(PadDatabase):
         return [HQWMCAPadFile(f, self.stream_file, self.streams, self.n_frames) for f in files]
 
 
-    def annotations(self, f):
+    def annotations(self, ff):
         """
         Computes annotations for a given file object ``f``, which
         is an instance of the ``BatlPadFile`` class.
@@ -297,17 +298,17 @@ class HQWMCAPadDatabase(PadDatabase):
             face bounding box and landmarks in frame N.
         """
 
-        file_path = os.path.join(self.annotations_dir, f.path + ".json")
+        file_path = os.path.join(self.annotations_dir, ff.path + ".json")
 
         if not os.path.isfile(file_path):  # no file with annotations
 
             # original values of the arguments of f:
 
 
-            video = f.load(directory=self.original_directory,
-                           extension=self.original_extension)
+            # video = f.load(directory=self.original_directory,
+            #                extension=self.original_extension)
 
-            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
+            video = ff.vf.load(directory=self.original_directory, extension=self.original_extension, stream_file=f, streams=streams, n_frames=self.n_frames)['color']
 
             annotations = {}
 
