@@ -9,11 +9,8 @@ from bob.extension import rc
 from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.db.hqwmca.attack_dictionaries import idiap_type_id_config, idiap_subtype_id_config
-from bob.io.stream import Stream, StreamFile
+from bob.io.stream import StreamFile, Stream
 
-import cv2
-import bob.io.image
-import numpy as np
 
 class HQWMCAPadFile(PadFile):
     """
@@ -208,9 +205,7 @@ class HQWMCAPadDatabase(PadDatabase):
         return [HQWMCAPadFile(f, self.streams, self.n_frames) for f in files]
 
 
-
-
-    def annotations(self, ff):
+    def annotations(self, f):
         """
         Computes annotations for a given file object ``f``, which
         is an instance of the ``BatlPadFile`` class.
@@ -237,111 +232,59 @@ class HQWMCAPadDatabase(PadDatabase):
             face bounding box and landmarks in frame N.
         """
 
-        file_path = os.path.join(self.annotations_dir, ff.path + ".json")
+        file_path = os.path.join(self.annotations_dir, f.path + ".json")
 
-        streams=self.streams
+        if not os.path.isfile(file_path):  # no file with annotations
 
-
-        rep_annotations={}
-
-
-        if os.path.isfile(file_path):  # only if the annotations exists
+            # original values of the arguments of f:
 
 
+            # video = f.load(directory=self.original_directory,
+            #                extension=self.original_extension)
 
-          with open(file_path, 'r') as json_file:
+            video = f.vf.load(directory=self.original_directory, extension=self.original_extension, streams=self.streams, n_frames=self.n_frames)['color']
 
+            annotations = {}
 
-            annotations = json.load(json_file)
+            for idx, image in enumerate(video.as_array()):
 
-          if not annotations:  # if dictionary is empty
-
-              return None
-
-
-          # set annotations in source channel
-
-          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
-
-          print('annotations.keys()',annotations.keys())
-          
-          for idx in annotations.keys():
+                frame_annotations = detect_face_landmarks_in_image(image, method='mtcnn')
 
 
-            frame_annotations = annotations[idx]
+                print('frame_annotations',frame_annotations)
 
-            frame_annotations.pop('quality', None)
+                if frame_annotations:
+                  for key in frame_annotations.keys():
+                    
 
-            img_points= np.array([frame_annotations[key] for key in sorted(frame_annotations.keys())])
-
-            print("img_points",img_points, img_points.shape)
-
-            self.streams['color'].image_points[int(idx)] = img_points
-
-            self.streams['color'].bounding_box[int(idx)] = np.zeros((2,2))
-
-            sorted_keys= sorted(frame_annotations.keys())
-
-            print('self.streams.image_points',self.streams['color'].image_points)
+                    if key!='quality':
+                      frame_annotations[key]=(int(frame_annotations[key][0]),int(frame_annotations[key][1]))
+                    else:
+                      frame_annotations[key]=int(frame_annotations[key])
 
 
-          del video
+                  print('frame_annotations AFTER',frame_annotations)
+                  if frame_annotations:
 
-          # The reprojected color frames
+                      annotations[str(idx)] = frame_annotations
 
-          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['rep_color']
-            
+            if self.annotations_dir:  # if directory is not an empty string
 
-          for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
+                bob.io.base.create_directories_safe(directory=os.path.split(file_path)[0], dryrun=False)
 
-          # for idx in annotations.keys():
+                with open(file_path, 'w+') as json_file:
 
-            print('self.streams',self.streams,image.shape)
+                    json_file.write(json.dumps(annotations))
 
+        else:  # if file with annotations exists load them from file
 
-            rep_image_points = self.streams['rep_color'].image_points[idx]
+            with open(file_path, 'r') as json_file:
 
-            print("rep_image_points",rep_image_points)
+                annotations = json.load(json_file)
 
-            if rep_image_points:
+        if not annotations:  # if dictionary is empty
 
-            
-              rep_frame_annotations= {}
+            return None
 
-              for idx, sk in enumerate(sorted_keys):
+        return annotations
 
-                rep_frame_annotations[sk]=[rep_image_points[idx,:][0],rep_image_points[idx,:][1]]
-
-              if rep_frame_annotations:
-
-                    rep_annotations[str(idx)] = rep_frame_annotations
-
-
-
-        return rep_annotations
-
-
-
-# import json
-
-# file_path= '/idiap/temp/ageorge/HQWMCA_NEW_API/WARP/UNORM/annotations/01.03.19/1_01_0001_0000_00_00_000-241b2419.json'
-
-# with open(file_path, 'r') as json_file:
-
-#     annotations = json.load(json_file)
-
-# aa=annotations['0']
-
-# aa.pop('quality', None)
-
-
-# for key in sorted(aa.keys()): 
-#     ...:     a.append(aa[key]) 
-
-
-
-# [aa[key] for key in sorted(aa.keys())]
-
-# np.array(a)
-
-# annot_entries=sorted(aa.keys())
