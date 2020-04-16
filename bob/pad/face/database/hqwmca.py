@@ -289,7 +289,13 @@ class HQWMCAPadDatabase(PadDatabase):
             print('self.streams.image_points',self.streams['color'].image_points)
 
           # transform annotations
-          video = ff.vf.transform_annotations(bounding_box, image_points, color_stream, rep_color_stream, self.n_frames)
+          video = ff.vf.transform_annotations(  directory=self.original_directory, 
+                                                extension=self.original_extension, 
+                                                bounding_box=bounding_box, 
+                                                image_points=image_points, 
+                                                source_stream=color_stream, 
+                                                destination_stream=ep_color_stream, 
+                                                n_frames=self.n_frames)
 
           for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
 
