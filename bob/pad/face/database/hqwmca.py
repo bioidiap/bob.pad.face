@@ -288,12 +288,12 @@ class HQWMCAPadDatabase(PadDatabase):
             print('self.streams.image_points',self.streams['color'].image_points)
 
 
-          del video
+          #del video
 
           # The reprojected color frames
 
           # load only the reprojected stream
-          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams={'rep_color': rep_color_stream}, n_frames=self.n_frames)
+          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams={'rep_color': rep_color_stream}, n_frames=self.n_frames)['rep_color']
             
 
           for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
