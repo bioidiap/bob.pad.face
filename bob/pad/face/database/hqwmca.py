@@ -261,7 +261,10 @@ class HQWMCAPadDatabase(PadDatabase):
 
           # set annotations in source channel
 
-          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
+          #video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
+
+          color_stream = streams['color']
+          rep_color_stream = streams['rep_color']
 
           print('annotations.keys()',annotations.keys())
           
@@ -276,9 +279,9 @@ class HQWMCAPadDatabase(PadDatabase):
 
             print("img_points",img_points, img_points.shape)
 
-            self.streams['color'].image_points[int(idx)] = img_points
+            color_stream.image_points[int(idx)] = img_points
 
-            self.streams['color'].bounding_box[int(idx)] = np.zeros((2,2))
+            color_stream.bounding_box[int(idx)] = np.zeros((2,2))
 
             sorted_keys= sorted(frame_annotations.keys())
 
@@ -289,7 +292,8 @@ class HQWMCAPadDatabase(PadDatabase):
 
           # The reprojected color frames
 
-          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['rep_color']
+          # load only the reprojected stream
+          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams={'rep_color': rep_color_stream}, n_frames=self.n_frames)
             
 
           for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
@@ -299,7 +303,7 @@ class HQWMCAPadDatabase(PadDatabase):
             print('self.streams',self.streams,image.shape)
 
 
-            rep_image_points = self.streams['rep_color'].image_points[idx]
+            rep_image_points = rep_color_stream.image_points[idx]
 
             print("rep_image_points",rep_image_points)
 
