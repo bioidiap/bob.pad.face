@@ -294,7 +294,7 @@ class HQWMCAPadDatabase(PadDatabase):
                                                 bounding_box=bounding_box, 
                                                 image_points=image_points, 
                                                 source_stream=color_stream, 
-                                                destination_stream=ep_color_stream, 
+                                                destination_stream=rep_color_stream, 
                                                 n_frames=self.n_frames)
 
           for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
