@@ -281,8 +281,8 @@ class HQWMCAPadDatabase(PadDatabase):
 
             print("img_points",img_points, img_points.shape)
 
-            bounding_box.append(img_points)
-            image_points.append(np.zeros((2,2)))
+            bounding_box.append(np.ones((2,2),dtype='int64'))
+            image_points.append(img_points.astype('int64'))
 
             sorted_keys= sorted(frame_annotations.keys())
 
