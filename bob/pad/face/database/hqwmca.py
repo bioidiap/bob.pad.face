@@ -262,30 +262,38 @@ class HQWMCAPadDatabase(PadDatabase):
 
           # set annotations in source channel
 
-          #video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
+          video = ff.vf.load(  directory=self.original_directory, extension=self.original_extension, streams=streams, n_frames=self.n_frames)['color']
 
           color_stream = streams['color']
           rep_color_stream = streams['rep_color']
 
-          print('annotations.keys()',annotations.keys())
+          print('annotations.keys()',annotations.keys(), annotations)
           
           bounding_box = []
           image_points = []
 
-          for idx in annotations.keys():
+          for iidx in range(0,self.n_frames):
+            idx=str(iidx)
 
-            frame_annotations = annotations[idx]
+            if idx in annotations.keys():
 
-            frame_annotations.pop('quality', None)
+              frame_annotations = annotations[idx]
 
-            img_points= np.array([frame_annotations[key] for key in sorted(frame_annotations.keys())])
+              frame_annotations.pop('quality', None)
 
-            #print("img_points",img_points, img_points.shape)
+              img_points= np.array([frame_annotations[key] for key in sorted(frame_annotations.keys())])
 
-            bounding_box.append(None)#np.ones((2,2),dtype='int64')
-            image_points.append(img_points.astype('float64'))
+              #print("img_points",img_points, img_points.shape)
 
-            sorted_keys= sorted(frame_annotations.keys())
+              bounding_box.append(None)#np.ones((2,2),dtype='int64')
+              image_points.append(img_points.astype('float64'))
+
+              sorted_keys= sorted(frame_annotations.keys())
+            else:
+              bounding_box.append(None)
+              image_points.append(None)
+
+
 
             #print('self.streams.image_points',self.streams['color'].image_points)
 
@@ -300,30 +308,38 @@ class HQWMCAPadDatabase(PadDatabase):
 
           #for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
 
-          for idx in annotations.keys():
+          for iidx in range(0,self.n_frames):
 
-            #print('self.streams',self.streams,image.shape)
+            idx=str(iidx)
 
-            rep_image_points = image_points[int(idx)].astype('int')
+            if idx in annotations.keys():
 
-            print("rep_image_points",rep_image_points, idx, rep_image_points.shape)
+              #print('self.streams',self.streams,image.shape)
 
-            if rep_image_points.shape[0]==7:
+              rep_image_points = image_points[int(idx)].astype('int')
 
-            
-              rep_frame_annotations= {}
+              #
+              # print("rep_image_points",rep_image_points, idx, rep_image_points.shape)
 
-              for ii, sk in enumerate(sorted_keys):
+              if rep_image_points.shape[0]==7:
 
-                rep_frame_annotations[sk]=[rep_image_points[ii,:][0],rep_image_points[ii,:][1]]
+              
+                rep_frame_annotations= {}
 
-              if rep_frame_annotations:
+                for ii, sk in enumerate(sorted_keys):
 
-                rep_annotations[idx] = rep_frame_annotations
+                  rep_frame_annotations[sk]=[rep_image_points[ii,:][0],rep_image_points[ii,:][1]]
+
+                if rep_frame_annotations:
+
+                  rep_annotations[idx] = rep_frame_annotations
+              else:
+                rep_annotations[idx]={}
 
 
 
-        print('rep_annotations.keys', rep_annotations.keys())
+
+        print('rep_annotations.keys', rep_annotations.keys(), rep_annotations)
         return rep_annotations
 
 
