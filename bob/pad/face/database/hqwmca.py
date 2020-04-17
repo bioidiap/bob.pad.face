@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -279,17 +280,17 @@ class HQWMCAPadDatabase(PadDatabase):
 
             img_points= np.array([frame_annotations[key] for key in sorted(frame_annotations.keys())])
 
-            print("img_points",img_points, img_points.shape)
+            #print("img_points",img_points, img_points.shape)
 
-            bounding_box.append(np.ones((2,2),dtype='int64'))
-            image_points.append(img_points.astype('int64'))
+            bounding_box.append(None)#np.ones((2,2),dtype='int64')
+            image_points.append(img_points.astype('float64'))
 
             sorted_keys= sorted(frame_annotations.keys())
 
-            print('self.streams.image_points',self.streams['color'].image_points)
+            #print('self.streams.image_points',self.streams['color'].image_points)
 
           # transform annotations
-          video = ff.vf.transform_annotations(  directory=self.original_directory, 
+          ff.vf.transform_annotations(  directory=self.original_directory, 
                                                 extension=self.original_extension, 
                                                 bounding_box=bounding_box, 
                                                 image_points=image_points, 
@@ -297,31 +298,32 @@ class HQWMCAPadDatabase(PadDatabase):
                                                 destination_stream=rep_color_stream, 
                                                 n_frames=self.n_frames)
 
-          for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
+          #for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
 
-          # for idx in annotations.keys():
+          for idx in annotations.keys():
 
-            print('self.streams',self.streams,image.shape)
+            #print('self.streams',self.streams,image.shape)
 
-            rep_image_points = image_points[idx]
+            rep_image_points = image_points[int(idx)].astype('int')
 
-            print("rep_image_points",rep_image_points)
+            print("rep_image_points",rep_image_points, idx, rep_image_points.shape)
 
-            if rep_image_points:
+            if rep_image_points.shape[0]==7:
 
             
               rep_frame_annotations= {}
 
-              for idx, sk in enumerate(sorted_keys):
+              for ii, sk in enumerate(sorted_keys):
 
-                rep_frame_annotations[sk]=[rep_image_points[idx,:][0],rep_image_points[idx,:][1]]
+                rep_frame_annotations[sk]=[rep_image_points[ii,:][0],rep_image_points[ii,:][1]]
 
               if rep_frame_annotations:
 
-                    rep_annotations[str(idx)] = rep_frame_annotations
+                rep_annotations[idx] = rep_frame_annotations
 
 
 
+        print('rep_annotations.keys', rep_annotations.keys())
         return rep_annotations
 
 
@@ -349,3 +351,4 @@ class HQWMCAPadDatabase(PadDatabase):
 # np.array(a)
 
 # annot_entries=sorted(aa.keys())
+
