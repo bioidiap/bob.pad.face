@@ -335,7 +335,7 @@ class HQWMCAPadDatabase(PadDatabase):
 
                 for ii, sk in enumerate(sorted_keys):
 
-                  rep_frame_annotations[sk]=[rep_image_points[ii,:][0],rep_image_points[ii,:][1]]
+                  rep_frame_annotations[sk]=[int(rep_image_points[ii,:][0]),int(rep_image_points[ii,:][1])]
 
                 if rep_frame_annotations:
 
@@ -347,6 +347,14 @@ class HQWMCAPadDatabase(PadDatabase):
 
 
           print('rep_annotations.keys', rep_annotations.keys(), rep_annotations)
+
+          r_file_path=file_path.replace('raw_annotations','rep_annotations')
+
+          bob.io.base.create_directories_safe(directory=os.path.split(r_file_path)[0], dryrun=False)
+
+          with open(r_file_path, 'w+') as json_file:
+
+              json_file.write(json.dumps(rep_annotations))
 
           if len(rep_annotations.keys()) < 2:
             print('KEYS LESSSSSSSSSSSSSSSSSSSSSSSSSSSSSS...........')
