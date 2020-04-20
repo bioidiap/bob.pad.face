@@ -27,7 +27,7 @@ class HQWMCAPadFile(PadFile):
       of the HQWMCA database, in the bob.db.hqwmca.models.py file.
     streams: :py:dict:
       Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
-    
+
     """
 
     def __init__(self, vf, streams=None, n_frames=10):
@@ -41,8 +41,8 @@ class HQWMCAPadFile(PadFile):
       streams: :py:dict:
         Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
       n_frames: int:
-        The number of frames, evenly spread, you would like to retrieve 
-      
+        The number of frames, evenly spread, you would like to retrieve
+
       """
       self.vf = vf
       self.streams = streams
@@ -60,7 +60,7 @@ class HQWMCAPadFile(PadFile):
             file_id=vf.id,
             attack_type=attack_type,
             path=vf.path)
-      
+
 
     def load(self, directory=rc['bob.db.hqwmca.directory'], extension='.h5'):
         """ Loads data from the given file
@@ -68,20 +68,20 @@ class HQWMCAPadFile(PadFile):
         Parameters
         ----------
         directory : :py:class:`str`
-          String containing the path to the HQWMCA database 
+          String containing the path to the HQWMCA database
         extension : :py:class:`str`
           Typical extension of a VideoFile
 
         Returns
         -------
-        
+
         """
         return self.vf.load(directory, extension, streams=self.streams, n_frames=self.n_frames)
 
 
-class HQWMCAPadDatabase(PadDatabase): 
+class HQWMCAPadDatabase(PadDatabase):
     """High level implementation of the Database class for the HQWMCA database.
-   
+
     Attributes
     ----------
     db : :py:class:`bob.db.hqwmca.Database`
@@ -90,8 +90,8 @@ class HQWMCAPadDatabase(PadDatabase):
       Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
 
     """
-       
-    def __init__(self, protocol='grand_test', original_directory=rc['bob.db.hqwmca.directory'], 
+
+    def __init__(self, protocol='grand_test', original_directory=rc['bob.db.hqwmca.directory'],
                  original_extension='.h5', annotations_dir=None, streams=None, n_frames=10, use_curated_file_list=False, **kwargs):
       """Init function
 
@@ -108,11 +108,11 @@ class HQWMCAPadDatabase(PadDatabase):
         streams: :py:dict:
           Dictionary of bob.io.stream Stream objects. Should be defined in a configuration file
         n_frames: int:
-          The number of frames, evenly spread, you would like to retrieve 
+          The number of frames, evenly spread, you would like to retrieve
         use_curated_file_list: bool
           Whether to remove all light makeup, unisex glasses and wigs, which are border case attacks, to create a clean set of attacks
           Removes these attacks from all folds. This can either be set as argument or as additional '-curated' in the protocol name.
-        
+
       """
       from bob.db.hqwmca import Database as LowLevelDatabase
       self.db = LowLevelDatabase()
@@ -128,7 +128,7 @@ class HQWMCAPadDatabase(PadDatabase):
           original_extension=original_extension)
 
       self.low_level_group_names = ('train', 'validation', 'test')
-      self.high_level_group_names = ('train', 'dev', 'eval') 
+      self.high_level_group_names = ('train', 'dev', 'eval')
 
 
     @property
@@ -178,10 +178,10 @@ class HQWMCAPadDatabase(PadDatabase):
 
         groups = self.convert_names_to_lowlevel(groups, self.low_level_group_names, self.high_level_group_names)
 
-        if not isinstance(groups, list) and groups is not None and groups is not str: 
+        if not isinstance(groups, list) and groups is not None and groups is not str:
           groups = list(groups)
 
-        
+
         if len(protocol.split('-'))>1 and protocol.split('-')[-1]=='curated':
           self.use_curated_file_list=True
 
@@ -194,7 +194,7 @@ class HQWMCAPadDatabase(PadDatabase):
                                 **kwargs)
 
 
-        
+
         if self.use_curated_file_list:
           # Remove Wigs
           files = [f for f in files if 'Wig' not in idiap_subtype_id_config[str(f.type_id)][str(f.subtype_id)]]
@@ -268,7 +268,7 @@ class HQWMCAPadDatabase(PadDatabase):
           rep_color_stream = streams['rep_color']
 
           print('annotations.keys()',annotations.keys(), annotations)
-          
+
           bounding_box = []
           image_points = []
 
@@ -298,15 +298,20 @@ class HQWMCAPadDatabase(PadDatabase):
             #print('self.streams.image_points',self.streams['color'].image_points)
 
           # transform annotations
-          ff.vf.transform_annotations(  directory=self.original_directory, 
-                                                extension=self.original_extension, 
-                                                bounding_box=bounding_box, 
-                                                image_points=image_points, 
-                                                source_stream=color_stream, 
-                                                destination_stream=rep_color_stream, 
+          r_bounding_box, r_image_points = ff.vf.transform_annotations(  directory=self.original_directory,
+                                                extension=self.original_extension,
+                                                bounding_box=bounding_box,
+                                                image_points=image_points,
+                                                source_stream=color_stream,
+                                                destination_stream=rep_color_stream,
                                                 n_frames=self.n_frames)
 
           #for idx, image in enumerate(video.as_array()): # next line is not loading the data but just use the projection , probably wont work
+
+          print('image_points',image_points,type(image_points))
+          print('r_image_points',r_image_points,type(r_image_points))
+
+          print('sorted_keys',sorted_keys)
 
           for iidx in range(0,self.n_frames):
 
@@ -316,14 +321,16 @@ class HQWMCAPadDatabase(PadDatabase):
 
               #print('self.streams',self.streams,image.shape)
 
-              rep_image_points = image_points[int(idx)].astype('int')
+              rep_image_points = r_image_points[int(idx)].astype('int')
+
+              print('rep_image_points',rep_image_points)
 
               #
               # print("rep_image_points",rep_image_points, idx, rep_image_points.shape)
 
               if rep_image_points.shape[0]==7:
 
-              
+
                 rep_frame_annotations= {}
 
                 for ii, sk in enumerate(sorted_keys):
@@ -339,8 +346,17 @@ class HQWMCAPadDatabase(PadDatabase):
 
 
 
-        print('rep_annotations.keys', rep_annotations.keys(), rep_annotations)
-        return rep_annotations
+          print('rep_annotations.keys', rep_annotations.keys(), rep_annotations)
+
+          if len(rep_annotations.keys()) < 2:
+            print('KEYS LESSSSSSSSSSSSSSSSSSSSSSSSSSSSSS...........')
+          return rep_annotations
+
+        else:
+
+          print('NO ANNOTATIONS_PRESENT...............')
+          return {}
+            
 
 
 
@@ -357,8 +373,8 @@ class HQWMCAPadDatabase(PadDatabase):
 # aa.pop('quality', None)
 
 
-# for key in sorted(aa.keys()): 
-#     ...:     a.append(aa[key]) 
+# for key in sorted(aa.keys()):
+#     ...:     a.append(aa[key])
 
 
 

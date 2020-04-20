@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+  #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Tue May 30 14:11:16 2017
@@ -581,6 +581,7 @@ class FaceCropAlign(Preprocessor):
 
 
 
+        print('INSIDE FACECROP ALIGN',annotations.keys(), annotations)
         if self.normalization_function is not None:
             image = self.normalization_function(image, annotations, **self.normalization_function_kwargs)
 
