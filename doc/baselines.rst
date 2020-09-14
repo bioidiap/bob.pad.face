@@ -119,13 +119,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + REPLAY-ATTACK database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 
 The EER/HTER errors for `replayattack`_ database are summarized in the Table below:
@@ -167,13 +167,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + REPLAY-ATTACK database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for `replayattack`_ database are summarized in the Table below:
 
@@ -214,13 +214,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + REPLAY-ATTACK database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for `replayattack`_ database are summarized in the Table below:
 
@@ -270,13 +270,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + Replay-Mobile database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Table below:
 
@@ -318,13 +318,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + Replay-Mobile database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Table below:
 
@@ -366,13 +366,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + Replay-Mobile database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Table below:
 
@@ -422,13 +422,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + MSU MFSD database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table below:
 
@@ -470,13 +470,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + MSU MFSD database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table below:
 
@@ -518,13 +518,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + MSU MFSD database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the `MSU MFSD`_ database are summarized in the Table below:
 
@@ -576,13 +576,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + Aggregated database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
 
@@ -623,13 +623,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + Aggregated database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
 
@@ -670,13 +670,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "10 features for each window in Frame Differences + SVM classifier + Aggregated Db" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
 
@@ -718,13 +718,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "LBP features of facial region + SVM classifier + MIFS database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the MIFS database are summarized in the Table below:
 
@@ -752,13 +752,13 @@ following command:
 
 .. code-block:: sh
 
-    evaluate.py \
-    --dev-files  <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    --eval-files <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
+    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
     --legends "IQM features of facial region + SVM classifier + MIFS database" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the MIFS database are summarized in the Table below:
 

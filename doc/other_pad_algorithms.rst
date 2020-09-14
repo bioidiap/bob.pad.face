@@ -142,25 +142,16 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
-    --dev-files \
-    <PATH_TO_STORE_THE_RESULTS_1>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_2>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_3>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_4>/grandtest/scores/scores-dev  \
-    --eval-files \
-    <PATH_TO_STORE_THE_RESULTS_1>/grandtest/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_2>/grandtest/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_3>/grandtest/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_4>/grandtest/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS_{1,2,3,4}>/grandtest/scores/scores-{dev,eval} \
     --legends \
     "IQM + one-class GMM + Aggregated Db" \
     "IQM + one-class SVM + Aggregated Db" \
     "IQM + two-class LR  + Aggregated Db" \
     "IQM + two-class SVM + Aggregated Db" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --c eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
 
@@ -231,25 +222,16 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
-    --dev-files \
-    <PATH_TO_STORE_THE_RESULTS_1>/photo-photo-video/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_2>/photo-photo-video/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_3>/photo-photo-video/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_4>/photo-photo-video/scores/scores-dev  \
-    --eval-files \
-    <PATH_TO_STORE_THE_RESULTS_1>/photo-photo-video/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_2>/photo-photo-video/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_3>/photo-photo-video/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_4>/photo-photo-video/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS_{1,2,3,4}>/photo-photo-video/scores/scores-{dev,eval}  \
     --legends \
     "IQM + one-class GMM + Aggregated Db" \
     "IQM + one-class SVM + Aggregated Db" \
     "IQM + two-class LR  + Aggregated Db" \
     "IQM + two-class SVM + Aggregated Db" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
 
@@ -320,25 +302,16 @@ following command:
 
 .. code-block:: sh
 
-    ./bin/evaluate.py \
-    --dev-files \
-    <PATH_TO_STORE_THE_RESULTS_1>/video-video-photo/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_2>/video-video-photo/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_3>/video-video-photo/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS_4>/video-video-photo/scores/scores-dev  \
-    --eval-files \
-    <PATH_TO_STORE_THE_RESULTS_1>/video-video-photo/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_2>/video-video-photo/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_3>/video-video-photo/scores/scores-eval \
-    <PATH_TO_STORE_THE_RESULTS_4>/video-video-photo/scores/scores-eval \
+    bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS_{1,2,3,4}>/video-video-photo/scores/scores-{dev,eval}  \
     --legends \
     "IQM + one-class GMM + Aggregated Db" \
     "IQM + one-class SVM + Aggregated Db" \
     "IQM + two-class LR  + Aggregated Db" \
     "IQM + two-class SVM + Aggregated Db" \
-    -F 7 \
-    --criterion EER \
-    --roc <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    -e \
+    --criterion eer \
+    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 The EER/HTER errors for the :ref:`bob.pad.face.resources.databases.aggregated_db` database are summarized in the Table below:
 
