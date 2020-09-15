@@ -143,7 +143,7 @@ following command:
 .. code-block:: sh
 
     bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS_{1,2,3,4}>/grandtest/scores/scores-{dev,eval} \
+    <PATH_TO_STORE_THE_RESULTS>_{1,2,3,4}/grandtest/scores/scores-{dev,eval} \
     --legends \
     "IQM + one-class GMM + Aggregated Db" \
     "IQM + one-class SVM + Aggregated Db" \
@@ -223,7 +223,7 @@ following command:
 .. code-block:: sh
 
     bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS_{1,2,3,4}>/photo-photo-video/scores/scores-{dev,eval}  \
+    <PATH_TO_STORE_THE_RESULTS>_{1,2,3,4}/photo-photo-video/scores/scores-{dev,eval}  \
     --legends \
     "IQM + one-class GMM + Aggregated Db" \
     "IQM + one-class SVM + Aggregated Db" \
@@ -303,7 +303,7 @@ following command:
 .. code-block:: sh
 
     bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS_{1,2,3,4}>/video-video-photo/scores/scores-{dev,eval}  \
+    <PATH_TO_STORE_THE_RESULTS>_{1,2,3,4}/video-video-photo/scores/scores-{dev,eval}  \
     --legends \
     "IQM + one-class GMM + Aggregated Db" \
     "IQM + one-class SVM + Aggregated Db" \
