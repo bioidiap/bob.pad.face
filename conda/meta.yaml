@@ -27,8 +27,6 @@ requirements:
     - bob.io.base
     - bob.ip.base
     - bob.pad.base
-    - bob.bio.face
-    - bob.bio.video
     - bob.io.image
     - bob.ip.color
     - bob.ip.qualitymeasure
