@@ -4,7 +4,7 @@
 import os
 import numpy as np
 import bob.io.video
-from bob.bio.video import FrameSelector, FrameContainer
+from bob.bio.video_legacy import FrameSelector, FrameContainer
 from bob.pad.face.database import VideoPadFile
 from bob.pad.base.database import PadDatabase
 
@@ -52,12 +52,12 @@ class MaskAttackPadFile(VideoPadFile):
           (generated sequences from original data).
         extension : :py:class:`str`
           Extension of the video files
-        frame_selector : :py:class:`bob.bio.video.FrameSelector`
+        frame_selector : :py:class:`bob.bio.video_legacy.FrameSelector`
             The frame selector to use.
 
         Returns
         -------
-        video_data : :py:class:`bob.bio.video.utils.FrameContainer`
+        video_data : :py:class:`bob.bio.video_legacy.utils.FrameContainer`
           video data stored in a FrameContainer
 
         """

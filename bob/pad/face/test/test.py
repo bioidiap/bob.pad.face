@@ -12,7 +12,7 @@ from bob.io.base import load
 
 import bob.io.image  # for image loading functionality
 
-import bob.bio.video
+import bob.bio.video_legacy
 
 from bob.ip.color import rgb_to_gray
 
@@ -40,11 +40,11 @@ from ..extractor import PPGSecure as PPGExtractor
 
 from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
 from ..preprocessor import VideoFaceCropAlignBlockPatch
 
-from bob.bio.video.utils import FrameSelector
+from bob.bio.video_legacy.utils import FrameSelector
 
 from ..preprocessor import BlockPatch
 
@@ -57,7 +57,7 @@ from bob.pad.face.config.preprocessor.video_face_crop_align_block_patch import v
 
 def test_detect_face_landmarks_in_image_mtcnn():
 
-    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
+    img = load(datafile('testimage.jpg', 'bob.bio.face_legacy.test'))
     assert len(img) == 3
     annotations = detect_face_landmarks_in_image(
         img, method='mtcnn')
@@ -72,7 +72,7 @@ def test_detect_face_landmarks_in_image_mtcnn():
 
 def test_detect_face_landmarks_in_image_dlib():
 
-    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
+    img = load(datafile('testimage.jpg', 'bob.bio.face_legacy.test'))
     assert len(img) == 3
     annotations = detect_face_landmarks_in_image(
         img, method='dlib')
@@ -88,7 +88,7 @@ def test_detect_face_landmarks_in_image_dlib():
 #==============================================================================
 def test_lbp_histogram():
     lbp = LBPHistogram()
-    img = load(datafile('testimage.jpg', 'bob.bio.face.test'))
+    img = load(datafile('testimage.jpg', 'bob.bio.face_legacy.test'))
     img = rgb_to_gray(img)
     features = lbp(img)
     reference = load(datafile('lbp.hdf5', 'bob.pad.face.test'))
@@ -137,7 +137,7 @@ def convert_image_to_video_data(image, annotations, n_frames):
     **Returns:**
 
     ``frame_container`` : FrameContainer
-        Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+        Video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
         for further details.
 
     ``video_annotations`` : :py:class:`dict`
@@ -147,7 +147,7 @@ def convert_image_to_video_data(image, annotations, n_frames):
         is the dictionary defining the coordinates of the face bounding box in frame N.
     """
 
-    frame_container = bob.bio.video.FrameContainer(
+    frame_container = bob.bio.video_legacy.FrameContainer(
     )  # initialize the FrameContainer
 
     video_annotations = {}
@@ -460,7 +460,7 @@ def test_video_lbp_histogram():
 
     from ..preprocessor import FaceCropAlign
 
-    from bob.bio.video.preprocessor import Wrapper
+    from bob.bio.video_legacy.preprocessor import Wrapper
 
     FACE_SIZE = 64 # The size of the resulting face
     RGB_OUTPUT_FLAG = False # Gray-scale output
@@ -492,7 +492,7 @@ def test_video_lbp_histogram():
     CIRC = False
     DTYPE = None
 
-    extractor = bob.bio.video.extractor.Wrapper(LBPHistogram(
+    extractor = bob.bio.video_legacy.extractor.Wrapper(LBPHistogram(
         lbptype=LBPTYPE,
         elbptype=ELBPTYPE,
         rad=RAD,
@@ -524,7 +524,7 @@ def test_video_quality_measure():
     MSU = True
     DTYPE = None
 
-    extractor = bob.bio.video.extractor.Wrapper(ImageQualityMeasure(galbally=GALBALLY, msu=MSU, dtype=DTYPE))
+    extractor = bob.bio.video_legacy.extractor.Wrapper(ImageQualityMeasure(galbally=GALBALLY, msu=MSU, dtype=DTYPE))
 
     features = extractor(video)
 
@@ -548,7 +548,7 @@ def convert_array_to_list_of_frame_cont(data):
         **Returns:**
 
     ``frame_container_list`` : [FrameContainer]
-        A list of FrameContainers, see ``bob.bio.video.utils.FrameContainer``
+        A list of FrameContainers, see ``bob.bio.video_legacy.utils.FrameContainer``
         for further details. Each frame container contains one feature vector.
     """
 
@@ -556,7 +556,7 @@ def convert_array_to_list_of_frame_cont(data):
 
     for idx, vec in enumerate(data):
 
-        frame_container = bob.bio.video.FrameContainer(
+        frame_container = bob.bio.video_legacy.FrameContainer(
         )  # initialize the FrameContainer
 
         frame_container.add(0, vec)

@@ -5,7 +5,7 @@
 import os
 import numpy as np
 import bob.io.video
-from bob.bio.video import FrameSelector, FrameContainer
+from bob.bio.video_legacy import FrameSelector, FrameContainer
 from bob.pad.face.database import VideoPadFile  
 from bob.pad.base.database import PadDatabase
 
@@ -63,7 +63,7 @@ class CasiaSurfPadFile(VideoPadFile):
           String containing the path to the CASIA-SURF database 
         extension : :py:class:`str`
           Extension of the image files 
-        frame_selector : :py:class:`bob.bio.video.FrameSelector`
+        frame_selector : :py:class:`bob.bio.video_legacy.FrameSelector`
             The frame selector to use.
 
         Returns

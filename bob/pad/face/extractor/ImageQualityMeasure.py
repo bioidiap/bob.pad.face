@@ -5,7 +5,7 @@
 # Import what is needed here:
 
 from __future__ import division
-from bob.bio.base.extractor import Extractor
+from bob.bio.base_legacy.extractor import Extractor
 from bob.ip.qualitymeasure import galbally_iqm_features as iqm
 from bob.ip.qualitymeasure import msu_iqa_features as iqa
 import numpy

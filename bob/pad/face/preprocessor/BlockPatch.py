@@ -9,7 +9,7 @@ Created on Mon Aug  6 14:14:28 2018
 # =============================================================================
 # Import what is needed here:
 
-from bob.bio.base.preprocessor import Preprocessor
+from bob.bio.base_legacy.preprocessor import Preprocessor
 
 import numpy as np
 

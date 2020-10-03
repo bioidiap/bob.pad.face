@@ -9,9 +9,9 @@ Created on Fri Sep 22 2017
 #==============================================================================
 # Import what is needed here:
 
-from bob.bio.base.preprocessor import Preprocessor
+from bob.bio.base_legacy.preprocessor import Preprocessor
 
-import bob.bio.video
+import bob.bio.video_legacy
 
 import numpy as np
 
@@ -118,7 +118,7 @@ class VideoSparseCoding(Preprocessor, object):
         self.method = method
         self.comp_reconstruct_err_flag = comp_reconstruct_err_flag
 
-        self.video_preprocessor = bob.bio.video.preprocessor.Wrapper()
+        self.video_preprocessor = bob.bio.video_legacy.preprocessor.Wrapper()
 
     #==========================================================================
     def crop_norm_face_grayscale(self, image, annotations, face_size):
@@ -237,7 +237,7 @@ class VideoSparseCoding(Preprocessor, object):
 
         ``frames`` : FrameContainer
             Video data stored in the FrameContainer, see
-            ``bob.bio.video.utils.FrameContainer`` for further details.
+            ``bob.bio.video_legacy.utils.FrameContainer`` for further details.
 
         **Returns:**
 
@@ -719,7 +719,7 @@ class VideoSparseCoding(Preprocessor, object):
             (``3`` x ``n_samples`` x ``n_words_in_the_dictionary``).
         """
 
-        frame_container = bob.bio.video.FrameContainer(
+        frame_container = bob.bio.video_legacy.FrameContainer(
         )  # initialize the FrameContainer
 
         idx = 0
@@ -810,7 +810,7 @@ class VideoSparseCoding(Preprocessor, object):
             FrameContainer containing the feature vectors.
         """
 
-        frame_container = bob.bio.video.FrameContainer(
+        frame_container = bob.bio.video_legacy.FrameContainer(
         )  # initialize the FrameContainer
 
         for idx, item in enumerate(list_of_arrays):
@@ -1054,7 +1054,7 @@ class VideoSparseCoding(Preprocessor, object):
 
         ``frames`` : FrameContainer
             Video data stored in the FrameContainer, see
-            ``bob.bio.video.utils.FrameContainer`` for further details.
+            ``bob.bio.video_legacy.utils.FrameContainer`` for further details.
 
         ``annotations`` : :py:class:`dict`
             A dictionary containing the annotations for each frame in the video.
@@ -1186,7 +1186,7 @@ class VideoSparseCoding(Preprocessor, object):
 
         **Returns:**
 
-        ``frames`` : :py:class:`bob.bio.video.FrameContainer`
+        ``frames`` : :py:class:`bob.bio.video_legacy.FrameContainer`
             Frames stored in the frame container.
         """
 

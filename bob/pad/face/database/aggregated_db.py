@@ -13,9 +13,9 @@ from bob.pad.face.database import replay_mobile as replay_mobile_hldi
 
 from bob.pad.face.database import msu_mfsd as msu_mfsd_hldi
 
-from bob.bio.video.database.mobio import MobioBioFile
+from bob.bio.video_legacy.database.mobio import MobioBioFile
 
-from bob.bio.video import FrameSelector, FrameContainer
+from bob.bio.video_legacy import FrameSelector, FrameContainer
 
 import numpy as np
 
@@ -206,7 +206,7 @@ class AggregatedDbPadFile(VideoPadFile):
         **Returns:**
 
         ``video_data`` : FrameContainer
-            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            Video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
         """
 
@@ -251,7 +251,7 @@ class AggregatedDbPadFile(VideoPadFile):
 
             directory = directories[3]
 
-        if isinstance(db_pad_file, bob.bio.video.database.mobio.MobioBioFile):
+        if isinstance(db_pad_file, bob.bio.video_legacy.database.mobio.MobioBioFile):
 
             video_data = db_pad_file.load(
                 directory=directory,
@@ -346,7 +346,7 @@ class AggregatedDbPadDatabase(PadDatabase):
             in the HighLevel DB Interface of MSU MFSD. Default: None.
 
         ``kwargs``
-            The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
+            The arguments of the :py:class:`bob.bio.base_legacy.database.BioDatabase`
             base class constructor.
         """
 

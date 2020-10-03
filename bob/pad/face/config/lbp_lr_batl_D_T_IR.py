@@ -22,9 +22,9 @@ this resource.
 
 from ..preprocessor import FaceCropAlign
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
-from bob.bio.video.utils import FrameSelector
+from bob.bio.video_legacy.utils import FrameSelector
 
 from ..preprocessor.FaceCropAlign import auto_norm_image as _norm_func
 
@@ -63,7 +63,7 @@ below ``MIN_FACE_SIZE`` threshold are discarded. The preprocessor is similar to 
 
 from ..extractor import LBPHistogram
 
-from bob.bio.video.extractor import Wrapper
+from bob.bio.video_legacy.extractor import Wrapper
 
 LBPTYPE = 'uniform'
 ELBPTYPE = 'regular'

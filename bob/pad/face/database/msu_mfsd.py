@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-from bob.bio.video import FrameSelector, FrameContainer
+from bob.bio.video_legacy import FrameSelector, FrameContainer
 from bob.pad.face.database import VideoPadFile  # Used in MsuMfsdPadFile class
 from bob.pad.base.database import PadDatabase
 from bob.extension import rc
@@ -68,7 +68,7 @@ class MsuMfsdPadFile(VideoPadFile):
         **Returns:**
 
         ``video_data`` : FrameContainer
-            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            Video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
         """
 
@@ -106,7 +106,7 @@ class MsuMfsdPadDatabase(PadDatabase):
             The file name extension of the original data.
 
         ``kwargs``
-            The arguments of the :py:class:`bob.bio.base.database.BioDatabase` base class constructor.
+            The arguments of the :py:class:`bob.bio.base_legacy.database.BioDatabase` base class constructor.
         """
 
         from bob.db.msu_mfsd_mod import Database as LowLevelDatabase

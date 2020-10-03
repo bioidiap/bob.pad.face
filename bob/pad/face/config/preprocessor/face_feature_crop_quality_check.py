@@ -9,9 +9,9 @@ Created on Tue Oct  9 13:53:58 2018
 # =============================================================================
 # Import here:
 
-from bob.bio.base.preprocessor import Preprocessor
+from bob.bio.base_legacy.preprocessor import Preprocessor
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
 import os
 
@@ -19,7 +19,7 @@ import importlib
 
 from bob.pad.face.utils.patch_utils import reshape_flat_patches
 
-from bob.bio.video.utils import FrameSelector
+from bob.bio.video_legacy.utils import FrameSelector
 
 from bob.pad.face.preprocessor import BlockPatch
 

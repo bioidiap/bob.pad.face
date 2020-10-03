@@ -7,9 +7,9 @@ from bob.pad.face.preprocessor import VideoFaceCropAlignBlockPatch
 
 from bob.pad.face.preprocessor import FaceCropAlign
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
-from bob.bio.video.utils import FrameSelector
+from bob.bio.video_legacy.utils import FrameSelector
 
 from bob.pad.face.preprocessor.FaceCropAlign import auto_norm_image as _norm_func
 

@@ -9,7 +9,7 @@ Created on Tue May 30 14:11:16 2017
 # ==============================================================================
 # Import what is needed here:
 
-from bob.bio.base.preprocessor import Preprocessor
+from bob.bio.base_legacy.preprocessor import Preprocessor
 
 import numpy as np
 
@@ -19,7 +19,7 @@ import bob.ip.base
 
 import importlib
 
-import bob.bio.face
+import bob.bio.face_legacy
 
 import logging 
 logger = logging.getLogger("bob.pad.face")
@@ -345,7 +345,7 @@ def normalize_image_size_in_grayscale(image, annotations,
 
             annotations['mouth_center']=mouth_center
 
-            light_cnn_face_cropper=bob.bio.face.preprocessor.FaceCrop(
+            light_cnn_face_cropper=bob.bio.face_legacy.preprocessor.FaceCrop(
                 cropped_image_size=(CROPPED_IMAGE_HEIGHT, CROPPED_IMAGE_WIDTH),
                 cropped_positions={'eye_center': EYE_CENTER_POS, 'mouth_center': MOUTH_CENTER_POS})
 

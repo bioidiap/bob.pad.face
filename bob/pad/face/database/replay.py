@@ -136,7 +136,7 @@ class ReplayPadDatabase(PadDatabase):
             The file name extension of the original data.
 
         kwargs
-            The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
+            The arguments of the :py:class:`bob.bio.base_legacy.database.BioDatabase`
             base class constructor.
         """
 
