@@ -20,7 +20,7 @@ class VideoPadFile(PadFile):
         extension=".avi",
         frame_selector=bob.bio.video_legacy.FrameSelector(selection_style="all"),
     ):
-        """Loads the video file and returns in a :any:`bob.bio.video_legacy.FrameContainer`.
+        """Loads the video file and returns in a `bob.bio.video_legacy.FrameContainer`.
 
         Parameters
         ----------
@@ -28,12 +28,12 @@ class VideoPadFile(PadFile):
             The directory to load the data from.
         extension : :obj:`str`, optional
             The extension of the file to load.
-        frame_selector : :any:`bob.bio.video_legacy.FrameSelector`, optional
+        frame_selector : `bob.bio.video_legacy.FrameSelector`, optional
             Which frames to select.
 
         Returns
         -------
-        :any:`bob.bio.video_legacy.FrameContainer`
+        `bob.bio.video_legacy.FrameContainer`
             The loaded frames inside a frame container.
         """
         return frame_selector(self.make_path(directory, extension))

@@ -64,12 +64,12 @@ class ReplayMobilePadFile(VideoPadFile):
         extension : str
             Extension of the video files in the Replay-Mobile database.
 
-        frame_selector : :any:`bob.bio.video_legacy.FrameSelector`
+        frame_selector : `bob.bio.video_legacy.FrameSelector`
             The frame selector to use.
 
         Returns
         -------
-        video_data : :any:`bob.bio.video_legacy.FrameContainer`
+        video_data : `bob.bio.video_legacy.FrameContainer`
             Video data stored in the FrameContainer, see
             ``bob.bio.video_legacy.utils.FrameContainer`` for further details.
         """
