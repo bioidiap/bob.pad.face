@@ -5,7 +5,7 @@
 
 #==============================================================================
 
-import bob.bio.video # Used in CELEBAPadFile class
+import bob.bio.video_legacy # Used in CELEBAPadFile class
 import bob.io.base
 import numpy as np
 
@@ -26,7 +26,7 @@ class CELEBAPadFile(PadFile):
 
     # ==========================================================================
     def load(self, directory=None, extension=None,
-             frame_selector=bob.bio.video.FrameSelector(selection_style='all')):
+             frame_selector=bob.bio.video_legacy.FrameSelector(selection_style='all')):
         """
         Overridden version of the load method defined in the ``PadFile``.
 
@@ -40,13 +40,13 @@ class CELEBAPadFile(PadFile):
             Extension of the video files in the CELEBA database.
             Default: None
 
-        ``frame_selector`` : :any:`bob.bio.video.FrameSelector`, optional
+        ``frame_selector`` : :any:`bob.bio.video_legacy.FrameSelector`, optional
             Specifying the frames to be selected.
 
         **Returns:**
 
         ``video_data`` : FrameContainer
-            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            Video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
         """
 

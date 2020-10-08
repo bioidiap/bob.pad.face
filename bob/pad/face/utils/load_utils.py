@@ -1,5 +1,5 @@
-from bob.bio.face.annotator import min_face_size_validator
-from bob.bio.video.annotator import normalize_annotations
+from bob.bio.face_legacy.annotator import min_face_size_validator
+from bob.bio.video_legacy.annotator import normalize_annotations
 from bob.io.video import reader
 from bob.ip.base import scale, block, block_output_shape, block_generator
 from bob.ip.color import rgb_to_yuv, rgb_to_hsv

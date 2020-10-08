@@ -3,9 +3,9 @@
 
 from bob.pad.face.preprocessor import FaceCropAlign
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
-from bob.bio.video.utils import FrameSelector
+from bob.bio.video_legacy.utils import FrameSelector
 
 # =======================================================================================
 # Define instances here:

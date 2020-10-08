@@ -1,5 +1,5 @@
-from bob.bio.base import vstack_features
-from bob.bio.video import FrameContainer
+from bob.bio.base_legacy import vstack_features
+from bob.bio.video_legacy import FrameContainer
 from bob.io.base import HDF5File
 from bob.ip.optflow.liu.cg import flow
 from collections import Iterator

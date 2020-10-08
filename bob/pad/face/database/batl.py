@@ -4,7 +4,7 @@
 # =============================================================================
 # Used in BATLMobilePadFile class
 from bob.pad.base.database import PadDatabase, PadFile
-from bob.bio.video import FrameSelector
+from bob.bio.video_legacy import FrameSelector
 from bob.extension import rc
 
 from bob.pad.face.preprocessor.FaceCropAlign import detect_face_landmarks_in_image
@@ -128,14 +128,14 @@ class BatlPadFile(PadFile):
             Extension of the BATL database.
             Default: ".h5".
 
-        ``frame_selector`` : :any:`bob.bio.video.FrameSelector`, optional
+        ``frame_selector`` : :any:`bob.bio.video_legacy.FrameSelector`, optional
             Specifying the frames to be selected.
 
         **Returns:**
 
         ``data`` : FrameContainer or :py:class:`dict`
             Video data stored in the FrameContainer,
-            see ``bob.bio.video.utils.FrameContainer``
+            see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
 
             OR Video data for multiple streams stored in the dictionary. The
@@ -370,7 +370,7 @@ class BatlPadDatabase(PadDatabase):
             Default: False.
 
         ``kwargs`` : dict
-            The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
+            The arguments of the :py:class:`bob.bio.base_legacy.database.BioDatabase`
             base class constructor.
         """
 

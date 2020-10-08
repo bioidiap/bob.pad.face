@@ -4,13 +4,13 @@
 
 from nose.plugins.skip import SkipTest
 
-import bob.bio.base
-from bob.bio.base.test.utils import db_available
+import bob.bio.base_legacy
+from bob.bio.base_legacy.test.utils import db_available
 
 
 @db_available('replay')  # the name of the package
 def test_replay():
-    replay_database_instance = bob.bio.base.load_resource(
+    replay_database_instance = bob.bio.base_legacy.load_resource(
         'replay-attack',
         'database',
         preferred_package='bob.pad.face',
@@ -46,7 +46,7 @@ def test_replay():
 
 @db_available('replaymobile')
 def test_replaymobile():
-    replaymobile = bob.bio.base.load_resource(
+    replaymobile = bob.bio.base_legacy.load_resource(
         'replay-mobile',
         'database',
         preferred_package='bob.pad.face',
@@ -79,7 +79,7 @@ def test_replaymobile():
 
 @db_available('msu_mfsd_mod')
 def test_msu_mfsd():
-    msu_mfsd = bob.bio.base.load_resource(
+    msu_mfsd = bob.bio.base_legacy.load_resource(
         'msu-mfsd',
         'database',
         preferred_package='bob.pad.face',
@@ -112,7 +112,7 @@ def test_msu_mfsd():
 # Test the maskattack database
 @db_available('maskattack')
 def test_maskattack():
-    maskattack = bob.bio.base.load_resource(
+    maskattack = bob.bio.base_legacy.load_resource(
         'maskattack',
         'database',
         preferred_package='bob.pad.face',
@@ -152,7 +152,7 @@ def test_maskattack():
 @db_available('msu_mfsd_mod')
 @db_available('mobio')
 def test_aggregated_db():
-    aggregated_db = bob.bio.base.load_resource(
+    aggregated_db = bob.bio.base_legacy.load_resource(
         'aggregated-db',
         'database',
         preferred_package='bob.pad.face',
@@ -213,7 +213,7 @@ def test_aggregated_db():
 # Test the casiasurf database
 @db_available('casiasurf')
 def test_casiasurf():
-    casiasurf = bob.bio.base.load_resource(
+    casiasurf = bob.bio.base_legacy.load_resource(
         'casiasurf',
         'database',
         preferred_package='bob.pad.face',
@@ -236,7 +236,7 @@ def test_casiasurf():
 
 @db_available('brsu')
 def test_brsu():
-    brsu = bob.bio.base.load_resource(
+    brsu = bob.bio.base_legacy.load_resource(
         'brsu',
         'database',
         preferred_package='bob.pad.face',
@@ -253,7 +253,7 @@ def test_brsu():
 
 @db_available('casia_fasd')
 def test_casia_fasd():
-    casia_fasd = bob.bio.base.load_resource(
+    casia_fasd = bob.bio.base_legacy.load_resource(
         'casiafasd',
         'database',
         preferred_package='bob.pad.face',
@@ -278,7 +278,7 @@ def test_casia_fasd():
 
 @db_available('casia_fasd')
 def test_casia_fasd_frames():
-    casia_fasd = bob.bio.base.load_resource(
+    casia_fasd = bob.bio.base_legacy.load_resource(
         'casiafasd',
         'database',
         preferred_package='bob.pad.face',

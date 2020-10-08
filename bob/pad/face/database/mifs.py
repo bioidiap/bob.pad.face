@@ -6,7 +6,7 @@
 #==============================================================================
 
 # Used in ReplayMobilePadFile class
-from bob.bio.video import FrameSelector, FrameContainer
+from bob.bio.video_legacy import FrameSelector, FrameContainer
 import bob.io.base
 import numpy as np
 
@@ -47,7 +47,7 @@ class MIFSPadFile(VideoPadFile):
         **Returns:**
 
         ``video_data`` : FrameContainer
-            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            Video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
         """
 

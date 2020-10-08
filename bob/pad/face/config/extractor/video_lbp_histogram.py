@@ -2,7 +2,7 @@
 
 from bob.pad.face.extractor import LBPHistogram
 
-from bob.bio.video.extractor import Wrapper
+from bob.bio.video_legacy.extractor import Wrapper
 
 #=======================================================================================
 # Define instances here:

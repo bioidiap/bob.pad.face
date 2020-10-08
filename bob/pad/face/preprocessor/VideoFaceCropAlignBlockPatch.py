@@ -9,15 +9,15 @@ Created on Wed Aug 22 15:38:28 2018
 # =============================================================================
 # Import what is needed here:
 
-from bob.bio.base.preprocessor import Preprocessor
+from bob.bio.base_legacy.preprocessor import Preprocessor
 
-import bob.bio.video
+import bob.bio.video_legacy
 
 import numpy as np
 
-from bob.bio.video.utils import FrameSelector
+from bob.bio.video_legacy.utils import FrameSelector
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
 import bob.ip.dlib
 
@@ -25,7 +25,7 @@ import cv2
 
 from skimage import morphology
 
-from bob.bio.video.utils.FrameContainer import FrameContainer
+from bob.bio.video_legacy.utils.FrameContainer import FrameContainer
 
 
 # =============================================================================
@@ -132,8 +132,8 @@ class VideoFaceCropAlignBlockPatch(Preprocessor, object):
     ``preprocessors`` : :py:class:`dict`
         A dictionary containing preprocessors for all channels. Dictionary
         structure is the following:
-        ``{channel_name_1: bob.bio.video.preprocessor.Wrapper, ``
-        ``channel_name_2: bob.bio.video.preprocessor.Wrapper, ...}``
+        ``{channel_name_1: bob.bio.video_legacy.preprocessor.Wrapper, ``
+        ``channel_name_2: bob.bio.video_legacy.preprocessor.Wrapper, ...}``
         Note: video, not image, preprocessors are expected.
 
     ``channel_names`` : [str]
@@ -272,7 +272,7 @@ class VideoFaceCropAlignBlockPatch(Preprocessor, object):
         preprocessed_arrays = np.concatenate(preprocessed_arrays, axis=1)
 
         # Convert to frame container:
-        preprocessed_fc = bob.bio.video.FrameContainer()  # initialize the FrameContainer
+        preprocessed_fc = bob.bio.video_legacy.FrameContainer()  # initialize the FrameContainer
         [preprocessed_fc.add(idx, item) for idx, item in enumerate(preprocessed_arrays)]
 
         if self.return_multi_channel_flag:
@@ -303,7 +303,7 @@ class VideoFaceCropAlignBlockPatch(Preprocessor, object):
         # compute face masks if needed:
         if self.get_face_contour_mask_dict is not None:
 
-            patches_masked = bob.bio.video.FrameContainer()  # initialize the FrameContainer
+            patches_masked = bob.bio.video_legacy.FrameContainer()  # initialize the FrameContainer
 
             for idx, (frame, frame_patches) in enumerate(zip(preprocessed_arrays, patches)):
 
@@ -367,7 +367,7 @@ class VideoFaceCropAlignBlockPatch(Preprocessor, object):
 
         **Returns:**
 
-        ``frames`` : :py:class:`bob.bio.video.FrameContainer`
+        ``frames`` : :py:class:`bob.bio.video_legacy.FrameContainer`
             Frames stored in the frame container.
         """
 

@@ -9,11 +9,11 @@ Created on Fri May 12 14:14:23 2017
 #==============================================================================
 # Import what is needed here:
 
-from bob.bio.base.preprocessor import Preprocessor
+from bob.bio.base_legacy.preprocessor import Preprocessor
 
 import numpy as np
 
-import bob.bio.video
+import bob.bio.video_legacy
 
 import bob.ip.base
 
@@ -189,7 +189,7 @@ class FrameDifference(Preprocessor):
         **Parameters:**
 
         ``frame_container`` : FrameContainer
-            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            Video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
 
         ``annotations`` : :py:class:`dict`
@@ -213,7 +213,7 @@ class FrameDifference(Preprocessor):
             is the dictionary defining the coordinates of the face bounding box in frame N.
         """
 
-        selected_frames = bob.bio.video.FrameContainer(
+        selected_frames = bob.bio.video_legacy.FrameContainer(
         )  # initialize the FrameContainer
 
         selected_annotations = {}
@@ -265,7 +265,7 @@ class FrameDifference(Preprocessor):
         **Parameters:**
 
         ``frames`` : FrameContainer
-            RGB video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            RGB video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
 
         ``annotations`` : :py:class:`dict`
@@ -334,7 +334,7 @@ class FrameDifference(Preprocessor):
         **Parameters:**
 
         ``frames`` : FrameContainer
-            Video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            Video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
 
         ``annotations`` : :py:class:`dict`
@@ -366,7 +366,7 @@ class FrameDifference(Preprocessor):
             set(annotated_frames).intersection(
                 available_frames))  # valid and annotated frames
 
-        cleaned_frame_container = bob.bio.video.FrameContainer(
+        cleaned_frame_container = bob.bio.video_legacy.FrameContainer(
         )  # initialize the FrameContainer
 
         cleaned_annotations = {}
@@ -395,7 +395,7 @@ class FrameDifference(Preprocessor):
         **Parameters:**
 
         ``frames`` : FrameContainer
-            RGB video data stored in the FrameContainer, see ``bob.bio.video.utils.FrameContainer``
+            RGB video data stored in the FrameContainer, see ``bob.bio.video_legacy.utils.FrameContainer``
             for further details.
 
         ``annotations`` : :py:class:`dict`

@@ -6,7 +6,7 @@ import numpy
 from bob.core.log import setup
 logger = setup("bob.pad.face")
 
-from bob.bio.base.preprocessor import Preprocessor
+from bob.bio.base_legacy.preprocessor import Preprocessor
 
 from bob.rppg.base.utils import build_bandpass_filter 
 import bob.ip.dlib
@@ -83,7 +83,7 @@ class LiPulseExtraction(Preprocessor):
 
     Parameters
     ----------
-    frames: :py:class:`bob.bio.video.utils.FrameContainer`
+    frames: :py:class:`bob.bio.video_legacy.utils.FrameContainer`
       video data 
     annotations: :py:class:`dict`
       the face bounding box, as follows: ``{'topleft': (row, col), 'bottomright': (row, col)}``

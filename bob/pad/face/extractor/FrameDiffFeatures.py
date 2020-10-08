@@ -9,13 +9,13 @@ Created on Wed Jun 14 10:13:21 2017
 #==============================================================================
 # Import what is needed here:
 
-from bob.bio.base.extractor import Extractor
+from bob.bio.base_legacy.extractor import Extractor
 
 import numpy as np
 
 import sys
 
-import bob.bio.video
+import bob.bio.video_legacy
 
 #==============================================================================
 # Main body:
@@ -207,7 +207,7 @@ class FrameDiffFeatures(Extractor):
             a particular sample.
         """
 
-        frames = bob.bio.video.FrameContainer(
+        frames = bob.bio.video_legacy.FrameContainer(
         )  # initialize the FrameContainer
 
         for idx, sample in enumerate(data):
@@ -292,7 +292,7 @@ class FrameDiffFeatures(Extractor):
             Name of the file.
         """
 
-        bob.bio.video.extractor.Wrapper(Extractor()).write_feature(
+        bob.bio.video_legacy.extractor.Wrapper(Extractor()).write_feature(
             frames, file_name)
 
     #==========================================================================
@@ -308,11 +308,11 @@ class FrameDiffFeatures(Extractor):
 
         **Returns:**
 
-        ``frames`` : :py:class:`bob.bio.video.FrameContainer`
+        ``frames`` : :py:class:`bob.bio.video_legacy.FrameContainer`
             Frames stored in the frame container.
         """
 
-        frames = bob.bio.video.extractor.Wrapper(
+        frames = bob.bio.video_legacy.extractor.Wrapper(
             Extractor()).read_feature(file_name)
 
         return frames

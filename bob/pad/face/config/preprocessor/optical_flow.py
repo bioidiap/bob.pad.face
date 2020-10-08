@@ -1,4 +1,4 @@
-from bob.bio.base.preprocessor import CallablePreprocessor
+from bob.bio.base_legacy.preprocessor import CallablePreprocessor
 from bob.pad.face.extractor import OpticalFlow
 
 

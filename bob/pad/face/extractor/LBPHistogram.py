@@ -1,6 +1,6 @@
 from __future__ import division
-from bob.bio.base.extractor import Extractor
-import bob.bio.video
+from bob.bio.base_legacy.extractor import Extractor
+import bob.bio.video_legacy
 import bob.ip.base
 import numpy as np
 

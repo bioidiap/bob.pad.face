@@ -1,14 +1,14 @@
 from ..utils import extract_patches
-from bob.bio.base.preprocessor import Preprocessor
-from bob.bio.video import FrameContainer
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.base_legacy.preprocessor import Preprocessor
+from bob.bio.video_legacy import FrameContainer
+from bob.bio.video_legacy.preprocessor import Wrapper
 from collections import OrderedDict
 
 
 class ImagePatches(Preprocessor):
     """Extracts patches of images and returns it in a FrameContainer. You need
     to wrap the further blocks (extractor and algorithm) that come after this
-    in bob.bio.video wrappers.
+    in bob.bio.video_legacy wrappers.
     """
 
     def __init__(self, block_size, block_overlap=(0, 0), n_random_patches=None,

@@ -23,9 +23,9 @@ this resource.
 
 from ..preprocessor import FaceCropAlign
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
-from bob.bio.video.utils import FrameSelector
+from bob.bio.video_legacy.utils import FrameSelector
 
 FACE_SIZE = 64 # The size of the resulting face
 RGB_OUTPUT_FLAG = True # RGB output
@@ -58,7 +58,7 @@ facial image, which is defined by ``RGB_OUTPUT_FLAG = True``.
 
 from ..extractor import ImageQualityMeasure
 
-from bob.bio.video.extractor import Wrapper
+from bob.bio.video_legacy.extractor import Wrapper
 
 GALBALLY = True
 MSU = True

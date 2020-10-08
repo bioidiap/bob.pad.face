@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Used in ReplayMobilePadFile class
-from bob.bio.video import FrameSelector
+from bob.bio.video_legacy import FrameSelector
 from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
 from bob.pad.face.utils import number_of_frames
@@ -64,14 +64,14 @@ class ReplayMobilePadFile(VideoPadFile):
         extension : str
             Extension of the video files in the Replay-Mobile database.
 
-        frame_selector : :any:`bob.bio.video.FrameSelector`
+        frame_selector : `bob.bio.video_legacy.FrameSelector`
             The frame selector to use.
 
         Returns
         -------
-        video_data : :any:`bob.bio.video.FrameContainer`
+        video_data : `bob.bio.video_legacy.FrameContainer`
             Video data stored in the FrameContainer, see
-            ``bob.bio.video.utils.FrameContainer`` for further details.
+            ``bob.bio.video_legacy.utils.FrameContainer`` for further details.
         """
         directory = directory or self.original_directory
         video_data_array = self.f.load(
@@ -147,7 +147,7 @@ class ReplayMobilePadDatabase(PadDatabase):
             The extension of annotations when annotation_extension is provided.
 
         **kwargs
-            The arguments of the :py:class:`bob.bio.base.database.BioDatabase`
+            The arguments of the :py:class:`bob.bio.base_legacy.database.BioDatabase`
             base class constructor.
         """
 

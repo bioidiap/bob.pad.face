@@ -3,7 +3,7 @@
 
 import numpy
 
-from bob.bio.base.extractor import Extractor
+from bob.bio.base_legacy.extractor import Extractor
 
 import logging
 logger = logging.getLogger("bob.pad.face")

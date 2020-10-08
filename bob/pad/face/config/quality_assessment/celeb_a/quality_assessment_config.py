@@ -29,7 +29,7 @@ import pkg_resources
 
 import cv2
 
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video_legacy.preprocessor import Wrapper
 
 import numpy as np
 
