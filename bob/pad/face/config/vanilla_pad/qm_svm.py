@@ -1,7 +1,6 @@
 # Legacy imports
 from bob.bio.face.helpers import face_crop_solver
-from bob.bio.video import FrameSelector
-from bob.bio.video.extractor import Wrapper as ExtractorWrapper
+from bob.bio.video import VideoLikeContainer
 from bob.bio.video.transformer import Wrapper as TransformerWrapper
 from bob.pad.face.extractor import ImageQualityMeasure
 
@@ -10,7 +9,6 @@ from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 from bob.pad.base.pipelines.vanilla_pad import FrameContainersToFrames
-from bob.bio.base.wrappers import wrap_sample_extractor
 import bob.pipelines as mario
 
 database = globals().get("database")
@@ -29,6 +27,8 @@ preprocessor = mario.wrap(
     preprocessor,
     transform_extra_arguments=(("annotations", "annotations"),),
     features_dir="temp/faces-64",
+    save_func=VideoLikeContainer.save,
+    load_func=VideoLikeContainer.load,
 )
 
 # Legacy extractor #
@@ -37,6 +37,8 @@ extractor = mario.wrap(
     ["sample", "checkpoint"],
     extractor,
     features_dir="temp/iqm-features",
+    save_func=VideoLikeContainer.save,
+    load_func=VideoLikeContainer.load,
 )
 
 # new stuff #
@@ -63,4 +65,5 @@ classifier = mario.wrap(
 #         ("frame_cont_to_array", frame_cont_to_array),
 #     ]
 # )
-pipeline = make_pipeline(preprocessor, extractor, frame_cont_to_array, classifier)
+frames_classifier = make_pipeline(frame_cont_to_array, classifier)
+pipeline = make_pipeline(preprocessor, extractor, frames_classifier)
