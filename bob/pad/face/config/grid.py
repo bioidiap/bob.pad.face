@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 
-from bob.bio.base.grid import Grid
+from bob.bio.base_legacy.grid import Grid
 
 # Configuration to run on computation cluster:
 idiap = Grid(

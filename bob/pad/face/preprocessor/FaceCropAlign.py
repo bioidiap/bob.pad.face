@@ -28,6 +28,67 @@ logger = logging.getLogger("bob.pad.face")
 
 
 # ==============================================================================
+
+
+def depth_auto_norm_image(data, annotations, n_sigma=3.0, norm_method='MAD', FD=500):
+    """
+    Normalizes a single channel image to range 0-255, using the data distribution
+    Expects single channel images
+
+    **method: Gaussian , MAD, MINMAX
+    **n_sigma: The range which is normalized
+
+    """
+
+    # print('annotation',annotations)
+
+    face = data[annotations['topleft'][0]:annotations['bottomright'][0],
+                 annotations['topleft'][1]:annotations['bottomright'][1]]
+
+    face = face.astype('float')
+    data = data.astype('float')
+
+    assert(len(data.shape)==2)
+
+    face_c = np.ma.array(face).compressed()
+    # Avoiding zeros from flat field in thermal and holes in depth
+
+    face_c=face_c[face_c>1.0]
+
+    if norm_method=='STD':
+
+        mu = np.mean(face_c)
+        std = np.std(face_c)
+
+        data_n=((data-mu+n_sigma*std)/(2.0*n_sigma*std))*255.0
+
+
+    if norm_method=='MAD':
+
+        med = np.median(face_c)
+        mad = np.median(np.abs(face_c - med))
+
+        data_n = ((data-med+n_sigma*mad)/(2.0*n_sigma*mad))*255.0
+
+
+    if norm_method=='MINMAX':
+
+        t_min = np.min(face_c)
+        t_max = np.max(face_c)
+
+        data_n = ((data-t_min)/(t_max-t_min))*255.0
+
+
+    # Clamping to 0-255
+    data_n=np.maximum(data_n,0)
+    data_n=np.minimum(data_n,255)
+
+    data_n = data_n.astype('uint8')
+
+    return data_n
+
+
+
 def auto_norm_image(data, annotations, n_sigma=3.0, norm_method='MAD'):
     """
     Normalizes a single channel image to range 0-255, using the data distribution
@@ -581,7 +642,7 @@ class FaceCropAlign(Preprocessor):
 
 
 
-        print('INSIDE FACECROP ALIGN',annotations.keys(), annotations)
+        #print('INSIDE FACECROP ALIGN',annotations.keys(), annotations)
         if self.normalization_function is not None:
             image = self.normalization_function(image, annotations, **self.normalization_function_kwargs)
 

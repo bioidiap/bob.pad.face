@@ -239,6 +239,8 @@ class HQWMCAPadDatabase_warp(PadDatabase):
 
         file_path = os.path.join(self.annotations_dir, ff.path + ".json")
 
+        print('Annotation path',file_path)
+
         if not os.path.isfile(file_path):  # no file with annotations
 
             # original values of the arguments of f:
