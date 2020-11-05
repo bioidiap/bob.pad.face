@@ -1,13 +1,13 @@
 from .FaceCropAlign import FaceCropAlign
 from .FrameDifference import FrameDifference
 from .VideoSparseCoding import VideoSparseCoding
-from .VideoFaceCropAlignBlockPatch import VideoFaceCropAlignBlockPatch
+# from .VideoFaceCropAlignBlockPatch import VideoFaceCropAlignBlockPatch
 from .BlockPatch import BlockPatch
 
-from .LiPulseExtraction import LiPulseExtraction
-from .Chrom import Chrom
-from .SSR import SSR
-from .PPGSecure import PPGSecure
+# from .LiPulseExtraction import LiPulseExtraction
+# from .Chrom import Chrom
+# from .SSR import SSR
+# from .PPGSecure import PPGSecure
 from .Patch import ImagePatches, VideoPatches
 
 
@@ -33,11 +33,11 @@ __appropriate__(
     FaceCropAlign,
     FrameDifference,
     VideoSparseCoding,
-    LiPulseExtraction,
-    Chrom,
-    SSR,
-    PPGSecure,
-    VideoFaceCropAlignBlockPatch,
+    # LiPulseExtraction,
+    # Chrom,
+    # SSR,
+    # PPGSecure,
+    # VideoFaceCropAlignBlockPatch,
     BlockPatch,
     ImagePatches,
     VideoPatches,

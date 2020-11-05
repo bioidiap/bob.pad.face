@@ -9,25 +9,38 @@ class VideoPadFile(PadFile):
     use in face PAD experiments.
     """
 
-    def __init__(self, attack_type, client_id, path, file_id=None):
-        super(VideoPadFile, self).__init__(
-            attack_type=attack_type, client_id=client_id, path=path, file_id=file_id
+    def __init__(
+        self,
+        attack_type,
+        client_id,
+        path,
+        file_id=None,
+        original_directory=None,
+        original_extension=".avi",
+        annotation_directory=None,
+        annotation_extension=None,
+        annotation_type=None,
+    ):
+        super().__init__(
+            attack_type=attack_type,
+            client_id=client_id,
+            path=path,
+            file_id=file_id,
+            original_directory=original_directory,
+            original_extension=original_extension,
+            annotation_directory=annotation_directory,
+            annotation_extension=annotation_extension,
+            annotation_type=annotation_type,
         )
 
     def load(
         self,
-        directory=None,
-        extension=".avi",
         frame_selector=bob.bio.video.FrameSelector(selection_style="all"),
     ):
-        """Loads the video file and returns in a :any:`bob.bio.video.FrameContainer`.
+        """Loads the video file and returns in a `bob.bio.video.FrameContainer`.
 
         Parameters
         ----------
-        directory : :obj:`str`, optional
-            The directory to load the data from.
-        extension : :obj:`str`, optional
-            The extension of the file to load.
         frame_selector : :any:`bob.bio.video.FrameSelector`, optional
             Which frames to select.
 
@@ -36,19 +49,16 @@ class VideoPadFile(PadFile):
         :any:`bob.bio.video.FrameContainer`
             The loaded frames inside a frame container.
         """
-        return frame_selector(self.make_path(directory, extension))
-
-    def check_original_directory_and_extension(self):
-        if not hasattr(self, "original_directory"):
-            raise RuntimeError(
-                "Please set the original_directory attribute of files in your "
-                "database's object method."
-            )
-        if not hasattr(self, "original_extension"):
-            raise RuntimeError(
-                "Please set the original_extension attribute of files in your "
-                "database's object method."
-            )
+        path = self.make_path(
+            self.original_directory, self.original_extension
+        )
+        video = bob.bio.video.VideoAsArray(
+            path,
+            selection_style=frame_selector.selection_style,
+            max_number_of_frames=frame_selector.max_number_of_frames,
+            step_size=frame_selector.step_size,
+        )
+        return video
 
     @property
     def frames(self):
@@ -60,15 +70,7 @@ class VideoPadFile(PadFile):
         -------
         collection.Iterator
             An iterator returning frames of the video.
-
-        Raises
-        ------
-        RuntimeError
-            In your database implementation, the original_directory and
-            original_extension attributes of the files need to be set when database's
-            object method is called.
         """
-        self.check_original_directory_and_extension()
         path = self.make_path(
             directory=self.original_directory, extension=self.original_extension
         )
@@ -76,7 +78,6 @@ class VideoPadFile(PadFile):
 
     @property
     def number_of_frames(self):
-        self.check_original_directory_and_extension()
         path = self.make_path(
             directory=self.original_directory, extension=self.original_extension
         )
@@ -85,7 +86,7 @@ class VideoPadFile(PadFile):
     @property
     def frame_shape(self):
         """Returns the size of each frame in this database.
-        This implementation assumes all videos and frames have the same shape.
+        This implementation assumes all frames have the same shape.
         It's best to override this method in your database implementation and return
         a constant.
 
@@ -94,7 +95,6 @@ class VideoPadFile(PadFile):
         (int, int, int)
             The (Channels, Height, Width) sizes.
         """
-        self.check_original_directory_and_extension()
         path = self.make_path(
             directory=self.original_directory, extension=self.original_extension
         )
@@ -113,17 +113,6 @@ class VideoPadFile(PadFile):
         dict
             The annotations as a dictionary.
         """
-        if not (
-            hasattr(self, "annotation_directory")
-            and hasattr(self, "annotation_extension")
-            and hasattr(self, "annotation_type")
-        ):
-            raise RuntimeError(
-                "For this property to work, you need to set ``annotation_directory``, "
-                "``annotation_extension``, and ``annotation_type`` attributes of the "
-                "files when database's object method is called."
-            )
-
         if self.annotation_directory is None:
             return None
 

@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from bob.pad.base.database import PadDatabase  # Used in ReplayMobilePadFile class
-from bob.pad.face.database import VideoPadFile  # Used in ReplayPadFile class
+from bob.pad.base.database import PadDatabase
+from bob.pad.face.database import VideoPadFile
 from bob.extension import rc
 from bob.ip.facedetect import expected_eye_positions, BoundingBox
 from bob.db.base.annotations import read_annotation_file
+from bob.db.base.utils import convert_names_to_lowlevel
 
 REPLAY_ATTACK_FRAME_SHAPE = (3, 240, 320)
 
@@ -16,7 +14,11 @@ class ReplayPadFile(VideoPadFile):
     database.
     """
 
-    def __init__(self, f):
+    def __init__(
+        self,
+        f,
+        **kwargs,
+    ):
         """
         Parameters
         ----------
@@ -43,7 +45,11 @@ class ReplayPadFile(VideoPadFile):
         # database.
 
         super(ReplayPadFile, self).__init__(
-            client_id=f.client_id, path=f.path, attack_type=attack_type, file_id=f.id
+            client_id=f.client_id,
+            path=f.path,
+            attack_type=attack_type,
+            file_id=f.id,
+            **kwargs,
         )
 
     @property
@@ -76,12 +82,8 @@ class ReplayPadFile(VideoPadFile):
             is the dictionary defining the coordinates of the face bounding box
             in frame N.
         """
-        if (
-            hasattr(self, "annotation_directory")
-            and self.annotation_directory is not None
-        ):
-            path = self.make_path(self.annotation_directory, extension=".json")
-            return read_annotation_file(path, annotation_type="json")
+        if self.annotation_directory is not None:
+            return super().annotations
 
         # numpy array containing the face bounding box data for each video
         # frame, returned data format described in the f.bbx() method of the
@@ -116,10 +118,10 @@ class ReplayPadDatabase(PadDatabase):
         self,
         # grandtest is the default protocol for this database
         protocol="grandtest",
-        original_directory=rc["bob.db.replay.directory"],
+        original_directory=rc.get("bob.db.replay.directory"),
         original_extension=".mov",
-        annotation_directory=None,
-        **kwargs
+        annotation_directory=rc.get("bob.db.replay.annotation_dir"),
+        **kwargs,
     ):
         """
         Parameters
@@ -164,7 +166,7 @@ class ReplayPadDatabase(PadDatabase):
             original_directory=original_directory,
             original_extension=original_extension,
             annotation_directory=annotation_directory,
-            **kwargs
+            **kwargs,
         )
 
     @property
@@ -209,7 +211,7 @@ class ReplayPadDatabase(PadDatabase):
         """
 
         # Convert group names to low-level group names here.
-        groups = self.convert_names_to_lowlevel(
+        groups = convert_names_to_lowlevel(
             groups, self.low_level_group_names, self.high_level_group_names
         )
         # Since this database was designed for PAD experiments, nothing special
@@ -217,77 +219,15 @@ class ReplayPadDatabase(PadDatabase):
         files = self.db.objects(
             protocol=protocol, groups=groups, cls=purposes, **kwargs
         )
-        files = [ReplayPadFile(f) for f in files]
-        # set the attributes
-        for f in files:
-            f.original_directory = self.original_directory
-            f.original_extension = self.original_extension
-            f.annotation_directory = self.annotation_directory
+        files = [
+            ReplayPadFile(
+                f,
+                original_directory=self.original_directory,
+                original_extension=self.original_extension,
+                annotation_directory=self.annotation_directory,
+                annotation_extension=self.annotation_extension,
+                annotation_type=self.annotation_type,
+            )
+            for f in files
+        ]
         return files
-
-    def annotations(self, f):
-        """
-        Return annotations for a given file object ``f``, which is an instance
-        of ``ReplayPadFile`` defined in the HLDI of the Replay-Attack DB. The
-        ``load()`` method of ``ReplayPadFile`` class (see above) returns a
-        video, therefore this method returns bounding-box annotations for each
-        video frame. The annotations are returned as a dictionary of
-        dictionaries.
-
-        Parameters
-        ----------
-        f : :any:`ReplayPadFile`
-            An instance of :any:`ReplayPadFile`.
-
-        Returns
-        -------
-        annotations : :py:class:`dict`
-            A dictionary containing the annotations for each frame in the
-            video. Dictionary structure:
-            ``annotations = {'1': frame1_dict, '2': frame1_dict, ...}``.Where
-            ``frameN_dict = {'topleft': (row, col), 'bottomright': (row, col)}``
-            is the dictionary defining the coordinates of the face bounding box
-            in frame N.
-        """
-        return f.annotations
-
-    def frames(self, padfile):
-        """Yields the frames of the padfile one by one.
-
-        Parameters
-        ----------
-        padfile : :any:`ReplayPadFile`
-            The high-level replay pad file
-
-        Yields
-        ------
-        :any:`numpy.array`
-            A frame of the video. The size is (3, 240, 320).
-        """
-        return padfile.frames
-
-    def number_of_frames(self, padfile):
-        """Returns the number of frames in a video file.
-
-        Parameters
-        ----------
-        padfile : :any:`ReplayPadFile`
-            The high-level pad file
-
-        Returns
-        -------
-        int
-            The number of frames.
-        """
-        return padfile.number_of_frames
-
-    @property
-    def frame_shape(self):
-        """Returns the size of each frame in this database.
-
-        Returns
-        -------
-        (int, int, int)
-            The (#Channels, Height, Width) which is (3, 240, 320).
-        """
-        return REPLAY_ATTACK_FRAME_SHAPE

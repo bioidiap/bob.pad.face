@@ -1,9 +1,9 @@
-from bob.bio.base import vstack_features
 from bob.bio.video import FrameContainer
 from bob.io.base import HDF5File
 from bob.ip.optflow.liu.cg import flow
 from collections import Iterator
 from functools import partial
+import bob.pipelines as mario
 import logging
 
 logger = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ class OpticalFlow(object):
                 n_cg_iterations=self.iterations,
             ),
         )
-        flows = vstack_features(reader, video)
+        flows = mario.utils.vstack_features(reader, video)
         shape = list(flows.shape)
         shape[0] = 2
         shape.insert(0, -1)
