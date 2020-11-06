@@ -20,33 +20,25 @@ requirements:
   host:
     - python {{ python }}
     - setuptools {{ setuptools }}
-    - six {{ six }}
-    - numpy
     - bob.extension
-    - bob.bio.base
     - bob.io.base
-    - bob.ip.base
-    - bob.pad.base
-    - bob.bio.face
-    - bob.bio.video
     - bob.io.image
+    - bob.ip.base
     - bob.ip.color
     - bob.ip.qualitymeasure
-    - bob.learn.libsvm
-    - bob.rppg.base >=2.0.0
-    - bob.ip.dlib
-    - bob.ip.facelandmarks
-    - opencv
+    - bob.bio.base
+    - bob.bio.face
+    - bob.bio.video
+    - bob.pad.base
+    - numpy
     - scikit-learn
     - scikit-image
   run:
     - python
     - setuptools
-    - six
     - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('scikit-learn') }}
+    - {{ pin_compatible('scikit-learn', min_pin='x.x') }}
     - {{ pin_compatible('scikit-image') }}
-    - {{ pin_compatible('opencv') }}
 
 test:
   imports:
@@ -63,12 +55,9 @@ test:
     - coverage
     - sphinx
     - sphinx_rtd_theme
-    - gridtk
     - bob.db.replay
     - bob.db.replaymobile
-    - bob.db.msu_mfsd_mod
     - bob.db.casia_fasd
-    - bob.db.mobio
     - bob.db.maskattack
     - bob.db.casiasurf
 

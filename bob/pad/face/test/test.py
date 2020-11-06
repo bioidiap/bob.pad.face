@@ -38,7 +38,6 @@ from ..extractor import LiSpectralFeatures
 from ..extractor import PPGSecure as PPGExtractor
 
 
-from ..preprocessor.FaceCropAlign import detect_face_landmarks_in_image
 
 from bob.bio.video.preprocessor import Wrapper
 

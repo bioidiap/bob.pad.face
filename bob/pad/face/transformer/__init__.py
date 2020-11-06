@@ -1,5 +1,4 @@
-from .FrameDifference import FrameDifference
-from .Patch import ImagePatches, VideoPatches
+from .VideoToFrames import VideoToFrames
 
 
 def __appropriate__(*args):
@@ -21,8 +20,6 @@ def __appropriate__(*args):
 
 
 __appropriate__(
-    FrameDifference,
-    ImagePatches,
-    VideoPatches,
+    VideoToFrames,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

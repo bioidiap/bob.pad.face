@@ -1,8 +1,6 @@
 from .database import VideoPadFile
 from .replay import ReplayPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
-from .msu_mfsd import MsuMfsdPadDatabase
-from .aggregated_db import AggregatedDbPadDatabase
 from .mifs import MIFSPadDatabase
 from .batl import BatlPadDatabase
 from .celeb_a import CELEBAPadDatabase
@@ -32,8 +30,6 @@ __appropriate__(
     VideoPadFile,
     ReplayPadDatabase,
     ReplayMobilePadDatabase,
-    MsuMfsdPadDatabase,
-    AggregatedDbPadDatabase,
     MIFSPadDatabase,
     BatlPadDatabase,
     CELEBAPadDatabase,
