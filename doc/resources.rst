@@ -84,14 +84,6 @@ Image Quality Measures as features of facial region + SVM for REPLAY-ATTACK
    :members:
 
 
-.. _bob.pad.face.resources.face_pad.frame_diff_svm_replayattack:
-
-Frame differences based features (motion analysis) + SVM for REPLAY-ATTACK
-================================================================================
-
-.. automodule:: bob.pad.face.config.frame_diff_svm
-   :members:
-
 
 .. _bob.pad.face.resources.face_pad.qm_lr:
 
