@@ -1,11 +1,12 @@
 from __future__ import division
-from bob.bio.base.extractor import Extractor
-import bob.bio.video
-import bob.ip.base
+
+from bob.ip.base import LBP, histogram
 import numpy as np
+from sklearn.base import BaseEstimator
+from sklearn.base import TransformerMixin
 
 
-class LBPHistogram(Extractor):
+class LBPHistogram(TransformerMixin, BaseEstimator):
     """Calculates a normalized LBP histogram over an image.
     These features are implemented based on [CAM12]_.
 
@@ -36,93 +37,94 @@ class LBPHistogram(Extractor):
     dtype : numpy.dtype
         If a ``dtype`` is specified in the contructor, it is assured that the
         resulting features have that dtype.
-    lbp : bob.ip.base.LBP
+    lbp : LBP
         The LPB extractor object.
     """
 
-    def __init__(self,
-                 lbptype='uniform',
-                 elbptype='regular',
-                 rad=1,
-                 neighbors=8,
-                 circ=False,
-                 dtype=None,
-                 n_hor=1,
-                 n_vert=1):
+    def __init__(
+        self,
+        lbptype="uniform",
+        elbptype="regular",
+        rad=1,
+        neighbors=8,
+        circ=False,
+        dtype=None,
+        n_hor=1,
+        n_vert=1,
+        **kwargs,
+    ):
 
-        super(LBPHistogram, self).__init__(
-            lbptype=lbptype,
-            elbptype=elbptype,
-            rad=rad,
-            neighbors=neighbors,
-            circ=circ,
-            dtype=dtype,
-            n_hor=n_hor,
-            n_vert=n_vert)
+        super().__init__(**kwargs)
 
         elbps = {
-            'regular': 'regular',
-            'transitional': 'trainsitional',
-            'direction_coded': 'direction-coded',
-            'modified': 'regular'
+            "regular": "regular",
+            "transitional": "trainsitional",
+            "direction_coded": "direction-coded",
+            "modified": "regular",
         }
 
-        if elbptype == 'modified':
+        if elbptype == "modified":
             mct = True
         else:
             mct = False
 
-        if lbptype == 'uniform':
+        if lbptype == "uniform":
             if neighbors == 16:
-                lbp = bob.ip.base.LBP(
+                lbp = LBP(
                     neighbors=16,
                     uniform=True,
                     circular=circ,
                     radius=rad,
                     to_average=mct,
-                    elbp_type=elbps[elbptype])
+                    elbp_type=elbps[elbptype],
+                )
             else:  # we assume neighbors==8 in this case
-                lbp = bob.ip.base.LBP(
+                lbp = LBP(
                     neighbors=8,
                     uniform=True,
                     circular=circ,
                     radius=rad,
                     to_average=mct,
-                    elbp_type=elbps[elbptype])
-        elif lbptype == 'riu2':
+                    elbp_type=elbps[elbptype],
+                )
+        elif lbptype == "riu2":
             if neighbors == 16:
-                lbp = bob.ip.base.LBP(
+                lbp = LBP(
                     neighbors=16,
                     uniform=True,
                     rotation_invariant=True,
                     radius=rad,
                     circular=circ,
                     to_average=mct,
-                    elbp_type=elbps[elbptype])
+                    elbp_type=elbps[elbptype],
+                )
             else:  # we assume neighbors==8 in this case
-                lbp = bob.ip.base.LBP(
+                lbp = LBP(
                     neighbors=8,
                     uniform=True,
                     rotation_invariant=True,
                     radius=rad,
                     circular=circ,
                     to_average=mct,
-                    elbp_type=elbps[elbptype])
+                    elbp_type=elbps[elbptype],
+                )
         else:  # regular LBP
             if neighbors == 16:
-                lbp = bob.ip.base.LBP(
+                lbp = LBP(
                     neighbors=16,
                     circular=circ,
                     radius=rad,
                     to_average=mct,
-                    elbp_type=elbps[elbptype])
+                    elbp_type=elbps[elbptype],
+                )
             else:  # we assume neighbors==8 in this case
-                lbp = bob.ip.base.LBP(
+                lbp = LBP(
                     neighbors=8,
                     circular=circ,
                     radius=rad,
                     to_average=mct,
-                    elbp_type=elbps[elbptype])
+                    elbp_type=elbps[elbptype],
+                )
 
         self.dtype = dtype
         self.lbp = lbp
@@ -151,16 +153,17 @@ class LBPHistogram(Extractor):
         assert isinstance(data, np.ndarray)
 
         # allocating the image with lbp codes
-        lbpimage = np.ndarray(self.lbp.lbp_shape(data), 'uint16')
+        lbpimage = np.ndarray(self.lbp.lbp_shape(data), "uint16")
         self.lbp(data, lbpimage)  # calculating the lbp image
-        hist = bob.ip.base.histogram(lbpimage, (0, self.lbp.max_label - 1),
-                                     self.lbp.max_label)
+        hist = histogram(
+            lbpimage, (0, self.lbp.max_label - 1), self.lbp.max_label
+        )
         hist = hist / sum(hist)  # histogram normalization
         if self.dtype is not None:
             hist = hist.astype(self.dtype)
         return hist
 
-    def __call__(self, data):
+    def transform_one_image(self, data):
         """
         Extracts spatially-enhanced LBP/MCT histograms from a gray-scale image.
 
@@ -182,7 +185,11 @@ class LBPHistogram(Extractor):
         col_max = int(data.shape[1] / self.n_hor) * self.n_hor
         data = data[:row_max, :col_max]
 
-        blocks = [sub_block for block in np.hsplit(data, self.n_hor) for sub_block in np.vsplit(block, self.n_vert)]
+        blocks = [
+            sub_block
+            for block in np.hsplit(data, self.n_hor)
+            for sub_block in np.vsplit(block, self.n_vert)
+        ]
 
         hists = [self.comp_block_histogram(block) for block in blocks]
 
@@ -191,3 +198,12 @@ class LBPHistogram(Extractor):
         hist = hist / len(blocks)  # histogram normalization
 
         return hist
+
+    def transform(self, images):
+        return [self.transform_one_image(img) for img in images]
+
+    def _more_tags(self):
+        return {"stateless": True, "requires_fit": False}
+
+    def fit(self, X, y=None):
+        return self
