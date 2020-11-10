@@ -65,9 +65,7 @@ setup(
         'bob.pad.database': [
             'replay-attack = bob.pad.face.config.replay_attack:database',
             'replay-mobile = bob.pad.face.config.replay_mobile:database',
-            'msu-mfsd = bob.pad.face.config.msu_mfsd:database',
             'casiafasd = bob.pad.face.config.casiafasd:database',
-            'aggregated-db = bob.pad.face.config.aggregated_db:database',
             'mifs = bob.pad.face.config.mifs:database',
             'batl-db = bob.pad.face.config.database.batl.batl_db:database',
             'batl-db-infrared = bob.pad.face.config.database.batl.batl_db_infrared:database',
@@ -86,9 +84,7 @@ setup(
             # databases
             'replay-attack = bob.pad.face.config.replay_attack',
             'replay-mobile = bob.pad.face.config.replay_mobile',
-            'msu-mfsd = bob.pad.face.config.msu_mfsd',
             'casiafasd = bob.pad.face.config.casiafasd',
-            'aggregated-db = bob.pad.face.config.aggregated_db',
             'mifs = bob.pad.face.config.mifs',
             'batl-db = bob.pad.face.config.database.batl.batl_db',
             'batl-db-infrared = bob.pad.face.config.database.batl.batl_db_infrared',
@@ -100,22 +96,15 @@ setup(
 
             # baselines using SVM:
             'lbp-svm = bob.pad.face.config.lbp_svm',
-            'lbp-svm-aggregated-db = bob.pad.face.config.lbp_svm_aggregated_db',
             'qm-svm = bob.pad.face.config.qm_svm',
-            'qm-svm-aggregated-db = bob.pad.face.config.qm_svm_aggregated_db',
             'frame-diff-svm = bob.pad.face.config.frame_diff_svm',
-            'frame-diff-svm-aggregated-db = bob.pad.face.config.frame_diff_svm_aggregated_db',
-
-            # baselines using one-class SVM
-            'qm-one-class-svm-aggregated-db = bob.pad.face.config.qm_one_class_svm_aggregated_db',
-            'qm-one-class-svm-cascade-aggregated-db = bob.pad.face.config.qm_one_class_svm_cascade_aggregated_db',
 
             # baselines using LR:
-            'qm-lr = bob.pad.face.config.qm_lr',  # this pipe-line can be used both for individual and Aggregated databases.
+            'qm-lr = bob.pad.face.config.qm_lr',
             'lbp-lr-batl-D-T-IR = bob.pad.face.config.lbp_lr_batl_D_T_IR',  # this pipe-line can be used both for BATL databases, Depth, Thermal and Infrared channels.
 
             # baselines using GMM:
-            'qm-one-class-gmm = bob.pad.face.config.qm_one_class_gmm',  # this pipe-line can be used both for individual and Aggregated databases.
+            'qm-one-class-gmm = bob.pad.face.config.qm_one_class_gmm',
         ],
 
         # registered preprocessors:

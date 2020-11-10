@@ -25,8 +25,6 @@ The current system readily supports the following freely available datasets:
 
 * `REPLAYATTACK`_
 * `REPLAY-MOBILE`_
-* `MSU MFSD`_
-* ``Aggregated DB``
 
 After downloading the databases, annotate the base directories in which they
 are installed. Then, follow the instructions in

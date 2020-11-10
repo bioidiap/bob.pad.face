@@ -43,23 +43,6 @@ Replay-Mobile Database
    :members:
 
 
-.. _bob.pad.face.resources.databases.msu_mfsd:
-
-MSU MFSD Database
-================================================================================
-
-.. automodule:: bob.pad.face.config.msu_mfsd
-   :members:
-
-
-.. _bob.pad.face.resources.databases.aggregated_db:
-
-Aggregated Database
-================================================================================
-
-.. automodule:: bob.pad.face.config.aggregated_db
-   :members:
-
 MIFS Database
 ================================================================================
 
@@ -110,33 +93,6 @@ Frame differences based features (motion analysis) + SVM for REPLAY-ATTACK
    :members:
 
 
-.. _bob.pad.face.resources.face_pad.lbp_svm_aggregated_db:
-
-LBP features of facial region + SVM for Aggregated Database
-===================================================================================
-
-.. automodule:: bob.pad.face.config.lbp_svm_aggregated_db
-   :members:
-
-
-.. _bob.pad.face.resources.face_pad.qm_svm_aggregated_db:
-
-Image Quality Measures as features of facial region + SVM for Aggregated Database
-===================================================================================
-
-.. automodule:: bob.pad.face.config.qm_svm_aggregated_db
-   :members:
-
-
-.. _bob.pad.face.resources.face_pad.frame_diff_svm_aggregated_db:
-
-Frame differences based features (motion analysis) + SVM for Aggregated Database
-===================================================================================
-
-.. automodule:: bob.pad.face.config.frame_diff_svm_aggregated_db
-   :members:
-
-
 .. _bob.pad.face.resources.face_pad.qm_lr:
 
 Image Quality Measures as features of facial region + Logistic Regression
@@ -153,14 +109,4 @@ Image Quality Measures as features of facial region + GMM-based one-class classi
 
 .. automodule:: bob.pad.face.config.qm_one_class_gmm
    :members:
-
-
-.. _bob.pad.face.resources.face_pad.qm_one_class_svm_aggregated_db:
-
-Image Quality Measures as features of facial region + one-class SVM classifier (anomaly detector) for Aggregated Database
-============================================================================================================================
-
-.. automodule:: bob.pad.face.config.qm_one_class_svm_aggregated_db
-   :members:
-
 
