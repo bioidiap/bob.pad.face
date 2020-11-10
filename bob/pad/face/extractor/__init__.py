@@ -2,9 +2,6 @@ from .LBPHistogram import LBPHistogram
 from .ImageQualityMeasure import ImageQualityMeasure
 from .FrameDiffFeatures import FrameDiffFeatures
 
-from .LiSpectralFeatures import LiSpectralFeatures 
-from .LTSS import LTSS 
-from .PPGSecure import PPGSecure 
 
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.
@@ -28,8 +25,5 @@ __appropriate__(
     LBPHistogram,
     ImageQualityMeasure,
     FrameDiffFeatures,
-    LiSpectralFeatures,
-    LTSS,
-    PPGSecure,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

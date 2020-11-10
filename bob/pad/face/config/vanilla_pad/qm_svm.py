@@ -8,7 +8,7 @@ from bob.pad.face.extractor import ImageQualityMeasure
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
-from bob.pad.base.pipelines.vanilla_pad import FrameContainersToFrames
+from bob.pad.face.transformer import VideoToFrames
 import bob.pipelines as mario
 
 database = globals().get("database")
@@ -42,7 +42,7 @@ extractor = mario.wrap(
 )
 
 # new stuff #
-frame_cont_to_array = FrameContainersToFrames()
+frame_cont_to_array = VideoToFrames()
 
 param_grid = [
     {"C": [1, 10, 100, 1000], "kernel": ["linear"]},
