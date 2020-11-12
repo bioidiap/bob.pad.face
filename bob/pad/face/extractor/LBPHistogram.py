@@ -12,18 +12,21 @@ class LBPHistogram(TransformerMixin, BaseEstimator):
 
     Parameters
     ----------
-    lbptype : str
+    lbp_type : str
         The type of the LBP operator (regular, uniform or riu2)
-    elbptype : str
-        The type of extended version of LBP (regular if not extended version
-        is used, otherwise transitional, direction_coded or modified)
-    rad : float
+    elbp_type : str
+        Which type of LBP codes should be computed; possible values: ('regular',
+        'transitional', 'direction-coded'). For the old 'modified' method,
+        specify `elbp_type` as 'regular` and `to_average` as True.
+    to_average : bool
+        Compare the neighbors to the average of the pixels instead of the central pixel?
+    radius : float
         The radius of the circle on which the points are taken (for circular
         LBP)
     neighbors : int
         The number of points around the central point on which LBP is
         computed (4, 8, 16)
-    circ : bool
+    circular : bool
         True if circular LBP is needed, False otherwise
     n_hor : int
         Number of blocks horizontally for spatially-enhanced LBP/MCT
@@ -43,11 +46,12 @@ class LBPHistogram(TransformerMixin, BaseEstimator):
 
     def __init__(
         self,
-        lbptype="uniform",
-        elbptype="regular",
-        rad=1,
+        lbp_type="uniform",
+        elbp_type="regular",
+        to_average=False,
+        radius=1,
         neighbors=8,
-        circ=False,
+        circular=False,
         dtype=None,
         n_hor=1,
         n_vert=1,
@@ -55,81 +59,39 @@ class LBPHistogram(TransformerMixin, BaseEstimator):
     ):
 
         super().__init__(**kwargs)
-
-        elbps = {
-            "regular": "regular",
-            "transitional": "trainsitional",
-            "direction_coded": "direction-coded",
-            "modified": "regular",
-        }
-
-        if elbptype == "modified":
-            mct = True
-        else:
-            mct = False
-
-        if lbptype == "uniform":
-            if neighbors == 16:
-                lbp = LBP(
-                    neighbors=16,
-                    uniform=True,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype],
-                )
-            else:  # we assume neighbors==8 in this case
-                lbp = LBP(
-                    neighbors=8,
-                    uniform=True,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype],
-                )
-        elif lbptype == "riu2":
-            if neighbors == 16:
-                lbp = LBP(
-                    neighbors=16,
-                    uniform=True,
-                    rotation_invariant=True,
-                    radius=rad,
-                    circular=circ,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype],
-                )
-            else:  # we assume neighbors==8 in this case
-                lbp = LBP(
-                    neighbors=8,
-                    uniform=True,
-                    rotation_invariant=True,
-                    radius=rad,
-                    circular=circ,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype],
-                )
-        else:  # regular LBP
-            if neighbors == 16:
-                lbp = LBP(
-                    neighbors=16,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype],
-                )
-            else:  # we assume neighbors==8 in this case
-                lbp = LBP(
-                    neighbors=8,
-                    circular=circ,
-                    radius=rad,
-                    to_average=mct,
-                    elbp_type=elbps[elbptype],
-                )
-
+        self.lbp_type = lbp_type
+        self.elbp_type = elbp_type
+        self.to_average = to_average
+        self.radius = radius
+        self.neighbors = neighbors
+        self.circular = circular
         self.dtype = dtype
-        self.lbp = lbp
         self.n_hor = n_hor
         self.n_vert = n_vert
+
+        self.fit()
+
+    def fit(self, X=None, y=None):
+
+        self.lbp_ = LBP(
+            neighbors=self.neighbors,
+            radius=self.radius,
+            circular=self.circular,
+            to_average=self.to_average,
+            uniform=self.lbp_type in ("uniform", "riu2"),
+            rotation_invariant=self.lbp_type == "riu2",
+            elbp_type=self.elbp_type,
+        )
+        return self
+
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        d.pop("lbp_")
+        return d
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.fit()
 
     def comp_block_histogram(self, data):
         """
@@ -153,12 +115,10 @@ class LBPHistogram(TransformerMixin, BaseEstimator):
         assert isinstance(data, np.ndarray)
 
         # allocating the image with lbp codes
-        lbpimage = np.ndarray(self.lbp.lbp_shape(data), "uint16")
-        self.lbp(data, lbpimage)  # calculating the lbp image
-        hist = histogram(
-            lbpimage, (0, self.lbp.max_label - 1), self.lbp.max_label
-        )
-        hist = hist / sum(hist)  # histogram normalization
+        lbpimage = np.ndarray(self.lbp_.lbp_shape(data), "uint16")
+        self.lbp_(data, lbpimage)  # calculating the lbp image
+        hist = histogram(lbpimage, (0, self.lbp_.max_label - 1), self.lbp_.max_label)
+        hist = hist / np.sum(hist)  # histogram normalization
         if self.dtype is not None:
             hist = hist.astype(self.dtype)
         return hist
@@ -204,6 +164,3 @@ class LBPHistogram(TransformerMixin, BaseEstimator):
 
     def _more_tags(self):
         return {"stateless": True, "requires_fit": False}
-
-    def fit(self, X, y=None):
-        return self
