@@ -2,7 +2,6 @@ from .database import VideoPadFile
 from .replay import ReplayPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .mifs import MIFSPadDatabase
-from .batl import BatlPadDatabase
 from .celeb_a import CELEBAPadDatabase
 from .maskattack import MaskAttackPadDatabase
 from .casiasurf import CasiaSurfPadDatabase
@@ -31,7 +30,6 @@ __appropriate__(
     ReplayPadDatabase,
     ReplayMobilePadDatabase,
     MIFSPadDatabase,
-    BatlPadDatabase,
     CELEBAPadDatabase,
     MaskAttackPadDatabase,
     CasiaSurfPadDatabase,
