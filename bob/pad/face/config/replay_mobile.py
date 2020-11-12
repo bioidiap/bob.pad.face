@@ -14,12 +14,5 @@ the link.
 """
 from bob.pad.face.database import ReplayMobilePadDatabase
 from bob.pad.base.pipelines.vanilla_pad import DatabaseConnector
-from bob.extension import rc
 
-database = DatabaseConnector(
-    ReplayMobilePadDatabase(
-        protocol="grandtest",
-        original_directory=rc.get("bob.db.replaymobile.directory"),
-        original_extension=".mov",
-    )
-)
+database = DatabaseConnector(ReplayMobilePadDatabase())

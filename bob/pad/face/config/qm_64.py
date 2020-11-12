@@ -1,7 +1,6 @@
 import bob.pipelines as mario
 from bob.bio.face.helpers import face_crop_solver
-from bob.bio.video import VideoLikeContainer
-from bob.bio.video.transformer import Wrapper as TransformerWrapper
+from bob.bio.video.transformer import VideoWrapper
 from bob.pad.face.extractor import ImageQualityMeasure
 
 database = globals().get("database")
@@ -14,22 +13,13 @@ else:
 
 # Preprocessor #
 cropper = face_crop_solver(cropped_image_size=64, cropped_positions=annotation_type)
-preprocessor = TransformerWrapper(cropper)
+preprocessor = VideoWrapper(cropper)
 preprocessor = mario.wrap(
-    ["sample", "checkpoint"],
+    ["sample"],
     preprocessor,
     transform_extra_arguments=(("annotations", "annotations"),),
-    features_dir="temp/faces-64",
-    save_func=VideoLikeContainer.save,
-    load_func=VideoLikeContainer.load,
 )
 
 # Extractor #
-extractor = TransformerWrapper(ImageQualityMeasure(galbally=True, msu=True, dtype=None))
-extractor = mario.wrap(
-    ["sample", "checkpoint"],
-    extractor,
-    features_dir="temp/iqm-features",
-    save_func=VideoLikeContainer.save,
-    load_func=VideoLikeContainer.load,
-)
+extractor = VideoWrapper(ImageQualityMeasure(galbally=True, msu=True, dtype=None))
+extractor = mario.wrap(["sample"], extractor)

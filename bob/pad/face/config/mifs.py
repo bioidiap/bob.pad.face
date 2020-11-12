@@ -17,12 +17,5 @@ the link.
 """
 from bob.pad.face.database import MIFSPadDatabase
 from bob.pad.base.pipelines.vanilla_pad import DatabaseConnector
-from bob.extension import rc
 
-database = DatabaseConnector(
-    MIFSPadDatabase(
-        protocol="grandtest",
-        original_directory=rc.get("bob.db.mifs.directory"),
-        original_extension="",
-    )
-)
+database = DatabaseConnector(MIFSPadDatabase())
