@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # Used in ReplayMobilePadFile class
-from bob.bio.video import FrameSelector
 from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
 from bob.pad.face.utils import number_of_frames
@@ -51,8 +50,7 @@ class ReplayMobilePadFile(VideoPadFile):
             attack_type=attack_type,
             file_id=f.id)
 
-    def load(self, directory=None, extension='.mov',
-             frame_selector=FrameSelector(selection_style='all')):
+    def load(self):
         """
         Overridden version of the load method defined in the ``VideoPadFile``.
 

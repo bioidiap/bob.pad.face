@@ -20,6 +20,9 @@ class VideoPadFile(PadFile):
         annotation_directory=None,
         annotation_extension=None,
         annotation_type=None,
+        selection_style=None,
+        max_number_of_frames=None,
+        step_size=None,
     ):
         super().__init__(
             attack_type=attack_type,
@@ -32,10 +35,12 @@ class VideoPadFile(PadFile):
             annotation_extension=annotation_extension,
             annotation_type=annotation_type,
         )
+        self.selection_style = selection_style or "all"
+        self.max_number_of_frames = max_number_of_frames
+        self.step_size = step_size
 
     def load(
         self,
-        frame_selector=bob.bio.video.FrameSelector(selection_style="all"),
     ):
         """Loads the video file and returns in a `bob.bio.video.FrameContainer`.
 
@@ -49,9 +54,7 @@ class VideoPadFile(PadFile):
         :any:`bob.bio.video.FrameContainer`
             The loaded frames inside a frame container.
         """
-        path = self.make_path(
-            self.original_directory, self.original_extension
-        )
+        path = self.make_path(self.original_directory, self.original_extension)
         video = bob.bio.video.VideoAsArray(
             path,
             selection_style=frame_selector.selection_style,

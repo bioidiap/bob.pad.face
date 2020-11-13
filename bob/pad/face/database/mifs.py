@@ -6,7 +6,6 @@
 #==============================================================================
 
 # Used in ReplayMobilePadFile class
-from bob.bio.video import FrameSelector, FrameContainer
 import bob.io.base
 import numpy as np
 
@@ -27,7 +26,7 @@ class MIFSPadFile(VideoPadFile):
                                           file_id)
 
     #==========================================================================
-    def load(self, directory=None, extension=None, frame_selector=FrameSelector(selection_style='all')):
+    def load():
         """
         Overridden version of the load method defined in the ``VideoPadFile``.
 

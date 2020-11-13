@@ -1,5 +1,4 @@
 from bob.bio.base.test.utils import atnt_database_directory
-from bob.bio.video.utils import FrameContainer
 import bob.io.base
 import os
 from bob.pad.face.database import VideoPadFile
