@@ -57,9 +57,9 @@ class VideoPadFile(PadFile):
         path = self.make_path(self.original_directory, self.original_extension)
         video = bob.bio.video.VideoAsArray(
             path,
-            selection_style=frame_selector.selection_style,
-            max_number_of_frames=frame_selector.max_number_of_frames,
-            step_size=frame_selector.step_size,
+            selection_style=self.selection_style,
+            max_number_of_frames=self.max_number_of_frames,
+            step_size=self.step_size,
         )
         return video
 
