@@ -14,9 +14,11 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
         logger.debug(f"{_frmt(self)}.transform")
         output = []
         for sample in video_samples:
-            annotations = getattr(sample, "annotations", {})
+            annotations = getattr(sample, "annotations", {}) or {}
 
-            for frame, frame_id in zip(sample.data.data, sample.data.indices):
+            # video is an instance of VideoAsArray or VideoLikeContainer
+            video = sample.data
+            for frame, frame_id in zip(video, video.indices):
                 new_sample = mario.Sample(
                     frame,
                     frame_id=frame_id,
