@@ -76,7 +76,6 @@ setup(
             'maskattack = bob.pad.face.config.maskattack:database',
             'casiasurf-color = bob.pad.face.config.casiasurf_color:database',
             'casiasurf = bob.pad.face.config.casiasurf:database',
-            'brsu = bob.pad.face.config.brsu:database',
         ],
 
         # registered configurations:

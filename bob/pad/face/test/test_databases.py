@@ -139,23 +139,6 @@ def test_casiasurf():
             % e)
 
 
-@db_available('brsu')
-def test_brsu():
-    brsu = bob.bio.base.load_resource(
-        'brsu',
-        'database',
-        preferred_package='bob.pad.face',
-        package_prefix='bob.pad.').database
-    try:
-        assert len(brsu.objects()) == 276
-        assert len(brsu.objects(purposes=('real',))) == 192
-        assert len(brsu.objects(purposes=('attack',))) == 84
-
-    except IOError as e:
-        raise SkipTest(
-            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
-            % e)
-
 @db_available('casia_fasd')
 def test_casia_fasd():
     casia_fasd = bob.bio.base.load_resource(
