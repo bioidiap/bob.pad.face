@@ -54,28 +54,17 @@ class ReplayMobilePadFile(VideoPadFile):
         """
         Overridden version of the load method defined in the ``VideoPadFile``.
 
-        Parameters
-        ----------
-        directory : str
-            String containing the path to the Replay-Mobile database.
-
-        extension : str
-            Extension of the video files in the Replay-Mobile database.
-
-        frame_selector : :any:`bob.bio.video.FrameSelector`
-            The frame selector to use.
-
         Returns
         -------
-        video_data : :any:`bob.bio.video.FrameContainer`
-            Video data stored in the FrameContainer, see
-            ``bob.bio.video.utils.FrameContainer`` for further details.
+        video_data : :any:`bob.bio.video.VideoAsArray`
+            Video data.
         """
-        directory = directory or self.original_directory
+        # TODO(amir): Handle loading with VideoAsArray and with a transform as
+        # some video files need to be flipped.
         video_data_array = self.f.load(
-            directory=directory, extension=extension)
+            directory=self.original_directory, extension=self.original_extension)
 
-        return frame_selector(video_data_array)
+        return video_data_array
 
     @property
     def annotations(self):

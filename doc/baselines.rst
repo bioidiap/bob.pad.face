@@ -40,7 +40,7 @@ Usually it is a good idea to have at least verbose level 2 (i.e., calling
 
 
 Database setups and baselines are encoded using
-:ref:`bob.bio.base.configuration-files`, all stored inside the package root, in
+``bob.bio.base.configuration-files``, all stored inside the package root, in
 the directory ``bob/pad/face/config``. Documentation for each resource
 is available on the section :ref:`bob.pad.face.resources`.
 

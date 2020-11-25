@@ -44,14 +44,9 @@ class VideoPadFile(PadFile):
     ):
         """Loads the video file and returns in a `bob.bio.video.FrameContainer`.
 
-        Parameters
-        ----------
-        frame_selector : :any:`bob.bio.video.FrameSelector`, optional
-            Which frames to select.
-
         Returns
         -------
-        :any:`bob.bio.video.FrameContainer`
+        :any:`bob.bio.video.VideoAsArray`
             The loaded frames inside a frame container.
         """
         path = self.make_path(self.original_directory, self.original_extension)

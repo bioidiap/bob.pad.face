@@ -71,27 +71,13 @@ The configuration files contain at least the following arguments of the ``spoof.
 LBP features of facial region + SVM for REPLAY-ATTACK
 ================================================================================
 
-.. automodule:: bob.pad.face.config.lbp_svm
-   :members:
-
 
 .. _bob.pad.face.resources.face_pad.qm_svm_replayattack:
 
 Image Quality Measures as features of facial region + SVM for REPLAY-ATTACK
 ================================================================================
 
-.. automodule:: bob.pad.face.config.qm_svm
-   :members:
 
-
-
-.. _bob.pad.face.resources.face_pad.qm_lr:
-
-Image Quality Measures as features of facial region + Logistic Regression
-============================================================================================================================
-
-.. automodule:: bob.pad.face.config.qm_lr
-   :members:
 
 
 .. _bob.pad.face.resources.face_pad.qm_one_class_gmm:
@@ -99,6 +85,4 @@ Image Quality Measures as features of facial region + Logistic Regression
 Image Quality Measures as features of facial region + GMM-based one-class classifier (anomaly detector)
 ============================================================================================================================
 
-.. automodule:: bob.pad.face.config.qm_one_class_gmm
-   :members:
 
