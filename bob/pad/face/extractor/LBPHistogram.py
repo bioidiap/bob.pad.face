@@ -1,5 +1,3 @@
-from __future__ import division
-
 from bob.ip.base import LBP, histogram
 import numpy as np
 from sklearn.base import BaseEstimator
