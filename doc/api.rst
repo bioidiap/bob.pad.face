@@ -49,11 +49,6 @@ Feature Extractors
 .. automodule:: bob.pad.face.extractor
 
 
-Matching Algorithms
-------------------------------
-
-.. automodule:: bob.pad.base.algorithm
-
 
 Utilities
 ---------

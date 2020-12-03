@@ -5,7 +5,7 @@ import numpy
 
 padfile = Database().all_files(('train', 'dev'))[0][0]
 image = padfile.load(Database().original_directory,
-                     Database().original_extension)[0][1]
+                     Database().original_extension)[0]
 
 
 def dummy_cropper(frame, annotations=None):

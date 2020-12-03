@@ -1,6 +1,5 @@
 from .LBPHistogram import LBPHistogram
 from .ImageQualityMeasure import ImageQualityMeasure
-from .FrameDiffFeatures import FrameDiffFeatures
 
 
 def __appropriate__(*args):
@@ -24,6 +23,5 @@ def __appropriate__(*args):
 __appropriate__(
     LBPHistogram,
     ImageQualityMeasure,
-    FrameDiffFeatures,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]

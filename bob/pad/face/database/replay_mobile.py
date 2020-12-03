@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # Used in ReplayMobilePadFile class
-from bob.bio.video import FrameSelector
 from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
 from bob.pad.face.utils import number_of_frames
@@ -51,33 +50,21 @@ class ReplayMobilePadFile(VideoPadFile):
             attack_type=attack_type,
             file_id=f.id)
 
-    def load(self, directory=None, extension='.mov',
-             frame_selector=FrameSelector(selection_style='all')):
+    def load(self):
         """
         Overridden version of the load method defined in the ``VideoPadFile``.
 
-        Parameters
-        ----------
-        directory : str
-            String containing the path to the Replay-Mobile database.
-
-        extension : str
-            Extension of the video files in the Replay-Mobile database.
-
-        frame_selector : :any:`bob.bio.video.FrameSelector`
-            The frame selector to use.
-
         Returns
         -------
-        video_data : :any:`bob.bio.video.FrameContainer`
-            Video data stored in the FrameContainer, see
-            ``bob.bio.video.utils.FrameContainer`` for further details.
+        video_data : :any:`bob.bio.video.VideoAsArray`
+            Video data.
         """
-        directory = directory or self.original_directory
+        # TODO(amir): Handle loading with VideoAsArray and with a transform as
+        # some video files need to be flipped.
         video_data_array = self.f.load(
-            directory=directory, extension=extension)
+            directory=self.original_directory, extension=self.original_extension)
 
-        return frame_selector(video_data_array)
+        return video_data_array
 
     @property
     def annotations(self):

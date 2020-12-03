@@ -14,22 +14,22 @@ in ``bob.pad.face``.
 Running Baseline Experiments
 ----------------------------
 
-To run the baseline PAD experiments, the ``spoof.py`` script located in ``bin`` directory is used.
+To run the baseline PAD experiments, the ``bob pad vanilla-pad`` script is used.
 To see the description of the script you can type in the console:
 
 .. code-block:: sh
 
-   $ spoof.py --help
+   $ bob pad vanilla-pad --help
 
 This script is explained in more detail in :ref:`bob.pad.base.experiments`.
 
 Usually it is a good idea to have at least verbose level 2 (i.e., calling
-``spoof.py --verbose --verbose``, or the short version ``spoof.py
--vv``).
+``bob pad vanilla-pad --verbose --verbose``, or the short version
+``bob pad vanilla-pad -vv``).
 
 .. note:: **Running in Parallel**
 
-   To run the experiments in parallel, you can define an SGE grid or local host
+   To run the experiments in parallel, you can define a dask client
    (multi-processing) configurations as explained in
    :ref:`running_in_parallel`.
 
@@ -40,7 +40,7 @@ Usually it is a good idea to have at least verbose level 2 (i.e., calling
 
 
 Database setups and baselines are encoded using
-:ref:`bob.bio.base.configuration-files`, all stored inside the package root, in
+``bob.bio.base.configuration-files``, all stored inside the package root, in
 the directory ``bob/pad/face/config``. Documentation for each resource
 is available on the section :ref:`bob.pad.face.resources`.
 
@@ -97,8 +97,7 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 
 .. code-block:: sh
 
-    $ spoof.py replay-attack lbp-svm \
-    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+    $ bob pad vanilla-pad replay-attack lbp-64 svm-frames
 
 .. tip::
 
@@ -190,51 +189,6 @@ The ROC curves for the particular experiment can be downloaded from here:
 ------------
 
 
-Frame differences based features (motion analysis) + SVM classifier
-========================================================================
-
-Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.frame_diff_svm_replayattack`.
-
-To run this baseline on the `replayattack`_ database, using the ``grandtest`` protocol, execute the following:
-
-.. code-block:: sh
-
-    $ spoof.py replay-attack frame-diff-svm \
-    --sub-directory <PATH_TO_STORE_THE_RESULTS>
-
-.. tip::
-
-    Similarly to the tip above you can run this baseline in parallel.
-
-To understand the settings of this baseline PAD experiment you can check the
-corresponding configuration file: ``bob/pad/face/config/frame_diff_svm.py``
-
-To evaluate the results computing EER, HTER and plotting ROC you can use the
-following command:
-
-.. code-block:: sh
-
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
-    --legends "10 features for each window in Frame Differences + SVM classifier + REPLAY-ATTACK database" \
-    -e \
-    --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
-
-The EER/HTER errors for `replayattack`_ database are summarized in the Table below:
-
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  11.752  |  13.195  |
-+-------------------+----------+----------+
-
-The ROC curves for the particular experiment can be downloaded from here:
-
-:download:`ROC curve <img/ROC_frame_diff_svm_replay_attack.pdf>`
-
-------------
 
 .. _bob.pad.face.baselines.replay_mobile:
 
@@ -341,52 +295,6 @@ The ROC curves for the particular experiment can be downloaded from here:
 ------------
 
 
-Frame differences based features (motion analysis) + SVM classifier
-========================================================================
-
-Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.frame_diff_svm_replayattack`.
-Note, that the same PAD pipe-line was used to run experiments on the Replay-Attack database.
-
-To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` protocol, execute the following:
-
-.. code-block:: sh
-
-    $ spoof.py replay-mobile frame-diff-svm \
-    --sub-directory <PATH_TO_STORE_THE_RESULTS>
-
-.. tip::
-
-    Similarly to the tip above you can run this baseline in parallel.
-
-To understand the settings of this baseline PAD experiment you can check the
-corresponding configuration file: ``bob/pad/face/config/frame_diff_svm.py``
-
-To evaluate the results computing EER, HTER and plotting ROC you can use the
-following command:
-
-.. code-block:: sh
-
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
-    --legends "10 features for each window in Frame Differences + SVM classifier + Replay-Mobile database" \
-    -e \
-    --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
-
-The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Table below:
-
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  10.801  |  10.414  |
-+-------------------+----------+----------+
-
-The ROC curves for the particular experiment can be downloaded from here:
-
-:download:`ROC curve <img/ROC_frame_diff_svm_replay_mobile.pdf>`
-
-------------
 
 
 .. _bob.pad.face.baselines.other_db:

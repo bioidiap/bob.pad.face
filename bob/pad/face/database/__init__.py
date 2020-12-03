@@ -2,12 +2,10 @@ from .database import VideoPadFile
 from .replay import ReplayPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .mifs import MIFSPadDatabase
-from .batl import BatlPadDatabase
 from .celeb_a import CELEBAPadDatabase
 from .maskattack import MaskAttackPadDatabase
 from .casiasurf import CasiaSurfPadDatabase
 from .casiafasd import CasiaFasdPadDatabase
-from .brsu import BRSUPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -31,12 +29,10 @@ __appropriate__(
     ReplayPadDatabase,
     ReplayMobilePadDatabase,
     MIFSPadDatabase,
-    BatlPadDatabase,
     CELEBAPadDatabase,
     MaskAttackPadDatabase,
     CasiaSurfPadDatabase,
     CasiaFasdPadDatabase,
-    BRSUPadDatabase
 )
 
 __all__ = [_ for _ in dir() if not _.startswith('_')]

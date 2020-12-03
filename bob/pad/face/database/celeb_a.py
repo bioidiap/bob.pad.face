@@ -25,8 +25,7 @@ class CELEBAPadFile(PadFile):
         super(CELEBAPadFile, self).__init__(client_id, path, attack_type, file_id)
 
     # ==========================================================================
-    def load(self, directory=None, extension=None,
-             frame_selector=bob.bio.video.FrameSelector(selection_style='all')):
+    def load(self):
         """
         Overridden version of the load method defined in the ``PadFile``.
 

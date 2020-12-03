@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from bob.bio.video import FrameSelector
 from bob.extension import rc
 from bob.io.video import reader
 from bob.pad.base.database import PadDatabase
@@ -125,28 +124,6 @@ class CasiaFasdPadFile(VideoPadFile):
             bounding_box = BoundingBox(topleft, size)
             annotations[str(i)].update(expected_eye_positions(bounding_box))
         return annotations
-
-    def load(self, directory=None, extension='.avi',
-             frame_selector=FrameSelector(selection_style='all')):
-        """Loads the video file and returns in a
-        :any:`bob.bio.video.FrameContainer`.
-
-        Parameters
-        ----------
-        directory : :obj:`str`, optional
-            The directory to load the data from.
-        extension : :obj:`str`, optional
-            The extension of the file to load.
-        frame_selector : :any:`bob.bio.video.FrameSelector`, optional
-            Which frames to select.
-
-        Returns
-        -------
-        :any:`bob.bio.video.FrameContainer`
-            The loaded frames inside a frame container.
-        """
-        directory = directory or self.original_directory
-        return frame_selector(self.make_path(directory, extension))
 
 
 class CasiaFasdPadDatabase(PadDatabase):

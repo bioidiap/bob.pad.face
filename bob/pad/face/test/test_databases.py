@@ -10,12 +10,13 @@ from bob.bio.base.test.utils import db_available
 
 @db_available('replay')  # the name of the package
 def test_replay():
+    # replay-attack is the name of the entry point
     replay_database_instance = bob.bio.base.load_resource(
         'replay-attack',
         'database',
         preferred_package='bob.pad.face',
         package_prefix='bob.pad.'
-    )  # replay-attack is the name of the configuration file
+    ).database
     try:
 
         assert len(
@@ -50,7 +51,7 @@ def test_replaymobile():
         'replay-mobile',
         'database',
         preferred_package='bob.pad.face',
-        package_prefix='bob.pad.')
+        package_prefix='bob.pad.').database
     try:
 
         assert len(
@@ -84,7 +85,7 @@ def test_maskattack():
         'maskattack',
         'database',
         preferred_package='bob.pad.face',
-        package_prefix='bob.pad.')
+        package_prefix='bob.pad.').database
     try:
         # all real sequences: 2 sessions, 5 recordings for 17 individuals
         assert len(maskattack.objects(
@@ -121,7 +122,7 @@ def test_casiasurf():
         'casiasurf',
         'database',
         preferred_package='bob.pad.face',
-        package_prefix='bob.pad.')
+        package_prefix='bob.pad.').database
     try:
         assert len(casiasurf.objects(groups=['train'], purposes='real')) == 8942
         assert len(casiasurf.objects(groups=['train'], purposes='attack')) == 20324
@@ -138,30 +139,13 @@ def test_casiasurf():
             % e)
 
 
-@db_available('brsu')
-def test_brsu():
-    brsu = bob.bio.base.load_resource(
-        'brsu',
-        'database',
-        preferred_package='bob.pad.face',
-        package_prefix='bob.pad.')
-    try:
-        assert len(brsu.objects()) == 276
-        assert len(brsu.objects(purposes=('real',))) == 192
-        assert len(brsu.objects(purposes=('attack',))) == 84
-
-    except IOError as e:
-        raise SkipTest(
-            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
-            % e)
-
 @db_available('casia_fasd')
 def test_casia_fasd():
     casia_fasd = bob.bio.base.load_resource(
         'casiafasd',
         'database',
         preferred_package='bob.pad.face',
-        package_prefix='bob.pad.')
+        package_prefix='bob.pad.').database
 
     assert len(casia_fasd.objects()) == 600
     assert len(casia_fasd.objects(purposes='real')) == 150
@@ -186,7 +170,7 @@ def test_casia_fasd_frames():
         'casiafasd',
         'database',
         preferred_package='bob.pad.face',
-        package_prefix='bob.pad.')
+        package_prefix='bob.pad.').database
 
     # test frame loading if the db original files are available
     try:

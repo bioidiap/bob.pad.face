@@ -1,4 +1,3 @@
-from .FrameDifference import FrameDifference
 from .Patch import ImagePatches, VideoPatches
 
 
@@ -21,7 +20,6 @@ def __appropriate__(*args):
 
 
 __appropriate__(
-    FrameDifference,
     ImagePatches,
     VideoPatches,
 )

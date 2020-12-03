@@ -1,24 +1,25 @@
 from bob.bio.base.test.utils import atnt_database_directory
-from bob.bio.video.utils import FrameContainer
 import bob.io.base
 import os
 from bob.pad.face.database import VideoPadFile
 from bob.pad.base.database import PadDatabase
 from bob.db.base.utils import (
     check_parameters_for_validity, convert_names_to_lowlevel)
+from bob.bio.video import VideoLikeContainer
 
 
 class DummyPadFile(VideoPadFile):
     def load(self, directory=None, extension='.pgm', frame_selector=None):
         file_name = self.make_path(directory, extension)
-        fc = FrameContainer()
-        fc.add(os.path.basename(file_name), bob.io.base.load(file_name))
+        data = bob.io.base.load(file_name)[None, ...]
+        indices = [os.path.basename(file_name)]
+        fc = VideoLikeContainer(data, indices)
         return fc
 
     @property
     def frames(self):
         fc = self.load(self.original_directory)
-        for _, frame, _ in fc:
+        for frame in fc:
             yield frame
 
     @property

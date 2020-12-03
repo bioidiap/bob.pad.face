@@ -1,7 +1,6 @@
 from ..utils import extract_patches
 from bob.bio.base.preprocessor import Preprocessor
-from bob.bio.video import FrameContainer
-from bob.bio.video.preprocessor import Wrapper
+from bob.bio.video.transformer import VideoWrapper
 from collections import OrderedDict
 
 
@@ -32,7 +31,7 @@ class ImagePatches(Preprocessor):
         return fc
 
 
-class VideoPatches(Wrapper):
+class VideoPatches(VideoWrapper):
     """Extracts patches of images from video containers and returns it in a
     FrameContainer.
     """

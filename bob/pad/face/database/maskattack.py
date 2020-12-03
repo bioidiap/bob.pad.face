@@ -4,7 +4,6 @@
 import os
 import numpy as np
 import bob.io.video
-from bob.bio.video import FrameSelector, FrameContainer
 from bob.pad.face.database import VideoPadFile
 from bob.pad.base.database import PadDatabase
 
@@ -41,30 +40,6 @@ class MaskAttackPadFile(VideoPadFile):
             path=f.path,
             attack_type=attack_type,
             file_id=f.id)
-
-    def load(self, directory=None, extension='.avi', frame_selector=FrameSelector(selection_style='all')):
-        """Overridden version of the load method defined in ``VideoPadFile``.
-
-        Parameters
-        ----------
-        directory : :py:class:`str`
-          String containing the path to the 3DMAD database
-          (generated sequences from original data).
-        extension : :py:class:`str`
-          Extension of the video files
-        frame_selector : :py:class:`bob.bio.video.FrameSelector`
-            The frame selector to use.
-
-        Returns
-        -------
-        video_data : :py:class:`bob.bio.video.utils.FrameContainer`
-          video data stored in a FrameContainer
-
-        """
-        vfilename = self.make_path(directory, extension)
-        video = bob.io.video.reader(vfilename)
-        video_data_array = video.load()
-        return frame_selector(video_data_array)
 
 
 class MaskAttackPadDatabase(PadDatabase):

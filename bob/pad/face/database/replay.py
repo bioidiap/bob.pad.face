@@ -2,7 +2,6 @@ from bob.pad.base.database import PadDatabase
 from bob.pad.face.database import VideoPadFile
 from bob.extension import rc
 from bob.ip.facedetect import expected_eye_positions, BoundingBox
-from bob.db.base.annotations import read_annotation_file
 from bob.db.base.utils import convert_names_to_lowlevel
 
 REPLAY_ATTACK_FRAME_SHAPE = (3, 240, 320)
