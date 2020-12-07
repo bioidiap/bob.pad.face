@@ -18,18 +18,21 @@ param_grid = [
     },
 ]
 
+
 classifier = GridSearchCV(SVC(), param_grid=param_grid, cv=3)
 classifier = mario.wrap(
-    ["sample"],
-    classifier,
-    fit_extra_arguments=[("y", "is_bonafide")],
+    ["sample"], classifier, fit_extra_arguments=[("y", "is_bonafide")],
 )
 
 
 # Pipeline #
-frames_classifier = Pipeline([("frame_cont_to_array", frame_cont_to_array), ("classifier", classifier)])
-pipeline = Pipeline([
-    ("preprocessor", preprocessor),
-    ("extractor", extractor),
-    ("svm", frames_classifier),
-])
+frames_classifier = Pipeline(
+    [("frame_cont_to_array", frame_cont_to_array), ("classifier", classifier)]
+)
+pipeline = Pipeline(
+    [
+        ("preprocessor", preprocessor),
+        ("extractor", extractor),
+        ("svm", frames_classifier),
+    ]
+)
