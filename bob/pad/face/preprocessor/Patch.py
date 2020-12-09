@@ -1,76 +1,88 @@
+from bob.bio.base.annotator.FailSafe import translate_kwargs
+from sklearn.base import BaseEstimator, TransformerMixin
 from ..utils import extract_patches
-from bob.bio.base.preprocessor import Preprocessor
-from bob.bio.video.transformer import VideoWrapper
+from bob.bio.video import VideoLikeContainer
 from collections import OrderedDict
 
 
-class ImagePatches(Preprocessor):
-    """Extracts patches of images and returns it in a FrameContainer. You need
+class ImagePatches(TransformerMixin, BaseEstimator):
+    """Extracts patches of images and returns it in a VideoLikeContainer. You need
     to wrap the further blocks (extractor and algorithm) that come after this
     in bob.bio.video wrappers.
     """
 
-    def __init__(self, block_size, block_overlap=(0, 0), n_random_patches=None,
-                 **kwargs):
+    def __init__(
+        self, block_size, block_overlap=(0, 0), n_random_patches=None, **kwargs
+    ):
         super(ImagePatches, self).__init__(**kwargs)
         self.block_size = block_size
         self.block_overlap = block_overlap
         self.n_random_patches = n_random_patches
 
-    def __call__(self, image, annotations=None):
-        fc = FrameContainer()
+    def transform(self, images):
+        return [self.transform_one_image(img) for img in images]
 
-        patches = extract_patches(image, self.block_size, self.block_overlap,
-                                  self.n_random_patches)
-        for i, patch in enumerate(patches):
-            fc.add(i, patch)
+    def transform_one_image(self, image):
 
-        if not len(fc):
-            return None
+        patches = extract_patches(
+            image, self.block_size, self.block_overlap, self.n_random_patches
+        )
+        vc = VideoLikeContainer(patches, range(len(patches)))
 
-        return fc
+        return vc
 
 
-class VideoPatches(VideoWrapper):
+class VideoPatches(TransformerMixin, BaseEstimator):
     """Extracts patches of images from video containers and returns it in a
-    FrameContainer.
+    VideoLikeContainer.
     """
 
-    def __init__(self, block_size, block_overlap=(0, 0), n_random_patches=None,
-                 normalizer=None,
-                 **kwargs):
+    def __init__(
+        self,
+        face_cropper,
+        block_size,
+        block_overlap=(0, 0),
+        n_random_patches=None,
+        normalizer=None,
+        **kwargs,
+    ):
         super(VideoPatches, self).__init__(**kwargs)
+        self.face_cropper = face_cropper
         self.block_size = block_size
         self.block_overlap = block_overlap
         self.n_random_patches = n_random_patches
         self.normalizer = normalizer
 
-    def __call__(self, frames, annotations=None):
-        fc = FrameContainer()
+    def transform(self, videos, annotations=None):
+        kwargs = translate_kwargs(dict(annotations=annotations), len(videos))
+        return [self.transform_one_video(vid, **kw) for vid, kw in zip(videos, kwargs)]
 
+    def transform_one_video(self, frames, annotations=None):
+        annotations = annotations or {}
         if self.normalizer is not None:
             annotations = OrderedDict(self.normalizer(annotations))
 
-        for index, frame, _ in frames:
+        all_patches = []
+        for frame, index in zip(frames, frames.indices):
 
             # if annotations are given, and if particular frame annotations are
             # not missing we take them:
-            annots = annotations[index] if annotations is not None and \
-                index in annotations else None
+            annots = annotations.get(str(index))
 
-            # preprocess image (by default: detect a face)
-            preprocessed = self.preprocessor(frame, annots)
+            # preprocess image (by default: crops a face)
+            preprocessed = self.face_cropper(frame, annots)
             if preprocessed is None:
                 continue
 
             # extract patches
             patches = extract_patches(
-                preprocessed, self.block_size, self.block_overlap,
-                self.n_random_patches)
-            for i, patch in enumerate(patches):
-                fc.add('{}_{}'.format(index, i), patch)
+                preprocessed, self.block_size, self.block_overlap, self.n_random_patches
+            )
+            all_patches.extend(patches)
 
-        if not len(fc):
+        vc = VideoLikeContainer(all_patches, range(len(all_patches)))
+
+        if not len(vc):
             return None
 
-        return fc
+        return vc
