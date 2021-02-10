@@ -23,7 +23,7 @@ To see the description of the command, you can type in the console:
 
 This script is explained in more detail in :ref:`bob.pad.base <bob.pad.base.vanilla_pad_intro>`.
 
-Usually it is a good idea to have at least verbose level 2 (i.e., calling
+Usually, it is a good idea to have at least verbose level 2 (i.e., calling
 ``bob pad vanilla-pad --verbose --verbose``, or the short version
 ``bob pad vanilla-pad -vv``).
 
@@ -48,13 +48,12 @@ is available on the section :ref:`bob.pad.face.resources`.
 
    You **cannot** run experiments just by executing the command line
    instructions described in this guide. You **need first** to procure yourself
-   the raw data files that correspond to *each* database used here in order to
-   correctly run experiments with those data. Biometric data is considered
-   private data and, under EU regulations, cannot be distributed without a
-   consent or license. You may consult our
-   :ref:`bob.pad.face.resources.databases` resources section for checking
-   currently supported databases and accessing download links for the raw data
-   files.
+   the raw data files that correspond to *each* database used here to correctly
+   run experiments with those data. Biometric data is considered private and,
+   under EU regulations, cannot be distributed without a consent or license.
+   You may consult our :ref:`bob.pad.face.resources.databases` resources
+   section for checking currently supported databases and accessing download
+   links for the raw data files.
 
    Once the raw data files have been downloaded, unpack the databases carefully
    and take a note of the root directory where they have been unpacked.
@@ -86,7 +85,7 @@ REPLAY-ATTACK (`replayattack`_) database.
 The description of the database-related settings, which are used to run face PAD
 baselines on the Replay-Attack is given here
 :ref:`bob.pad.face.resources.databases.replay`. To understand the settings in
-more details you can check the corresponding configuration file :
+more detail you can check the corresponding configuration file:
 ``bob/pad/face/config/replay_attack.py``.
 
 
@@ -105,7 +104,7 @@ protocol, execute the following:
 
 .. tip::
 
-    If you are at `idiap`_ you can use SGE grid to speed-up the calculations.
+    If you are at `idiap`_ you can use the SGE grid to speed-up the calculations.
     Simply add the ``--dask-client sge`` (or ``-l sge``) argument to the above
     command. For example:
 
@@ -132,7 +131,7 @@ following command:
     -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
 
-The error rates for `replayattack`_ database are summarized in the Table below:
+The error rates for `replayattack`_ database are summarized in the table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
@@ -179,7 +178,7 @@ following command:
     --criterion eer \
     -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
-The EER/HTER errors for `replayattack`_ database are summarized in the Table below:
+The EER/HTER errors for `replayattack`_ database are summarized in the table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
@@ -201,7 +200,7 @@ Baselines on REPLAY-MOBILE database
 --------------------------------------
 
 This section summarizes the results of baseline face PAD experiments on the `Replay-Mobile`_ database.
-The description of the database-related settings, which are used to run face PAD baselines on the Replay-Mobile is given here :ref:`bob.pad.face.resources.databases.replay_mobile`. To understand the settings in more details you can check the corresponding configuration file : ``bob/pad/face/config/replay_mobile.py``.
+The description of the database-related settings, which are used to run face PAD baselines on the Replay-Mobile is given here :ref:`bob.pad.face.resources.databases.replay_mobile`. To understand the settings in more detail you can check the corresponding configuration file : ``bob/pad/face/config/replay_mobile.py``.
 
 
 LBP features of facial region + SVM classifier
@@ -237,7 +236,7 @@ following command:
     --criterion eer \
     -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
-The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Table below:
+The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
@@ -285,7 +284,7 @@ following command:
     --criterion eer \
     -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
-The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the Table below:
+The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
@@ -335,7 +334,7 @@ following command:
     --criterion eer \
     -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
-The EER/HTER errors for the MIFS database are summarized in the Table below:
+The EER/HTER errors for the MIFS database are summarized in the table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
@@ -369,7 +368,7 @@ following command:
     --criterion eer \
     -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
 
-The EER/HTER errors for the MIFS database are summarized in the Table below:
+The EER/HTER errors for the MIFS database are summarized in the table below:
 
 +-------------------+----------+----------+
 |      Protocol     |  EER,\%  |  HTER,\% |
