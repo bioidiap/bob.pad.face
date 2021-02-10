@@ -21,7 +21,7 @@ To see the description of the command, you can type in the console:
 
    $ bob pad vanilla-pad --help
 
-This script is explained in more detail in :ref:`bob.pad.base <bob.pad.base.vanilla_pad_intro>`.
+This command is explained in more detail in :ref:`bob.pad.base`.
 
 Usually, it is a good idea to have at least verbose level 2 (i.e., calling
 ``bob pad vanilla-pad --verbose --verbose``, or the short version
