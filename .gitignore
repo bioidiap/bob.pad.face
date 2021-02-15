@@ -10,6 +10,7 @@ parts
 src
 develop-eggs
 sphinx
+build
 dist
 record.txt
 results

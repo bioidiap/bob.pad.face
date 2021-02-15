@@ -18,7 +18,8 @@ Databases
 ------------
 
 These configuration files/resources contain parameters of available databases.
-The configuration files contain at least the following arguments of the ``spoof.py`` script:
+The configuration files contain at least the following arguments of the
+``bob pad vanilla-pad`` command:
 
     * ``database``
     * ``protocol``
@@ -57,13 +58,12 @@ MIFS Database
 Available face PAD systems
 ------------------------------
 
-These configuration files/resources contain parameters of available face PAD systems/algorithms.
-The configuration files contain at least the following arguments of the ``spoof.py`` script:
+These configuration files/resources contain parameters of available face PAD
+systems/algorithms.
+The configuration files contain at least the following arguments of the
+``bob pad vanilla-pad`` command:
 
-    * ``sub_directory``
-    * ``preprocessor``
-    * ``extractor``
-    * ``algorithm``
+    * ``pipeline`` containing zero, one, or more Transformers and one Classifier
 
 
 .. _bob.pad.face.resources.face_pad.lbp_svm_replayattack:

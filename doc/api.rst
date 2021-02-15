@@ -37,14 +37,17 @@ MIFS Database
 .. autoclass:: bob.pad.face.database.mifs.MIFSPadDatabase
 
 
+Transformers
+------------
+
 Pre-processors
-------------------------------
+==============
 
 .. automodule:: bob.pad.face.preprocessor
 
 
 Feature Extractors
-------------------------------
+==================
 
 .. automodule:: bob.pad.face.extractor
 
