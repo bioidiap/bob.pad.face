@@ -52,34 +52,6 @@ Database setups and face PAD algorithms are encoded using
 in the directory ``bob/pad/face/config``. Documentation for each resource
 is available on the section :ref:`bob.pad.face.resources`.
 
-.. warning::
-
-   You **cannot** run experiments just by executing the command line
-   instructions described in this guide. You **need first** to procure yourself
-   the raw data files that correspond to *each* database used here to correctly
-   run experiments with those data. Biometric data is considered private and,
-   under EU regulations, cannot be distributed without a consent or license.
-   You may consult our :ref:`bob.pad.face.resources.databases` resources
-   section for checking currently supported databases and accessing download
-   links for the raw data files.
-
-   Once the raw data files have been downloaded, particular attention should be
-   given to the directory locations of those. Unpack the databases carefully
-   and take note of the root directory where they have been unpacked.
-
-   Then, carefully read the *Databases* section of
-   :ref:`bob.pad.base.installation` on how to correctly setup the
-   ``~/.bob_bio_databases.txt`` file.
-
-   Use the following command with the appropriate database name (see
-   :ref:`bob.pad.face.resources.databases`):
-
-   .. code-block:: sh
-
-      bob config set bob.db.<dbname> /path/to/the/db/folder
-
-   Once this step is done, you can proceed with the execution of the experiment.
-
 
 .. include:: links.rst
 
