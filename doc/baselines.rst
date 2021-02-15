@@ -21,7 +21,7 @@ To see the description of the command, you can type in the console:
 
    $ bob pad vanilla-pad --help
 
-This command is explained in more detail in :ref:`bob.pad.base`.
+This command is explained in more detail in :ref:`bob.pad.base <bob.pad.base.vanilla_pad_features>`.
 
 Usually, it is a good idea to have at least verbose level 2 (i.e., calling
 ``bob pad vanilla-pad --verbose --verbose``, or the short version
@@ -29,14 +29,14 @@ Usually, it is a good idea to have at least verbose level 2 (i.e., calling
 
 .. note:: **Running in Parallel**
 
-   To run the experiments in parallel, you can define a dask client
-   (multi-processing) configurations as explained in :ref:`running_in_parallel`.
+   To run the experiments in parallel, you can use an existing or (define a new)
+   SGE grid or local host multiprocessing configuration. To run the experiment
+   in the Idiap SGE grid, you can simply add the ``--dask-client sge`` command
+   line option. To run experiments in parallel on the local machine, add the 
+   ``--dask-client local-parallel`` option.
 
-   In short, to run in the Idiap SGE grid, you can simply add the ``-l``
-   (``--dask-client``) command line option, with grid configuration parameters
-   (e.g. ``-l sge``).
-   To run experiments in parallel on the local machine, simply add the
-   ``-l local-parallel`` option.
+   See :ref:`this <bob.bio.base.vanilla_biometrics_advanced_features>` for more
+   details on dask configurations.
 
 
 Database setups and baselines are encoded using

@@ -30,20 +30,21 @@ To see the description of this command you can type in the console:
 
    $ bob pad --help
 
-This script is explained in more detail in :ref:`bob.pad.base.experiments`.
+This script is explained in more detail in :ref:`bob.pad.base`.
 
 Usually, it is a good idea to have at least verbose level 2 (i.e., calling
 ``bob pad --verbose --verbose``, or the short version ``bob pad -vv``).
 
 .. note:: **Running in Parallel**
 
-   To run the experiments in parallel, you can define an SGE grid or local host
-   (multi-processing) configurations as explained in
-   :ref:`running_in_parallel`.
+   To run the experiments in parallel, you can use an existing or (define a new)
+   SGE grid or local host multiprocessing configuration. To run the experiment
+   in the Idiap SGE grid, you can simply add the ``--dask-client sge`` command
+   line option. To run experiments in parallel on the local machine, add the 
+   ``--dask-client local-parallel`` option.
 
-   In short, to run in the Idiap SGE grid, you can simply add the
-   ``--dask-client sge`` command line option. To run experiments in parallel on
-   the local machine, simply add the ``--dask-client local-parallel`` option.
+   See :ref:`this <bob.bio.base.vanilla_biometrics_advanced_features>` for more
+   details on dask configurations.
 
 
 Database setups and face PAD algorithms are encoded using
