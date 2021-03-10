@@ -1,4 +1,4 @@
-from .database import VideoPadFile
+from .database import VideoPadFile, VideoPadSample
 from .replay import ReplayPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .mifs import MIFSPadDatabase

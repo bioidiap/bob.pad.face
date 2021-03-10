@@ -13,6 +13,5 @@ the link.
 .. include:: links.rst
 """
 from bob.pad.face.database import ReplayMobilePadDatabase
-from bob.pad.base.pipelines.vanilla_pad import DatabaseConnector
 
-database = DatabaseConnector(ReplayMobilePadDatabase())
+database = ReplayMobilePadDatabase()
