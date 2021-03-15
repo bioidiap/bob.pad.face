@@ -8,57 +8,43 @@ import bob.bio.base
 from bob.bio.base.test.utils import db_available
 
 
-@db_available("replay")  # the name of the package
-def test_replay():
-    # replay-attack is the name of the entry point
-    replay_database_instance = bob.bio.base.load_resource(
+def test_replayattack():
+    database = bob.bio.base.load_resource(
         "replay-attack",
         "database",
         preferred_package="bob.pad.face",
         package_prefix="bob.pad.",
-    ).database
+    )
+
+    assert database.protocols() == ['digitalphoto', 'grandtest', 'highdef', 'mobile', 'photo', 'print', 'smalltest', 'video']
+    assert database.groups() == ["dev", "eval", "train"]
+    assert len(database.samples(groups=["train", "dev", "eval"])) == 1200
+    assert len(database.samples(groups=["train", "dev"])) == 720
+    assert len(database.samples(groups=["train"])) == 360
+    assert len(database.samples(groups=["train", "dev", "eval"])) == 1200
+    assert (
+        len(database.samples(groups=["train", "dev", "eval"], purposes="real")) == 200
+    )
+    assert (
+        len(database.samples(groups=["train", "dev", "eval"], purposes="attack")) == 1000
+    )
+
+    sample = database.sort(database.samples())[0]
     try:
-
-        assert (
-            len(replay_database_instance.objects(groups=["train", "dev", "eval"]))
-            == 1200
-        )
-        assert len(replay_database_instance.objects(groups=["train", "dev"])) == 720
-        assert len(replay_database_instance.objects(groups=["train"])) == 360
-        assert (
-            len(
-                replay_database_instance.objects(
-                    groups=["train", "dev", "eval"], protocol="grandtest"
-                )
-            )
-            == 1200
-        )
-        assert (
-            len(
-                replay_database_instance.objects(
-                    groups=["train", "dev", "eval"],
-                    protocol="grandtest",
-                    purposes="real",
-                )
-            )
-            == 200
-        )
-        assert (
-            len(
-                replay_database_instance.objects(
-                    groups=["train", "dev", "eval"],
-                    protocol="grandtest",
-                    purposes="attack",
-                )
-            )
-            == 1000
-        )
-
+        assert sample.annotations["0"] == {
+            "bottomright": [213, 219],
+            "topleft": [58, 108],
+            "leye": [118, 190],
+            "reye": [117, 137],
+            "mouthleft": [177, 144],
+            "mouthright": [180, 183],
+            "nose": [152, 164],
+        }
+        assert sample.data.shape == (20, 3, 240, 320)
+        assert sample.data[0][0, 0, 0] == 8
     except IOError as e:
-        raise SkipTest(
-            "The database could not be queried; probably the db.sql3 file is missing. Here is the error: '%s'"
-            % e
-        )
+        raise SkipTest(e)
+
 
 
 def test_replaymobile():
@@ -94,6 +80,7 @@ def test_replaymobile():
             "nose": [585, 358],
         }
         assert sample.data.shape == (20, 3, 720, 1280)
+        assert sample.data[0][0, 0, 0] == 13
     except IOError as e:
         raise SkipTest(e)
 

@@ -12,20 +12,7 @@ from sklearn.pipeline import make_pipeline
 logger = logging.getLogger(__name__)
 
 
-def get_rm_video_transform(sample):
-    should_flip = sample.should_flip
-
-    def transform(video):
-        video = np.asarray(video)
-        video = np.rollaxis(video, -1, -2)
-        if should_flip:
-            video = video[..., ::-1, :]
-        return video
-
-    return transform
-
-
-def ReplayMobilePadDatabase(
+def ReplayAttackPadDatabase(
     protocol="grandtest",
     selection_style=None,
     max_number_of_frames=None,
@@ -35,34 +22,30 @@ def ReplayMobilePadDatabase(
     fixed_positions=None,
     **kwargs,
 ):
-    name = "pad-face-replay-mobile-586b7e81.tar.gz"
+    name = "pad-face-replay-attack-a8e31cc3.tar.gz"
     dataset_protocols_path = get_file(
         name,
         [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
         cache_subdir="protocols",
-        file_hash="586b7e81",
+        file_hash="a8e31cc3",
     )
 
     if annotation_directory is None:
-        name = "annotations-replaymobile-mtcnn-9cd6e452.tar.xz"
+        name = "annotations-replay-attack-mtcnn-3ecbfa3c.tar.xz"
         annotation_directory = get_file(
             name,
             [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
             cache_subdir="annotations",
-            file_hash="9cd6e452",
+            file_hash="3ecbfa3c",
         )
         annotation_type = "eyes-center"
 
-    transformer = make_pipeline(
-        Str_To_Types(fieldtypes=dict(should_flip=str_to_bool)),
-        VideoPadSample(
-            original_directory=rc.get("bob.db.replaymobile.directory"),
-            annotation_directory=annotation_directory,
-            selection_style=selection_style,
-            max_number_of_frames=max_number_of_frames,
-            step_size=step_size,
-            get_transform=get_rm_video_transform,
-        ),
+    transformer = VideoPadSample(
+        original_directory=rc.get("bob.db.replayattack.directory"),
+        annotation_directory=annotation_directory,
+        selection_style=selection_style,
+        max_number_of_frames=max_number_of_frames,
+        step_size=step_size,
     )
 
     database = FileListPadDatabase(
