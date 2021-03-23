@@ -3,5 +3,5 @@ Please run ``bob config set bob.db.casia_fasd.directory /path/to/casia_fasd_file
 in terminal to point to the original files of the dataset on your computer."""
 
 from bob.pad.face.database import CasiaFasdPadDatabase
-from bob.pad.base.pipelines.vanilla_pad import DatabaseConnector
-database = DatabaseConnector(CasiaFasdPadDatabase())
+
+database = CasiaFasdPadDatabase()

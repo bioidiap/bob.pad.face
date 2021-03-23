@@ -43,13 +43,6 @@ Replay-Mobile Database
 .. automodule:: bob.pad.face.config.replay_mobile
    :members:
 
-
-MIFS Database
-================================================================================
-
-.. automodule:: bob.pad.face.config.mifs
-  :members:
-
 ---------------------------------
 
 

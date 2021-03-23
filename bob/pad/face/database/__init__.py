@@ -2,9 +2,7 @@ from .database import VideoPadFile
 from .database import VideoPadSample  # noqa: F401
 from .casiafasd import CasiaFasdPadDatabase
 from .casiasurf import CasiaSurfPadDatabase
-from .celeb_a import CELEBAPadDatabase
 from .maskattack import MaskAttackPadDatabase
-from .mifs import MIFSPadDatabase
 from .replay_attack import ReplayAttackPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 
@@ -29,8 +27,6 @@ __appropriate__(
     VideoPadFile,
     ReplayAttackPadDatabase,
     ReplayMobilePadDatabase,
-    MIFSPadDatabase,
-    CELEBAPadDatabase,
     MaskAttackPadDatabase,
     CasiaSurfPadDatabase,
     CasiaFasdPadDatabase,

@@ -21,20 +21,13 @@ Base classes
 REPLAY-ATTACK Database
 ========================
 
-.. autoclass:: bob.pad.face.database.replay.ReplayPadFile
-.. autoclass:: bob.pad.face.database.replay.ReplayPadDatabase
+.. autoclass:: bob.pad.face.database.replay_attack.ReplayAttackPadDatabase
 
 REPLAY-MOBILE Database
 ========================
 
-.. autoclass:: bob.pad.face.database.replay_mobile.ReplayMobilePadFile
 .. autoclass:: bob.pad.face.database.replay_mobile.ReplayMobilePadDatabase
 
-MIFS Database
-========================
-
-.. autoclass:: bob.pad.face.database.mifs.MIFSPadFile
-.. autoclass:: bob.pad.face.database.mifs.MIFSPadDatabase
 
 
 Transformers
