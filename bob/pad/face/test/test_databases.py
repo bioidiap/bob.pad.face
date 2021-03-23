@@ -41,7 +41,7 @@ def test_replayattack():
         }
         assert sample.data.shape == (20, 3, 240, 320)
         assert sample.data[0][0, 0, 0] == 8
-    except IOError as e:
+    except RuntimeError as e:
         raise SkipTest(e)
 
 
@@ -80,7 +80,7 @@ def test_replaymobile():
         }
         assert sample.data.shape == (20, 3, 720, 1280)
         assert sample.data[0][0, 0, 0] == 13
-    except IOError as e:
+    except RuntimeError as e:
         raise SkipTest(e)
 
 
