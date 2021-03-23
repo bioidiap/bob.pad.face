@@ -13,7 +13,10 @@ else:
 
 # Preprocessor #
 cropper = face_crop_solver(
-    cropped_image_size=64, cropped_positions=annotation_type, color_channel="gray"
+    cropped_image_size=64,
+    cropped_positions=annotation_type,
+    color_channel="gray",
+    fixed_positions=fixed_positions,
 )
 preprocessor = VideoWrapper(cropper)
 preprocessor = mario.wrap(

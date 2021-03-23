@@ -3,9 +3,13 @@ from bob.pad.face.utils import yield_faces, scale_face, blocks
 from nose.tools import raises
 import numpy
 
-padfile = Database().all_files(('train', 'dev'))[0][0]
-image = padfile.load(Database().original_directory,
-                     Database().original_extension)[0]
+
+def get_pad_sample(none_annotations=False):
+    sample = Database(none_annotations=none_annotations).samples(("train", "dev"))[0]
+    return sample
+
+
+image = get_pad_sample().data[0]
 
 
 def dummy_cropper(frame, annotations=None):
@@ -13,38 +17,38 @@ def dummy_cropper(frame, annotations=None):
 
 
 def test_yield_frames():
-    database = Database()
-    nframes = database.number_of_frames(padfile)
+    padfile = get_pad_sample()
+    nframes = len(padfile.data)
     assert nframes == 1, nframes
-    for frame in padfile.frames:
+    for frame in padfile.data:
         assert frame.ndim == 2
-        assert frame.shape == database.frame_shape
+        assert frame.shape == (112, 92)
 
 
 @raises(ValueError)
 def test_yield_faces_1():
-    padfile.none_annotations = True
+    padfile = get_pad_sample(none_annotations=True)
     for face in yield_faces(padfile, dummy_cropper):
         pass
 
 
 def test_yield_faces_2():
-    padfile.none_annotations = False
+    padfile = get_pad_sample(none_annotations=False)
     assert len(list(yield_faces(padfile, dummy_cropper)))
     for face in yield_faces(padfile, dummy_cropper):
         assert face.ndim == 2
-        assert face.shape == padfile.frame_shape
+        assert face.shape == padfile.data.shape[1:]
 
 
 def test_scale_face():
     # gray-scale image
     face = image
     scaled_face = scale_face(face, 64)
-    assert scaled_face.dtype == 'float64'
+    assert scaled_face.dtype == "float64"
     assert scaled_face.shape == (64, 64)
     # color image
     scaled_face = scale_face(numpy.array([face, face, face]), 64)
-    assert scaled_face.dtype == 'float64'
+    assert scaled_face.dtype == "float64"
     assert scaled_face.shape == (3, 64, 64)
     assert (scaled_face[0] == scaled_face[1]).all()
     assert (scaled_face[0] == scaled_face[2]).all()

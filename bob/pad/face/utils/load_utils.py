@@ -61,14 +61,14 @@ def min_face_size_normalizer(annotations, max_age=15, **kwargs):
     )
 
 
-def yield_faces(padfile, cropper, normalizer=None):
+def yield_faces(pad_sample, cropper, normalizer=None):
     """Yields face images of a padfile. It uses the annotations from the
     database. The annotations are further normalized.
 
     Parameters
     ----------
-    padfile : :any:`bob.pad.base.database.PadFile`
-        The padfile to return the faces.
+    pad_sample
+        The pad sample to return the faces.
     cropper : callable
         A face image cropper that works with database's annotations.
     normalizer : callable
@@ -86,10 +86,9 @@ def yield_faces(padfile, cropper, normalizer=None):
     ValueError
         If the database returns None for annotations.
     """
-    frames_gen = padfile.frames
 
     # read annotation
-    annotations = padfile.annotations
+    annotations = pad_sample.annotations
     if annotations is None:
         raise ValueError("No annotations were returned.")
 
@@ -97,7 +96,7 @@ def yield_faces(padfile, cropper, normalizer=None):
         annotations = OrderedDict(normalizer(annotations))
 
     # normalize annotations and crop faces
-    for frame_id, frame in enumerate(frames_gen):
+    for frame_id, frame in enumerate(pad_sample.data):
         annot = annotations.get(str(frame_id), None)
         if annot is None:
             continue
@@ -268,8 +267,7 @@ def extract_patches(image, block_size, block_overlap=(0, 0), n_random_patches=No
 
 
 def the_giant_video_loader(
-    paddb,
-    padfile,
+    pad_sample,
     region="whole",
     scaling_factor=None,
     cropper=None,
@@ -288,10 +286,8 @@ def the_giant_video_loader(
 
     Parameters
     ----------
-    paddb
-        Ignored.
-    padfile
-        The pad file
+    pad_sample
+        The pad sample
     region : str
         Either `whole` or `crop`. If whole, it will return the whole frame.
         Otherwise, you need to provide a cropper and a normalizer.
@@ -329,9 +325,9 @@ def the_giant_video_loader(
         If region is not whole or crop.
     """
     if region == "whole":
-        generator = padfile.frames
+        generator = iter(pad_sample.data)
     elif region == "crop":
-        generator = yield_faces(padfile, cropper=cropper, normalizer=normalizer)
+        generator = yield_faces(pad_sample, cropper=cropper, normalizer=normalizer)
     else:
         raise ValueError("Invalid region value: `{}'".format(region))
 
@@ -345,7 +341,7 @@ def the_giant_video_loader(
                 for patch in blocks_generator(frame, block_size, block_overlap)
             )
         else:
-            if padfile.attack_type is None:
+            if pad_sample.is_bonafide:
                 random_patches_per_frame *= multiple_bonafide_patches
             generator = (
                 patch
@@ -358,10 +354,10 @@ def the_giant_video_loader(
     if augment is not None:
         generator = (augment(frame) for frame in generator)
 
-    if keep_pa_samples is not None and padfile.attack_type is not None:
+    if keep_pa_samples is not None and not pad_sample.is_bonafide:
         generator = (frame for frame in generator if random.random() < keep_pa_samples)
 
-    if keep_bf_samples is not None and padfile.attack_type is None:
+    if keep_bf_samples is not None and pad_sample.is_bonafide:
         generator = (frame for frame in generator if random.random() < keep_bf_samples)
 
     return generator

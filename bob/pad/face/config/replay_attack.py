@@ -9,7 +9,6 @@ the link.
 
 .. include:: links.rst
 """
-from bob.pad.face.database import ReplayPadDatabase
-from bob.pad.base.pipelines.vanilla_pad import DatabaseConnector
+from bob.pad.face.database import ReplayAttackPadDatabase
 
-database = DatabaseConnector(ReplayPadDatabase())
+database = ReplayAttackPadDatabase()

@@ -20,8 +20,8 @@ setup(
     description="Implements tools for spoofing or presentation attack detection in face biometrics",
     url="https://gitlab.idiap.ch/bob/bob.pad.face",
     license="GPLv3",
-    author="Olegs Nikisins",
-    author_email="olegs.nikisins@idiap.ch",
+    author="Amir Mohammadi",
+    author_email="amir.mohammadi@idiap.ch",
     keywords="bob",
     # If you have a better, long description of your package, place it on the
     # 'doc' directory and then hook it here
@@ -53,15 +53,12 @@ setup(
     entry_points={
         # scripts should be declared using this entry:
         "console_scripts": [
-            "quality-assessment.py = bob.pad.face.script.quality_assessment:main",
         ],
         # registered databases:
         "bob.pad.database": [
             "replay-attack = bob.pad.face.config.replay_attack:database",
             "replay-mobile = bob.pad.face.config.replay_mobile:database",
             "casiafasd = bob.pad.face.config.casiafasd:database",
-            "mifs = bob.pad.face.config.mifs:database",
-            "celeb-a = bob.pad.face.config.celeb_a:database",
             "maskattack = bob.pad.face.config.maskattack:database",
             "casiasurf-color = bob.pad.face.config.casiasurf_color:database",
             "casiasurf = bob.pad.face.config.casiasurf:database",
@@ -72,8 +69,6 @@ setup(
             "replay-attack = bob.pad.face.config.replay_attack",
             "replay-mobile = bob.pad.face.config.replay_mobile",
             "casiafasd = bob.pad.face.config.casiafasd",
-            "mifs = bob.pad.face.config.mifs",
-            "celeb-a = bob.pad.face.config.celeb_a",
             "maskattack = bob.pad.face.config.maskattack",
             # LBPs
             "lbp = bob.pad.face.config.lbp_64",

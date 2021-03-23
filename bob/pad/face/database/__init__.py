@@ -1,11 +1,10 @@
 from .database import VideoPadFile
-from .replay import ReplayPadDatabase
-from .replay_mobile import ReplayMobilePadDatabase
-from .mifs import MIFSPadDatabase
-from .celeb_a import CELEBAPadDatabase
-from .maskattack import MaskAttackPadDatabase
-from .casiasurf import CasiaSurfPadDatabase
+from .database import VideoPadSample  # noqa: F401
 from .casiafasd import CasiaFasdPadDatabase
+from .casiasurf import CasiaSurfPadDatabase
+from .maskattack import MaskAttackPadDatabase
+from .replay_attack import ReplayAttackPadDatabase
+from .replay_mobile import ReplayMobilePadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -26,10 +25,8 @@ def __appropriate__(*args):
 
 __appropriate__(
     VideoPadFile,
-    ReplayPadDatabase,
+    ReplayAttackPadDatabase,
     ReplayMobilePadDatabase,
-    MIFSPadDatabase,
-    CELEBAPadDatabase,
     MaskAttackPadDatabase,
     CasiaSurfPadDatabase,
     CasiaFasdPadDatabase,
