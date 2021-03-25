@@ -1,6 +1,1 @@
 nose
-bob.db.replay
-bob.db.replaymobile
-bob.db.casia_fasd
-bob.db.maskattack
-bob.db.casiasurf
