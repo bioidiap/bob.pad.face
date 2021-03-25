@@ -63,6 +63,7 @@ setup(
             "casiasurf-color = bob.pad.face.config.casiasurf_color:database",
             "casiasurf = bob.pad.face.config.casiasurf:database",
             "swan = bob.pad.face.config.swan:database",
+            "oulunpu = bob.pad.face.config.oulunpu:database",
         ],
         # registered configurations:
         "bob.pad.config": [
@@ -74,6 +75,7 @@ setup(
             "casiasurf-color = bob.pad.face.config.casiasurf_color",
             "casiasurf = bob.pad.face.config.casiasurf",
             "swan = bob.pad.face.config.swan",
+            "oulunpu = bob.pad.face.config.oulunpu",
             # LBPs
             "lbp = bob.pad.face.config.lbp_64",
             # quality measure

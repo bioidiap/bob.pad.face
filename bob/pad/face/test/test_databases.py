@@ -39,7 +39,9 @@ def test_replayattack():
 
     sample = database.sort(database.samples())[0]
     try:
-        assert sample.annotations["0"] == {
+        annot = dict(sample.annotations["0"])
+        assert annot["leye"][1] > annot["reye"][1], annot
+        assert annot == {
             "bottomright": [213, 219],
             "topleft": [58, 108],
             "leye": [118, 190],
@@ -76,7 +78,9 @@ def test_replaymobile():
 
     sample = database.sort(database.samples())[0]
     try:
-        assert sample.annotations["0"] == {
+        annot = dict(sample.annotations["0"])
+        assert annot["leye"][1] > annot["reye"][1], annot
+        assert annot == {
             "bottomright": [760, 498],
             "topleft": [374, 209],
             "leye": [518, 417],
@@ -211,7 +215,9 @@ def test_swan():
 
     sample = database.sort(database.samples())[0]
     try:
-        assert dict(sample.annotations["0"]) == {
+        annot = dict(sample.annotations["0"])
+        assert annot["leye"][1] > annot["reye"][1], annot
+        assert annot == {
             "bottomright": [849, 564],
             "leye": [511, 453],
             "mouthleft": [709, 271],
@@ -222,5 +228,63 @@ def test_swan():
         }
         assert sample.data.shape == (20, 3, 720, 1280)
         assert sample.data[0][0, 0, 0] == 87
+    except RuntimeError as e:
+        raise SkipTest(e)
+
+
+def test_oulunpu():
+    database = bob.bio.base.load_resource(
+        "oulunpu",
+        "database",
+        preferred_package="bob.pad.face",
+        package_prefix="bob.pad.",
+    )
+
+    assert database.protocols() == [
+        "Protocol_1",
+        "Protocol_1_2",
+        "Protocol_1_3",
+        "Protocol_2",
+        "Protocol_3_1",
+        "Protocol_3_2",
+        "Protocol_3_3",
+        "Protocol_3_4",
+        "Protocol_3_5",
+        "Protocol_3_6",
+        "Protocol_4_1",
+        "Protocol_4_2",
+        "Protocol_4_3",
+        "Protocol_4_4",
+        "Protocol_4_5",
+        "Protocol_4_6",
+    ]
+    assert database.groups() == ["dev", "eval", "train"]
+    assert len(database.samples(groups=["train", "dev", "eval"])) == 1200 + 900 + 600
+    assert len(database.samples(groups=["train", "dev"])) == 1200 + 900
+    assert len(database.samples(groups=["train"])) == 1200
+    assert (
+        len(database.samples(groups=["train", "dev", "eval"], purposes="real"))
+        == 240 + 180 + 120
+    )
+    assert (
+        len(database.samples(groups=["train", "dev", "eval"], purposes="attack"))
+        == 960 + 720 + 480
+    )
+
+    sample = database.sort(database.samples())[0]
+    try:
+        annot = dict(sample.annotations["0"])
+        assert annot["leye"][1] > annot["reye"][1], annot
+        assert annot == {
+            "bottomright": [1124, 773],
+            "leye": [818, 638],
+            "mouthleft": [1005, 489],
+            "mouthright": [1000, 634],
+            "nose": [906, 546],
+            "reye": [821, 470],
+            "topleft": [632, 394],
+        }
+        assert sample.data.shape == (20, 3, 1920, 1080)
+        assert sample.data[0][0, 0, 0] == 195
     except RuntimeError as e:
         raise SkipTest(e)

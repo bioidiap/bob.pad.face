@@ -15,3 +15,4 @@
 .. _MIFS: http://www.antitza.com/makeup-datasets.html
 .. _CELEBA: http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html
 .. _Swan: https://www.idiap.ch/dataset/swan
+.. _oulu-npu: https://sites.google.com/site/oulunpudatabase/

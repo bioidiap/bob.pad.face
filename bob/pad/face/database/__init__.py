@@ -6,6 +6,7 @@ from .maskattack import MaskAttackPadDatabase
 from .replay_attack import ReplayAttackPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .swan import SwanPadDatabase
+from .oulunpu import OulunpuPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -32,6 +33,7 @@ __appropriate__(
     CasiaSurfPadDatabase,
     CasiaFasdPadDatabase,
     SwanPadDatabase,
+    OulunpuPadDatabase,
 )
 
 __all__ = [_ for _ in dir() if not _.startswith('_')]
