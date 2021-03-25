@@ -17,6 +17,7 @@ def delayed_video_load(
     max_number_of_frames=None,
     step_size=None,
     get_transform=None,
+    keep_extension_for_annotation=False,
 ):
     if get_transform is None:
         def get_transform(x):
@@ -37,7 +38,9 @@ def delayed_video_load(
         )
         annotations, delayed_attributes = None, None
         if annotation_directory:
-            path = os.path.splitext(sample.filename)[0]
+            path = sample.filename
+            if not keep_extension_for_annotation:
+                path = os.path.splitext(sample.filename)[0]
             delayed_annotations = partial(
                 read_annotation_file,
                 file_name=f"{annotation_directory}:{path}.json",
@@ -63,6 +66,7 @@ def VideoPadSample(
     max_number_of_frames=None,
     step_size=None,
     get_transform=None,
+    keep_extension_for_annotation=False,
 ):
     return FunctionTransformer(
         delayed_video_load,
@@ -74,6 +78,7 @@ def VideoPadSample(
             max_number_of_frames=max_number_of_frames,
             step_size=step_size,
             get_transform=get_transform,
+            keep_extension_for_annotation=keep_extension_for_annotation,
         ),
     )
 

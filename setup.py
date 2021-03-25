@@ -62,6 +62,7 @@ setup(
             "maskattack = bob.pad.face.config.maskattack:database",
             "casiasurf-color = bob.pad.face.config.casiasurf_color:database",
             "casiasurf = bob.pad.face.config.casiasurf:database",
+            "swan = bob.pad.face.config.swan:database",
         ],
         # registered configurations:
         "bob.pad.config": [
@@ -70,6 +71,9 @@ setup(
             "replay-mobile = bob.pad.face.config.replay_mobile",
             "casiafasd = bob.pad.face.config.casiafasd",
             "maskattack = bob.pad.face.config.maskattack",
+            "casiasurf-color = bob.pad.face.config.casiasurf_color",
+            "casiasurf = bob.pad.face.config.casiasurf",
+            "swan = bob.pad.face.config.swan",
             # LBPs
             "lbp = bob.pad.face.config.lbp_64",
             # quality measure

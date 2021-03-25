@@ -15,17 +15,26 @@ def test_replayattack():
         package_prefix="bob.pad.",
     )
 
-    assert database.protocols() == ['digitalphoto', 'grandtest', 'highdef', 'mobile', 'photo', 'print', 'smalltest', 'video']
+    assert database.protocols() == [
+        "digitalphoto",
+        "grandtest",
+        "highdef",
+        "mobile",
+        "photo",
+        "print",
+        "smalltest",
+        "video",
+    ]
     assert database.groups() == ["dev", "eval", "train"]
     assert len(database.samples(groups=["train", "dev", "eval"])) == 1200
     assert len(database.samples(groups=["train", "dev"])) == 720
     assert len(database.samples(groups=["train"])) == 360
-    assert len(database.samples(groups=["train", "dev", "eval"])) == 1200
     assert (
         len(database.samples(groups=["train", "dev", "eval"], purposes="real")) == 200
     )
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="attack")) == 1000
+        len(database.samples(groups=["train", "dev", "eval"], purposes="attack"))
+        == 1000
     )
 
     sample = database.sort(database.samples())[0]
@@ -45,7 +54,6 @@ def test_replayattack():
         raise SkipTest(e)
 
 
-
 def test_replaymobile():
     database = bob.bio.base.load_resource(
         "replay-mobile",
@@ -59,7 +67,6 @@ def test_replaymobile():
     assert len(database.samples(groups=["train", "dev", "eval"])) == 1030
     assert len(database.samples(groups=["train", "dev"])) == 728
     assert len(database.samples(groups=["train"])) == 312
-    assert len(database.samples(groups=["train", "dev", "eval"])) == 1030
     assert (
         len(database.samples(groups=["train", "dev", "eval"], purposes="real")) == 390
     )
@@ -94,8 +101,7 @@ def test_maskattack():
     )
     # all real sequences: 2 sessions, 5 recordings for 17 individuals
     assert (
-        len(maskattack.samples(groups=["train", "dev", "eval"], purposes="real"))
-        == 170
+        len(maskattack.samples(groups=["train", "dev", "eval"], purposes="real")) == 170
     )
     # all attacks: 1 session, 5 recordings for 17 individuals
     assert (
@@ -139,6 +145,7 @@ def test_maskattack():
 #         == 57710
 #     )
 
+
 def test_casiasurf_color_protocol():
     casiasurf = bob.bio.base.load_resource(
         "casiasurf-color",
@@ -150,16 +157,12 @@ def test_casiasurf_color_protocol():
     assert len(casiasurf.samples(groups=["train"], purposes="attack")) == 20324
     assert len(casiasurf.samples(groups=("dev",), purposes=("real",))) == 2994
     assert len(casiasurf.samples(groups=("dev",), purposes=("attack",))) == 6614
-    assert (
-        len(casiasurf.samples(groups=("dev",), purposes=("real", "attack"))) == 9608
-    )
+    assert len(casiasurf.samples(groups=("dev",), purposes=("real", "attack"))) == 9608
     assert len(casiasurf.samples(groups=("eval",), purposes=("real",))) == 17458
     assert len(casiasurf.samples(groups=("eval",), purposes=("attack",))) == 40252
     assert (
-        len(casiasurf.samples(groups=("eval",), purposes=("real", "attack")))
-        == 57710
+        len(casiasurf.samples(groups=("eval",), purposes=("real", "attack"))) == 57710
     )
-
 
 
 def test_casia_fasd():
@@ -177,3 +180,47 @@ def test_casia_fasd():
     assert len(casia_fasd.samples(groups="train")) == 180
     assert len(casia_fasd.samples(groups="dev")) == 60
     assert len(casia_fasd.samples(groups="eval")) == 360
+
+
+def test_swan():
+    database = bob.bio.base.load_resource(
+        "swan",
+        "database",
+        preferred_package="bob.pad.face",
+        package_prefix="bob.pad.",
+    )
+
+    assert database.protocols() == [
+        "pad_p2_face_f1",
+        "pad_p2_face_f2",
+        "pad_p2_face_f3",
+        "pad_p2_face_f4",
+        "pad_p2_face_f5",
+    ]
+    assert database.groups() == ["dev", "eval", "train"]
+    assert len(database.samples(groups=["train", "dev", "eval"])) == 5802
+    assert len(database.samples(groups=["train", "dev"])) == 2803
+    assert len(database.samples(groups=["train"])) == 2001
+    assert (
+        len(database.samples(groups=["train", "dev", "eval"], purposes="real")) == 3300
+    )
+    assert (
+        len(database.samples(groups=["train", "dev", "eval"], purposes="attack"))
+        == 2502
+    )
+
+    sample = database.sort(database.samples())[0]
+    try:
+        assert dict(sample.annotations["0"]) == {
+            "bottomright": [849, 564],
+            "leye": [511, 453],
+            "mouthleft": [709, 271],
+            "mouthright": [711, 445],
+            "nose": [590, 357],
+            "reye": [510, 265],
+            "topleft": [301, 169],
+        }
+        assert sample.data.shape == (20, 3, 720, 1280)
+        assert sample.data[0][0, 0, 0] == 87
+    except RuntimeError as e:
+        raise SkipTest(e)
