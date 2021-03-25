@@ -18,21 +18,21 @@ def SwanPadDatabase(
     fixed_positions=None,
     **kwargs,
 ):
-    name = "pad-face-swan.tar.gz"
+    name = "pad-face-swan-711dffcf.tar.gz"
     dataset_protocols_path = get_file(
         name,
         [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="datasets",
-        # file_hash="a8e31cc3",protocols
+        cache_subdir="protocols",
+        file_hash="711dffcf",
     )
 
     if annotation_directory is None:
-        name = "annotations-swan-mtcnn.tar.xz"
+        name = "annotations-swan-mtcnn-cff2f062.tar.xz"
         annotation_directory = get_file(
             name,
             [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
             cache_subdir="annotations",
-            # file_hash="3ecbfa3c",
+            file_hash="cff2f062",
         )
         annotation_type = "eyes-center"
 
