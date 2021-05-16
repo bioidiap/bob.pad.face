@@ -1,5 +1,6 @@
 import bob.pipelines as mario
 from bob.bio.face.helpers import face_crop_solver
+from bob.bio.face.config.baseline.helpers import get_default_cropped_positions
 from bob.bio.video.transformer import VideoWrapper
 from bob.pad.face.extractor import LBPHistogram
 
@@ -12,9 +13,13 @@ else:
     fixed_positions = None
 
 # Preprocessor #
+cropped_image_size = (64, 64)
+cropped_positions = get_default_cropped_positions(
+    "pad", cropped_image_size, annotation_type
+)
 cropper = face_crop_solver(
-    cropped_image_size=64,
-    cropped_positions=annotation_type,
+    cropped_image_size=cropped_image_size,
+    cropped_positions=cropped_positions,
     color_channel="gray",
     fixed_positions=fixed_positions,
 )
