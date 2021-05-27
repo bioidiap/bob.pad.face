@@ -1,6 +1,5 @@
 import bob.pipelines as mario
-from bob.bio.face.helpers import face_crop_solver
-from bob.bio.face.config.baseline.helpers import get_default_cropped_positions
+from bob.bio.face.helpers import face_crop_solver, get_default_cropped_positions
 from bob.bio.video.transformer import VideoWrapper
 from bob.pad.face.extractor import LBPHistogram
 
