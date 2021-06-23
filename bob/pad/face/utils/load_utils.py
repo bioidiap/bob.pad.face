@@ -20,7 +20,7 @@ def frames(path):
 
     Yields
     ------
-    :any:`numpy.array`
+    numpy.ndarray
         A frame of the video. The size is (3, 240, 320).
     """
     video = reader(path)
@@ -69,16 +69,16 @@ def yield_faces(pad_sample, cropper, normalizer=None):
     ----------
     pad_sample
         The pad sample to return the faces.
-    cropper : callable
+    cropper : collections.abc.Callable
         A face image cropper that works with database's annotations.
-    normalizer : callable
+    normalizer : collections.abc.Callable
         If not None, it should be a function that takes all the annotations of
         the whole video and yields normalized annotations frame by frame. It
         should yield same as ``annotations.items()``.
 
     Yields
     ------
-    numpy.array
+    numpy.ndarray
         Face images
 
     Raises
@@ -110,7 +110,7 @@ def scale_face(face, face_height, face_width=None):
 
     Parameters
     ----------
-    face : :any:`numpy.array`
+    face : numpy.ndarray
         The face image. It can be 2D or 3D in bob image format.
     face_height : int
         The height of the scaled face.
@@ -119,7 +119,7 @@ def scale_face(face, face_height, face_width=None):
 
     Returns
     -------
-    :any:`numpy.array`
+    numpy.ndarray
         The scaled face.
     """
     face_width = face_height if face_width is None else face_width
@@ -135,7 +135,7 @@ def blocks(data, block_size, block_overlap=(0, 0)):
 
     Parameters
     ----------
-    data : :any:`numpy.array`
+    data : numpy.ndarray
         The image in gray-scale, color, or color video format.
     block_size : (int, int)
         The size of patches
@@ -144,7 +144,7 @@ def blocks(data, block_size, block_overlap=(0, 0)):
 
     Returns
     -------
-    :any:`numpy.array`
+    numpy.ndarray
         The patches.
 
     Raises
@@ -180,7 +180,7 @@ def blocks_generator(data, block_size, block_overlap=(0, 0)):
 
     Parameters
     ----------
-    data : :any:`numpy.array`
+    data : numpy.ndarray
         The image in gray-scale, color, or color video format.
     block_size : (int, int)
         The size of patches
@@ -189,7 +189,7 @@ def blocks_generator(data, block_size, block_overlap=(0, 0)):
 
     Yields
     ------
-    :any:`numpy.array`
+    numpy.ndarray
         The patches.
 
     Raises
@@ -215,7 +215,7 @@ def color_augmentation(image, channels=("rgb",)):
 
     Parameters
     ----------
-    image : numpy.array
+    image : numpy.ndarray
         The image in RGB Bob format.
     channels : :obj:`tuple`, optional
         List of channels to convert the image to. It can be any of ``rgb``,
@@ -223,7 +223,7 @@ def color_augmentation(image, channels=("rgb",)):
 
     Returns
     -------
-    numpy.array
+    numpy.ndarray
         The image that contains several channels:
         ``(3*len(channels), height, width)``.
     """

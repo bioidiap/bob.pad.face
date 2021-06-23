@@ -19,8 +19,7 @@ class LBPHistogram(TransformerMixin, BaseEstimator):
     to_average : bool
         Compare the neighbors to the average of the pixels instead of the central pixel?
     radius : float
-        The radius of the circle on which the points are taken (for circular
-        LBP)
+        The radius of the circle on which the points are taken (for circular LBP)
     neighbors : int
         The number of points around the central point on which LBP is
         computed (4, 8, 16)
@@ -36,9 +35,9 @@ class LBPHistogram(TransformerMixin, BaseEstimator):
     Attributes
     ----------
     dtype : numpy.dtype
-        If a ``dtype`` is specified in the contructor, it is assured that the
+        If a ``dtype`` is specified in the constructor, it is assured that the
         resulting features have that dtype.
-    lbp : LBP
+    lbp : bob.ip.base.LBP
         The LPB extractor object.
     """
 

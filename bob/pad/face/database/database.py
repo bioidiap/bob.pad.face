@@ -145,7 +145,7 @@ class VideoPadFile(PadFile):
 
         Returns
         -------
-        collection.Iterator
+        collections.abc.Iterator
             An iterator returning frames of the video.
         """
         path = self.make_path(
