@@ -100,7 +100,8 @@ protocol, execute the following:
 
 .. code-block:: sh
 
-    $ bob pad vanilla-pad replay-attack lbp svm-frames -o <PATH_TO_STORE_THE_RESULTS>
+    $ bob pad vanilla-pad replay-attack lbp svm-frames \
+    --output <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
 
@@ -112,7 +113,7 @@ protocol, execute the following:
 
         $ bob pad vanilla-pad replay-attack lbp svm-frames \
         --output <PATH_TO_STORE_THE_RESULTS> \
-        --dask-client idiap
+        --dask-client sge
 
 To understand the settings of this baseline PAD experiment you can check the
 corresponding configuration file: ``bob/pad/face/config/lbp_svm.py``
@@ -122,22 +123,37 @@ following command:
 
 .. code-block:: sh
 
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/scores-eval \
+    $ bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/scores-dev.csv  \
+    <PATH_TO_STORE_THE_RESULTS>/scores-eval.csv \
     --legends "LBP features of facial region + SVM classifier + REPLAY-ATTACK database" \
-    -e \
+    --eval \
     --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    --output <PATH_TO_STORE_THE_RESULTS>/evaluation_report.pdf
 
 
 The error rates for `replayattack`_ database are summarized in the table below:
 
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  15.117  |  15.609  |
-+-------------------+----------+----------+
+==============  =================  =================
+..              Development        Evaluation
+==============  =================  =================
+APCER (attack)  17.4%              14.2%
+APCER_AP        17.4%              14.2%
+BPCER           17.4%              16.4%
+ACER            17.4%              15.3%
+FTA             0.0%               0.0%
+FPR             17.4% (1045/6000)  14.2% (1134/7999)
+FNR             17.4% (209/1200)   16.4% (262/1600)
+HTER            17.4%              15.3%
+FAR             17.4%              14.2%
+FRR             17.4%              16.4%
+PRECISION       0.5                0.5
+RECALL          0.8                0.8
+F1_SCORE        0.6                0.7
+AUC             0.9                0.9
+AUC-LOG-SCALE   2.0                2.1
+==============  =================  =================
+
 
 The ROC curves for this particular experiment can be downloaded from here:
 
@@ -156,11 +172,12 @@ To run this baseline on the `replayattack`_ database, using the ``grandtest`` pr
 .. code-block:: sh
 
     $ bob pad vanilla-pad replay-attack qm svm-frames \
-    --sub-directory <PATH_TO_STORE_THE_RESULTS>
+    --output <PATH_TO_STORE_THE_RESULTS>
 
 .. tip::
 
-    Similarly to the tip above you can run this baseline in parallel.
+    Similarly to the tip above you can run this baseline in parallel with the
+    ``--dask-client`` option.
 
 To understand the settings of this baseline PAD experiment you can check the
 corresponding configuration file: ``bob/pad/face/config/qm_svm.py``
@@ -170,21 +187,36 @@ following command:
 
 .. code-block:: sh
 
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    $ bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/scores-dev.csv  \
+    <PATH_TO_STORE_THE_RESULTS>/scores-eval.csv \
     --legends "IQM features of facial region + SVM classifier + REPLAY-ATTACK database" \
-    -e \
+    --eval \
     --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    --output <PATH_TO_STORE_THE_RESULTS>/evaluation_report.pdf
 
 The EER/HTER errors for `replayattack`_ database are summarized in the table below:
 
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  3.987   |  4.571   |
-+-------------------+----------+----------+
+==============  ================  ==================
+..              Development       Evaluation
+==============  ================  ==================
+APCER (attack)  6.58%             12.96%
+APCER_AP        6.58%             12.96%
+BPCER           6.58%             0.19%
+ACER            6.58%             6.58%
+FTA             0.00%             0.00%
+FPR             6.58% (395/6000)  12.96% (1037/7999)
+FNR             6.58% (79/1200)   0.19% (3/1600)
+HTER            6.58%             6.58%
+FAR             6.58%             12.96%
+FRR             6.58%             0.19%
+PRECISION       0.74              0.61
+RECALL          0.93              1.00
+F1_SCORE        0.83              0.75
+AUC             0.98              0.99
+AUC-LOG-SCALE   2.91              2.71
+==============  ================  ==================
+
 
 The ROC curves for the particular experiment can be downloaded from here:
 
@@ -218,7 +250,8 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. tip::
 
-    Similarly to the tip above you can run this baseline in parallel.
+    Similarly to the tip above you can run this baseline in parallel with the
+    ``--dask-client`` option.
 
 To understand the settings of this baseline PAD experiment you can check the
 corresponding configuration file: ``bob/pad/face/config/lbp_svm.py``
@@ -228,21 +261,37 @@ following command:
 
 .. code-block:: sh
 
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    $ bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/scores-dev.csv  \
+    <PATH_TO_STORE_THE_RESULTS>/scores-eval.csv \
     --legends "LBP features of facial region + SVM classifier + Replay-Mobile database" \
-    -e \
+    --eval \
     --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    --output <PATH_TO_STORE_THE_RESULTS>/evaluation_report.pdf
 
 The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the table below:
 
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  13.814  |  17.174  |
-+-------------------+----------+----------+
+===================  =================  =================
+..                   Development        Evaluation
+===================  =================  =================
+APCER (mattescreen)  15.60%             25.77%
+APCER (print)        12.97%             8.44%
+APCER_AP             15.60%             25.77%
+BPCER                14.29%             20.03%
+ACER                 14.94%             22.90%
+FTA                  0.00%              0.00%
+FPR                  14.28% (728/5098)  17.02% (647/3802)
+FNR                  14.29% (457/3199)  20.03% (439/2192)
+HTER                 14.28%             18.52%
+FAR                  14.28%             17.02%
+FRR                  14.29%             20.03%
+PRECISION            0.79               0.73
+RECALL               0.86               0.80
+F1_SCORE             0.82               0.76
+AUC                  0.93               0.88
+AUC-LOG-SCALE        1.83               1.76
+===================  =================  =================
+
 
 The ROC curves for the particular experiment can be downloaded from here:
 
@@ -266,7 +315,8 @@ To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` p
 
 .. tip::
 
-    Similarly to the tip above you can run this baseline in parallel.
+    Similarly to the tip above you can run this baseline in parallel with the
+    ``--dask-client`` option.
 
 To understand the settings of this baseline PAD experiment you can check the
 corresponding configuration file: ``bob/pad/face/config/qm_svm.py``
@@ -276,105 +326,41 @@ following command:
 
 .. code-block:: sh
 
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
+    $ bob pad evaluate \
+    <PATH_TO_STORE_THE_RESULTS>/scores-dev.csv  \
+    <PATH_TO_STORE_THE_RESULTS>/scores-eval.csv \
     --legends "IQM features of facial region + SVM classifier + Replay-Mobile database" \
-    -e \
+    --eval \
     --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
+    --output <PATH_TO_STORE_THE_RESULTS>/evaluation_report.pdf
 
 The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the table below:
 
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  1.747   |  4.074   |
-+-------------------+----------+----------+
+===================  ================  =================
+..                   Development       Evaluation
+===================  ================  =================
+APCER (mattescreen)  1.54%             0.16%
+APCER (print)        8.16%             9.53%
+APCER_AP             8.16%             9.53%
+BPCER                4.88%             10.77%
+ACER                 6.52%             10.15%
+FTA                  0.00%             0.00%
+FPR                  4.86% (248/5098)  4.89% (186/3802)
+FNR                  4.88% (156/3199)  10.77% (236/2192)
+HTER                 4.87%             7.83%
+FAR                  4.86%             4.89%
+FRR                  4.88%             10.77%
+PRECISION            0.92              0.91
+RECALL               0.95              0.89
+F1_SCORE             0.94              0.90
+AUC                  0.99              0.98
+AUC-LOG-SCALE        2.54              2.52
+===================  ================  =================
+
 
 The ROC curves for the particular experiment can be downloaded from here:
 
 :download:`ROC curve <img/ROC_iqm_svm_replay_mobile.pdf>`
-
-------------
-
-
-
-
-.. _bob.pad.face.baselines.other_db:
-
-Baselines on other databases
---------------------------------------
-
-This section summarizes the results of baseline face PAD experiments on other databases.
-
-------------
-
-
-MIFS database + LBP features of facial region + SVM classifier
-========================================================================
-
-To run this baseline on the MIFS database, using the ``grandtest`` protocol, execute the following:
-
-.. code-block:: sh
-
-    $ bob pad vanilla-pad mifs lbp svm-frames \
-    --output <PATH_TO_STORE_THE_RESULTS>
-
-To evaluate the results computing EER, HTER and plotting ROC you can use the
-following command:
-
-.. code-block:: sh
-
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
-    --legends "LBP features of facial region + SVM classifier + MIFS database" \
-    -e \
-    --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
-
-The EER/HTER errors for the MIFS database are summarized in the table below:
-
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  27.143  |  32.353  |
-+-------------------+----------+----------+
-
-------------
-
-
-MIFS database + Image Quality Measures as features of facial region + SVM classifier
-========================================================================================
-
-To run this baseline on the MIFS database, using the ``grandtest`` protocol, execute the following:
-
-.. code-block:: sh
-
-    $ bob pad vanilla-pad mifs qm svm-frames \
-    --output <PATH_TO_STORE_THE_RESULTS>
-
-To evaluate the results computing EER, HTER and plotting ROC you can use the
-following command:
-
-.. code-block:: sh
-
-    bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-dev  \
-    <PATH_TO_STORE_THE_RESULTS>/grandtest/scores/scores-eval \
-    --legends "IQM features of facial region + SVM classifier + MIFS database" \
-    -e \
-    --criterion eer \
-    -o <PATH_TO_STORE_THE_RESULTS>/ROC.pdf
-
-The EER/HTER errors for the MIFS database are summarized in the table below:
-
-+-------------------+----------+----------+
-|      Protocol     |  EER,\%  |  HTER,\% |
-+===================+==========+==========+
-|   ``grandtest``   |  34.286  |  28.676  |
-+-------------------+----------+----------+
 
 ------------
 

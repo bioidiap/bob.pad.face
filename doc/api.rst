@@ -21,12 +21,12 @@ Base classes
 REPLAY-ATTACK Database
 ========================
 
-.. autoclass:: bob.pad.face.database.replay_attack.ReplayAttackPadDatabase
+.. autofunction:: bob.pad.face.database.replay_attack.ReplayAttackPadDatabase
 
 REPLAY-MOBILE Database
 ========================
 
-.. autoclass:: bob.pad.face.database.replay_mobile.ReplayMobilePadDatabase
+.. autofunction:: bob.pad.face.database.replay_mobile.ReplayMobilePadDatabase
 
 
 
