@@ -30,9 +30,9 @@ requirements:
     - bob.bio.face
     - bob.bio.video
     - bob.pad.base
-    - numpy
-    - scikit-learn
-    - scikit-image
+    - numpy {{ numpy }}
+    - scikit-learn {{ scikit_learn }}
+    - scikit-image {{ scikit_image }}
   run:
     - python
     - setuptools
@@ -50,11 +50,10 @@ test:
     - conda inspect linkages -p $PREFIX {{ name }}  # [not win]
     - conda inspect objects -p $PREFIX {{ name }}  # [osx]
   requires:
-    - bob-devel {{ bob_devel }}.*
-    - nose
-    - coverage
-    - sphinx
-    - sphinx_rtd_theme
+    - nose {{ nose }}
+    - coverage {{ coverage }}
+    - sphinx {{ sphinx }}
+    - sphinx_rtd_theme {{ sphinx_rtd_theme }}
 
 about:
   home: https://www.idiap.ch/software/bob/
