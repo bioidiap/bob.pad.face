@@ -9,8 +9,6 @@ The reference citation is [CBVM16]_.
 
 You can download the raw data of the `Replay-Mobile`_ database by following
 the link.
-
-.. include:: links.rst
 """
 from bob.pad.face.database import ReplayMobilePadDatabase
 
