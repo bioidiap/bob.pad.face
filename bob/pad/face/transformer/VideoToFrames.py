@@ -19,6 +19,8 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
             # video is an instance of VideoAsArray or VideoLikeContainer
             video = sample.data
             for frame, frame_id in zip(video, video.indices):
+                if frame is None:
+                    continue
                 new_sample = mario.Sample(
                     frame,
                     frame_id=frame_id,
