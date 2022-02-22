@@ -1,6 +1,6 @@
 from bob.bio.face.annotator import min_face_size_validator
 from bob.bio.video.annotator import normalize_annotations
-from bob.io.video import reader
+from imageio import get_reader
 from bob.ip.base import scale, block, block_output_shape, block_generator
 from bob.ip.color import rgb_to_yuv, rgb_to_hsv
 from bob.ip.facedetect import bounding_box_from_annotation
@@ -8,6 +8,7 @@ from collections import OrderedDict
 from functools import partial
 import numpy
 import random
+import bob.io.image
 
 
 def frames(path):
@@ -23,8 +24,9 @@ def frames(path):
     numpy.ndarray
         A frame of the video. The size is (3, 240, 320).
     """
-    video = reader(path)
-    return iter(video)
+    video = get_reader(path)
+    for frame in video:
+        yield bob.io.image.to_bob(frame)
 
 
 def number_of_frames(path):
@@ -40,8 +42,8 @@ def number_of_frames(path):
     int
         The number of frames. Then, it yields the frames.
     """
-    video = reader(path)
-    return video.number_of_frames
+    video = get_reader(path)
+    return video.count_frames()
 
 
 def bbx_cropper(frame, annotations):

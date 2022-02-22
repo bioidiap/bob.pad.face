@@ -5,6 +5,7 @@
 from nose.plugins.skip import SkipTest
 
 import bob.bio.base
+import numpy as np
 
 
 def test_replayattack():
@@ -51,8 +52,8 @@ def test_replayattack():
             "nose": [152, 164],
         }
         assert sample.data.shape == (20, 3, 240, 320)
-        assert sample.data[0][0, 0, 0] == 8
-    except RuntimeError as e:
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [8, 9, 11])
+    except (RuntimeError, FileNotFoundError) as e:
         raise SkipTest(e)
 
 
@@ -76,22 +77,49 @@ def test_replaymobile():
         len(database.samples(groups=["train", "dev", "eval"], purposes="attack")) == 640
     )
 
-    sample = database.sort(database.samples())[0]
+    all_samples = database.sort(database.samples())
+    sample = all_samples[0]
+    assert (
+        sample.key
+        == "devel/attack/attack_client005_session01_mattescreen_fixed_mobile_photo_lightoff.mov"
+    ), sample.key
+    assert sample.should_flip
+    annot = dict(sample.annotations["0"])
+    assert annot["leye"][1] > annot["reye"][1], annot
+    assert annot == {
+        "bottomright": [760, 498],
+        "topleft": [374, 209],
+        "leye": [518, 417],
+        "reye": [522, 291],
+        "mouthleft": [669, 308],
+        "mouthright": [666, 407],
+        "nose": [585, 358],
+    }, annot
+
+    sample2 = [s for s in all_samples if not s.should_flip][0]
+    assert (
+        sample2.key
+        == "devel/attack/attack_client005_session01_mattescreen_fixed_tablet_photo_lightoff.mov"
+    ), sample2.key
+    assert not sample2.should_flip
+    annot = dict(sample2.annotations["0"])
+    assert annot["leye"][1] > annot["reye"][1], annot
+    assert annot == {
+        "reye": [873, 305],
+        "leye": [879, 423],
+        "nose": [937, 365],
+        "mouthleft": [1018, 313],
+        "mouthright": [1023, 405],
+        "topleft": [747, 226],
+        "bottomright": [1111, 495],
+    }, annot
+
     try:
-        annot = dict(sample.annotations["0"])
-        assert annot["leye"][1] > annot["reye"][1], annot
-        assert annot == {
-            "bottomright": [760, 498],
-            "topleft": [374, 209],
-            "leye": [518, 417],
-            "reye": [522, 291],
-            "mouthleft": [669, 308],
-            "mouthright": [666, 407],
-            "nose": [585, 358],
-        }
-        assert sample.data.shape == (20, 3, 720, 1280)
-        assert sample.data[0][0, 0, 0] == 13
-    except RuntimeError as e:
+        assert sample.data.shape == (20, 3, 1280, 720), sample.data.shape
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [13, 13, 13])
+        assert sample2.data.shape == (20, 3, 1280, 720), sample2.data.shape
+        np.testing.assert_equal(sample2.data[0][:, 0, 0], [19, 33, 30])
+    except (RuntimeError, FileNotFoundError) as e:
         raise SkipTest(e)
 
 
@@ -226,9 +254,9 @@ def test_swan():
             "reye": [510, 265],
             "topleft": [301, 169],
         }
-        assert sample.data.shape == (20, 3, 720, 1280)
-        assert sample.data[0][0, 0, 0] == 87
-    except RuntimeError as e:
+        assert sample.data.shape == (20, 3, 1280, 720)
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [255, 255, 253])
+    except (RuntimeError, FileNotFoundError) as e:
         raise SkipTest(e)
 
 
@@ -285,6 +313,6 @@ def test_oulunpu():
             "topleft": [632, 394],
         }
         assert sample.data.shape == (20, 3, 1920, 1080)
-        assert sample.data[0][0, 0, 0] == 195
-    except RuntimeError as e:
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [195, 191, 199])
+    except (RuntimeError, FileNotFoundError) as e:
         raise SkipTest(e)

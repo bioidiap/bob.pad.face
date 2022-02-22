@@ -12,3 +12,4 @@ bob.ip.color
 bob.ip.qualitymeasure
 scikit-learn
 scikit-image
+imageio-ffmpeg
