@@ -16,10 +16,9 @@ def get_rm_video_transform(sample):
     should_flip = sample.should_flip
 
     def transform(video):
-        video = np.asarray(video)
-        video = np.rollaxis(video, -1, -2)
-        if should_flip:
-            video = video[..., ::-1, :]
+        if not should_flip:
+            # after changing to imageio-ffmpeg, we need to flip other way around
+            video = video[..., ::-1]
         return video
 
     return transform

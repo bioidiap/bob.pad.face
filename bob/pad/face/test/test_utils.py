@@ -1,7 +1,8 @@
 from bob.pad.face.test.dummy.database import DummyDatabase as Database
-from bob.pad.face.utils import yield_faces, scale_face, blocks
+from bob.pad.face.utils import yield_faces, scale_face, blocks, frames, number_of_frames
 from nose.tools import raises
 import numpy
+import imageio
 
 
 def get_pad_sample(none_annotations=False):
@@ -10,6 +11,26 @@ def get_pad_sample(none_annotations=False):
 
 
 image = get_pad_sample().data[0]
+
+
+def test_video_frames():
+    # get the path to cockatoo.mp4 from imageio-ffmpeg
+    path = imageio.core.Request("imageio:cockatoo.mp4", "r").get_local_filename()
+    # read 2 frames
+    for i, frame in enumerate(frames(path)):
+        assert frame.shape == (3, 720, 1280), frame.shape
+        assert frame.ndim == 3, frame.ndim
+        if i == 0:
+            numpy.testing.assert_equal(frame[:, 0, 0], [116, 119, 104])
+        elif i == 1:
+            numpy.testing.assert_equal(frame[:, 0, 0], [116, 119, 104])
+        else:
+            break
+
+    # test number of frames
+    n_frames = number_of_frames(path)
+    assert n_frames == 280, n_frames
+
 
 
 def dummy_cropper(frame, annotations=None):

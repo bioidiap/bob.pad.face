@@ -1,4 +1,3 @@
-from .database import VideoPadFile
 from .database import VideoPadSample  # noqa: F401
 from .casiafasd import CasiaFasdPadDatabase
 from .casiasurf import CasiaSurfPadDatabase
@@ -26,7 +25,6 @@ def __appropriate__(*args):
 
 
 __appropriate__(
-    VideoPadFile,
     ReplayAttackPadDatabase,
     ReplayMobilePadDatabase,
     MaskAttackPadDatabase,
