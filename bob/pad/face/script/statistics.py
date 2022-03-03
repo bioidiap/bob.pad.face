@@ -6,7 +6,7 @@ import numpy as np
 from os.path import expanduser
 from bob.extension.scripts.click_helper import (
     verbosity_option, ConfigCommand, ResourceOption)
-from bob.ip.facedetect import (
+from bob.bio.face.annotator import (
     bounding_box_from_annotation, expected_eye_positions, BoundingBox)
 
 logger = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ from bob.bio.video.annotator import normalize_annotations
 from imageio import get_reader
 from bob.ip.base import scale, block, block_output_shape, block_generator
 from bob.ip.color import rgb_to_yuv, rgb_to_hsv
-from bob.ip.facedetect import bounding_box_from_annotation
+from bob.bio.face.annotator import bounding_box_from_annotation
 from collections import OrderedDict
 from functools import partial
 import numpy
