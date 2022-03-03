@@ -5,21 +5,35 @@ import click
 import numpy as np
 from os.path import expanduser
 from bob.extension.scripts.click_helper import (
-    verbosity_option, ConfigCommand, ResourceOption)
+    verbosity_option,
+    ConfigCommand,
+    ResourceOption,
+)
 from bob.bio.face.annotator import (
-    bounding_box_from_annotation, expected_eye_positions, BoundingBox)
+    bounding_box_from_annotation,
+    expected_eye_positions,
+    BoundingBox,
+)
 
 logger = logging.getLogger(__name__)
-BF = 'Bona Fide'
-PA = 'Presentation Attack'
+BF = "Bona Fide"
+PA = "Presentation Attack"
 
 
-@click.command(entry_point_group='bob.bio.config', cls=ConfigCommand)
-@click.option('--database', '-d', required=True, cls=ResourceOption,
-              entry_point_group='bob.pad.database')
-@click.option('-o', '--output', default='face_sizes.png')
-@click.option('--database-directories-file', cls=ResourceOption,
-              default=expanduser('~/.bob_bio_databases.txt'))
+@click.command(entry_point_group="bob.bio.config", cls=ConfigCommand)
+@click.option(
+    "--database",
+    "-d",
+    required=True,
+    cls=ResourceOption,
+    entry_point_group="bob.pad.database",
+)
+@click.option("-o", "--output", default="face_sizes.png")
+@click.option(
+    "--database-directories-file",
+    cls=ResourceOption,
+    default=expanduser("~/.bob_bio_databases.txt"),
+)
 @verbosity_option(cls=ResourceOption)
 def statistics(database, output, database_directories_file, **kwargs):
     """Statistics on face size in video databases.
@@ -46,10 +60,10 @@ def statistics(database, output, database_directories_file, **kwargs):
                            command-line (see below) will override the values of
                            configuration files.
     """
-    logger.debug('database: %s', database)
-    logger.debug('output: %s', output)
-    logger.debug('database_directories_file: %s', database_directories_file)
-    logger.debug('kwargs: %s', kwargs)
+    logger.debug("database: %s", database)
+    logger.debug("output: %s", output)
+    logger.debug("database_directories_file: %s", database_directories_file)
+    logger.debug("kwargs: %s", kwargs)
 
     # Some databases need their original_directory to be replaced
     database.replace_directories(database_directories_file)
@@ -63,7 +77,7 @@ def statistics(database, output, database_directories_file, **kwargs):
     for i, biofile in enumerate(biofiles):
         for annot in database.annotations(biofile).values():
             # get the bounding box
-            for source in ('direct', 'eyes', None):
+            for source in ("direct", "eyes", None):
                 try:
                     bbx = bounding_box_from_annotation(source=source, **annot)
                     break
@@ -80,6 +94,7 @@ def statistics(database, output, database_directories_file, **kwargs):
 
     if output:
         import matplotlib.pyplot as plt
+
         # from matplotlib.backends.backend_pdf import PdfPages
         # pp = PdfPages(output)
 
@@ -88,20 +103,21 @@ def statistics(database, output, database_directories_file, **kwargs):
         face_sizes = np.array(face_sizes)
         # get statistics on the face sizes
         for name, array in (
-            ('Height', face_sizes[:, 0]),
-            ('Width', face_sizes[:, 1]),
+            ("Height", face_sizes[:, 0]),
+            ("Width", face_sizes[:, 1]),
         ):
-            click.echo('min: {}, mean: {}, max: {}, std: {:.1f} for {}'.format(
-                array.min(), int(array.mean()), array.max(), array.std(),
-                name))
+            click.echo(
+                "min: {}, mean: {}, max: {}, std: {:.1f} for {}".format(
+                    array.min(), int(array.mean()), array.max(), array.std(), name
+                )
+            )
         # print the average eye distance assuming bounding boxes are from
         # bob.ip.facedetect or the annotations had eye locations in them
         bbx = BoundingBox((0, 0), face_sizes.mean(axis=0))
         annot = expected_eye_positions(bbx)
-        eye_distance = np.linalg.norm(
-            np.array(annot['reye']) - np.array(annot['leye']))
-        click.echo('Average eye locations: {}'.format(annot))
-        click.echo('Average eye distance: {}'.format(int(eye_distance)))
+        eye_distance = np.linalg.norm(np.array(annot["reye"]) - np.array(annot["leye"]))
+        click.echo("Average eye locations: {}".format(annot))
+        click.echo("Average eye distance: {}".format(int(eye_distance)))
 
         if not output:
             continue
@@ -124,12 +140,12 @@ def statistics(database, output, database_directories_file, **kwargs):
         # ax = Axes3D(fig)
         # ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.viridis)
 
-        plt.hist(face_sizes[:, 1], density=True,
-                 bins='auto', label=attack_type,
-                 alpha=0.5)
+        plt.hist(
+            face_sizes[:, 1], density=True, bins="auto", label=attack_type, alpha=0.5
+        )
     if output:
-        plt.xlabel('Width of faces')
-        plt.ylabel('Probability Density')
+        plt.xlabel("Width of faces")
+        plt.ylabel("Probability Density")
 
         plt.tight_layout()
         plt.legend()

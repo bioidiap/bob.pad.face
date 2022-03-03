@@ -1,6 +1,5 @@
 from functools import partial
 import os
-from bob.pad.base.database import PadFile
 import bob.bio.video
 from bob.db.base.annotations import read_annotation_file
 from sklearn.preprocessing import FunctionTransformer
