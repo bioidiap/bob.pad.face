@@ -1,14 +1,14 @@
-from bob.bio.face.annotator import min_face_size_validator
-from bob.bio.video.annotator import normalize_annotations
-from imageio import get_reader
-from bob.ip.base import scale, block, block_output_shape, block_generator
-from bob.ip.color import rgb_to_yuv, rgb_to_hsv
-from bob.bio.face.annotator import bounding_box_from_annotation
+import random
 from collections import OrderedDict
 from functools import partial
-import numpy
-import random
+
 import bob.io.image
+import numpy
+from bob.bio.face.annotator import bounding_box_from_annotation, min_face_size_validator
+from bob.bio.video.annotator import normalize_annotations
+from bob.ip.base import block, block_generator, block_output_shape, scale
+from bob.ip.color import rgb_to_hsv, rgb_to_yuv
+from imageio import get_reader
 
 
 def frames(path):
