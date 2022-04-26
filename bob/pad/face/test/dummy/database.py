@@ -2,7 +2,7 @@ import bob.io.base
 import os
 from bob.pipelines import DelayedSample
 from bob.pad.base.pipelines.vanilla_pad.abstract_classes import Database
-from bob.db.base.utils import check_parameters_for_validity, convert_names_to_lowlevel
+from bob.bio.base.database.legacy import check_parameters_for_validity, convert_names_to_lowlevel
 from bob.bio.video import VideoLikeContainer
 from bob.bio.base.database import AtntBioDatabase
 

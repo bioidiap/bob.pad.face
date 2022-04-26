@@ -76,8 +76,6 @@ setup(
             "casiasurf = bob.pad.face.config.casiasurf",
             "swan = bob.pad.face.config.swan",
             "oulunpu = bob.pad.face.config.oulunpu",
-            # LBPs
-            "lbp = bob.pad.face.config.lbp_64",
             # quality measure
             "qm = bob.pad.face.config.qm_64",
             # classifiers

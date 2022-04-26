@@ -32,7 +32,7 @@ Usually, it is a good idea to have at least verbose level 2 (i.e., calling
    To run the experiments in parallel, you can use an existing or (define a new)
    SGE grid or local host multiprocessing configuration. To run the experiment
    in the Idiap SGE grid, you can simply add the ``--dask-client sge`` command
-   line option. To run experiments in parallel on the local machine, add the 
+   line option. To run experiments in parallel on the local machine, add the
    ``--dask-client local-parallel`` option.
 
    See :any:`this <pipeline_simple_features>` for more
@@ -87,79 +87,6 @@ baselines on the Replay-Attack is given here
 :ref:`bob.pad.face.resources.databases.replay`. To understand the settings in
 more detail you can check the corresponding configuration file:
 ``bob/pad/face/config/replay_attack.py``.
-
-
-LBP features of facial region + SVM classifier
-===================================================
-
-Detailed description of this PAD pipe-line is given at
-:ref:`bob.pad.face.resources.face_pad.lbp_svm_replayattack`.
-
-To run this baseline on the `replayattack`_ database, using the ``grandtest``
-protocol, execute the following:
-
-.. code-block:: sh
-
-    $ bob pad vanilla-pad replay-attack lbp svm-frames \
-    --output <PATH_TO_STORE_THE_RESULTS>
-
-.. tip::
-
-    If you are at `idiap`_ you can use the SGE grid to speed-up the calculations.
-    Simply add the ``--dask-client sge`` (or ``-l sge``) argument to the above
-    command. For example:
-
-    .. code-block:: sh
-
-        $ bob pad vanilla-pad replay-attack lbp svm-frames \
-        --output <PATH_TO_STORE_THE_RESULTS> \
-        --dask-client sge
-
-To understand the settings of this baseline PAD experiment you can check the
-corresponding configuration file: ``bob/pad/face/config/lbp_svm.py``
-
-To evaluate the results computing EER, HTER and plotting ROC you can use the
-following command:
-
-.. code-block:: sh
-
-    $ bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/scores-dev.csv  \
-    <PATH_TO_STORE_THE_RESULTS>/scores-eval.csv \
-    --legends "LBP features of facial region + SVM classifier + REPLAY-ATTACK database" \
-    --eval \
-    --criterion eer \
-    --output <PATH_TO_STORE_THE_RESULTS>/evaluation_report.pdf
-
-
-The error rates for `replayattack`_ database are summarized in the table below:
-
-==============  =================  =================
-..              Development        Evaluation
-==============  =================  =================
-APCER (attack)  17.4%              14.2%
-APCER_AP        17.4%              14.2%
-BPCER           17.4%              16.4%
-ACER            17.4%              15.3%
-FTA             0.0%               0.0%
-FPR             17.4% (1045/6000)  14.2% (1134/7999)
-FNR             17.4% (209/1200)   16.4% (262/1600)
-HTER            17.4%              15.3%
-FAR             17.4%              14.2%
-FRR             17.4%              16.4%
-PRECISION       0.5                0.5
-RECALL          0.8                0.8
-F1_SCORE        0.6                0.7
-AUC             0.9                0.9
-AUC-LOG-SCALE   2.0                2.1
-==============  =================  =================
-
-
-The ROC curves for this particular experiment can be downloaded from here:
-
-:download:`ROC curve <img/ROC_lbp_svm_replay_attack.pdf>`
-
-------------
 
 
 Image Quality Measures as features of facial region + SVM classifier
@@ -234,70 +161,6 @@ Baselines on REPLAY-MOBILE database
 This section summarizes the results of baseline face PAD experiments on the `Replay-Mobile`_ database.
 The description of the database-related settings, which are used to run face PAD baselines on the Replay-Mobile is given here :ref:`bob.pad.face.resources.databases.replay_mobile`. To understand the settings in more detail you can check the corresponding configuration file : ``bob/pad/face/config/replay_mobile.py``.
 
-
-LBP features of facial region + SVM classifier
-========================================================================
-
-Detailed description of this PAD pipe-line is given at :ref:`bob.pad.face.resources.face_pad.lbp_svm_replayattack`.
-Note, that the same PAD pipe-line was used to run experiments on the Replay-Attack database.
-
-To run this baseline on the `Replay-Mobile`_ database, using the ``grandtest`` protocol, execute the following:
-
-.. code-block:: sh
-
-    $ bob pad vanilla-pad replay-mobile lbp svm_frame \
-    --output <PATH_TO_STORE_THE_RESULTS>
-
-.. tip::
-
-    Similarly to the tip above you can run this baseline in parallel with the
-    ``--dask-client`` option.
-
-To understand the settings of this baseline PAD experiment you can check the
-corresponding configuration file: ``bob/pad/face/config/lbp_svm.py``
-
-To evaluate the results computing EER, HTER and plotting ROC you can use the
-following command:
-
-.. code-block:: sh
-
-    $ bob pad evaluate \
-    <PATH_TO_STORE_THE_RESULTS>/scores-dev.csv  \
-    <PATH_TO_STORE_THE_RESULTS>/scores-eval.csv \
-    --legends "LBP features of facial region + SVM classifier + Replay-Mobile database" \
-    --eval \
-    --criterion eer \
-    --output <PATH_TO_STORE_THE_RESULTS>/evaluation_report.pdf
-
-The EER/HTER errors for the `Replay-Mobile`_ database are summarized in the table below:
-
-===================  =================  =================
-..                   Development        Evaluation
-===================  =================  =================
-APCER (mattescreen)  15.60%             25.77%
-APCER (print)        12.97%             8.44%
-APCER_AP             15.60%             25.77%
-BPCER                14.29%             20.03%
-ACER                 14.94%             22.90%
-FTA                  0.00%              0.00%
-FPR                  14.28% (728/5098)  17.02% (647/3802)
-FNR                  14.29% (457/3199)  20.03% (439/2192)
-HTER                 14.28%             18.52%
-FAR                  14.28%             17.02%
-FRR                  14.29%             20.03%
-PRECISION            0.79               0.73
-RECALL               0.86               0.80
-F1_SCORE             0.82               0.76
-AUC                  0.93               0.88
-AUC-LOG-SCALE        1.83               1.76
-===================  =================  =================
-
-
-The ROC curves for the particular experiment can be downloaded from here:
-
-:download:`ROC curve <img/ROC_lbp_svm_replay_mobile.pdf>`
-
-------------
 
 
 Image Quality Measures as features of facial region + SVM classifier

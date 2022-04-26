@@ -59,11 +59,6 @@ The configuration files contain at least the following arguments of the
     * ``pipeline`` containing zero, one, or more Transformers and one Classifier
 
 
-.. _bob.pad.face.resources.face_pad.lbp_svm_replayattack:
-
-LBP features of facial region + SVM for REPLAY-ATTACK
-================================================================================
-
 
 .. _bob.pad.face.resources.face_pad.qm_svm_replayattack:
 
