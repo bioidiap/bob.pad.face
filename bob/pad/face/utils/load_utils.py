@@ -8,6 +8,52 @@ from bob.bio.face.annotator import bounding_box_from_annotation, min_face_size_v
 from bob.bio.video.annotator import normalize_annotations
 from bob.bio.face.color import rgb_to_hsv, rgb_to_yuv
 from imageio import get_reader
+from PIL import Image
+
+
+def scale(image, scaling_factor):
+    """
+    Scales and image using PIL
+
+    Parameters
+    ----------
+
+        image:
+           Input image to be scaled
+
+        new_shape: tuple
+           Shape of the rescaled image
+
+
+
+    """
+
+    if isinstance(scaling_factor, float):
+        new_size = tuple((numpy.array(image.shape) * scaling_factor).astype(numpy.int))
+        return bob.io.image.to_bob(
+            numpy.array(
+                Image.fromarray(bob.io.image.to_matplotlib(image)).resize(
+                    size=new_size
+                ),
+                dtype="float",
+            )
+        )
+
+    elif isinstance(scaling_factor, tuple):
+
+        if len(scaling_factor) > 2:
+            scaling_factor = scaling_factor[1:]
+
+        return bob.io.image.to_bob(
+            numpy.array(
+                Image.fromarray(bob.io.image.to_matplotlib(image)).resize(
+                    size=scaling_factor
+                ),
+                dtype="float",
+            )
+        )
+    else:
+        raise ValueError(f"Scaling factor not supported: {scaling_factor}")
 
 
 def frames(path):
@@ -126,8 +172,8 @@ def scale_face(face, face_height, face_width=None):
     face_width = face_height if face_width is None else face_width
     shape = list(face.shape)
     shape[-2:] = (face_height, face_width)
-    scaled_face = numpy.empty(shape, dtype="float64")
-    scale(face, scaled_face)
+    # scaled_face = numpy.empty(shape, dtype="float64")
+    scaled_face = scale(face, tuple(shape))
     return scaled_face
 
 
