@@ -1,10 +1,10 @@
-from bob.bio.base.test.utils import atnt_database_directory
 import bob.io.base
 import os
 from bob.pipelines import DelayedSample
 from bob.pad.base.pipelines.vanilla_pad.abstract_classes import Database
 from bob.db.base.utils import check_parameters_for_validity, convert_names_to_lowlevel
 from bob.bio.video import VideoLikeContainer
+from bob.bio.base.database import AtntBioDatabase
 
 
 def DummyPadSample(
@@ -35,13 +35,11 @@ class DummyDatabase(Database):
     def __init__(self, none_annotations=False):
         # call base class constructor with useful parameters
         super(DummyDatabase, self).__init__()
-        self.original_directory = atnt_database_directory()
-        import bob.db.atnt
-
-        self._db = bob.db.atnt.Database()
-        self.low_level_names = ("world", "dev")
-        self.high_level_names = ("train", "dev")
+        self._db = AtntBioDatabase()
+        self.original_directory = self._db.original_directory
         self.none_annotations = none_annotations
+        self.high_level_names = ["train", "dev", "eval"]
+        self.low_level_names = ["world", "dev", "eval"]
 
     def _make_bio(self, files):
         files = [

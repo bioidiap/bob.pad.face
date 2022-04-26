@@ -10,11 +10,9 @@ from bob.io.base.test_utils import datafile
 
 from bob.io.base import load
 
-import bob.io.image  # for image loading functionality
-
 import bob.bio.video
 
-from bob.ip.color import rgb_to_gray
+from bob.bio.face.color import rgb_to_gray
 
 from bob.pad.face.extractor import LBPHistogram, ImageQualityMeasure
 
