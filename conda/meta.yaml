@@ -24,8 +24,6 @@ requirements:
     - pip {{ pip }}
     - bob.extension
     - bob.io.base
-    - bob.ip.color
-    - bob.ip.qualitymeasure
     - bob.bio.base
     - bob.bio.face
     - bob.bio.video

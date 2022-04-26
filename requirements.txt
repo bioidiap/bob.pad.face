@@ -6,8 +6,6 @@ bob.io.base
 bob.pad.base
 bob.bio.face
 bob.bio.video
-bob.ip.color
-bob.ip.qualitymeasure
 scikit-learn
 scikit-image
 imageio-ffmpeg
