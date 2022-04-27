@@ -6,9 +6,94 @@ import bob.io.image
 import numpy
 from bob.bio.face.annotator import bounding_box_from_annotation, min_face_size_validator
 from bob.bio.video.annotator import normalize_annotations
-from bob.ip.base import block, block_generator, block_output_shape, scale
-from bob.ip.color import rgb_to_hsv, rgb_to_yuv
+from bob.bio.face.color import rgb_to_hsv, rgb_to_yuv
 from imageio import get_reader
+from PIL import Image
+
+
+def block(X, block_size, block_overlap, flat=False):
+    """
+    Parameters
+    ----------
+    X : numpy.ndarray
+        The image to be split into blocks.
+    block_size : tuple
+        The size of the block.
+    block_overlap : tuple
+        The overlap of the block.
+
+    Returns
+    -------
+    numpy.ndarray
+        The image split into blocks.
+    """
+
+    assert len(block_size) == 2
+    assert len(block_overlap) == 2
+
+    size_ov_h = int(block_size[0] - block_overlap[0])
+    size_ov_w = int(block_size[1] - block_overlap[1])
+    n_blocks_h = int((X.shape[0] - block_overlap[0]) / size_ov_h)
+    n_blocks_w = int((X.shape[1] - block_overlap[1]) / size_ov_w)
+
+    blocks = numpy.zeros(shape=(n_blocks_h, n_blocks_w, size_ov_h, size_ov_w))
+    for h in range(n_blocks_h):
+        for w in range(n_blocks_w):
+
+            blocks[h, w, :, :] = X[
+                h * size_ov_h : h * size_ov_h + block_size[0],
+                w * size_ov_w : w * size_ov_w + block_size[1],
+            ]
+
+    if flat:
+        return blocks.reshape(n_blocks_h * n_blocks_w, blocks.shape[2], blocks.shape[3])
+
+    return blocks
+
+
+def scale(image, scaling_factor):
+    """
+    Scales and image using PIL
+
+    Parameters
+    ----------
+
+        image:
+           Input image to be scaled
+
+        new_shape: tuple
+           Shape of the rescaled image
+
+
+
+    """
+
+    if isinstance(scaling_factor, float):
+        new_size = tuple((numpy.array(image.shape) * scaling_factor).astype(numpy.int))
+        return bob.io.image.to_bob(
+            numpy.array(
+                Image.fromarray(bob.io.image.to_matplotlib(image)).resize(
+                    size=new_size
+                ),
+                dtype="float",
+            )
+        )
+
+    elif isinstance(scaling_factor, tuple):
+
+        if len(scaling_factor) > 2:
+            scaling_factor = scaling_factor[1:]
+
+        return bob.io.image.to_bob(
+            numpy.array(
+                Image.fromarray(bob.io.image.to_matplotlib(image)).resize(
+                    size=scaling_factor
+                ),
+                dtype="float",
+            )
+        )
+    else:
+        raise ValueError(f"Scaling factor not supported: {scaling_factor}")
 
 
 def frames(path):
@@ -127,8 +212,8 @@ def scale_face(face, face_height, face_width=None):
     face_width = face_height if face_width is None else face_width
     shape = list(face.shape)
     shape[-2:] = (face_height, face_width)
-    scaled_face = numpy.empty(shape, dtype="float64")
-    scale(face, scaled_face)
+    # scaled_face = numpy.empty(shape, dtype="float64")
+    scaled_face = scale(face, tuple(shape))
     return scaled_face
 
 
@@ -154,19 +239,21 @@ def blocks(data, block_size, block_overlap=(0, 0)):
     ValueError
         If data dimension is not between 2 and 4 (inclusive).
     """
+
     data = numpy.asarray(data)
     # if a gray scale image:
     if data.ndim == 2:
         output = block(data, block_size, block_overlap, flat=True)
     # if a color image:
     elif data.ndim == 3:
-        out_shape = list(data.shape[0:1]) + list(
-            block_output_shape(data[0], block_size, block_overlap, flat=True)
-        )
+        # out_shape = list(data.shape[0:1]) + list(
+        #    block_output_shape(data[0], block_size, block_overlap, flat=True)
+        # )
 
-        output = numpy.empty(out_shape, dtype=data.dtype)
+        # output = numpy.empty(out_shape, dtype=data.dtype)
+        output = []
         for i, img2d in enumerate(data):
-            block(img2d, block_size, block_overlap, output[i], flat=True)
+            output.append(block(img2d, block_size, block_overlap, flat=True))
         output = numpy.moveaxis(output, 0, 1)
     # if a color video:
     elif data.ndim == 4:

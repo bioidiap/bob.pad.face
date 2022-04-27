@@ -1,4 +1,3 @@
-from .LBPHistogram import LBPHistogram
 from .ImageQualityMeasure import ImageQualityMeasure
 
 
@@ -21,7 +20,6 @@ def __appropriate__(*args):
 
 
 __appropriate__(
-    LBPHistogram,
     ImageQualityMeasure,
 )
 __all__ = [_ for _ in dir() if not _.startswith('_')]
