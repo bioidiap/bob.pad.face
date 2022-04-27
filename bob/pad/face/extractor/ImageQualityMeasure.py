@@ -1,8 +1,6 @@
 import logging
 
 import numpy as np
-from bob.ip.qualitymeasure import galbally_iqm_features as iqm
-from bob.ip.qualitymeasure import msu_iqa_features as iqa
 from sklearn.preprocessing import FunctionTransformer
 
 logger = logging.getLogger(__name__)

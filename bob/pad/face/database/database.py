@@ -1,7 +1,7 @@
 from functools import partial
 import os
 import bob.bio.video
-from bob.db.base.annotations import read_annotation_file
+from bob.bio.base.utils.annotations import read_annotation_file
 from sklearn.preprocessing import FunctionTransformer
 from bob.bio.video import VideoAsArray
 from bob.pipelines import DelayedSample
