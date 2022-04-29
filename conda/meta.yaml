@@ -25,8 +25,8 @@ requirements:
     - bob.extension
     - bob.io.base
     - bob.bio.base
-    - bob.bio.face
-    - bob.bio.video
+    - bob.bio.face  # [arm64]
+    - bob.bio.video  # [arm64]
     - bob.pad.base
     - numpy {{ numpy }}
     - scikit-learn {{ scikit_learn }}
