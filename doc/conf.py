@@ -72,10 +72,10 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"bob.pad.face"
+project = "bob.pad.face"
 import time
 
-copyright = u"%s, Idiap Research Institute" % time.strftime("%Y")
+copyright = "%s, Idiap Research Institute" % time.strftime("%Y")
 
 # Grab the setup entry
 distribution = pkg_resources.require(project)[0]
@@ -125,8 +125,8 @@ pygments_style = "sphinx"
 
 # Some variables which are useful for generated material
 project_variable = project.replace(".", "_")
-short_description = u"Presentation Attack Detection in Face Biometrics"
-owner = [u"Idiap Research Institute"]
+short_description = "Presentation Attack Detection in Face Biometrics"
+owner = ["Idiap Research Institute"]
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -207,7 +207,7 @@ html_favicon = "img/favicon.ico"
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = project_variable + u"_doc"
+htmlhelp_basename = project_variable + "_doc"
 
 # -- Post configuration --------------------------------------------------------
 

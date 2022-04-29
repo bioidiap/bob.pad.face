@@ -14,8 +14,8 @@ frame_cont_to_array = VideoToFrames()
 
 param_grid = [
     {
-        "C": [2 ** P for P in range(-3, 14, 2)],
-        "gamma": [2 ** P for P in range(-15, 0, 2)],
+        "C": [2**P for P in range(-3, 14, 2)],
+        "gamma": [2**P for P in range(-15, 0, 2)],
         "kernel": ["rbf"],
     },
 ]
