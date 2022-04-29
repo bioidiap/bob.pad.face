@@ -76,8 +76,6 @@ setup(
             "casiasurf = bob.pad.face.config.casiasurf",
             "swan = bob.pad.face.config.swan",
             "oulunpu = bob.pad.face.config.oulunpu",
-            # quality measure
-            "qm = bob.pad.face.config.qm_64",
             # classifiers
             "svm-frames = bob.pad.face.config.svm_frames",
         ],
