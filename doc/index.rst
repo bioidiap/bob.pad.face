@@ -29,5 +29,3 @@ Users Guide
 .. todolist::
 
 .. include:: links.rst
-
-

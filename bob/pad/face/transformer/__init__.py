@@ -22,4 +22,4 @@ def __appropriate__(*args):
 __appropriate__(
     VideoToFrames,
 )
-__all__ = [_ for _ in dir() if not _.startswith('_')]
+__all__ = [_ for _ in dir() if not _.startswith("_")]

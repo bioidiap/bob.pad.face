@@ -1,14 +1,16 @@
-from sklearn.base import TransformerMixin, BaseEstimator
-import bob.pipelines as mario
-from bob.pipelines.wrappers import _frmt
 import logging
+
+from sklearn.base import BaseEstimator, TransformerMixin
+
+import bob.pipelines as mario
+
+from bob.pipelines.wrappers import _frmt
 
 logger = logging.getLogger(__name__)
 
 
 class VideoToFrames(TransformerMixin, BaseEstimator):
-    """Expands video samples to frame-based samples only when transform is called.
-    """
+    """Expands video samples to frame-based samples only when transform is called."""
 
     def transform(self, video_samples):
         logger.debug(f"{_frmt(self)}.transform")

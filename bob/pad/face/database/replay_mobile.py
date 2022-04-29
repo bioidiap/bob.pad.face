@@ -1,13 +1,12 @@
 import logging
 
-import numpy as np
+from sklearn.pipeline import make_pipeline
+
 from bob.extension import rc
 from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
-from bob.pipelines.transformers import Str_To_Types
-from bob.pipelines.transformers import str_to_bool
-from sklearn.pipeline import make_pipeline
+from bob.pipelines.transformers import Str_To_Types, str_to_bool
 
 logger = logging.getLogger(__name__)
 

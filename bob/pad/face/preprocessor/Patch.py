@@ -1,8 +1,11 @@
-from bob.bio.base.annotator.FailSafe import translate_kwargs
-from sklearn.base import BaseEstimator, TransformerMixin
-from ..utils import extract_patches
-from bob.bio.video import VideoLikeContainer
 from collections import OrderedDict
+
+from sklearn.base import BaseEstimator, TransformerMixin
+
+from bob.bio.base.annotator.FailSafe import translate_kwargs
+from bob.bio.video import VideoLikeContainer
+
+from ..utils import extract_patches
 
 
 class ImagePatches(TransformerMixin, BaseEstimator):
@@ -55,7 +58,10 @@ class VideoPatches(TransformerMixin, BaseEstimator):
 
     def transform(self, videos, annotations=None):
         kwargs = translate_kwargs(dict(annotations=annotations), len(videos))
-        return [self.transform_one_video(vid, **kw) for vid, kw in zip(videos, kwargs)]
+        return [
+            self.transform_one_video(vid, **kw)
+            for vid, kw in zip(videos, kwargs)
+        ]
 
     def transform_one_video(self, frames, annotations=None):
         annotations = annotations or {}
@@ -76,7 +82,10 @@ class VideoPatches(TransformerMixin, BaseEstimator):
 
             # extract patches
             patches = extract_patches(
-                preprocessed, self.block_size, self.block_overlap, self.n_random_patches
+                preprocessed,
+                self.block_size,
+                self.block_overlap,
+                self.n_random_patches,
             )
             all_patches.extend(patches)
 

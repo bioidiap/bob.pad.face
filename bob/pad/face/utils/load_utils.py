@@ -1,14 +1,21 @@
 import random
+
 from collections import OrderedDict
 from functools import partial
 
-import bob.io.image
 import numpy
-from bob.bio.face.annotator import bounding_box_from_annotation, min_face_size_validator
-from bob.bio.video.annotator import normalize_annotations
-from bob.bio.face.color import rgb_to_hsv, rgb_to_yuv
+
 from imageio import get_reader
 from PIL import Image
+
+import bob.io.image
+
+from bob.bio.face.annotator import (
+    bounding_box_from_annotation,
+    min_face_size_validator,
+)
+from bob.bio.face.color import rgb_to_hsv, rgb_to_yuv
+from bob.bio.video.annotator import normalize_annotations
 
 
 def block(X, block_size, block_overlap, flat=False):
@@ -46,7 +53,9 @@ def block(X, block_size, block_overlap, flat=False):
             ]
 
     if flat:
-        return blocks.reshape(n_blocks_h * n_blocks_w, blocks.shape[2], blocks.shape[3])
+        return blocks.reshape(
+            n_blocks_h * n_blocks_w, blocks.shape[2], blocks.shape[3]
+        )
 
     return blocks
 
@@ -69,7 +78,9 @@ def scale(image, scaling_factor):
     """
 
     if isinstance(scaling_factor, float):
-        new_size = tuple((numpy.array(image.shape) * scaling_factor).astype(numpy.int))
+        new_size = tuple(
+            (numpy.array(image.shape) * scaling_factor).astype(numpy.int)
+        )
         return bob.io.image.to_bob(
             numpy.array(
                 Image.fromarray(bob.io.image.to_matplotlib(image)).resize(
@@ -264,6 +275,61 @@ def blocks(data, block_size, block_overlap=(0, 0)):
     return output
 
 
+def block_generator(input, block_size, block_overlap=(0, 0)):
+    """Performs a block decomposition of a 2D or 3D array/image
+
+    It works exactly as :any:`bob.ip.base.block` except that it yields the blocks
+    one by one instead of concatenating them. It also works with color images.
+
+    Parameters
+    ----------
+    input : :any:`numpy.ndarray`
+        A 2D array (Height, Width) or a color image (Bob format: Channels,
+        Height, Width).
+    block_size : (:obj:`int`, :obj:`int`)
+        The size of the blocks in which the image is decomposed.
+    block_overlap : (:obj:`int`, :obj:`int`), optional
+        The overlap of the blocks.
+
+    Yields
+    ------
+    array_like
+        A block view of the image. Modifying the blocks will change the original
+        image as well. This is different from :any:`bob.ip.base.block`.
+
+    Raises
+    ------
+    ValueError
+        If the block_overlap is not smaller than block_size.
+        If the block_size is bigger than the image size.
+    """
+    block_h, block_w = block_size
+    overlap_h, overlap_w = block_overlap
+    img_h, img_w = input.shape[-2:]
+
+    if overlap_h >= block_h or overlap_w >= block_w:
+        raise ValueError(
+            "block_overlap: {} must be smaller than block_size: {}.".format(
+                block_overlap, block_size
+            )
+        )
+    if img_h < block_h or img_w < block_w:
+        raise ValueError(
+            "block_size: {} must be smaller than the image size: {}.".format(
+                block_size, input.shape[-2:]
+            )
+        )
+
+    # Determine the number of block per row and column
+    size_ov_h = block_h - overlap_h
+    size_ov_w = block_w - overlap_w
+
+    # Perform the block decomposition
+    for h in range(0, img_h - block_h + 1, size_ov_h):
+        for w in range(0, img_w - block_w + 1, size_ov_w):
+            yield input[..., h : h + block_h, w : w + block_w]
+
+
 def blocks_generator(data, block_size, block_overlap=(0, 0)):
     """Yields patches of an image
 
@@ -347,12 +413,16 @@ def random_patches(image, block_size, n_random_patches=1):
         yield image[..., ch : ch + bh, cw : cw + bw]
 
 
-def extract_patches(image, block_size, block_overlap=(0, 0), n_random_patches=None):
+def extract_patches(
+    image, block_size, block_overlap=(0, 0), n_random_patches=None
+):
     """Yields either all patches from an image or N random patches."""
     if n_random_patches is None:
         return blocks_generator(image, block_size, block_overlap)
     else:
-        return random_patches(image, block_size, n_random_patches=n_random_patches)
+        return random_patches(
+            image, block_size, n_random_patches=n_random_patches
+        )
 
 
 def the_giant_video_loader(
@@ -416,7 +486,9 @@ def the_giant_video_loader(
     if region == "whole":
         generator = iter(pad_sample.data)
     elif region == "crop":
-        generator = yield_faces(pad_sample, cropper=cropper, normalizer=normalizer)
+        generator = yield_faces(
+            pad_sample, cropper=cropper, normalizer=normalizer
+        )
     else:
         raise ValueError("Invalid region value: `{}'".format(region))
 
@@ -436,7 +508,8 @@ def the_giant_video_loader(
                 patch
                 for frame in generator
                 for patch in random_sample(
-                    blocks(frame, block_size, block_overlap), random_patches_per_frame
+                    blocks(frame, block_size, block_overlap),
+                    random_patches_per_frame,
                 )
             )
 
@@ -444,9 +517,13 @@ def the_giant_video_loader(
         generator = (augment(frame) for frame in generator)
 
     if keep_pa_samples is not None and not pad_sample.is_bonafide:
-        generator = (frame for frame in generator if random.random() < keep_pa_samples)
+        generator = (
+            frame for frame in generator if random.random() < keep_pa_samples
+        )
 
     if keep_bf_samples is not None and pad_sample.is_bonafide:
-        generator = (frame for frame in generator if random.random() < keep_bf_samples)
+        generator = (
+            frame for frame in generator if random.random() < keep_bf_samples
+        )
 
     return generator

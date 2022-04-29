@@ -57,4 +57,3 @@ The configuration files contain at least the following arguments of the
 ``bob pad vanilla-pad`` command:
 
     * ``pipeline`` containing zero, one, or more Transformers and one Classifier
-

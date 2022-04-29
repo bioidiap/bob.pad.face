@@ -1,14 +1,24 @@
-import bob.io.base
 import os
-from bob.pipelines import DelayedSample
-from bob.pad.base.pipelines.vanilla_pad.abstract_classes import Database
-from bob.bio.base.database.legacy import check_parameters_for_validity, convert_names_to_lowlevel
-from bob.bio.video import VideoLikeContainer
+
+import bob.io.base
+
 from bob.bio.base.database import AtntBioDatabase
+from bob.bio.base.database.legacy import (
+    check_parameters_for_validity,
+    convert_names_to_lowlevel,
+)
+from bob.bio.video import VideoLikeContainer
+from bob.pad.base.pipelines.vanilla_pad.abstract_classes import Database
+from bob.pipelines import DelayedSample
 
 
 def DummyPadSample(
-    path, original_directory, client_id, key, attack_type, none_annotations=False
+    path,
+    original_directory,
+    client_id,
+    key,
+    attack_type,
+    none_annotations=False,
 ):
     def load():
         file_name = os.path.join(original_directory, path + ".pgm")

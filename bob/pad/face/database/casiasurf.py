@@ -1,14 +1,17 @@
 import logging
 import os
+
 from functools import partial
 
+from sklearn.preprocessing import FunctionTransformer
+
 import bob.io.base
+
 from bob.bio.video import VideoLikeContainer
 from bob.extension import rc
 from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import DelayedSample
-from sklearn.preprocessing import FunctionTransformer
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +48,9 @@ def casia_surf_multistream_load(samples, original_directory, stream_type):
         paths = []
         for mod in mods:
             paths.append(
-                os.path.join(original_directory or "", getattr(sample, mod_to_attr[mod]))
+                os.path.join(
+                    original_directory or "", getattr(sample, mod_to_attr[mod])
+                )
             )
         data = partial(load_multi_stream, mods, paths)
         return DelayedSample(data, parent=sample, annotations=None)
@@ -56,7 +61,9 @@ def casia_surf_multistream_load(samples, original_directory, stream_type):
 def CasiaSurfMultiStreamSample(original_directory, stream_type):
     return FunctionTransformer(
         casia_surf_multistream_load,
-        kw_args=dict(original_directory=original_directory, stream_type=stream_type),
+        kw_args=dict(
+            original_directory=original_directory, stream_type=stream_type
+        ),
     )
 
 

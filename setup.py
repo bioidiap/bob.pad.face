@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 
-from setuptools import setup, dist
+from setuptools import dist, setup
 
 dist.Distribution(dict(setup_requires=["bob.extension"]))
 
 # load the requirements.txt for additional requirements
-from bob.extension.utils import load_requirements, find_packages
+from bob.extension.utils import find_packages, load_requirements
 
 install_requires = load_requirements()
 
@@ -52,8 +52,7 @@ setup(
     # the version of bob.
     entry_points={
         # scripts should be declared using this entry:
-        "console_scripts": [
-        ],
+        "console_scripts": [],
         # registered databases:
         "bob.pad.database": [
             "replay-attack = bob.pad.face.config.replay_attack:database",
