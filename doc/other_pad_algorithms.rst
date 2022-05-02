@@ -40,7 +40,7 @@ Usually, it is a good idea to have at least verbose level 2 (i.e., calling
    To run the experiments in parallel, you can use an existing or (define a new)
    SGE grid or local host multiprocessing configuration. To run the experiment
    in the Idiap SGE grid, you can simply add the ``--dask-client sge`` command
-   line option. To run experiments in parallel on the local machine, add the 
+   line option. To run experiments in parallel on the local machine, add the
    ``--dask-client local-parallel`` option.
 
    See :any:`this <pipeline_simple_features>` for more
@@ -54,5 +54,3 @@ is available on the section :ref:`bob.pad.face.resources`.
 
 
 .. include:: links.rst
-
-

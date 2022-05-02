@@ -1,18 +1,21 @@
 """Gets statistics on the average face size in a video database.
 """
 import logging
+
+from os.path import expanduser
+
 import click
 import numpy as np
-from os.path import expanduser
-from bob.extension.scripts.click_helper import (
-    verbosity_option,
-    ConfigCommand,
-    ResourceOption,
-)
+
 from bob.bio.face.annotator import (
+    BoundingBox,
     bounding_box_from_annotation,
     expected_eye_positions,
-    BoundingBox,
+)
+from bob.extension.scripts.click_helper import (
+    ConfigCommand,
+    ResourceOption,
+    verbosity_option,
 )
 
 logger = logging.getLogger(__name__)
@@ -108,14 +111,20 @@ def statistics(database, output, database_directories_file, **kwargs):
         ):
             click.echo(
                 "min: {}, mean: {}, max: {}, std: {:.1f} for {}".format(
-                    array.min(), int(array.mean()), array.max(), array.std(), name
+                    array.min(),
+                    int(array.mean()),
+                    array.max(),
+                    array.std(),
+                    name,
                 )
             )
         # print the average eye distance assuming bounding boxes are from
         # bob.ip.facedetect or the annotations had eye locations in them
         bbx = BoundingBox((0, 0), face_sizes.mean(axis=0))
         annot = expected_eye_positions(bbx)
-        eye_distance = np.linalg.norm(np.array(annot["reye"]) - np.array(annot["leye"]))
+        eye_distance = np.linalg.norm(
+            np.array(annot["reye"]) - np.array(annot["leye"])
+        )
         click.echo("Average eye locations: {}".format(annot))
         click.echo("Average eye distance: {}".format(int(eye_distance)))
 
@@ -141,7 +150,11 @@ def statistics(database, output, database_directories_file, **kwargs):
         # ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.viridis)
 
         plt.hist(
-            face_sizes[:, 1], density=True, bins="auto", label=attack_type, alpha=0.5
+            face_sizes[:, 1],
+            density=True,
+            bins="auto",
+            label=attack_type,
+            alpha=0.5,
         )
     if output:
         plt.xlabel("Width of faces")

@@ -4,4 +4,3 @@ recursive-include bob/pad/face/config/preprocessor/dictionaries *.hdf5
 recursive-include doc *.py *.rst *.ico *.png
 recursive-include bob/pad/face/test/data *.hdf5 *.png
 recursive-include bob/pad/face/config *.xml
-
