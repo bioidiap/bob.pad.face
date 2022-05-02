@@ -1,15 +1,17 @@
-from functools import partial
 import os
-import bob.bio.video
-from bob.bio.base.utils.annotations import read_annotation_file
+
+from functools import partial
+
 from sklearn.preprocessing import FunctionTransformer
+
+from bob.bio.base.utils.annotations import read_annotation_file
 from bob.bio.video import VideoAsArray
 from bob.pipelines import DelayedSample
 
-from ..utils import frames, number_of_frames
 
 def get_no_transform(x):
     return None
+
 
 def delayed_video_load(
     samples,

@@ -2,10 +2,11 @@
 # vim: set fileencoding=utf-8 :
 # Thu May 24 10:41:42 CEST 2012
 
+import numpy as np
+
 from nose.plugins.skip import SkipTest
 
 import bob.bio.base
-import numpy as np
 
 
 def test_replayattack():
@@ -31,10 +32,13 @@ def test_replayattack():
     assert len(database.samples(groups=["train", "dev"])) == 720
     assert len(database.samples(groups=["train"])) == 360
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="real")) == 200
+        len(database.samples(groups=["train", "dev", "eval"], purposes="real"))
+        == 200
     )
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="attack"))
+        len(
+            database.samples(groups=["train", "dev", "eval"], purposes="attack")
+        )
         == 1000
     )
 
@@ -71,10 +75,14 @@ def test_replaymobile():
     assert len(database.samples(groups=["train", "dev"])) == 728
     assert len(database.samples(groups=["train"])) == 312
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="real")) == 390
+        len(database.samples(groups=["train", "dev", "eval"], purposes="real"))
+        == 390
     )
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="attack")) == 640
+        len(
+            database.samples(groups=["train", "dev", "eval"], purposes="attack")
+        )
+        == 640
     )
 
     all_samples = database.sort(database.samples())
@@ -133,11 +141,18 @@ def test_maskattack():
     )
     # all real sequences: 2 sessions, 5 recordings for 17 individuals
     assert (
-        len(maskattack.samples(groups=["train", "dev", "eval"], purposes="real")) == 170
+        len(
+            maskattack.samples(groups=["train", "dev", "eval"], purposes="real")
+        )
+        == 170
     )
     # all attacks: 1 session, 5 recordings for 17 individuals
     assert (
-        len(maskattack.samples(groups=["train", "dev", "eval"], purposes="attack"))
+        len(
+            maskattack.samples(
+                groups=["train", "dev", "eval"], purposes="attack"
+            )
+        )
         == 85
     )
 
@@ -189,11 +204,17 @@ def test_casiasurf_color_protocol():
     assert len(casiasurf.samples(groups=["train"], purposes="attack")) == 20324
     assert len(casiasurf.samples(groups=("dev",), purposes=("real",))) == 2994
     assert len(casiasurf.samples(groups=("dev",), purposes=("attack",))) == 6614
-    assert len(casiasurf.samples(groups=("dev",), purposes=("real", "attack"))) == 9608
-    assert len(casiasurf.samples(groups=("eval",), purposes=("real",))) == 17458
-    assert len(casiasurf.samples(groups=("eval",), purposes=("attack",))) == 40252
     assert (
-        len(casiasurf.samples(groups=("eval",), purposes=("real", "attack"))) == 57710
+        len(casiasurf.samples(groups=("dev",), purposes=("real", "attack")))
+        == 9608
+    )
+    assert len(casiasurf.samples(groups=("eval",), purposes=("real",))) == 17458
+    assert (
+        len(casiasurf.samples(groups=("eval",), purposes=("attack",))) == 40252
+    )
+    assert (
+        len(casiasurf.samples(groups=("eval",), purposes=("real", "attack")))
+        == 57710
     )
 
 
@@ -234,10 +255,13 @@ def test_swan():
     assert len(database.samples(groups=["train", "dev"])) == 2803
     assert len(database.samples(groups=["train"])) == 2001
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="real")) == 3300
+        len(database.samples(groups=["train", "dev", "eval"], purposes="real"))
+        == 3300
     )
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="attack"))
+        len(
+            database.samples(groups=["train", "dev", "eval"], purposes="attack")
+        )
         == 2502
     )
 
@@ -287,7 +311,10 @@ def test_oulunpu():
         "Protocol_4_6",
     ]
     assert database.groups() == ["dev", "eval", "train"]
-    assert len(database.samples(groups=["train", "dev", "eval"])) == 1200 + 900 + 600
+    assert (
+        len(database.samples(groups=["train", "dev", "eval"]))
+        == 1200 + 900 + 600
+    )
     assert len(database.samples(groups=["train", "dev"])) == 1200 + 900
     assert len(database.samples(groups=["train"])) == 1200
     assert (
@@ -295,7 +322,9 @@ def test_oulunpu():
         == 240 + 180 + 120
     )
     assert (
-        len(database.samples(groups=["train", "dev", "eval"], purposes="attack"))
+        len(
+            database.samples(groups=["train", "dev", "eval"], purposes="attack")
+        )
         == 960 + 720 + 480
     )
 

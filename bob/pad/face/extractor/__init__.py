@@ -1,4 +1,4 @@
-from .ImageQualityMeasure import ImageQualityMeasure
+# isort: skip_file
 
 
 def __appropriate__(*args):
@@ -19,7 +19,5 @@ def __appropriate__(*args):
         obj.__module__ = __name__
 
 
-__appropriate__(
-    ImageQualityMeasure,
-)
-__all__ = [_ for _ in dir() if not _.startswith('_')]
+__appropriate__()
+__all__ = [_ for _ in dir() if not _.startswith("_")]
