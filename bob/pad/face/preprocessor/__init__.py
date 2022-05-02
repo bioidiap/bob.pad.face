@@ -1,3 +1,4 @@
+# isort: skip_file
 from .Patch import ImagePatches, VideoPatches
 
 

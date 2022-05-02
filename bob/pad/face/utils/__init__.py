@@ -1,17 +1,18 @@
+# isort: skip_file
 from .load_utils import (  # noqa: F401
-    bbx_cropper,
-    blocks,
-    blocks_generator,
-    color_augmentation,
-    extract_patches,
     frames,
-    min_face_size_normalizer,
     number_of_frames,
-    random_patches,
-    random_sample,
-    scale_face,
-    the_giant_video_loader,
     yield_faces,
+    scale_face,
+    blocks,
+    bbx_cropper,
+    min_face_size_normalizer,
+    color_augmentation,
+    blocks_generator,
+    the_giant_video_loader,
+    random_sample,
+    random_patches,
+    extract_patches,
 )
 
 # gets sphinx autodoc done right - don't remove it

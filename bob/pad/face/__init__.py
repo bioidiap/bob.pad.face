@@ -1,4 +1,5 @@
-from . import database, extractor, preprocessor  # noqa: F401
+# isort: skip_file
+from . import extractor, preprocessor, database  # noqa: F401
 
 
 def get_config():

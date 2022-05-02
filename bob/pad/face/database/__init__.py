@@ -1,11 +1,12 @@
+# isort: skip_file
+from .database import VideoPadSample  # noqa: F401
 from .casiafasd import CasiaFasdPadDatabase
 from .casiasurf import CasiaSurfPadDatabase
-from .database import VideoPadSample  # noqa: F401
 from .maskattack import MaskAttackPadDatabase
-from .oulunpu import OulunpuPadDatabase
 from .replay_attack import ReplayAttackPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .swan import SwanPadDatabase
+from .oulunpu import OulunpuPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
