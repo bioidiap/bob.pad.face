@@ -37,4 +37,4 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
         return self
 
     def _more_tags(self):
-        return {"stateless": True, "requires_fit": False}
+        return {"requires_fit": False}
