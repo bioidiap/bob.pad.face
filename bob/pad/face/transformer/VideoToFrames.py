@@ -23,18 +23,24 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
             for frame, frame_id in zip(video, video.indices):
                 if frame is None:
                     continue
+                kw = (
+                    {"key": f"{sample.key}_{frame_id}"}
+                    if hasattr(sample, "key")
+                    else {}
+                )
                 new_sample = mario.Sample(
                     frame,
                     frame_id=frame_id,
                     annotations=annotations.get(str(frame_id)),
                     parent=sample,
+                    **kw,
                 )
                 output.append(new_sample)
 
         return output
 
-    def fit(self, X, y=None, **fit_params):
+    def fit(self, X, y=None):
         return self
 
     def _more_tags(self):
-        return {"requires_fit": False}
+        return {"requires_fit": False, "bob_checkpoint_features": False}
