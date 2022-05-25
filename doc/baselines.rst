@@ -14,18 +14,18 @@ algorithms implemented in ``bob.pad.face``.
 Running Baseline Experiments
 ----------------------------
 
-To run the baseline PAD experiments, the ``bob pad vanilla-pad`` command is used.
+To run the baseline PAD experiments, the ``bob pad run-pipeline`` command is used.
 To see the description of the command, you can type in the console:
 
 .. code-block:: sh
 
-   $ bob pad vanilla-pad --help
+   $ bob pad run-pipeline --help
 
-This command is explained in more detail in :ref:`bob.pad.base <bob.pad.base.vanilla_pad_features>`.
+This command is explained in more detail in :ref:`bob.pad.base <bob.pad.base.features>`.
 
 Usually, it is a good idea to have at least verbose level 2 (i.e., calling
-``bob pad vanilla-pad --verbose --verbose``, or the short version
-``bob pad vanilla-pad -vv``).
+``bob pad run-pipeline --verbose --verbose``, or the short version
+``bob pad run-pipeline -vv``).
 
 .. note:: **Running in Parallel**
 

@@ -32,6 +32,7 @@ requirements:
     - scikit-learn {{ scikit_learn }}
     - scikit-image {{ scikit_image }}
     - imageio-ffmpeg {{ imageio_ffmpeg }}
+    - pytorch {{ pytorch }}
   run:
     - python
     - setuptools
@@ -39,6 +40,7 @@ requirements:
     - {{ pin_compatible('scikit-learn', min_pin='x.x') }}
     - {{ pin_compatible('scikit-image') }}
     - {{ pin_compatible('imageio-ffmpeg') }}
+    - {{ pin_compatible('pytorch') }}
 
 test:
   imports:

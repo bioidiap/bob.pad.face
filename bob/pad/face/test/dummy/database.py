@@ -8,7 +8,7 @@ from bob.bio.base.database.legacy import (
     convert_names_to_lowlevel,
 )
 from bob.bio.video import VideoLikeContainer
-from bob.pad.base.pipelines.vanilla_pad.abstract_classes import Database
+from bob.pad.base.pipelines.abstract_classes import Database
 from bob.pipelines import DelayedSample
 
 
