@@ -19,7 +19,7 @@ Databases
 
 These configuration files/resources contain parameters of available databases.
 The configuration files contain at least the following arguments of the
-``bob pad vanilla-pad`` command:
+``bob pad run-pipeline`` command:
 
     * ``database``
     * ``protocol``
@@ -54,6 +54,6 @@ Available face PAD systems
 These configuration files/resources contain parameters of available face PAD
 systems/algorithms.
 The configuration files contain at least the following arguments of the
-``bob pad vanilla-pad`` command:
+``bob pad run-pipeline`` command:
 
     * ``pipeline`` containing zero, one, or more Transformers and one Classifier

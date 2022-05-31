@@ -6,11 +6,10 @@ import bob.pipelines as mario
 
 from bob.pad.face.transformer import VideoToFrames
 
-preprocessor = globals().get("preprocessor")
-extractor = globals().get("extractor")
+preprocessor = globals()["preprocessor"]
+extractor = globals()["extractor"]
 
 # Classifier #
-frame_cont_to_array = VideoToFrames()
 
 param_grid = [
     {
@@ -29,10 +28,13 @@ classifier = mario.wrap(
 )
 
 
-# Pipeline #
+# we put video_to_frames and classifier together in a pipeline
+# so that the output of video_to_frames is not checkpointed!
 frames_classifier = Pipeline(
-    [("frame_cont_to_array", frame_cont_to_array), ("classifier", classifier)]
+    [("video_to_frames", VideoToFrames()), ("classifier", classifier)]
 )
+
+# Pipeline #
 pipeline = Pipeline(
     [
         ("preprocessor", preprocessor),
