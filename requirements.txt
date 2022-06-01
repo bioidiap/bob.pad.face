@@ -9,4 +9,4 @@ bob.bio.video
 scikit-learn
 scikit-image
 imageio-ffmpeg
-pytorch
+torch
