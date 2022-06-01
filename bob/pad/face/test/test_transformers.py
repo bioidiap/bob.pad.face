@@ -14,6 +14,6 @@ def test_video_to_frames():
     samples = [mario.Sample(v, key=i) for i, v in enumerate(video_container)]
     frame_samples = VideoToFrames().transform(samples)
     assert len(frame_samples) == 4
-    assert all(s.key == 0 for s in frame_samples)
+    assert all("0_" in s.key for s in frame_samples)
     assert [s.data for s in frame_samples] == [0, 1, 2, 3]
     assert [s.frame_id for s in frame_samples] == [0, 1, 2, 4]
