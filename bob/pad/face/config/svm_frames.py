@@ -27,18 +27,12 @@ classifier = mario.wrap(
     fit_extra_arguments=[("y", "is_bonafide")],
 )
 
-
-# we put video_to_frames and classifier together in a pipeline
-# so that the output of video_to_frames is not checkpointed!
-frames_classifier = Pipeline(
-    [("video_to_frames", VideoToFrames()), ("classifier", classifier)]
-)
-
 # Pipeline #
 pipeline = Pipeline(
     [
         ("preprocessor", preprocessor),
         ("extractor", extractor),
-        ("svm", frames_classifier),
+        ("video_to_frames", VideoToFrames()),
+        ("svm", classifier),
     ]
 )

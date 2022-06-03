@@ -1,5 +1,3 @@
-
-
 .. _bob.pad.face.baselines:
 
 
@@ -7,9 +5,7 @@
  Executing Baseline Algorithms
 ===============================
 
-This section explains how to execute face presentation attack detection (PAD)
-algorithms implemented in ``bob.pad.face``.
-
+This section explains how to execute face presentation attack detection (PAD).
 
 Running Baseline Experiments
 ----------------------------
@@ -21,7 +17,7 @@ To see the description of the command, you can type in the console:
 
    $ bob pad run-pipeline --help
 
-This command is explained in more detail in :ref:`bob.pad.base <bob.pad.base.features>`.
+This command is explained in more detail in :ref:`bob.pad.base <bob.pad.base.pipeline_intro>`.
 
 Usually, it is a good idea to have at least verbose level 2 (i.e., calling
 ``bob pad run-pipeline --verbose --verbose``, or the short version
@@ -35,14 +31,15 @@ Usually, it is a good idea to have at least verbose level 2 (i.e., calling
    line option. To run experiments in parallel on the local machine, add the
    ``--dask-client local-parallel`` option.
 
-   See :any:`this <pipeline_simple_features>` for more
-   details on dask configurations.
+.. note::
 
+   If you run out of memory, you can try to reduce the dask partition size
+   by setting the ``--dask-partition-size`` option.
 
-Database setups and baselines are encoded using
-``configuration-files``, all stored inside the package structure, in
-the directory ``bob/pad/face/config``. Documentation for each resource
-is available on the section :ref:`bob.pad.face.resources`.
+Database setups and baselines are encoded using ``configuration-files``, all
+stored inside the package structure, in the directory ``bob/pad/face/config``.
+Documentation for each resource is available on the section
+:ref:`bob.pad.face.resources`.
 
 .. warning::
 
@@ -63,8 +60,7 @@ is available on the section :ref:`bob.pad.face.resources`.
 
    .. code-block:: sh
 
-      $ bob config set bob.db.replaymobile.directory /path/to/replayattack-database/
-      $ bob config set bob.db.replaymobile.extension .mov
+      $ bob config set bob.db.replaymobile.directory /path/to/replaymobile-database/
 
    Notice it is rather important to correctly configure the database as
    described above, otherwise ``bob.pad.base`` will not be able to correctly
@@ -81,14 +77,49 @@ Baselines on REPLAY-ATTACK database
 --------------------------------------
 
 This section summarizes the results of baseline face PAD experiments on the
-REPLAY-ATTACK (`replayattack`_) database.
-The description of the database-related settings, which are used to run face PAD
-baselines on the Replay-Attack is given here
-:ref:`bob.pad.face.resources.databases.replay`. To understand the settings in
-more detail you can check the corresponding configuration file:
-``bob/pad/face/config/replay_attack.py``.
+REPLAY-ATTACK (`replayattack`_) database. The description of the
+database-related settings, which are used to run face PAD baselines on the
+Replay-Attack is given here :ref:`bob.pad.face.resources.databases.replay`. To
+understand the settings in more detail you can check the corresponding
+configuration file: ``bob/pad/face/config/replay_attack.py``.
 
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
 
+.. code-block:: sh
+
+   $ bob pad run-pipeline -vvv replay-attack deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+
+This baseline reports scores per frame. To obtain scores per video, you can run::
+
+   $ bob pad finalize-scores -vvv <OUTPUT>/scores-{dev,eval}.csv
+
+Finally, you can evaluate this baseline using::
+
+   $ bob pad metrics -vvv --eval <OUTPUT>/scores-{dev,eval}.csv
+
+which should give you::
+
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 1.919391e-01
+   ==============  ==============  ===============
+   ..              Development     Evaluation
+   ==============  ==============  ===============
+   APCER (attack)  32.3%           34.0%
+   APCER_AP        32.3%           34.0%
+   BPCER           31.7%           27.5%
+   ACER            32.0%           30.8%
+   FTA             0.0%            0.0%
+   FPR             32.3% (97/300)  34.0% (136/400)
+   FNR             31.7% (19/60)   27.5% (22/80)
+   HTER            32.0%           30.8%
+   FAR             32.3%           34.0%
+   FRR             31.7%           27.5%
+   PRECISION       0.3             0.3
+   RECALL          0.7             0.7
+   F1_SCORE        0.4             0.4
+   AUC             0.7             0.7
+   AUC-LOG-SCALE   1.5             1.4
+   ==============  ==============  ===============
 
 
 .. _bob.pad.face.baselines.replay_mobile:
@@ -96,9 +127,104 @@ more detail you can check the corresponding configuration file:
 Baselines on REPLAY-MOBILE database
 --------------------------------------
 
-This section summarizes the results of baseline face PAD experiments on the `Replay-Mobile`_ database.
-The description of the database-related settings, which are used to run face PAD baselines on the Replay-Mobile is given here :ref:`bob.pad.face.resources.databases.replay_mobile`. To understand the settings in more detail you can check the corresponding configuration file : ``bob/pad/face/config/replay_mobile.py``.
+This section summarizes the results of baseline face PAD experiments on the
+`Replay-Mobile`_ database. The description of the database-related settings,
+which are used to run face PAD baselines on the Replay-Mobile is given here
+:ref:`bob.pad.face.resources.databases.replay_mobile`. To understand the
+settings in more detail you can check the corresponding configuration file :
+``bob/pad/face/config/replay_mobile.py``.
 
 
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: sh
+
+   $ bob pad run-pipeline -vv replay-mobile deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+
+This baseline reports scores per frame. To obtain scores per video, you can run::
+
+   $ bob pad finalize-scores -vv <OUTPUT>/scores-{dev,eval}.csv
+
+Finally, you can evaluate this baseline using::
+
+   $ bob pad metrics -vv --eval <OUTPUT>/scores-{dev,eval}.csv
+
+which should give you::
+
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.051177e-01
+   ===================  ==============  ==============
+   ..                   Development     Evaluation
+   ===================  ==============  ==============
+   APCER (mattescreen)  4.7%            8.3%
+   APCER (print)        15.6%           18.8%
+   APCER_AP             15.6%           18.8%
+   BPCER                10.0%           10.9%
+   ACER                 12.8%           14.8%
+   FTA                  0.0%            0.0%
+   FPR                  10.2% (26/256)  13.5% (26/192)
+   FNR                  10.0% (16/160)  10.9% (12/110)
+   HTER                 10.1%           12.2%
+   FAR                  10.2%           13.5%
+   FRR                  10.0%           10.9%
+   PRECISION            0.8             0.8
+   RECALL               0.9             0.9
+   F1_SCORE             0.9             0.8
+   AUC                  1.0             1.0
+   AUC-LOG-SCALE        2.0             1.8
+   ===================  ==============  ==============
+
+
+.. _bob.pad.face.baselines.oulunpu:
+
+Baselines on OULU-NPU database
+--------------------------------------
+
+This section summarizes the results of baseline face PAD experiments on the
+`OULU-NPU`_ database. The description of the database-related settings,
+which are used to run face PAD baselines on the OULU-NPU is given here
+:ref:`bob.pad.face.resources.databases.oulunpu`. To understand the
+settings in more detail you can check the corresponding configuration file :
+``bob/pad/face/config/oulunpu.py``.
+
+
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: sh
+
+   $ bob pad run-pipeline -vv oulunpu deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+
+This baseline reports scores per frame. To obtain scores per video, you can run::
+
+   $ bob pad finalize-scores -vv <OUTPUT>/scores-{dev,eval}.csv
+
+Finally, you can evaluate this baseline using::
+
+   $ bob pad metrics -vv --eval <OUTPUT>/scores-{dev,eval}.csv
+
+which should give you::
+
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.051177e-01
+   ===================  ==============  ==============
+   ..                   Development     Evaluation
+   ===================  ==============  ==============
+   APCER (mattescreen)  4.7%            8.3%
+   APCER (print)        15.6%           18.8%
+   APCER_AP             15.6%           18.8%
+   BPCER                10.0%           10.9%
+   ACER                 12.8%           14.8%
+   FTA                  0.0%            0.0%
+   FPR                  10.2% (26/256)  13.5% (26/192)
+   FNR                  10.0% (16/160)  10.9% (12/110)
+   HTER                 10.1%           12.2%
+   FAR                  10.2%           13.5%
+   FRR                  10.0%           10.9%
+   PRECISION            0.8             0.8
+   RECALL               0.9             0.9
+   F1_SCORE             0.9             0.8
+   AUC                  1.0             1.0
+   AUC-LOG-SCALE        2.0             1.8
+   ===================  ==============  ==============
 
 .. include:: links.rst

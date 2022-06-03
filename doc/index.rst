@@ -7,8 +7,8 @@ Library for Facial Presentation Attack Detection (PAD)
 ========================================================
 
 The Facial Presentation Attack Detection Library is an open-source tool consisting of a
-series of plugins for bob.pad.base_, our open-source presentation attack detection
-platform. As a result, it is fully extensible using bob.pad.base_ documented
+series of plugins for :ref:`bob.pad.base`, our open-source presentation attack detection
+platform. As a result, it is fully extensible using :ref:`bob.pad.base` documented
 types and techniques. Please refer to the manual of that package for a thorough
 introduction. In this guide, we focus on details concerning
 face PAD experiments using our plugins.

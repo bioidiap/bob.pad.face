@@ -64,6 +64,11 @@ setup(
             "swan = bob.pad.face.config.swan:database",
             "oulunpu = bob.pad.face.config.oulunpu:database",
         ],
+        # registered pipelines:
+        "bob.pad.pipeline": [
+            "svm-frames = bob.pad.face.config.svm_frames:pipeline",
+            "deep-pix-bis = bob.pad.face.config.deep_pix_bis:pipeline",
+        ],
         # registered configurations:
         "bob.pad.config": [
             # databases
@@ -75,8 +80,9 @@ setup(
             "casiasurf = bob.pad.face.config.casiasurf",
             "swan = bob.pad.face.config.swan",
             "oulunpu = bob.pad.face.config.oulunpu",
-            # classifiers
+            # pipelines
             "svm-frames = bob.pad.face.config.svm_frames",
+            "deep-pix-bis = bob.pad.face.config.deep_pix_bis",
         ],
         # registered ``bob pad ...`` commands
         "bob.pad.cli": [
