@@ -31,7 +31,7 @@ The current system readily supports the following freely available datasets:
 
 After downloading the databases, annotate the base directories in which they
 are installed. Then, follow the instructions in
-:ref:`bob.pad.base.installation` to let this framework know where databases are
+:ref:`bob.pad.base.setup` to let this framework know where databases are
 located on your system.
 
 
