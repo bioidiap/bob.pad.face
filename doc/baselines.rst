@@ -77,7 +77,7 @@ Baselines on REPLAY-ATTACK database
 --------------------------------------
 
 This section summarizes the results of baseline face PAD experiments on the
-REPLAY-ATTACK (`replayattack`_) database. The description of the
+REPLAY-ATTACK (`replay-attack`_) database. The description of the
 database-related settings, which are used to run face PAD baselines on the
 Replay-Attack is given here :ref:`bob.pad.face.resources.databases.replay`. To
 understand the settings in more detail you can check the corresponding
@@ -205,26 +205,28 @@ Finally, you can evaluate this baseline using::
 
 which should give you::
 
-   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.051177e-01
-   ===================  ==============  ==============
-   ..                   Development     Evaluation
-   ===================  ==============  ==============
-   APCER (mattescreen)  4.7%            8.3%
-   APCER (print)        15.6%           18.8%
-   APCER_AP             15.6%           18.8%
-   BPCER                10.0%           10.9%
-   ACER                 12.8%           14.8%
-   FTA                  0.0%            0.0%
-   FPR                  10.2% (26/256)  13.5% (26/192)
-   FNR                  10.0% (16/160)  10.9% (12/110)
-   HTER                 10.1%           12.2%
-   FAR                  10.2%           13.5%
-   FRR                  10.0%           10.9%
-   PRECISION            0.8             0.8
-   RECALL               0.9             0.9
-   F1_SCORE             0.9             0.8
-   AUC                  1.0             1.0
-   AUC-LOG-SCALE        2.0             1.8
-   ===================  ==============  ==============
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.326179e-01
+   ======================  =============  ============
+   ..                      Development    Evaluation
+   ======================  =============  ============
+   APCER (print/1)         0.6%           1.7%
+   APCER (print/2)         0.0%           4.2%
+   APCER (video_replay/1)  1.7%           0.0%
+   APCER (video_replay/2)  0.0%           0.8%
+   APCER_AP                1.7%           4.2%
+   BPCER                   0.6%           0.0%
+   ACER                    1.1%           2.1%
+   FTA                     0.0%           0.0%
+   FPR                     0.6% (4/720)   1.7% (8/480)
+   FNR                     0.6% (1/180)   0.0% (0/120)
+   HTER                    0.6%           0.8%
+   FAR                     0.6%           1.7%
+   FRR                     0.6%           0.0%
+   PRECISION               1.0            0.9
+   RECALL                  1.0            1.0
+   F1_SCORE                1.0            1.0
+   AUC                     1.0            1.0
+   AUC-LOG-SCALE           2.9            2.7
+   ======================  =============  ============
 
 .. include:: links.rst

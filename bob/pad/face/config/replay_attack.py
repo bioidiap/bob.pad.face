@@ -10,8 +10,6 @@ link. After downloading, you can tell the bob library where the files are
 located using::
 
     $ bob config set bob.db.replayattack.directory /path/to/replayattack/directory
-
-.. include:: links.rst
 """
 from bob.pad.face.database import ReplayAttackPadDatabase
 
