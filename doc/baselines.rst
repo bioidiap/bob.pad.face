@@ -85,6 +85,7 @@ configuration file: ``bob/pad/face/config/replay_attack.py``.
 
 Deep-Pix-BiS Baseline
 ~~~~~~~~~~~~~~~~~~~~~
+(see :ref:`bob.pad.face.resources.deep_pix_bis_pad`)
 
 .. code-block:: sh
 
