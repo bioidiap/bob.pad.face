@@ -13,7 +13,7 @@ if database is not None:
     annotation_type = database.annotation_type
     fixed_positions = database.fixed_positions
 else:
-    annotation_type = None
+    annotation_type = "eyes-center"
     fixed_positions = None
 
 
@@ -41,6 +41,8 @@ preprocessor = mario.wrap(
 # Classifier #
 classifier = DeepPixBisClassifier(model_file="oulunpu-p1")
 classifier = mario.wrap(["sample"], classifier)
+# change the decision_function
+decision_function = "predict_proba"
 
 
 pipeline = Pipeline(

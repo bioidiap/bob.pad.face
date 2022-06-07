@@ -43,7 +43,16 @@ Replay-Mobile Database
 .. automodule:: bob.pad.face.config.replay_mobile
    :members:
 
----------------------------------
+
+
+.. _bob.pad.face.resources.databases.oulunpu:
+
+OULU-NPU Database
+================================================================================
+
+.. automodule:: bob.pad.face.config.oulunpu
+   :members:
+
 
 
 .. _bob.pad.face.resources.face_pad:
@@ -57,3 +66,5 @@ The configuration files contain at least the following arguments of the
 ``bob pad run-pipeline`` command:
 
     * ``pipeline`` containing zero, one, or more Transformers and one Classifier
+
+.. include:: links.rst
