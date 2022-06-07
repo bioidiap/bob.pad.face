@@ -55,6 +55,16 @@ OULU-NPU Database
 
 
 
+.. _bob.pad.face.resources.deep_pix_bis_pad:
+
+Deep Pixel-wise Binary Supervision for Face PAD
+================================================================================
+
+.. automodule:: bob.pad.face.config.deep_pix_bis
+   :members:
+
+
+
 .. _bob.pad.face.resources.face_pad:
 
 Available face PAD systems

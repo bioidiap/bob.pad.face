@@ -1,3 +1,15 @@
+"""Deep Pixel-wise Binary Supervision for Face PAD
+
+This package contains source code to replicate the experimental results published in the following paper::
+
+@inproceedings{GeorgeICB2019,
+        author = {Anjith George, Sebastien Marcel},
+        title = {Deep Pixel-wise Binary Supervision for Face Presentation Attack Detection},
+        year = {2019},
+        booktitle = {ICB 2019},
+    }
+"""
+
 from sklearn.pipeline import Pipeline
 
 import bob.pipelines as mario
