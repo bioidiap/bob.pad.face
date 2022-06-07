@@ -24,8 +24,6 @@ evaluation. All the random splits are done 10 times to created 10 different
 protocols. The PAD protocols contain only one type of attacks. For convenience,
 PA_F and PA_V protocols are created for face and voice, respectively which
 contain all the attacks.
-
-.. include:: links.rst
 """
 from bob.pad.face.database import SwanPadDatabase
 

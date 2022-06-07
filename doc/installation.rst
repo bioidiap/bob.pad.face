@@ -23,19 +23,16 @@ the baselines.
 
 The current system readily supports the following freely available datasets:
 
-* `REPLAYATTACK`_
+* `REPLAY-ATTACK`_
 * `REPLAY-MOBILE`_
+* `SWAN`_
+* `OULU-NPU`_
+* `MASK-ATTACK`_
 
 After downloading the databases, annotate the base directories in which they
 are installed. Then, follow the instructions in
 :ref:`bob.pad.base.installation` to let this framework know where databases are
 located on your system.
-
-.. note::
-
-    Some databases may need to be configured using a newer method explained in
-    :ref:`bob.extension.rc`. Refer to the documentation of the database for
-    further information.
 
 
 .. include:: links.rst

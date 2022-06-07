@@ -16,9 +16,6 @@ If you use this database, please cite the following publication::
             journal = {IEEE International Conference on Automatic Face and Gesture Recognition},
                year = {2017},
     }
-
-
-.. include:: links.rst
 """
 from bob.pad.face.database import OulunpuPadDatabase
 

@@ -232,8 +232,6 @@ class DeepPixBisClassifier(BaseEstimator, ClassifierMixin):
           The output score is close to 1 for bonafide and 0 for PAs.
         """
         self.load_model()
-        if self.device != torch.self.device("cuda"):
-            raise ValueError("Device {} is not supported.".format(self.device))
 
         tensor_images = []
         for img in images:
