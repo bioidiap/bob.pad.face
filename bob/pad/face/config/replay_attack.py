@@ -9,7 +9,7 @@ You can download the raw data of the `Replay-Attack`_ database by following the
 link. After downloading, you can tell the bob library where the files are
 located using::
 
-    $ bob config set bob.db.replayattack.directory /path/to/replayattack/directory
+    $ bob config set bob.db.replayattack.directory /path/to/database/replay/protocols/replayattack-database/
 """
 from bob.pad.face.database import ReplayAttackPadDatabase
 

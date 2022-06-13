@@ -3,7 +3,7 @@ A mobile face presentation attack database with real-world variations database.
 
 To configure the location of the database on your computer, run::
 
-    bob config set bob.db.oulunpu.directory /path/to/oulunpu/database
+    bob config set bob.db.oulunpu.directory /path/to/database/oulu-npu
 
 
 If you use this database, please cite the following publication::

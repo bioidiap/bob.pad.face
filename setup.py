@@ -76,7 +76,6 @@ setup(
             "replay-mobile = bob.pad.face.config.replay_mobile",
             "casiafasd = bob.pad.face.config.casiafasd",
             "maskattack = bob.pad.face.config.maskattack",
-            "casiasurf-color = bob.pad.face.config.casiasurf_color",
             "casiasurf = bob.pad.face.config.casiasurf",
             "swan = bob.pad.face.config.swan",
             "oulunpu = bob.pad.face.config.oulunpu",

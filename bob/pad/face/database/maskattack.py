@@ -1,11 +1,124 @@
 import logging
+import os
 
+from functools import partial
+
+import h5py
+import numpy as np
+
+from sklearn.preprocessing import FunctionTransformer
+
+from bob.bio.video import VideoLikeContainer, select_frames
 from bob.extension import rc
 from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
-from bob.pad.face.database import VideoPadSample
+from bob.pipelines import DelayedSample
 
 logger = logging.getLogger(__name__)
+
+
+def load_frames_from_hdf5(
+    hdf5_file,
+    key="Color_Data",
+    selection_style=None,
+    max_number_of_frames=None,
+    step_size=None,
+):
+    with h5py.File(hdf5_file) as f:
+        video = f[key][()]
+        # reduce the shape of depth from (N, C, H, W) to (N, H, W) since H == 1
+        video = np.squeeze(video)
+
+    indices = select_frames(
+        len(video),
+        max_number_of_frames=max_number_of_frames,
+        selection_style=selection_style,
+        step_size=step_size,
+    )
+    data = VideoLikeContainer(video[indices], indices)
+
+    return data
+
+
+def load_annotations_from_hdf5(
+    hdf5_file,
+):
+    with h5py.File(hdf5_file) as f:
+        eye_pos = f["Eye_Pos"][()]
+
+    annotations = {
+        str(i): {
+            "reye": [row[1], row[0]],
+            "leye": [row[3], row[2]],
+        }
+        for i, row in enumerate(eye_pos)
+    }
+    return annotations
+
+
+def delayed_maskattack_video_load(
+    samples,
+    original_directory,
+    selection_style=None,
+    max_number_of_frames=None,
+    step_size=None,
+):
+
+    original_directory = original_directory or ""
+    results = []
+    for sample in samples:
+        hdf5_file = os.path.join(original_directory, sample.filename)
+        data = partial(
+            load_frames_from_hdf5,
+            key="Color_Data",
+            hdf5_file=hdf5_file,
+            selection_style=selection_style,
+            max_number_of_frames=max_number_of_frames,
+            step_size=step_size,
+        )
+        depth = partial(
+            load_frames_from_hdf5,
+            key="Depth_Data",
+            hdf5_file=hdf5_file,
+            selection_style=selection_style,
+            max_number_of_frames=max_number_of_frames,
+            step_size=step_size,
+        )
+        annotations = partial(
+            load_annotations_from_hdf5,
+            hdf5_file=hdf5_file,
+        )
+        delayed_attributes = {
+            "annotations": annotations,
+            "depth": depth,
+        }
+
+        results.append(
+            DelayedSample(
+                data,
+                parent=sample,
+                delayed_attributes=delayed_attributes,
+            )
+        )
+    return results
+
+
+def MaskAttackPadSample(
+    original_directory,
+    selection_style=None,
+    max_number_of_frames=None,
+    step_size=None,
+):
+    return FunctionTransformer(
+        delayed_maskattack_video_load,
+        validate=False,
+        kw_args=dict(
+            original_directory=original_directory,
+            selection_style=selection_style,
+            max_number_of_frames=max_number_of_frames,
+            step_size=step_size,
+        ),
+    )
 
 
 def MaskAttackPadDatabase(
@@ -13,9 +126,6 @@ def MaskAttackPadDatabase(
     selection_style=None,
     max_number_of_frames=None,
     step_size=None,
-    annotation_directory=None,
-    annotation_type=None,
-    fixed_positions=None,
     **kwargs,
 ):
     name = "pad-face-mask-attack-211bd751.tar.gz"
@@ -25,10 +135,10 @@ def MaskAttackPadDatabase(
         cache_subdir="protocols",
         file_hash="211bd751",
     )
+    dataset_protocols_path = "/idiap/home/amohammadi/bob_data/protocols/pad-face-mask-attack-211bd751/"
 
-    transformer = VideoPadSample(
+    transformer = MaskAttackPadSample(
         original_directory=rc.get("bob.db.maskattack.directory"),
-        annotation_directory=annotation_directory,
         selection_style=selection_style,
         max_number_of_frames=max_number_of_frames,
         step_size=step_size,
@@ -40,6 +150,6 @@ def MaskAttackPadDatabase(
         transformer=transformer,
         **kwargs,
     )
-    database.annotation_type = annotation_type
-    database.fixed_positions = fixed_positions
+    database.annotation_type = "eyes-center"
+    database.fixed_positions = None
     return database

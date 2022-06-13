@@ -2,9 +2,9 @@
 # vim: set fileencoding=utf-8 :
 # Thu May 24 10:41:42 CEST 2012
 
-import numpy as np
+from unittest import SkipTest
 
-from nose.plugins.skip import SkipTest
+import numpy as np
 
 import bob.bio.base
 
@@ -169,53 +169,19 @@ def test_maskattack():
     assert len(maskattack.samples(groups=["dev"], purposes="attack")) == 25
     assert len(maskattack.samples(groups=["eval"], purposes="attack")) == 25
 
-
-# Test the casiasurf database
-# def test_casiasurf():
-#     casiasurf = bob.bio.base.load_resource(
-#         "casiasurf",
-#         "database",
-#         preferred_package="bob.pad.face",
-#         package_prefix="bob.pad.",
-#     )
-#     assert len(casiasurf.samples(groups=["train"], purposes="real")) == 8942
-#     assert len(casiasurf.samples(groups=["train"], purposes="attack")) == 20324
-#     assert len(casiasurf.samples(groups=("dev",), purposes=("real",))) == 2994
-#     assert len(casiasurf.samples(groups=("dev",), purposes=("attack",))) == 6614
-#     assert (
-#         len(casiasurf.samples(groups=("dev",), purposes=("real", "attack"))) == 9608
-#     )
-#     assert len(casiasurf.samples(groups=("eval",), purposes=("real",))) == 17458
-#     assert len(casiasurf.samples(groups=("eval",), purposes=("attack",))) == 40252
-#     assert (
-#         len(casiasurf.samples(groups=("eval",), purposes=("real", "attack")))
-#         == 57710
-#     )
-
-
-def test_casiasurf_color_protocol():
-    casiasurf = bob.bio.base.load_resource(
-        "casiasurf-color",
-        "database",
-        preferred_package="bob.pad.face",
-        package_prefix="bob.pad.",
-    )
-    assert len(casiasurf.samples(groups=["train"], purposes="real")) == 8942
-    assert len(casiasurf.samples(groups=["train"], purposes="attack")) == 20324
-    assert len(casiasurf.samples(groups=("dev",), purposes=("real",))) == 2994
-    assert len(casiasurf.samples(groups=("dev",), purposes=("attack",))) == 6614
-    assert (
-        len(casiasurf.samples(groups=("dev",), purposes=("real", "attack")))
-        == 9608
-    )
-    assert len(casiasurf.samples(groups=("eval",), purposes=("real",))) == 17458
-    assert (
-        len(casiasurf.samples(groups=("eval",), purposes=("attack",))) == 40252
-    )
-    assert (
-        len(casiasurf.samples(groups=("eval",), purposes=("real", "attack")))
-        == 57710
-    )
+    sample = maskattack.samples()[0]
+    try:
+        assert sample.data.shape == (20, 3, 480, 640)
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [185, 166, 167])
+        annot = sample.annotations["0"]
+        assert annot["leye"][1] > annot["reye"][1], annot
+        assert annot == {
+            "leye": [212, 287],
+            "reye": [217, 249],
+        }
+        assert sample.depth.shape == (20, 480, 640)
+    except FileNotFoundError as e:
+        raise SkipTest(e)
 
 
 def test_casia_fasd():
@@ -233,6 +199,37 @@ def test_casia_fasd():
     assert len(casia_fasd.samples(groups="train")) == 180
     assert len(casia_fasd.samples(groups="dev")) == 60
     assert len(casia_fasd.samples(groups="eval")) == 360
+    sample = casia_fasd.samples()[0]
+    try:
+        assert sample.data.shape == (20, 3, 480, 640)
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [217, 228, 227])
+    except FileNotFoundError as e:
+        raise SkipTest(e)
+
+
+def test_casia_surf():
+    casia_surf = bob.bio.base.load_resource(
+        "casiasurf",
+        "database",
+        preferred_package="bob.pad.face",
+        package_prefix="bob.pad.",
+    )
+
+    try:
+        assert len(casia_surf.samples()) == 96584
+        assert len(casia_surf.samples(purposes="real")) == 29394
+        assert len(casia_surf.samples(purposes="attack")) == 67190
+        assert len(casia_surf.samples(groups=("train", "dev"))) == 38874
+        assert len(casia_surf.samples(groups="train")) == 29266
+        assert len(casia_surf.samples(groups="dev")) == 9608
+        assert len(casia_surf.samples(groups="eval")) == 57710
+        sample = casia_surf.samples()[0]
+        assert sample.data.shape == (1, 3, 279, 279)
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [0, 0, 0])
+        assert sample.depth.shape == (1, 143, 143)
+        assert sample.infrared.shape == (1, 143, 143)
+    except FileNotFoundError as e:
+        raise SkipTest(e)
 
 
 def test_swan():

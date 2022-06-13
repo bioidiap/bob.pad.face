@@ -49,6 +49,11 @@ def delayed_video_load(
                 annotation_type="json",
             )
             delayed_attributes = {"annotations": delayed_annotations}
+        if sample.attack_type == "":
+            sample.attack_type = None
+        sample.is_bonafide = sample.attack_type is None
+        if not hasattr(sample, "key"):
+            sample.key = sample.filename
 
         results.append(
             DelayedSample(

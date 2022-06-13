@@ -230,4 +230,58 @@ which should give you::
    AUC-LOG-SCALE           2.9            2.7
    ======================  =============  ============
 
+
+.. _bob.pad.face.baselines.swan:
+
+Baselines on SWAN database
+--------------------------
+
+This section summarizes the results of baseline face PAD experiments on the
+`SWAN`_ database. The description of the database-related settings,
+which are used to run face PAD baselines on the SWAN is given here
+:ref:`bob.pad.face.resources.databases.swan`. To understand the
+settings in more detail you can check the corresponding configuration file :
+``bob/pad/face/config/swan.py``.
+
+
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: sh
+
+   $ bob pad run-pipeline -vv swan deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+
+This baseline reports scores per frame. To obtain scores per video, you can run::
+
+   $ bob pad finalize-scores -vv <OUTPUT>/scores-{dev,eval}.csv
+
+Finally, you can evaluate this baseline using::
+
+   $ bob pad metrics -vv --eval <OUTPUT>/scores-{dev,eval}.csv
+
+which should give you::
+
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.867174e-01
+   ==============  ==============  ================
+   ..              Development     Evaluation
+   ==============  ==============  ================
+   APCER (PA.F.1)  60.0%           51.1%
+   APCER (PA.F.5)  0.8%            2.8%
+   APCER (PA.F.6)  16.8%           16.3%
+   APCER_AP        60.0%           51.1%
+   BPCER           11.7%           21.8%
+   ACER            35.8%           36.5%
+   FTA             0.0%            0.0%
+   FPR             11.8% (59/502)  11.9% (89/749)
+   FNR             11.7% (35/300)  21.8% (491/2250)
+   HTER            11.7%           16.9%
+   FAR             11.8%           11.9%
+   FRR             11.7%           21.8%
+   PRECISION       0.8             1.0
+   RECALL          0.9             0.8
+   F1_SCORE        0.8             0.9
+   AUC             1.0             0.9
+   AUC-LOG-SCALE   2.0             1.6
+   ==============  ==============  ================
+
 .. include:: links.rst

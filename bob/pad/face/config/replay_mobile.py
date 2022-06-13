@@ -8,7 +8,10 @@ of collaboration with Galician Research and Development Center in Advanced Telec
 The reference citation is [CBVM16]_.
 
 You can download the raw data of the `Replay-Mobile`_ database by following
-the link.
+the link. After downloading, you can tell the bob library where the files are
+located using::
+
+    $ bob config set bob.db.replaymobile.directory /path/to/database/replay-mobile/database/
 """
 from bob.pad.face.database import ReplayMobilePadDatabase
 

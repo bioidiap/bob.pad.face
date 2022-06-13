@@ -9,68 +9,61 @@ import bob.io.base
 
 from bob.bio.video import VideoLikeContainer
 from bob.extension import rc
-from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
-from bob.pipelines import DelayedSample
+from bob.pipelines import CSVToSamples, DelayedSample
 
 logger = logging.getLogger(__name__)
 
 
-def load_multi_stream(mods, paths):
-    retval = {}
-    for mod, path in zip(mods, paths):
-        data = bob.io.base.load(path)
-        fc = VideoLikeContainer(data, [0])
-        retval[mod] = fc
-
-    if len(retval) == 1:
-        retval = retval[mods[0]]
-
-    return retval
+def load_multi_stream(path):
+    data = bob.io.base.load(path)
+    video = VideoLikeContainer(data[None, ...], [0])
+    return video
 
 
-def casia_surf_multistream_load(samples, original_directory, stream_type):
+def casia_surf_multistream_load(samples, original_directory):
     mod_to_attr = {}
     mod_to_attr["color"] = "filename"
     mod_to_attr["infrared"] = "ir_filename"
     mod_to_attr["depth"] = "depth_filename"
-
-    mods = []
-    if isinstance(stream_type, str) and stream_type != "all":
-        mods = [stream_type]
-    elif isinstance(stream_type, str) and stream_type == "all":
-        mods = ["color", "infrared", "depth"]
-    else:
-        for m in stream_type:
-            mods.append(m)
+    mods = list(mod_to_attr.keys())
 
     def _load(sample):
-        paths = []
+        paths = dict()
         for mod in mods:
-            paths.append(
-                os.path.join(
-                    original_directory or "", getattr(sample, mod_to_attr[mod])
-                )
+            paths[mod] = os.path.join(
+                original_directory or "", getattr(sample, mod_to_attr[mod])
             )
-        data = partial(load_multi_stream, mods, paths)
-        return DelayedSample(data, parent=sample, annotations=None)
+        data = partial(load_multi_stream, paths["color"])
+        depth = partial(load_multi_stream, paths["depth"])
+        infrared = partial(load_multi_stream, paths["infrared"])
+        subject = None
+        key = sample.filename
+        is_bonafide = sample.is_bonafide == "1"
+        attack_type = None if is_bonafide else "attack"
+
+        return DelayedSample(
+            data,
+            parent=sample,
+            subject=subject,
+            key=key,
+            attack_type=attack_type,
+            is_bonafide=is_bonafide,
+            annotations=None,
+            delayed_attributes={"depth": depth, "infrared": infrared},
+        )
 
     return [_load(s) for s in samples]
 
 
-def CasiaSurfMultiStreamSample(original_directory, stream_type):
+def CasiaSurfMultiStreamSample(original_directory):
     return FunctionTransformer(
         casia_surf_multistream_load,
-        kw_args=dict(
-            original_directory=original_directory, stream_type=stream_type
-        ),
+        kw_args=dict(original_directory=original_directory),
     )
 
 
-def CasiaSurfPadDatabase(
-    stream_type="all",
-    **kwargs,
-):
+class CasiaSurfPadDatabase(FileListPadDatabase):
     """The CASIA SURF Face PAD database interface.
 
     Parameters
@@ -81,25 +74,50 @@ def CasiaSurfPadDatabase(
     The returned sample either have their data as a VideoLikeContainer or
     a dict of VideoLikeContainers depending on the chosen stream_type.
     """
-    name = "pad-face-casia-surf-252f86f2.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="252f86f2",
-    )
 
-    transformer = CasiaSurfMultiStreamSample(
-        original_directory=rc.get("bob.db.casiasurf.directory"),
-        stream_type=stream_type,
-    )
-
-    database = FileListPadDatabase(
-        dataset_protocols_path,
-        protocol="all",
-        transformer=transformer,
+    def __init__(
+        self,
         **kwargs,
-    )
-    database.annotation_type = None
-    database.fixed_positions = None
-    return database
+    ):
+        original_directory = rc.get("bob.db.casiasurf.directory")
+        if original_directory is None or not os.path.isdir(original_directory):
+            raise FileNotFoundError(
+                "The original_directory is not set. Please set it in the terminal using `bob config set bob.db.casiasurf.directory /path/to/database/CASIA-SURF/`."
+            )
+        transformer = CasiaSurfMultiStreamSample(
+            original_directory=original_directory,
+        )
+        super().__init__(
+            dataset_protocols_path=original_directory,
+            protocol="all",
+            reader_cls=partial(
+                CSVToSamples,
+                dict_reader_kwargs=dict(
+                    delimiter=" ",
+                    fieldnames=[
+                        "filename",
+                        "ir_filename",
+                        "depth_filename",
+                        "is_bonafide",
+                    ],
+                ),
+            ),
+            transformer=transformer,
+            **kwargs,
+        )
+        self.annotation_type = None
+        self.fixed_positions = None
+
+    def protocols(self):
+        return ["all"]
+
+    def groups(self):
+        return ["train", "dev", "eval"]
+
+    def list_file(self, group):
+        filename = {
+            "train": "train_list.txt",
+            "dev": "val_private_list.txt",
+            "eval": "test_private_list.txt",
+        }[group]
+        return os.path.join(self.dataset_protocols_path, filename)

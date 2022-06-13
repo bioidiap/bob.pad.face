@@ -55,6 +55,16 @@ OULU-NPU Database
 
 
 
+.. _bob.pad.face.resources.databases.swan:
+
+SWAN Database
+================================================================================
+
+.. automodule:: bob.pad.face.config.swan
+   :members:
+
+
+
 .. _bob.pad.face.resources.deep_pix_bis_pad:
 
 Deep Pixel-wise Binary Supervision for Face PAD

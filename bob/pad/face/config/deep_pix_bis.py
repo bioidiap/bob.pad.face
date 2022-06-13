@@ -1,6 +1,6 @@
 """ Deep Pixel-wise Binary Supervision for Face PAD
 
-This package contains source code to replicate the experimental results published in the following publication::
+This baseline includes the models to replicate the experimental results published in the following publication::
 
     @INPROCEEDINGS{GeorgeICB2019,
         author = {Anjith George, Sebastien Marcel},
@@ -22,10 +22,12 @@ from bob.pad.face.deep_pix_bis import DeepPixBisClassifier
 from bob.pad.face.transformer import VideoToFrames
 
 database = globals().get("database")
+annotation_type, fixed_positions = None, None
 if database is not None:
     annotation_type = database.annotation_type
     fixed_positions = database.fixed_positions
-else:
+
+if annotation_type is None:
     annotation_type = "eyes-center"
     fixed_positions = None
 
