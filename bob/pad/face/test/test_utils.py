@@ -1,7 +1,6 @@
 import imageio
 import numpy
-
-from nose.tools import raises
+import pytest
 
 from bob.pad.face.test.dummy.database import DummyDatabase as Database
 from bob.pad.face.utils import (
@@ -57,11 +56,11 @@ def test_yield_frames():
         assert frame.shape == (112, 92)
 
 
-@raises(ValueError)
 def test_yield_faces_1():
-    padfile = get_pad_sample(none_annotations=True)
-    for face in yield_faces(padfile, dummy_cropper):
-        pass
+    with pytest.raises(ValueError):
+        padfile = get_pad_sample(none_annotations=True)
+        for face in yield_faces(padfile, dummy_cropper):
+            pass
 
 
 def test_yield_faces_2():
@@ -105,11 +104,11 @@ def test_blocks():
     assert (patches_gray == patches[:, 2, ...]).all()
 
 
-@raises(ValueError)
 def test_block_raises1():
-    blocks(image[0], (28, 28))
+    with pytest.raises(ValueError):
+        blocks(image[0], (28, 28))
 
 
-@raises(ValueError)
 def test_block_raises2():
-    blocks([[[image]]], (28, 28))
+    with pytest.raises(ValueError):
+        blocks([[[image]]], (28, 28))

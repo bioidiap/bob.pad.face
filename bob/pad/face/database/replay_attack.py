@@ -37,7 +37,7 @@ def ReplayAttackPadDatabase(
         annotation_type = "eyes-center"
 
     transformer = VideoPadSample(
-        original_directory=rc.get("bob.db.replayattack.directory"),
+        original_directory=rc.get("bob.db.replay_attack.directory"),
         annotation_directory=annotation_directory,
         selection_style=selection_style,
         max_number_of_frames=max_number_of_frames,

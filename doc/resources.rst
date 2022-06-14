@@ -26,7 +26,7 @@ The configuration files contain at least the following arguments of the
     * ``groups``
 
 
-.. _bob.pad.face.resources.databases.replay:
+.. _bob.pad.face.resources.databases.replay_attack:
 
 Replay-Attack Database
 ================================================================================
@@ -45,12 +45,32 @@ Replay-Mobile Database
 
 
 
-.. _bob.pad.face.resources.databases.oulunpu:
+.. _bob.pad.face.resources.databases.oulu_npu:
 
 OULU-NPU Database
 ================================================================================
 
-.. automodule:: bob.pad.face.config.oulunpu
+.. automodule:: bob.pad.face.config.oulu_npu
+   :members:
+
+
+
+.. _bob.pad.face.resources.databases.swan:
+
+SWAN Database
+================================================================================
+
+.. automodule:: bob.pad.face.config.swan
+   :members:
+
+
+
+.. _bob.pad.face.resources.deep_pix_bis_pad:
+
+Deep Pixel-wise Binary Supervision for Face PAD
+================================================================================
+
+.. automodule:: bob.pad.face.config.deep_pix_bis
    :members:
 
 

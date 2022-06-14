@@ -1,3 +1,16 @@
+""" Deep Pixel-wise Binary Supervision for Face PAD
+
+This baseline includes the models to replicate the experimental results published in the following publication::
+
+    @INPROCEEDINGS{GeorgeICB2019,
+        author = {Anjith George, Sebastien Marcel},
+        title = {Deep Pixel-wise Binary Supervision for Face Presentation Attack Detection},
+        year = {2019},
+        booktitle = {ICB 2019},
+    }
+
+"""
+
 from sklearn.pipeline import Pipeline
 
 import bob.pipelines as mario
@@ -9,10 +22,12 @@ from bob.pad.face.deep_pix_bis import DeepPixBisClassifier
 from bob.pad.face.transformer import VideoToFrames
 
 database = globals().get("database")
+annotation_type, fixed_positions = None, None
 if database is not None:
     annotation_type = database.annotation_type
     fixed_positions = database.fixed_positions
-else:
+
+if annotation_type is None:
     annotation_type = "eyes-center"
     fixed_positions = None
 
@@ -39,7 +54,7 @@ preprocessor = mario.wrap(
 )
 
 # Classifier #
-classifier = DeepPixBisClassifier(model_file="oulunpu-p1")
+classifier = DeepPixBisClassifier(model_file="oulu-npu-p1")
 classifier = mario.wrap(["sample"], classifier)
 # change the decision_function
 decision_function = "predict_proba"
