@@ -2,7 +2,7 @@
 
 To configure the location of the database on your computer, run::
 
-    bob config set bob.db.swan.directory /path/to/swan/database
+    bob config set bob.db.swan.directory /path/to/database/swan
 
 
 The Idiap part of the dataset comprises 150 subjects that are captured in six

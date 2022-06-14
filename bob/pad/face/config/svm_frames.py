@@ -10,7 +10,6 @@ preprocessor = globals()["preprocessor"]
 extractor = globals()["extractor"]
 
 # Classifier #
-
 param_grid = [
     {
         "C": [2**P for P in range(-3, 14, 2)],
@@ -20,6 +19,12 @@ param_grid = [
 ]
 
 
+# TODO: The grid search below does not take into account splitting frames of
+# each video into a separate group. You might have frames of the same video in
+# both groups of training and validation.
+
+# TODO: This gridsearch can also be part of dask graph using dask-ml and the
+# ``bob_fit_supports_dask_array`` tag from bob.pipelines.
 classifier = GridSearchCV(SVC(), param_grid=param_grid, cv=3)
 classifier = mario.wrap(
     ["sample"],

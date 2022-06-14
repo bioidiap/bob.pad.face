@@ -2,14 +2,14 @@
 # vim: set fileencoding=utf-8 :
 # Thu May 24 10:41:42 CEST 2012
 
-import numpy as np
+from unittest import SkipTest
 
-from nose.plugins.skip import SkipTest
+import numpy as np
 
 import bob.bio.base
 
 
-def test_replayattack():
+def test_replay_attack():
     database = bob.bio.base.load_resource(
         "replay-attack",
         "database",
@@ -61,7 +61,7 @@ def test_replayattack():
         raise SkipTest(e)
 
 
-def test_replaymobile():
+def test_replay_mobile():
     database = bob.bio.base.load_resource(
         "replay-mobile",
         "database",
@@ -131,10 +131,10 @@ def test_replaymobile():
         raise SkipTest(e)
 
 
-# Test the maskattack database
-def test_maskattack():
-    maskattack = bob.bio.base.load_resource(
-        "maskattack",
+# Test the mask_attack database
+def test_mask_attack():
+    mask_attack = bob.bio.base.load_resource(
+        "mask-attack",
         "database",
         preferred_package="bob.pad.face",
         package_prefix="bob.pad.",
@@ -142,14 +142,16 @@ def test_maskattack():
     # all real sequences: 2 sessions, 5 recordings for 17 individuals
     assert (
         len(
-            maskattack.samples(groups=["train", "dev", "eval"], purposes="real")
+            mask_attack.samples(
+                groups=["train", "dev", "eval"], purposes="real"
+            )
         )
         == 170
     )
     # all attacks: 1 session, 5 recordings for 17 individuals
     assert (
         len(
-            maskattack.samples(
+            mask_attack.samples(
                 groups=["train", "dev", "eval"], purposes="attack"
             )
         )
@@ -157,70 +159,36 @@ def test_maskattack():
     )
 
     # training real: 7 subjects, 2 sessions, 5 recordings
-    assert len(maskattack.samples(groups=["train"], purposes="real")) == 70
+    assert len(mask_attack.samples(groups=["train"], purposes="real")) == 70
     # training real: 7 subjects, 1 session, 5 recordings
-    assert len(maskattack.samples(groups=["train"], purposes="attack")) == 35
+    assert len(mask_attack.samples(groups=["train"], purposes="attack")) == 35
 
     # dev and test contains the same number of sequences:
     # real: 5 subjects, 2 sessions, 5 recordings
     # attack: 5 subjects, 1 sessions, 5 recordings
-    assert len(maskattack.samples(groups=["dev"], purposes="real")) == 50
-    assert len(maskattack.samples(groups=["eval"], purposes="real")) == 50
-    assert len(maskattack.samples(groups=["dev"], purposes="attack")) == 25
-    assert len(maskattack.samples(groups=["eval"], purposes="attack")) == 25
+    assert len(mask_attack.samples(groups=["dev"], purposes="real")) == 50
+    assert len(mask_attack.samples(groups=["eval"], purposes="real")) == 50
+    assert len(mask_attack.samples(groups=["dev"], purposes="attack")) == 25
+    assert len(mask_attack.samples(groups=["eval"], purposes="attack")) == 25
 
-
-# Test the casiasurf database
-# def test_casiasurf():
-#     casiasurf = bob.bio.base.load_resource(
-#         "casiasurf",
-#         "database",
-#         preferred_package="bob.pad.face",
-#         package_prefix="bob.pad.",
-#     )
-#     assert len(casiasurf.samples(groups=["train"], purposes="real")) == 8942
-#     assert len(casiasurf.samples(groups=["train"], purposes="attack")) == 20324
-#     assert len(casiasurf.samples(groups=("dev",), purposes=("real",))) == 2994
-#     assert len(casiasurf.samples(groups=("dev",), purposes=("attack",))) == 6614
-#     assert (
-#         len(casiasurf.samples(groups=("dev",), purposes=("real", "attack"))) == 9608
-#     )
-#     assert len(casiasurf.samples(groups=("eval",), purposes=("real",))) == 17458
-#     assert len(casiasurf.samples(groups=("eval",), purposes=("attack",))) == 40252
-#     assert (
-#         len(casiasurf.samples(groups=("eval",), purposes=("real", "attack")))
-#         == 57710
-#     )
-
-
-def test_casiasurf_color_protocol():
-    casiasurf = bob.bio.base.load_resource(
-        "casiasurf-color",
-        "database",
-        preferred_package="bob.pad.face",
-        package_prefix="bob.pad.",
-    )
-    assert len(casiasurf.samples(groups=["train"], purposes="real")) == 8942
-    assert len(casiasurf.samples(groups=["train"], purposes="attack")) == 20324
-    assert len(casiasurf.samples(groups=("dev",), purposes=("real",))) == 2994
-    assert len(casiasurf.samples(groups=("dev",), purposes=("attack",))) == 6614
-    assert (
-        len(casiasurf.samples(groups=("dev",), purposes=("real", "attack")))
-        == 9608
-    )
-    assert len(casiasurf.samples(groups=("eval",), purposes=("real",))) == 17458
-    assert (
-        len(casiasurf.samples(groups=("eval",), purposes=("attack",))) == 40252
-    )
-    assert (
-        len(casiasurf.samples(groups=("eval",), purposes=("real", "attack")))
-        == 57710
-    )
+    sample = mask_attack.samples()[0]
+    try:
+        assert sample.data.shape == (20, 3, 480, 640)
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [185, 166, 167])
+        annot = sample.annotations["0"]
+        assert annot["leye"][1] > annot["reye"][1], annot
+        assert annot == {
+            "leye": [212, 287],
+            "reye": [217, 249],
+        }
+        assert sample.depth.shape == (20, 480, 640)
+    except FileNotFoundError as e:
+        raise SkipTest(e)
 
 
 def test_casia_fasd():
     casia_fasd = bob.bio.base.load_resource(
-        "casiafasd",
+        "casia-fasd",
         "database",
         preferred_package="bob.pad.face",
         package_prefix="bob.pad.",
@@ -233,6 +201,37 @@ def test_casia_fasd():
     assert len(casia_fasd.samples(groups="train")) == 180
     assert len(casia_fasd.samples(groups="dev")) == 60
     assert len(casia_fasd.samples(groups="eval")) == 360
+    sample = casia_fasd.samples()[0]
+    try:
+        assert sample.data.shape == (20, 3, 480, 640)
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [217, 228, 227])
+    except FileNotFoundError as e:
+        raise SkipTest(e)
+
+
+def test_casia_surf():
+    try:
+        casia_surf = bob.bio.base.load_resource(
+            "casia-surf",
+            "database",
+            preferred_package="bob.pad.face",
+            package_prefix="bob.pad.",
+        )
+
+        assert len(casia_surf.samples()) == 96584
+        assert len(casia_surf.samples(purposes="real")) == 29394
+        assert len(casia_surf.samples(purposes="attack")) == 67190
+        assert len(casia_surf.samples(groups=("train", "dev"))) == 38874
+        assert len(casia_surf.samples(groups="train")) == 29266
+        assert len(casia_surf.samples(groups="dev")) == 9608
+        assert len(casia_surf.samples(groups="eval")) == 57710
+        sample = casia_surf.samples()[0]
+        assert sample.data.shape == (1, 3, 279, 279)
+        np.testing.assert_equal(sample.data[0][:, 0, 0], [0, 0, 0])
+        assert sample.depth.shape == (1, 143, 143)
+        assert sample.infrared.shape == (1, 143, 143)
+    except FileNotFoundError as e:
+        raise SkipTest(e)
 
 
 def test_swan():
@@ -284,9 +283,9 @@ def test_swan():
         raise SkipTest(e)
 
 
-def test_oulunpu():
+def test_oulu_npu():
     database = bob.bio.base.load_resource(
-        "oulunpu",
+        "oulu-npu",
         "database",
         preferred_package="bob.pad.face",
         package_prefix="bob.pad.",
