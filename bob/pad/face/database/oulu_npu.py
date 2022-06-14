@@ -8,7 +8,7 @@ from bob.pad.face.database import VideoPadSample
 logger = logging.getLogger(__name__)
 
 
-def OulunpuPadDatabase(
+def OuluNpuPadDatabase(
     protocol="Protocol_1",
     selection_style=None,
     max_number_of_frames=None,
@@ -37,7 +37,7 @@ def OulunpuPadDatabase(
         annotation_type = "eyes-center"
 
     transformer = VideoPadSample(
-        original_directory=rc.get("bob.db.oulunpu.directory"),
+        original_directory=rc.get("bob.db.oulu_npu.directory"),
         annotation_directory=annotation_directory,
         selection_style=selection_style,
         max_number_of_frames=max_number_of_frames,

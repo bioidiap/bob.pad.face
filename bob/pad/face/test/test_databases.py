@@ -9,7 +9,7 @@ import numpy as np
 import bob.bio.base
 
 
-def test_replayattack():
+def test_replay_attack():
     database = bob.bio.base.load_resource(
         "replay-attack",
         "database",
@@ -61,7 +61,7 @@ def test_replayattack():
         raise SkipTest(e)
 
 
-def test_replaymobile():
+def test_replay_mobile():
     database = bob.bio.base.load_resource(
         "replay-mobile",
         "database",
@@ -131,10 +131,10 @@ def test_replaymobile():
         raise SkipTest(e)
 
 
-# Test the maskattack database
-def test_maskattack():
-    maskattack = bob.bio.base.load_resource(
-        "maskattack",
+# Test the mask_attack database
+def test_mask_attack():
+    mask_attack = bob.bio.base.load_resource(
+        "mask-attack",
         "database",
         preferred_package="bob.pad.face",
         package_prefix="bob.pad.",
@@ -142,14 +142,16 @@ def test_maskattack():
     # all real sequences: 2 sessions, 5 recordings for 17 individuals
     assert (
         len(
-            maskattack.samples(groups=["train", "dev", "eval"], purposes="real")
+            mask_attack.samples(
+                groups=["train", "dev", "eval"], purposes="real"
+            )
         )
         == 170
     )
     # all attacks: 1 session, 5 recordings for 17 individuals
     assert (
         len(
-            maskattack.samples(
+            mask_attack.samples(
                 groups=["train", "dev", "eval"], purposes="attack"
             )
         )
@@ -157,19 +159,19 @@ def test_maskattack():
     )
 
     # training real: 7 subjects, 2 sessions, 5 recordings
-    assert len(maskattack.samples(groups=["train"], purposes="real")) == 70
+    assert len(mask_attack.samples(groups=["train"], purposes="real")) == 70
     # training real: 7 subjects, 1 session, 5 recordings
-    assert len(maskattack.samples(groups=["train"], purposes="attack")) == 35
+    assert len(mask_attack.samples(groups=["train"], purposes="attack")) == 35
 
     # dev and test contains the same number of sequences:
     # real: 5 subjects, 2 sessions, 5 recordings
     # attack: 5 subjects, 1 sessions, 5 recordings
-    assert len(maskattack.samples(groups=["dev"], purposes="real")) == 50
-    assert len(maskattack.samples(groups=["eval"], purposes="real")) == 50
-    assert len(maskattack.samples(groups=["dev"], purposes="attack")) == 25
-    assert len(maskattack.samples(groups=["eval"], purposes="attack")) == 25
+    assert len(mask_attack.samples(groups=["dev"], purposes="real")) == 50
+    assert len(mask_attack.samples(groups=["eval"], purposes="real")) == 50
+    assert len(mask_attack.samples(groups=["dev"], purposes="attack")) == 25
+    assert len(mask_attack.samples(groups=["eval"], purposes="attack")) == 25
 
-    sample = maskattack.samples()[0]
+    sample = mask_attack.samples()[0]
     try:
         assert sample.data.shape == (20, 3, 480, 640)
         np.testing.assert_equal(sample.data[0][:, 0, 0], [185, 166, 167])
@@ -186,7 +188,7 @@ def test_maskattack():
 
 def test_casia_fasd():
     casia_fasd = bob.bio.base.load_resource(
-        "casiafasd",
+        "casia-fasd",
         "database",
         preferred_package="bob.pad.face",
         package_prefix="bob.pad.",
@@ -208,14 +210,14 @@ def test_casia_fasd():
 
 
 def test_casia_surf():
-    casia_surf = bob.bio.base.load_resource(
-        "casiasurf",
-        "database",
-        preferred_package="bob.pad.face",
-        package_prefix="bob.pad.",
-    )
-
     try:
+        casia_surf = bob.bio.base.load_resource(
+            "casia-surf",
+            "database",
+            preferred_package="bob.pad.face",
+            package_prefix="bob.pad.",
+        )
+
         assert len(casia_surf.samples()) == 96584
         assert len(casia_surf.samples(purposes="real")) == 29394
         assert len(casia_surf.samples(purposes="attack")) == 67190
@@ -281,9 +283,9 @@ def test_swan():
         raise SkipTest(e)
 
 
-def test_oulunpu():
+def test_oulu_npu():
     database = bob.bio.base.load_resource(
-        "oulunpu",
+        "oulu-npu",
         "database",
         preferred_package="bob.pad.face",
         package_prefix="bob.pad.",

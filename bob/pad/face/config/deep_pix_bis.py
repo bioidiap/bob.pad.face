@@ -54,7 +54,7 @@ preprocessor = mario.wrap(
 )
 
 # Classifier #
-classifier = DeepPixBisClassifier(model_file="oulunpu-p1")
+classifier = DeepPixBisClassifier(model_file="oulu-npu-p1")
 classifier = mario.wrap(["sample"], classifier)
 # change the decision_function
 decision_function = "predict_proba"

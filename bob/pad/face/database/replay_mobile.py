@@ -54,7 +54,7 @@ def ReplayMobilePadDatabase(
     transformer = make_pipeline(
         Str_To_Types(fieldtypes=dict(should_flip=str_to_bool)),
         VideoPadSample(
-            original_directory=rc.get("bob.db.replaymobile.directory"),
+            original_directory=rc.get("bob.db.replay_mobile.directory"),
             annotation_directory=annotation_directory,
             selection_style=selection_style,
             max_number_of_frames=max_number_of_frames,

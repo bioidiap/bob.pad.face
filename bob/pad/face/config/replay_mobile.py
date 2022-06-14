@@ -11,7 +11,7 @@ You can download the raw data of the `Replay-Mobile`_ database by following
 the link. After downloading, you can tell the bob library where the files are
 located using::
 
-    $ bob config set bob.db.replaymobile.directory /path/to/database/replay-mobile/database/
+    $ bob config set bob.db.replay_mobile.directory /path/to/database/replay-mobile/database/
 """
 from bob.pad.face.database import ReplayMobilePadDatabase
 

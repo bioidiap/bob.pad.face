@@ -1,12 +1,12 @@
 # isort: skip_file
-from .database import VideoPadSample  # noqa: F401
-from .casiafasd import CasiaFasdPadDatabase
-from .casiasurf import CasiaSurfPadDatabase
-from .maskattack import MaskAttackPadDatabase
+from .database import VideoPadSample
+from .casia_fasd import CasiaFasdPadDatabase
+from .casia_surf import CasiaSurfPadDatabase
+from .mask_attack import MaskAttackPadDatabase
 from .replay_attack import ReplayAttackPadDatabase
 from .replay_mobile import ReplayMobilePadDatabase
 from .swan import SwanPadDatabase
-from .oulunpu import OulunpuPadDatabase
+from .oulu_npu import OuluNpuPadDatabase
 
 
 # gets sphinx autodoc done right - don't remove it
@@ -26,13 +26,14 @@ def __appropriate__(*args):
 
 
 __appropriate__(
+    VideoPadSample,
     ReplayAttackPadDatabase,
     ReplayMobilePadDatabase,
     MaskAttackPadDatabase,
     CasiaSurfPadDatabase,
     CasiaFasdPadDatabase,
     SwanPadDatabase,
-    OulunpuPadDatabase,
+    OuluNpuPadDatabase,
 )
 
 __all__ = [_ for _ in dir() if not _.startswith("_")]

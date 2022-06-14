@@ -60,7 +60,7 @@ Documentation for each resource is available on the section
 
    .. code-block:: sh
 
-      $ bob config set bob.db.replaymobile.directory /path/to/replaymobile-database/
+      $ bob config set bob.db.replay_mobile.directory /path/to/replaymobile-database/
 
    Notice it is rather important to correctly configure the database as
    described above, otherwise ``bob.pad.base`` will not be able to correctly
@@ -79,7 +79,7 @@ Baselines on REPLAY-ATTACK database
 This section summarizes the results of baseline face PAD experiments on the
 REPLAY-ATTACK (`replay-attack`_) database. The description of the
 database-related settings, which are used to run face PAD baselines on the
-Replay-Attack is given here :ref:`bob.pad.face.resources.databases.replay`. To
+Replay-Attack is given here :ref:`bob.pad.face.resources.databases.replay_attack`. To
 understand the settings in more detail you can check the corresponding
 configuration file: ``bob/pad/face/config/replay_attack.py``.
 
@@ -176,7 +176,7 @@ which should give you::
    ===================  ==============  ==============
 
 
-.. _bob.pad.face.baselines.oulunpu:
+.. _bob.pad.face.baselines.oulu_npu:
 
 Baselines on OULU-NPU database
 --------------------------------------
@@ -184,9 +184,9 @@ Baselines on OULU-NPU database
 This section summarizes the results of baseline face PAD experiments on the
 `OULU-NPU`_ database. The description of the database-related settings,
 which are used to run face PAD baselines on the OULU-NPU is given here
-:ref:`bob.pad.face.resources.databases.oulunpu`. To understand the
+:ref:`bob.pad.face.resources.databases.oulu_npu`. To understand the
 settings in more detail you can check the corresponding configuration file :
-``bob/pad/face/config/oulunpu.py``.
+``bob/pad/face/config/oulu_npu.py``.
 
 
 Deep-Pix-BiS Baseline
@@ -194,7 +194,7 @@ Deep-Pix-BiS Baseline
 
 .. code-block:: sh
 
-   $ bob pad run-pipeline -vv oulunpu deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+   $ bob pad run-pipeline -vv oulu-npu deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
 
 This baseline reports scores per frame. To obtain scores per video, you can run::
 

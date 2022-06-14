@@ -55,14 +55,13 @@ setup(
         "console_scripts": [],
         # registered databases:
         "bob.pad.database": [
+            "casia-fasd = bob.pad.face.config.casia_fasd:database",
+            "casia-surf = bob.pad.face.config.casia_surf:database",
+            "mask-attack = bob.pad.face.config.mask_attack:database",
+            "oulu-npu = bob.pad.face.config.oulu_npu:database",
             "replay-attack = bob.pad.face.config.replay_attack:database",
             "replay-mobile = bob.pad.face.config.replay_mobile:database",
-            "casiafasd = bob.pad.face.config.casiafasd:database",
-            "maskattack = bob.pad.face.config.maskattack:database",
-            "casiasurf-color = bob.pad.face.config.casiasurf_color:database",
-            "casiasurf = bob.pad.face.config.casiasurf:database",
             "swan = bob.pad.face.config.swan:database",
-            "oulunpu = bob.pad.face.config.oulunpu:database",
         ],
         # registered pipelines:
         "bob.pad.pipeline": [
@@ -72,13 +71,13 @@ setup(
         # registered configurations:
         "bob.pad.config": [
             # databases
+            "casia-fasd = bob.pad.face.config.casia_fasd",
+            "casia-surf = bob.pad.face.config.casia_surf",
+            "mask-attack = bob.pad.face.config.mask_attack",
+            "oulu-npu = bob.pad.face.config.oulu_npu",
             "replay-attack = bob.pad.face.config.replay_attack",
             "replay-mobile = bob.pad.face.config.replay_mobile",
-            "casiafasd = bob.pad.face.config.casiafasd",
-            "maskattack = bob.pad.face.config.maskattack",
-            "casiasurf = bob.pad.face.config.casiasurf",
             "swan = bob.pad.face.config.swan",
-            "oulunpu = bob.pad.face.config.oulunpu",
             # pipelines
             "svm-frames = bob.pad.face.config.svm_frames",
             "deep-pix-bis = bob.pad.face.config.deep_pix_bis",

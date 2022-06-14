@@ -17,7 +17,7 @@ your references:
 After downloading, you can tell the bob library where the files are located
 using::
 
-    $ bob config set bob.db.maskattack.directory /path/to/database/3dmad/Data/
+    $ bob config set bob.db.mask_attack.directory /path/to/database/3dmad/Data/
 """
 from bob.pad.face.database import MaskAttackPadDatabase
 

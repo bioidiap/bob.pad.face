@@ -79,10 +79,10 @@ class CasiaSurfPadDatabase(FileListPadDatabase):
         self,
         **kwargs,
     ):
-        original_directory = rc.get("bob.db.casiasurf.directory")
+        original_directory = rc.get("bob.db.casia_surf.directory")
         if original_directory is None or not os.path.isdir(original_directory):
             raise FileNotFoundError(
-                "The original_directory is not set. Please set it in the terminal using `bob config set bob.db.casiasurf.directory /path/to/database/CASIA-SURF/`."
+                "The original_directory is not set. Please set it in the terminal using `bob config set bob.db.casia_surf.directory /path/to/database/CASIA-SURF/`."
             )
         transformer = CasiaSurfMultiStreamSample(
             original_directory=original_directory,

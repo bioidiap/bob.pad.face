@@ -128,17 +128,16 @@ def MaskAttackPadDatabase(
     step_size=None,
     **kwargs,
 ):
-    name = "pad-face-mask-attack-211bd751.tar.gz"
+    name = "pad-face-mask-attack-2ab2032c.tar.gz"
     dataset_protocols_path = get_file(
         name,
         [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
         cache_subdir="protocols",
-        file_hash="211bd751",
+        file_hash="2ab2032c",
     )
-    dataset_protocols_path = "/idiap/home/amohammadi/bob_data/protocols/pad-face-mask-attack-211bd751/"
 
     transformer = MaskAttackPadSample(
-        original_directory=rc.get("bob.db.maskattack.directory"),
+        original_directory=rc.get("bob.db.mask_attack.directory"),
         selection_style=selection_style,
         max_number_of_frames=max_number_of_frames,
         step_size=step_size,

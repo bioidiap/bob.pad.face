@@ -15,49 +15,49 @@ logger = logging.getLogger(__name__)
 
 
 DEEP_PIX_BIS_PRETRAINED_MODELS = {
-    "oulunpu-p1": [
+    "oulu-npu-p1": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_1_model_0_0-24844429.pth"
     ],
-    "oulunpu-p2": [
+    "oulu-npu-p2": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_2_model_0_0-4aae2f3a.pth"
     ],
-    "oulunpu-p3-1": [
+    "oulu-npu-p3-1": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_3_1_model_0_0-f0e70cf3.pth"
     ],
-    "oulunpu-p3-2": [
+    "oulu-npu-p3-2": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_3_2_model_0_0-92594797.pth"
     ],
-    "oulunpu-p3-3": [
+    "oulu-npu-p3-3": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_3_3_model_0_0-71e18149.pth"
     ],
-    "oulunpu-p3-4": [
+    "oulu-npu-p3-4": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_3_4_model_0_0-d7f666e5.pth"
     ],
-    "oulunpu-p3-5": [
+    "oulu-npu-p3-5": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_3_5_model_0_0-fc40ba69.pth"
     ],
-    "oulunpu-p3-6": [
+    "oulu-npu-p3-6": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_3_6_model_0_0-123a6c92.pth"
     ],
-    "oulunpu-p4-1": [
+    "oulu-npu-p4-1": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_4_1_model_0_0-5f8dc7cf.pth"
     ],
-    "oulunpu-p4-2": [
+    "oulu-npu-p4-2": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_4_2_model_0_0-168f2644.pth"
     ],
-    "oulunpu-p4-3": [
+    "oulu-npu-p4-3": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_4_3_model_0_0-db57e3b5.pth"
     ],
-    "oulunpu-p4-4": [
+    "oulu-npu-p4-4": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_4_4_model_0_0-e999b7e8.pth"
     ],
-    "oulunpu-p4-5": [
+    "oulu-npu-p4-5": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_4_5_model_0_0-dcd13b8b.pth"
     ],
-    "oulunpu-p4-6": [
+    "oulu-npu-p4-6": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_OULU_Protocol_4_6_model_0_0-96a1ab92.pth"
     ],
-    "replaymobile": [
+    "replay-mobile": [
         "http://www.idiap.ch/software/bob/data/bob/bob.pad.face/deep_pix_bis_RM_grandtest_model_0_0-6761ca7e.pth"
     ],
 }

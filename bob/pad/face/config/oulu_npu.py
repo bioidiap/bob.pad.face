@@ -3,7 +3,7 @@ A mobile face presentation attack database with real-world variations database.
 
 To configure the location of the database on your computer, run::
 
-    bob config set bob.db.oulunpu.directory /path/to/database/oulu-npu
+    bob config set bob.db.oulu_npu.directory /path/to/database/oulu-npu
 
 
 If you use this database, please cite the following publication::
@@ -17,6 +17,6 @@ If you use this database, please cite the following publication::
                year = {2017},
     }
 """
-from bob.pad.face.database import OulunpuPadDatabase
+from bob.pad.face.database import OuluNpuPadDatabase
 
-database = OulunpuPadDatabase()
+database = OuluNpuPadDatabase()
