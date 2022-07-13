@@ -15,8 +15,8 @@ def test_video_to_frames():
     frame_samples = VideoToFrames().transform(samples)
     assert len(frame_samples) == 4
     assert all(
-        s.key == "0.{}".format(k) for s, k in zip(frame_samples, [0, 1, 2, 4])
+        s.key == "0_{}".format(k) for s, k in zip(frame_samples, [0, 1, 2, 4])
     )
-    assert all(s.groups == hash(0) for s in frame_samples)
+    assert all(s.video_key == 0 for s in frame_samples)
     assert [s.data for s in frame_samples] == [0, 1, 2, 3]
     assert [s.frame_id for s in frame_samples] == [0, 1, 2, 4]
