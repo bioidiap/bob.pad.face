@@ -53,7 +53,7 @@ def _init_pipeline(database, crop_size=(112, 112), grid_size=(3, 3)):
     sk_classifier = dcv.GridSearchCV(
         sk_classifier, param_grid=param_grid, cv=cv
     )
-    fit_extra_arguments = [("y", "is_bonafide"), ("groups", "groups")]
+    fit_extra_arguments = [("y", "is_bonafide"), ("groups", "video_key")]
     classifier = SampleWrapper(
         sk_classifier,
         delayed_output=False,

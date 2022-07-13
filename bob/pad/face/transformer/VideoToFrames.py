@@ -17,7 +17,7 @@ def _get(sth):
 class VideoToFrames(TransformerMixin, BaseEstimator):
     """Expands video samples to frame-based samples only when transform is called."""
 
-    def __init__(self, delayed_output=False):
+    def __init__(self, delayed_output=True):
         self.delayed_output = delayed_output
 
     def transform(self, video_samples):
@@ -25,7 +25,7 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
         outputs = []
         for vid_sample in video_samples:
             annotations = getattr(vid_sample, "annotations", None)
-            # Define groups with hash(sample.key) since we need a unique ID for
+            # Define groups with `sample.key`` since we need a unique ID for
             # each video. The `groups` attribute is used to do cross-validation
             if not hasattr(vid_sample, "key"):
                 raise ValueError(
@@ -34,7 +34,7 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
                         self.__class__.__name__
                     )
                 )
-            groups = hash(vid_sample.key)
+            groups = vid_sample.key
             # video is an instance of VideoAsArray or VideoLikeContainer
             video = vid_sample.data
             for frame, frame_id in zip(video, video.indices):
@@ -48,7 +48,7 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
                 # Update key, otherwise get the one from parent and each frames
                 # get the same one, breaking checkpoint mechanic for steps
                 # later down the pipelines
-                key = "{}.{}".format(vid_sample.key, frame_id)
+                key = "{}_{}".format(vid_sample.key, frame_id)
                 if self.delayed_output:
                     # create a load method so that we can create DelayedSamples
                     # because the input samples could be DelayedSamples with
@@ -57,18 +57,20 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
                     sample = DelayedSample(
                         partial(_get, frame),
                         frame_id=frame_id,
-                        annotations=frame_annotations,
-                        groups=groups,
+                        video_key=groups,
                         parent=vid_sample,
+                        # Override parent's attributes
+                        annotations=frame_annotations,
                         key=key,
                     )
                 else:
                     sample = Sample(
                         frame,
                         frame_id=frame_id,
-                        annotations=frame_annotations,
-                        groups=groups,
+                        video_key=groups,
                         parent=vid_sample,
+                        # Override parent's attributes
+                        annotations=frame_annotations,
                         key=key,
                     )
                 outputs.append(sample)
@@ -79,7 +81,6 @@ class VideoToFrames(TransformerMixin, BaseEstimator):
 
     def _more_tags(self):
         return {
-            "stateless": True,
             "requires_fit": False,
             "bob_checkpoint_features": False,
         }
