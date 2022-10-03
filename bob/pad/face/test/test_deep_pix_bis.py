@@ -1,5 +1,5 @@
-import pkg_resources
 import numpy
+import pkg_resources
 
 import bob.io.base as io
 import bob.pipelines as mario
