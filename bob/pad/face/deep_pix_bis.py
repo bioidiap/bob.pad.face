@@ -148,7 +148,7 @@ class DeepPixBisClassifier(BaseEstimator, ClassifierMixin):
         model_file: str
           The path of the trained PAD network to load or one of the keys to :py:attr:`DEEP_PIX_BIS_PRETRAINED_MODELS`
         transforms: :py:mod:`torchvision.transforms`
-          Tranform to be applied on the image
+          Transform to be applied on the image
         scoring_method: str
           The scoring method to be used to get the final score,
           available methods are ['pixel_mean','binary','combined'].
