@@ -25,6 +25,4 @@ def test_pipeline():
 
     assert type(prediction.data) is numpy.float32
 
-    # TODO This test fails on the linux CI for some (mysterious) reason since the
-    # support of python 3.10. I'm deactivating it for now (10.2022 - ydayer)
-    # assert prediction.data < 0.04
+    assert prediction.data < 0.04
