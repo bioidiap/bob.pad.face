@@ -38,7 +38,7 @@ def delayed_video_load(
             step_size=step_size,
             transform=get_transform(sample),
         )
-        delayed_attributes = None
+        delayed_attributes = {"annotations": lambda: None}
         if annotation_directory:
             path = sample.filename
             if not keep_extension_for_annotation:

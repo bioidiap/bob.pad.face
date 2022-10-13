@@ -83,14 +83,16 @@ Replay-Attack is given here :ref:`bob.pad.face.resources.databases.replay_attack
 understand the settings in more detail you can check the corresponding
 configuration file: ``bob/pad/face/config/replay_attack.py``.
 
-Deep-Pix-BiS Baseline
+Running Baseline
 ~~~~~~~~~~~~~~~~~~~~~
-(see :ref:`bob.pad.face.resources.deep_pix_bis_pad`)
+
+The baseline is run by invoking the command below
 
 .. code-block:: sh
 
-   $ bob pad run-pipeline -vvv replay-attack deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+   $ bob pad run-pipeline -vvv replay-attack <BASELINE> --output <OUTPUT> --dask-client <CLIENT>
 
+where ``<BASELINE>`` can be any of the following: ``lbp-svm``, ``deep-pix-bis``.
 This baseline reports scores per frame. To obtain scores per video, you can run::
 
    $ bob pad finalize-scores -vvv <OUTPUT>/scores-{dev,eval}.csv
@@ -99,7 +101,38 @@ Finally, you can evaluate this baseline using::
 
    $ bob pad metrics -vvv --eval <OUTPUT>/scores-{dev,eval}.csv
 
-which should give you::
+LBP-SVM Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+The metrics for this baseline should give you::
+
+   [Min. criterion: EER ] Threshold on Development set ``<OUTPUT>/scores-dev.csv`: -1.042440e+00
+   ==============  ==============  ==============
+   ..              Development     Evaluation
+   ==============  ==============  ==============
+   APCER (attack)  20.7%           19.5%
+   APCER_AP        20.7%           19.5%
+   BPCER           20.0%           13.8%
+   ACER            20.3%           16.6%
+   FTA             0.0%            0.0%
+   FPR             20.7% (62/300)  19.5% (78/400)
+   FNR             20.0% (12/60)   13.8% (11/80)
+   HTER            20.3%           16.6%
+   FAR             20.7%           19.5%
+   FRR             20.0%           13.8%
+   PRECISION       0.4             0.5
+   RECALL          0.8             0.9
+   F1_SCORE        0.6             0.6
+   AUC             0.9             0.9
+   AUC-LOG-SCALE   1.4             1.5
+   ==============  ==============  ==============
+
+
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
+(see :ref:`bob.pad.face.resources.deep_pix_bis_pad`)
+
+The metrics for this baseline should give you::
 
    [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 1.919391e-01
    ==============  ==============  ===============
@@ -136,22 +169,57 @@ settings in more detail you can check the corresponding configuration file :
 ``bob/pad/face/config/replay_mobile.py``.
 
 
-Deep-Pix-BiS Baseline
+Running Baseline
 ~~~~~~~~~~~~~~~~~~~~~
+
+The baseline is run by invoking the command below
 
 .. code-block:: sh
 
-   $ bob pad run-pipeline -vv replay-mobile deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+   $ bob pad run-pipeline -vvv replay-mobile <BASELINE> --output <OUTPUT> --dask-client <CLIENT>
 
+where ``<BASELINE>`` can be any of the following: ``lbp-svm``, ``deep-pix-bis``.
 This baseline reports scores per frame. To obtain scores per video, you can run::
 
-   $ bob pad finalize-scores -vv <OUTPUT>/scores-{dev,eval}.csv
+   $ bob pad finalize-scores -vvv <OUTPUT>/scores-{dev,eval}.csv
 
 Finally, you can evaluate this baseline using::
 
-   $ bob pad metrics -vv --eval <OUTPUT>/scores-{dev,eval}.csv
+   $ bob pad metrics -vvv --eval <OUTPUT>/scores-{dev,eval}.csv
 
-which should give you::
+
+LBP-SVM Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+The metrics for this baseline should give you::
+
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: -5.045229e-01
+   ===================  ==============  ==============
+   ..                   Development     Evaluation
+   ===================  ==============  ==============
+   APCER (mattescreen)  7.0%            7.3%
+   APCER (print)        9.4%            3.1%
+   APCER_AP             9.4%            7.3%
+   BPCER                8.1%            0.9%
+   ACER                 8.8%            4.1%
+   FTA                  0.0%            0.0%
+   FPR                  8.2% (21/256)   5.2% (10/192)
+   FNR                  8.1% (13/160)   0.9% (1/110)
+   HTER                 8.2%            3.1%
+   FAR                  8.2%            5.2%
+   FRR                  8.1%            0.9%
+   PRECISION            0.9             0.9
+   RECALL               0.9             1.0
+   F1_SCORE             0.9             1.0
+   AUC                  1.0             1.0
+   AUC-LOG-SCALE        2.2             2.2
+   ===================  ==============  ==============
+
+
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+The metrics for this baseline should give you::
 
    [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.051177e-01
    ===================  ==============  ==============
@@ -189,22 +257,59 @@ settings in more detail you can check the corresponding configuration file :
 ``bob/pad/face/config/oulu_npu.py``.
 
 
-Deep-Pix-BiS Baseline
+Running Baseline
 ~~~~~~~~~~~~~~~~~~~~~
+
+The baseline is run by invoking the command below
 
 .. code-block:: sh
 
-   $ bob pad run-pipeline -vv oulu-npu deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+   $ bob pad run-pipeline -vvv oulu-npu <BASELINE> --output <OUTPUT> --dask-client <CLIENT>
 
+where ``<BASELINE>`` can be any of the following: ``lbp-svm``, ``deep-pix-bis``.
 This baseline reports scores per frame. To obtain scores per video, you can run::
 
-   $ bob pad finalize-scores -vv <OUTPUT>/scores-{dev,eval}.csv
+   $ bob pad finalize-scores -vvv <OUTPUT>/scores-{dev,eval}.csv
 
 Finally, you can evaluate this baseline using::
 
-   $ bob pad metrics -vv --eval <OUTPUT>/scores-{dev,eval}.csv
+   $ bob pad metrics -vvv --eval <OUTPUT>/scores-{dev,eval}.csv
 
-which should give you::
+
+LBP-SVM Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+The metrics for this baseline should give you::
+
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 6.161214e-02
+   ======================  =============  ============
+   ..                      Development    Evaluation
+   ======================  =============  ============
+   APCER (print/1)         13.3%          10.0%
+   APCER (print/2)         11.1%          6.7%
+   APCER (video_replay/1)  4.4%           5.8%
+   APCER (video_replay/2)  8.3%           11.7%
+   APCER_AP                13.3%          11.7%
+   BPCER                   9.4%           57.5%
+   ACER                    11.4%          34.6%
+   FTA                     0.0%           0.0%
+   FPR                     9.3% (67/720)  8.5% (41/480)
+   FNR                     9.4% (17/180)  57.5% (69/120)
+   HTER                    9.4%           33.0%
+   FAR                     9.3%           8.5%
+   FRR                     9.4%           57.5%
+   PRECISION               0.7            0.6
+   RECALL                  0.9            0.4
+   F1_SCORE                0.8            0.5
+   AUC                     1.0            0.8
+   AUC-LOG-SCALE           2.1            1.1
+   ======================  =============  ============
+
+
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+The metrics for this baseline should give you::
 
    [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.326179e-01
    ======================  =============  ============
@@ -244,22 +349,58 @@ settings in more detail you can check the corresponding configuration file :
 ``bob/pad/face/config/swan.py``.
 
 
-Deep-Pix-BiS Baseline
+Running Baseline
 ~~~~~~~~~~~~~~~~~~~~~
+
+The baseline is run by invoking the command below
 
 .. code-block:: sh
 
-   $ bob pad run-pipeline -vv swan deep-pix-bis --output <OUTPUT> --dask-client <CLIENT>
+   $ bob pad run-pipeline -vvv swan <BASELINE> --output <OUTPUT> --dask-client <CLIENT>
 
+where ``<BASELINE>`` can be any of the following: ``lbp-svm``, ``deep-pix-bis``.
 This baseline reports scores per frame. To obtain scores per video, you can run::
 
-   $ bob pad finalize-scores -vv <OUTPUT>/scores-{dev,eval}.csv
+   $ bob pad finalize-scores -vvv <OUTPUT>/scores-{dev,eval}.csv
 
 Finally, you can evaluate this baseline using::
 
-   $ bob pad metrics -vv --eval <OUTPUT>/scores-{dev,eval}.csv
+   $ bob pad metrics -vvv --eval <OUTPUT>/scores-{dev,eval}.csv
 
-which should give you::
+
+LBP-SVM Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+The metrics for this baseline should give you::
+
+   [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 9.408851e-02
+   ======================  =============  ============
+   ..                      Development    Evaluation
+   ======================  =============  ============
+   APCER (PA.F.1)          6.7%           11.1%
+   APCER (PA.F.5)          0.8%           0.8%
+   APCER (PA.F.6)          11.2%          10.8%
+   APCER_AP                11.2%          11.1%
+   BPCER                   6.0%           25.2%
+   ACER                    8.6%           18.2%
+   FTA                     0.0%           0.0%
+   FPR                     6.0% (30/502)  6.0% (45/749)
+   FNR                     6.0% (18/300)  25.2% (568/2250)
+   HTER                    6.0%           15.6%
+   FAR                     6.0%           6.0%
+   FRR                     6.0%           25.2%
+   PRECISION               0.9            1.0
+   RECALL                  0.9            0.7
+   F1_SCORE                0.9            0.8
+   AUC                     1.0            1.0
+   AUC-LOG-SCALE           2.4            2.0
+   ======================  =============  ============
+
+
+Deep-Pix-BiS Baseline
+~~~~~~~~~~~~~~~~~~~~~
+
+The metrics for this baseline should give you::
 
    [Min. criterion: EER ] Threshold on Development set `<OUTPUT>/scores-dev.csv`: 4.867174e-01
    ==============  ==============  ================

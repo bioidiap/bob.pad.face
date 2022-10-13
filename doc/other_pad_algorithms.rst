@@ -43,8 +43,9 @@ Usually, it is a good idea to have at least verbose level 2 (i.e., calling
    line option. To run experiments in parallel on the local machine, add the
    ``--dask-client local-parallel`` option.
 
-   See :any:`this <bob.bio.base.pipeline_simple_advanced_features>` for more for more
+   See :any:`this <bob.bio.base.pipeline_simple_advanced_features>` for more
    details on dask configurations.
+
 
 
 Database setups and face PAD algorithms are encoded using
