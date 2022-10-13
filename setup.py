@@ -79,7 +79,7 @@ setup(
             "replay-mobile = bob.pad.face.config.replay_mobile",
             "swan = bob.pad.face.config.swan",
             # pipelines
-            "svm-frames = bob.pad.face.config.svm_frames",
+            "lbp-svm = bob.pad.face.config.lbp_svm",
             "deep-pix-bis = bob.pad.face.config.deep_pix_bis",
         ],
         # registered ``bob pad ...`` commands
