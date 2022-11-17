@@ -2,7 +2,6 @@ import imageio
 import numpy
 import pytest
 
-from bob.pad.face.test.dummy.database import DummyDatabase as Database
 from bob.pad.face.utils import (
     blocks,
     frames,
@@ -10,6 +9,7 @@ from bob.pad.face.utils import (
     scale_face,
     yield_faces,
 )
+from tests.dummy.database import DummyDatabase as Database
 
 
 def get_pad_sample(none_annotations=False):
