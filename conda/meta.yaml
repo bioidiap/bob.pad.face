@@ -63,4 +63,3 @@ about:
   summary: {{ data['project']['description'] }}
   license: {{ data['project']['license']['text'] }}
   license_family: BSD
-
