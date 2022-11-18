@@ -8,11 +8,12 @@ from sklearn.preprocessing import FunctionTransformer
 import bob.io.base
 
 from bob.bio.video import VideoLikeContainer
-from bob.extension import rc
+from exposed.rc import UserDefaults
 from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import CSVToSamples, DelayedSample
 
 logger = logging.getLogger(__name__)
+rc = UserDefaults("~/.bobrc", "BOBRC")
 
 
 def load_multi_stream(path):
