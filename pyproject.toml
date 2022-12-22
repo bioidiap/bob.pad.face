@@ -32,7 +32,7 @@
         "bob.bio.base",
         "bob.io.base",
         "bob.pad.base",
-        "bob.bio.face==7.1.2",
+        "bob.bio.face",
         "bob.bio.video",
         "scikit-learn",
         "scikit-image",
