@@ -33,7 +33,6 @@ requirements:
     - scikit-image {{ scikit_image }}
     - imageio-ffmpeg {{ imageio_ffmpeg }}
     - pytorch {{ pytorch }}
-    - tensorflow {{ tensorflow }}
   run:
     - python
     - setuptools
@@ -49,7 +48,6 @@ requirements:
     - {{ pin_compatible('scikit-image') }}
     - {{ pin_compatible('imageio-ffmpeg') }}
     - {{ pin_compatible('pytorch') }}
-    - {{ pin_compatible('tensorflow') }}
 
 test:
   imports:
