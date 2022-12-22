@@ -34,6 +34,7 @@ def DummyPadSample(
     return DelayedSample(
         load,
         client_id=client_id,
+        template_id=client_id,
         key=key,
         attack_type=attack_type,
         is_bonafide=attack_type is None,
