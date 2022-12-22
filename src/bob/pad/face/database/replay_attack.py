@@ -1,12 +1,14 @@
 import logging
 
 from exposed.rc import UserDefaults
+
 from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
 
 logger = logging.getLogger(__name__)
 rc = UserDefaults("~/.bobrc", "BOBRC")
+
 
 def ReplayAttackPadDatabase(
     protocol="grandtest",

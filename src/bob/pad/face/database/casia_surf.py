@@ -3,12 +3,12 @@ import os
 
 from functools import partial
 
+from exposed.rc import UserDefaults
 from sklearn.preprocessing import FunctionTransformer
 
 import bob.io.base
 
 from bob.bio.video import VideoLikeContainer
-from exposed.rc import UserDefaults
 from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import CSVToSamples, DelayedSample
 

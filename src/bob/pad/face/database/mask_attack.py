@@ -6,10 +6,10 @@ from functools import partial
 import h5py
 import numpy as np
 
+from exposed.rc import UserDefaults
 from sklearn.preprocessing import FunctionTransformer
 
 from bob.bio.video import VideoLikeContainer, select_frames
-from exposed.rc import UserDefaults
 from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import DelayedSample
