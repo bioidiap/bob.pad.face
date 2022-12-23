@@ -49,7 +49,7 @@ class DummyDatabase(Database):
         self.original_directory = self._db.dataset_original_directory
         self.none_annotations = none_annotations
         self.high_level_names = ["train", "dev", "eval"]
-        self.low_level_names = ["world", "dev", "eval"]
+        self.low_level_names = ["dev", "eval"]
 
     def _make_bio(self, files):
         files = [
