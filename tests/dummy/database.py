@@ -2,26 +2,26 @@ import os
 
 import bob.io.base
 
-from bob.bio.base.database import AtntBioDatabase
 from bob.bio.base.database.legacy import (
     check_parameters_for_validity,
     convert_names_to_lowlevel,
 )
 from bob.bio.video import VideoLikeContainer
 from bob.pad.base.pipelines.abstract_classes import Database
+from bob.pad.face.database import AtntPadDatabase
 from bob.pipelines import DelayedSample
 
 
 def DummyPadSample(
     path,
     original_directory,
-    client_id,
+    template_id,
     key,
     attack_type,
     none_annotations=False,
 ):
     def load():
-        file_name = os.path.join(original_directory, path + ".pgm")
+        file_name = os.path.join(original_directory, f"{path}.pgm")
         data = bob.io.base.load(file_name)[None, ...]
         indices = [os.path.basename(file_name)]
         fc = VideoLikeContainer(data, indices)
@@ -33,8 +33,7 @@ def DummyPadSample(
 
     return DelayedSample(
         load,
-        client_id=client_id,
-        template_id=client_id,
+        client_id=template_id,
         key=key,
         attack_type=attack_type,
         is_bonafide=attack_type is None,
@@ -46,8 +45,8 @@ class DummyDatabase(Database):
     def __init__(self, none_annotations=False):
         # call base class constructor with useful parameters
         super(DummyDatabase, self).__init__()
-        self._db = AtntBioDatabase()
-        self.original_directory = self._db.original_directory
+        self._db = AtntPadDatabase()
+        self.original_directory = self._db.dataset_original_directory
         self.none_annotations = none_annotations
         self.high_level_names = ["train", "dev", "eval"]
         self.low_level_names = ["world", "dev", "eval"]
@@ -57,7 +56,7 @@ class DummyDatabase(Database):
             DummyPadSample(
                 path=f.path,
                 original_directory=self.original_directory,
-                client_id=f.client_id,
+                template_id=f.template_id,
                 key=f.id,
                 attack_type=None,
                 none_annotations=self.none_annotations,
