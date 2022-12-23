@@ -21,7 +21,7 @@ from bob.pipelines import DelayedSample
 def get_pad_sample(none_annotations=False):
     def load():
         file_name = pkg_resources.resource_filename(
-            __name__, "data/test_image.png"
+            __name__, "data/test_image_gs.png"
         )
         data = bob.io.base.load(file_name)[None, ...]
         indices = [os.path.basename(file_name)]
