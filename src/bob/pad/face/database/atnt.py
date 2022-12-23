@@ -32,6 +32,7 @@ class AtntPadDatabase(CSVDatabase):
         "http://www.idiap.ch/software/bob/databases/latest/base/atnt-f529acef.tar.gz",
     ]
     dataset_protocols_hash = "f529acef"
+    dataset_original_directory = (rc.get("bob.bio.face.atnt.directory", ""),)
 
     def __init__(
         self,
@@ -45,9 +46,7 @@ class AtntPadDatabase(CSVDatabase):
             transformer=make_pipeline(
                 FileSampleLoader(
                     data_loader=bob.io.base.load,
-                    dataset_original_directory=rc.get(
-                        "bob.bio.face.atnt.directory", ""
-                    ),
+                    dataset_original_directory=self.dataset_original_directory,
                     extension=rc.get("bob.bio.face.atnt.extension", ".pgm"),
                 ),
             ),

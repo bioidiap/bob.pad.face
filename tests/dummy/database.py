@@ -65,7 +65,7 @@ class DummyDatabase(Database):
         ]
         return files
 
-    def samples(self, groups=None, protocol=None, purposes=None, **kwargs):
+    def samples(self, groups=None, purposes=None, **kwargs):
         groups = check_parameters_for_validity(
             groups, "groups", self.high_level_names, default_parameters=None
         )
@@ -86,9 +86,7 @@ class DummyDatabase(Database):
         if "attack" in purposes:
             purposes.remove("attack")
             purposes.append("probe")
-        return self._make_bio(
-            self._db.objects(None, groups, purposes, protocol, **kwargs)
-        )
+        return self._make_bio(self._db.samples(groups))
 
     def fit_samples(self):
         return self.samples(groups="train")
