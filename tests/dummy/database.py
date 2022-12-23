@@ -2,10 +2,6 @@ import os
 
 import bob.io.base
 
-from bob.bio.base.database.legacy import (
-    check_parameters_for_validity,
-    convert_names_to_lowlevel,
-)
 from bob.bio.video import VideoLikeContainer
 from bob.pad.base.pipelines.abstract_classes import Database
 from bob.pad.face.database import AtntPadDatabase
@@ -66,26 +62,6 @@ class DummyDatabase(Database):
         return files
 
     def samples(self, groups=None, purposes=None, **kwargs):
-        groups = check_parameters_for_validity(
-            groups, "groups", self.high_level_names, default_parameters=None
-        )
-        groups = convert_names_to_lowlevel(
-            groups, self.low_level_names, self.high_level_names
-        )
-        purposes = list(
-            check_parameters_for_validity(
-                purposes,
-                "purposes",
-                ("real", "attack"),
-                default_parameters=("real", "attack"),
-            )
-        )
-        if "real" in purposes:
-            purposes.remove("real")
-            purposes.append("enroll")
-        if "attack" in purposes:
-            purposes.remove("attack")
-            purposes.append("probe")
         return self._make_bio(self._db.samples(groups))
 
     def fit_samples(self):
