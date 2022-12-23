@@ -29,6 +29,7 @@ requirements:
     - bob.bio.video
     - bob.pad.base
     - numpy {{ numpy }}
+    - tensorflow {{ tensorflow }}
     - scikit-learn {{ scikit_learn }}
     - scikit-image {{ scikit_image }}
     - imageio-ffmpeg {{ imageio_ffmpeg }}
@@ -48,7 +49,8 @@ requirements:
     - {{ pin_compatible('scikit-image') }}
     - {{ pin_compatible('imageio-ffmpeg') }}
     - {{ pin_compatible('pytorch') }}
-
+  run_constrained:
+    - {{ pin_compatible('tensorflow') }}  # [linux]
 test:
   imports:
     - {{ name }}
