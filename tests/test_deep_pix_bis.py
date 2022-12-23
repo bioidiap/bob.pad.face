@@ -8,7 +8,7 @@ from bob.bio.video import VideoLikeContainer
 
 
 def _sample_video():
-    path = pkg_resources.resource_filename(__name__, "test/data/test_image.png")
+    path = pkg_resources.resource_filename(__name__, "data/test_image.png")
     img = io.load(path)
     video = VideoLikeContainer(img, [0])
     sample = bob.pipelines.Sample(video, key="sample", annotations=None)
