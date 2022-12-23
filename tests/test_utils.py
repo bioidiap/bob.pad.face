@@ -76,7 +76,7 @@ def test_yield_frames():
     assert nframes == 1, nframes
     for frame in padfile.data:
         assert frame.ndim == 2
-        assert frame.shape == (112, 92)
+        assert frame.shape == (312, 520)
 
 
 def test_yield_faces_1():
@@ -111,17 +111,17 @@ def test_scale_face():
 def test_blocks():
     # gray-scale image
     patches = blocks(image, (28, 28))
-    assert patches.shape == (12, 28, 28), patches.shape
+    assert patches.shape == (198, 28, 28), patches.shape
     # color image
     patches_gray = patches
     patches = blocks([image, image, image], (28, 28))
-    assert patches.shape == (12, 3, 28, 28), patches.shape
+    assert patches.shape == (198, 3, 28, 28), patches.shape
     assert (patches_gray == patches[:, 0, ...]).all()
     assert (patches_gray == patches[:, 1, ...]).all()
     assert (patches_gray == patches[:, 2, ...]).all()
     # color video
     patches = blocks([[image, image, image]], (28, 28))
-    assert patches.shape == (12, 3, 28, 28), patches.shape
+    assert patches.shape == (198, 3, 28, 28), patches.shape
     assert (patches_gray == patches[:, 0, ...]).all()
     assert (patches_gray == patches[:, 1, ...]).all()
     assert (patches_gray == patches[:, 2, ...]).all()
