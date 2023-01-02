@@ -237,5 +237,6 @@ auto_intersphinx_packages = [
     "dask",
     "dask-ml",
     "bob.bio.base",
+    "bob.pad.base",
 ]
 auto_intersphinx_catalog = "catalog.json"
