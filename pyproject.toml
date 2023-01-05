@@ -1,12 +1,120 @@
 [build-system]
-    requires = ["setuptools", "wheel", "bob.extension"]
+    requires      = ["setuptools>=61.0.0", "wheel"]
     build-backend = "setuptools.build_meta"
 
+[project]
+    name            = "bob.pad.face"
+    version         = "4.1.2b0"
+    requires-python = ">=3.9"
+    description     = "Implements tools for spoofing or presentation attack detection in face biometrics"
+    dynamic         = ["readme"]
+    license         = {text = "GPLv3 License"}
+    authors         = [
+    {name = "Amir Mohammadi"},
+    {email = "amir.mohammadi@idiap.ch"},
+    ]
+    keywords = ["bob"]
+
+    classifiers=[
+        "Framework :: Bob",
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Natural Language :: English",
+        "Programming Language :: Python",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    ]
+    dependencies = [
+        "setuptools",
+        "numpy",
+        "exposed",
+        "bob.extension",
+        "bob.bio.base",
+        "bob.io.base",
+        "bob.pad.base",
+        "bob.bio.face",
+        "bob.bio.video",
+        "scikit-learn",
+        "scikit-image",
+        "imageio-ffmpeg",
+        "torch",
+        "dask-ml",
+    ]
+
+[project.urls]
+    documentation = "https://www.idiap.ch/software/bob/docs/bob/bob.pad.face/stable/"
+    homepage      = "https://pypi.org/project/bob.pad.face/"
+    repository    = "https://gitlab.idiap.ch/bob/bob.pad.face"
+    changelog     = "https://gitlab.idiap.ch/bob/bob.pad.face/-/releases"
+
+[project.optional-dependencies]
+    qa  = ["pre-commit"]
+    doc = [
+        "sphinx",
+        "sphinx_rtd_theme",
+        "sphinx-autodoc-typehints",
+        "auto-intersphinx",
+        "sphinxcontrib-programoutput",
+        "matplotlib",
+        "tensorflow ; sys_platform == 'linux'",
+        "tensorflow-macos ; sys_platform != 'linux'",
+        ]
+    test = [
+        "pytest",
+        "pytest-cov",
+        "coverage",
+        "tensorflow ; sys_platform == 'linux'",
+        "tensorflow-macos ; sys_platform != 'linux'",
+        ]
+
+[tool.setuptools]
+    zip-safe    = false
+    package-dir = {"" = "src"}
+
+[tool.setuptools.dynamic]
+    readme = {file = "README.rst"}
+
+[project.entry-points."bob.pad.database"]
+    casia-fasd    = "bob.pad.face.config.casia_fasd:database"
+    casia-surf    = "bob.pad.face.config.casia_surf:database"
+    mask-attack   = "bob.pad.face.config.mask_attack:database"
+    oulu-npu      = "bob.pad.face.config.oulu_npu:database"
+    replay-attack = "bob.pad.face.config.replay_attack:database"
+    replay-mobile = "bob.pad.face.config.replay_mobile:database"
+    swan          = "bob.pad.face.config.swan:database"
+
+[project.entry-points."bob.pad.pipeline"]
+    svm-frames   = "bob.pad.face.config.svm_frames:pipeline"
+    deep-pix-bis = "bob.pad.face.config.deep_pix_bis:pipeline"
+
+[project.entry-points."bob.pad.config"]
+    casia-fasd    = "bob.pad.face.config.casia_fasd"
+    casia-surf    = "bob.pad.face.config.casia_surf"
+    mask-attack   = "bob.pad.face.config.mask_attack"
+    oulu-npu      = "bob.pad.face.config.oulu_npu"
+    replay-attack = "bob.pad.face.config.replay_attack"
+    replay-mobile = "bob.pad.face.config.replay_mobile"
+    swan          = "bob.pad.face.config.swan"
+    lbp-svm       = "bob.pad.face.config.lbp_svm"
+    deep-pix-bis  = "bob.pad.face.config.deep_pix_bis"
+
+[project.entry-points."bob.pad.cli"]
+    statistics = "bob.pad.face.script.statistics:statistics"
+
 [tool.isort]
-    profile = "black"
-    line_length = 80
-    order_by_type = true
+    profile             = "black"
+    line_length         = 80
+    order_by_type       = true
     lines_between_types = 1
 
 [tool.black]
     line-length = 80
+
+[tool.pytest.ini_options]
+    addopts = [
+        "--import-mode=append",
+        "--cov-report=term-missing",
+        "--cov=bob.pad.face",
+    ]
+    junit_logging           = "all"
+    junit_log_passing_tests = false

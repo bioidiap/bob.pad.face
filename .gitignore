@@ -7,7 +7,6 @@ parts
 .installed.cfg
 .mr.developer.cfg
 *.egg-info
-src
 develop-eggs
 sphinx
 build
@@ -17,3 +16,5 @@ results
 submitted.sql3
 temp*
 *.DS_Store
+.gitlab-ci-local*
+html/

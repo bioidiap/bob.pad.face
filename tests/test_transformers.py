@@ -1,4 +1,4 @@
-import bob.pipelines as mario
+import bob.pipelines
 
 from bob.bio.video import VideoLikeContainer
 from bob.pad.face.transformer import VideoToFrames
@@ -11,7 +11,9 @@ def test_video_to_frames():
 
     videos = [[0, 1, 2, None, 3], [None, None, None]]
     video_container = [VideoLikeContainer(v, range(len(v))) for v in videos]
-    samples = [mario.Sample(v, key=i) for i, v in enumerate(video_container)]
+    samples = [
+        bob.pipelines.Sample(v, key=i) for i, v in enumerate(video_container)
+    ]
     frame_samples = VideoToFrames().transform(samples)
     assert len(frame_samples) == 4
     assert all(

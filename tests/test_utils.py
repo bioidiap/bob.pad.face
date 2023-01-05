@@ -1,8 +1,13 @@
+import os
+
 import imageio
 import numpy
+import pkg_resources
 import pytest
 
-from bob.pad.face.test.dummy.database import DummyDatabase as Database
+import bob.io.base
+
+from bob.bio.video import VideoLikeContainer
 from bob.pad.face.utils import (
     blocks,
     frames,
@@ -10,13 +15,31 @@ from bob.pad.face.utils import (
     scale_face,
     yield_faces,
 )
+from bob.pipelines import DelayedSample
 
 
 def get_pad_sample(none_annotations=False):
-    sample = Database(none_annotations=none_annotations).samples(
-        ("train", "dev")
-    )[0]
-    return sample
+    def load():
+        file_name = pkg_resources.resource_filename(
+            __name__, "data/test_image_gs.png"
+        )
+        data = bob.io.base.load(file_name)[None, ...]
+        indices = [os.path.basename(file_name)]
+        fc = VideoLikeContainer(data, indices)
+        return fc
+
+    annotations = None
+    if not none_annotations:
+        annotations = {"0": {"topleft": (0, 0), "bottomright": (112, 92)}}
+
+    return DelayedSample(
+        load,
+        client_id=123,
+        key=0,
+        attack_type=None,
+        is_bonafide=True,
+        annotations=annotations,
+    )
 
 
 image = get_pad_sample().data[0]
@@ -53,7 +76,7 @@ def test_yield_frames():
     assert nframes == 1, nframes
     for frame in padfile.data:
         assert frame.ndim == 2
-        assert frame.shape == (112, 92)
+        assert frame.shape == (312, 520)
 
 
 def test_yield_faces_1():
@@ -88,17 +111,17 @@ def test_scale_face():
 def test_blocks():
     # gray-scale image
     patches = blocks(image, (28, 28))
-    assert patches.shape == (12, 28, 28), patches.shape
+    assert patches.shape == (198, 28, 28), patches.shape
     # color image
     patches_gray = patches
     patches = blocks([image, image, image], (28, 28))
-    assert patches.shape == (12, 3, 28, 28), patches.shape
+    assert patches.shape == (198, 3, 28, 28), patches.shape
     assert (patches_gray == patches[:, 0, ...]).all()
     assert (patches_gray == patches[:, 1, ...]).all()
     assert (patches_gray == patches[:, 2, ...]).all()
     # color video
     patches = blocks([[image, image, image]], (28, 28))
-    assert patches.shape == (12, 3, 28, 28), patches.shape
+    assert patches.shape == (198, 3, 28, 28), patches.shape
     assert (patches_gray == patches[:, 0, ...]).all()
     assert (patches_gray == patches[:, 1, ...]).all()
     assert (patches_gray == patches[:, 2, ...]).all()
