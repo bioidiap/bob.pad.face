@@ -13,7 +13,7 @@ This baseline includes the models to replicate the experimental results publishe
 
 from sklearn.pipeline import Pipeline
 
-import bob.pipelines as mario
+import bob.pipelines
 
 from bob.bio.face.preprocessor import FaceCrop
 from bob.bio.face.utils import get_default_cropped_positions
@@ -47,7 +47,7 @@ cropper = FaceCrop(
 )
 
 preprocessor = VideoWrapper(cropper)
-preprocessor = mario.wrap(
+preprocessor = bob.pipelines.wrap(
     ["sample"],
     preprocessor,
     transform_extra_arguments=(("annotations", "annotations"),),
@@ -55,7 +55,7 @@ preprocessor = mario.wrap(
 
 # Classifier #
 classifier = DeepPixBisClassifier(model_file="oulu-npu-p1")
-classifier = mario.wrap(["sample"], classifier)
+classifier = bob.pipelines.wrap(["sample"], classifier)
 # change the decision_function
 decision_function = "predict_proba"
 

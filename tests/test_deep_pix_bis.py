@@ -2,18 +2,16 @@ import numpy
 import pkg_resources
 
 import bob.io.base as io
-import bob.pipelines as mario
+import bob.pipelines
 
 from bob.bio.video import VideoLikeContainer
 
 
 def _sample_video():
-    path = pkg_resources.resource_filename(
-        "bob.pad.face", "test/data/test_image.png"
-    )
+    path = pkg_resources.resource_filename(__name__, "data/test_image.png")
     img = io.load(path)
     video = VideoLikeContainer(img, [0])
-    sample = mario.Sample(video, key="sample", annotations=None)
+    sample = bob.pipelines.Sample(video, key="sample", annotations=None)
     return sample
 
 
