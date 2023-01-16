@@ -10,8 +10,7 @@
     dynamic         = ["readme"]
     license         = {text = "GPLv3 License"}
     authors         = [
-    {name = "Amir Mohammadi"},
-    {email = "amir.mohammadi@idiap.ch"},
+    {name = "Amir Mohammadi", email = "amir.mohammadi@idiap.ch"},
     ]
     keywords = ["bob"]
 
