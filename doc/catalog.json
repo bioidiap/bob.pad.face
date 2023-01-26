@@ -1,8 +1,0 @@
-{
-  "bob.pad.base": {
-    "versions": {
-      "latest": "https://www.idiap.ch/software/bob/docs/bob/bob.pad.base/master"
-    },
-    "sources": {}
-  }
-}
