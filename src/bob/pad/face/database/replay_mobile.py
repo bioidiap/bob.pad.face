@@ -9,7 +9,7 @@ from bob.pad.face.database import VideoPadSample
 from bob.pipelines.transformers import Str_To_Types, str_to_bool
 
 logger = logging.getLogger(__name__)
-rc = UserDefaults("~/.bobrc", "BOBRC")
+rc = UserDefaults("~/.bobrc")
 
 
 def get_rm_video_transform(sample):

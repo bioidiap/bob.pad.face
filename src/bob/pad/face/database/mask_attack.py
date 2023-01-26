@@ -15,7 +15,7 @@ from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import DelayedSample
 
 logger = logging.getLogger(__name__)
-rc = UserDefaults("~/.bobrc", "BOBRC")
+rc = UserDefaults("~/.bobrc")
 
 
 def load_frames_from_hdf5(

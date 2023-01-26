@@ -7,7 +7,7 @@ from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
 
 logger = logging.getLogger(__name__)
-rc = UserDefaults("~/.bobrc", "BOBRC")
+rc = UserDefaults("~/.bobrc")
 
 
 def ReplayAttackPadDatabase(
