@@ -13,7 +13,7 @@ from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import CSVToSamples, DelayedSample
 
 logger = logging.getLogger(__name__)
-rc = UserDefaults("~/.bobrc")
+rc = UserDefaults("bobrc.toml")
 
 
 def load_multi_stream(path):
