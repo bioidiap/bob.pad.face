@@ -1,6 +1,6 @@
 import logging
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 
 from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase

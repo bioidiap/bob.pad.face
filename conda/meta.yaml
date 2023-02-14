@@ -21,7 +21,7 @@ requirements:
     - python {{ python }}
     - setuptools {{ setuptools }}
     - pip {{ pip }}
-    - exposed
+    - clapp
     - bob.extension
     - bob.io.base
     - bob.bio.base
@@ -37,7 +37,7 @@ requirements:
   run:
     - python
     - setuptools
-    - exposed
+    - clapp
     - bob.extension
     - bob.io.base
     - bob.bio.base

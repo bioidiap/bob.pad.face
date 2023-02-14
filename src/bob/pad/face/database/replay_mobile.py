@@ -1,6 +1,6 @@
 import logging
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 from sklearn.pipeline import make_pipeline
 
 from bob.extension.download import get_file

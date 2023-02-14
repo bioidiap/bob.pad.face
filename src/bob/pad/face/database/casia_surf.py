@@ -3,7 +3,7 @@ import os
 
 from functools import partial
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 from sklearn.preprocessing import FunctionTransformer
 
 import bob.io.base
