@@ -64,7 +64,6 @@ def delayed_maskattack_video_load(
     max_number_of_frames=None,
     step_size=None,
 ):
-
     original_directory = original_directory or ""
     results = []
     for sample in samples:

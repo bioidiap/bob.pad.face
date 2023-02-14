@@ -142,7 +142,6 @@ class DeepPixBisClassifier(BaseEstimator, ClassifierMixin):
         threshold=0.8,
         **kwargs,
     ):
-
         """Init method
 
         Parameters
