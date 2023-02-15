@@ -8,6 +8,7 @@ from .replay_mobile import ReplayMobilePadDatabase
 from .swan import SwanPadDatabase
 from .oulu_npu import OuluNpuPadDatabase
 
+
 # gets sphinx autodoc done right - don't remove it
 def __appropriate__(*args):
     """Says object was actually declared here, and not in the import module.

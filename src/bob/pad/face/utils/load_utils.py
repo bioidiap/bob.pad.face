@@ -46,7 +46,6 @@ def block(X, block_size, block_overlap, flat=False):
     blocks = numpy.zeros(shape=(n_blocks_h, n_blocks_w, size_ov_h, size_ov_w))
     for h in range(n_blocks_h):
         for w in range(n_blocks_w):
-
             blocks[h, w, :, :] = X[
                 h * size_ov_h : h * size_ov_h + block_size[0],
                 w * size_ov_w : w * size_ov_w + block_size[1],
@@ -91,7 +90,6 @@ def scale(image, scaling_factor):
         )
 
     elif isinstance(scaling_factor, tuple):
-
         if len(scaling_factor) > 2:
             scaling_factor = scaling_factor[1:]
 

@@ -26,7 +26,6 @@ class ImagePatches(TransformerMixin, BaseEstimator):
         return [self.transform_one_image(img) for img in images]
 
     def transform_one_image(self, image):
-
         patches = extract_patches(
             image, self.block_size, self.block_overlap, self.n_random_patches
         )
@@ -70,7 +69,6 @@ class VideoPatches(TransformerMixin, BaseEstimator):
 
         all_patches = []
         for frame, index in zip(frames, frames.indices):
-
             # if annotations are given, and if particular frame annotations are
             # not missing we take them:
             annots = annotations.get(str(index))

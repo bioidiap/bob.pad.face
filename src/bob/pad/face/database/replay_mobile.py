@@ -1,9 +1,9 @@
 import logging
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 from sklearn.pipeline import make_pipeline
 
-from bob.extension.download import get_file
+from bob.bio.base.database.utils import download_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
 from bob.pipelines.transformers import Str_To_Types, str_to_bool
@@ -34,21 +34,23 @@ def ReplayMobilePadDatabase(
     fixed_positions=None,
     **kwargs,
 ):
-    name = "pad-face-replay-mobile-586b7e81.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="586b7e81",
+    name = "pad-face-replay-mobile-620dded2.tar.gz"
+    dataset_protocols_path = download_file(
+        urls=[f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
+        destination_filename=name,
+        destination_sub_directory="protocols/pad",
+        checksum="620dded2",
     )
 
     if annotation_directory is None:
-        name = "annotations-replaymobile-mtcnn-9cd6e452.tar.xz"
-        annotation_directory = get_file(
-            name,
-            [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-            cache_subdir="annotations",
-            file_hash="9cd6e452",
+        name = "annotations-replay-mobile-mtcnn-20055a07.tar.gz"
+        annotation_directory = download_file(
+            urls=[
+                f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"
+            ],
+            destination_filename=name,
+            destination_sub_directory="annotations",
+            checksum="20055a07",
         )
         annotation_type = "eyes-center"
 
@@ -65,8 +67,9 @@ def ReplayMobilePadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
-        protocol,
+        name="replay-mobile",
+        dataset_protocols_path=dataset_protocols_path,
+        protocol=protocol,
         transformer=transformer,
         **kwargs,
     )

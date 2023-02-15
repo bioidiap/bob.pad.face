@@ -1,8 +1,8 @@
 import logging
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 
-from bob.extension.download import get_file
+from bob.bio.base.database.utils import download_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
 
@@ -20,21 +20,23 @@ def SwanPadDatabase(
     fixed_positions=None,
     **kwargs,
 ):
-    name = "pad-face-swan-711dffcf.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="711dffcf",
+    name = "pad-face-swan-ce83ebd8.tar.gz"
+    dataset_protocols_path = download_file(
+        urls=[f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
+        destination_filename=name,
+        destination_sub_directory="protocols",
+        checksum="ce83ebd8",
     )
 
     if annotation_directory is None:
-        name = "annotations-swan-mtcnn-cff2f062.tar.xz"
-        annotation_directory = get_file(
-            name,
-            [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-            cache_subdir="annotations",
-            file_hash="cff2f062",
+        name = "annotations-swan-mtcnn-9f9e12d8.tar.gz"
+        annotation_directory = download_file(
+            urls=[
+                f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"
+            ],
+            destination_filename=name,
+            destination_sub_directory="annotations",
+            checksum="9f9e12d8",
         )
         annotation_type = "eyes-center"
 
@@ -48,8 +50,9 @@ def SwanPadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
-        protocol,
+        name="swan",
+        dataset_protocols_path=dataset_protocols_path,
+        protocol=protocol,
         transformer=transformer,
         **kwargs,
     )

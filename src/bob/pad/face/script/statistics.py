@@ -7,15 +7,12 @@ from os.path import expanduser
 import click
 import numpy as np
 
+from clapp.click import ConfigCommand, ResourceOption, verbosity_option
+
 from bob.bio.face.annotator import (
     BoundingBox,
     bounding_box_from_annotation,
     expected_eye_positions,
-)
-from bob.extension.scripts.click_helper import (
-    ConfigCommand,
-    ResourceOption,
-    verbosity_option,
 )
 
 logger = logging.getLogger(__name__)
@@ -37,7 +34,7 @@ PA = "Presentation Attack"
     cls=ResourceOption,
     default=expanduser("~/.bob_bio_databases.txt"),
 )
-@verbosity_option(cls=ResourceOption)
+@verbosity_option(logger=logger, expose_value=False)
 def statistics(database, output, database_directories_file, **kwargs):
     """Statistics on face size in video databases.
 

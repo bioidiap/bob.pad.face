@@ -1,8 +1,8 @@
 import logging
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 
-from bob.extension.download import get_file
+from bob.bio.base.database.utils import download_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
 
@@ -19,12 +19,12 @@ def CasiaFasdPadDatabase(
     fixed_positions=None,
     **kwargs,
 ):
-    name = "pad-face-casia-fasd-e00ce410.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="e00ce410",
+    name = "pad-face-casia-fasd-0b07ea45.tar.gz"
+    dataset_protocols_path = download_file(
+        urls=[f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
+        destination_filename=name,
+        destination_sub_directory="protocols/pad",
+        checksum="0b07ea45",
     )
 
     transformer = VideoPadSample(
@@ -36,7 +36,8 @@ def CasiaFasdPadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
+        name="casia-fsd",
+        dataset_protocols_path=dataset_protocols_path,
         protocol="grandtest",
         transformer=transformer,
         **kwargs,
