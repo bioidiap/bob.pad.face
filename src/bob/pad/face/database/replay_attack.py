@@ -47,8 +47,9 @@ def ReplayAttackPadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
-        protocol,
+        name="replay-attack",
+        dataset_protocols_path=dataset_protocols_path,
+        protocol=protocol,
         transformer=transformer,
         **kwargs,
     )

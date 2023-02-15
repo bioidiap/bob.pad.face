@@ -65,8 +65,9 @@ def ReplayMobilePadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
-        protocol,
+        name="replay-mobile",
+        dataset_protocols_path=dataset_protocols_path,
+        protocol=protocol,
         transformer=transformer,
         **kwargs,
     )

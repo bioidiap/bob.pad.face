@@ -47,8 +47,9 @@ def OuluNpuPadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
-        protocol,
+        name="oulunpu",
+        dataset_protocols_path=dataset_protocols_path,
+        protocol=protocol,
         transformer=transformer,
         **kwargs,
     )

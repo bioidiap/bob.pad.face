@@ -36,7 +36,8 @@ def CasiaFasdPadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
+        name="casia-fsd",
+        dataset_protocols_path=dataset_protocols_path,
         protocol="grandtest",
         transformer=transformer,
         **kwargs,
