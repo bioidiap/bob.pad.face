@@ -6,11 +6,11 @@ from functools import partial
 import h5py
 import numpy as np
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 from sklearn.preprocessing import FunctionTransformer
 
+from bob.bio.base.database.utils import download_file
 from bob.bio.video import VideoLikeContainer, select_frames
-from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import DelayedSample
 
@@ -64,7 +64,6 @@ def delayed_maskattack_video_load(
     max_number_of_frames=None,
     step_size=None,
 ):
-
     original_directory = original_directory or ""
     results = []
     for sample in samples:
@@ -129,12 +128,12 @@ def MaskAttackPadDatabase(
     step_size=None,
     **kwargs,
 ):
-    name = "pad-face-mask-attack-2ab2032c.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="2ab2032c",
+    name = "pad-face-mask-attack-6d8854c2.tar.gz"
+    dataset_protocols_path = download_file(
+        urls=[f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
+        destination_filename=name,
+        destination_sub_directory="protocols/pad",
+        checksum="6d8854c2",
     )
 
     transformer = MaskAttackPadSample(
@@ -145,8 +144,9 @@ def MaskAttackPadDatabase(
     )
 
     database = FileListPadDatabase(
-        dataset_protocols_path,
-        protocol,
+        name="mask-attack",
+        dataset_protocols_path=dataset_protocols_path,
+        protocol=protocol,
         transformer=transformer,
         **kwargs,
     )

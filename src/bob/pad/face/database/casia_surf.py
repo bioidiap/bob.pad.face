@@ -3,7 +3,7 @@ import os
 
 from functools import partial
 
-from exposed.rc import UserDefaults
+from clapp.rc import UserDefaults
 from sklearn.preprocessing import FunctionTransformer
 
 import bob.io.base
@@ -89,6 +89,7 @@ class CasiaSurfPadDatabase(FileListPadDatabase):
             original_directory=original_directory,
         )
         super().__init__(
+            name="casia-surf",
             dataset_protocols_path=original_directory,
             protocol="all",
             reader_cls=partial(
