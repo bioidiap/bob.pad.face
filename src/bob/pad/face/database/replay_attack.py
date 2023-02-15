@@ -2,7 +2,7 @@ import logging
 
 from clapp.rc import UserDefaults
 
-from bob.extension.download import get_file
+from bob.bio.base.database.utils import download_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
 
@@ -20,21 +20,23 @@ def ReplayAttackPadDatabase(
     fixed_positions=None,
     **kwargs,
 ):
-    name = "pad-face-replay-attack-a8e31cc3.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="a8e31cc3",
+    name = "pad-face-replay-attack-aca6b46f.tar.gz"
+    dataset_protocols_path = download_file(
+        urls=[f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
+        destination_filename=name,
+        destination_sub_directory="protocols/pad",
+        checksum="aca6b46f",
     )
 
     if annotation_directory is None:
-        name = "annotations-replay-attack-mtcnn-3ecbfa3c.tar.xz"
-        annotation_directory = get_file(
-            name,
-            [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-            cache_subdir="annotations",
-            file_hash="3ecbfa3c",
+        name = "annotations-replay-attack-mtcnn-8d1f4c12.tar.gz"
+        annotation_directory = download_file(
+            urls=[
+                f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"
+            ],
+            destination_filename=name,
+            destination_sub_directory="annotations",
+            checksum="8d1f4c12",
         )
         annotation_type = "eyes-center"
 

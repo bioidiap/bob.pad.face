@@ -8,7 +8,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from torch import nn
 from torchvision import models
 
-from bob.extension.download import get_file
+from bob.bio.base.database.utils import download_file
 from bob.io.image import to_matplotlib
 
 logger = logging.getLogger(__name__)
@@ -192,11 +192,11 @@ class DeepPixBisClassifier(BaseEstimator, ClassifierMixin):
             file_hash = (
                 model_urls[0].split("/")[-1].split("-")[-1].split(".")[0]
             )
-            model_file = get_file(
-                filename,
-                model_urls,
-                cache_subdir="models",
-                file_hash=file_hash,
+            model_file = download_file(
+                urls=model_urls,
+                destination_filename=filename,
+                destination_sub_directory="models",
+                checksum=file_hash,
                 extract=False,
             )
 

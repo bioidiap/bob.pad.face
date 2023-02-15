@@ -9,8 +9,8 @@ import numpy as np
 from clapp.rc import UserDefaults
 from sklearn.preprocessing import FunctionTransformer
 
+from bob.bio.base.database.utils import download_file
 from bob.bio.video import VideoLikeContainer, select_frames
-from bob.extension.download import get_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pipelines import DelayedSample
 
@@ -128,12 +128,12 @@ def MaskAttackPadDatabase(
     step_size=None,
     **kwargs,
 ):
-    name = "pad-face-mask-attack-2ab2032c.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="2ab2032c",
+    name = "pad-face-mask-attack-6d8854c2.tar.gz"
+    dataset_protocols_path = download_file(
+        urls=[f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
+        destination_filename=name,
+        destination_sub_directory="protocols/pad",
+        checksum="6d8854c2",
     )
 
     transformer = MaskAttackPadSample(

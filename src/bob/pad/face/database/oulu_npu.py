@@ -2,7 +2,7 @@ import logging
 
 from clapp.rc import UserDefaults
 
-from bob.extension.download import get_file
+from bob.bio.base.database.utils import download_file
 from bob.pad.base.database import FileListPadDatabase
 from bob.pad.face.database import VideoPadSample
 
@@ -20,21 +20,23 @@ def OuluNpuPadDatabase(
     fixed_positions=None,
     **kwargs,
 ):
-    name = "pad-face-oulunpu-75221078.tar.gz"
-    dataset_protocols_path = get_file(
-        name,
-        [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-        cache_subdir="protocols",
-        file_hash="75221078",
+    name = "pad-face-oulunpu-7bfb90c9.tar.gz"
+    dataset_protocols_path = download_file(
+        urls=[f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
+        destination_sub_directory="protocols/pad",
+        destination_filename=name,
+        checksum="7bfb90c9",
     )
 
     if annotation_directory is None:
-        name = "annotations-oulunpu-mtcnn-3bee9b6d.tar.xz"
-        annotation_directory = get_file(
-            name,
-            [f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"],
-            cache_subdir="annotations",
-            file_hash="3bee9b6d",
+        name = "annotations-oulunpu-mtcnn-903addac.tar.gz"
+        annotation_directory = download_file(
+            urls=[
+                f"http://www.idiap.ch/software/bob/data/bob/bob.pad.face/{name}"
+            ],
+            destination_sub_directory="annotations",
+            destination_filename=name,
+            checksum="903addac",
         )
         annotation_type = "eyes-center"
 
