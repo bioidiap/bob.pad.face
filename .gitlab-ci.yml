@@ -1,4 +1,4 @@
 include:
   - project: bob/dev-profile
-    ref: main
+    ref: pytorch-fix-threads-used
     file: /gitlab/python.yml
