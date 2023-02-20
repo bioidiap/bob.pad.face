@@ -13,8 +13,6 @@ from bob.io.image import to_matplotlib
 
 logger = logging.getLogger(__name__)
 
-# Fix for torch on docker (fixes CI linux runners):
-torch.set_num_threads(1)
 
 DEEP_PIX_BIS_PRETRAINED_MODELS = {
     "oulu-npu-p1": [
