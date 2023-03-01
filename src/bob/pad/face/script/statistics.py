@@ -7,7 +7,7 @@ from os.path import expanduser
 import click
 import numpy as np
 
-from clapp.click import ConfigCommand, ResourceOption, verbosity_option
+from clapper.click import ConfigCommand, ResourceOption, verbosity_option
 
 from bob.bio.face.annotator import (
     BoundingBox,

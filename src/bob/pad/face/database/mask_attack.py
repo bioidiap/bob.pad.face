@@ -6,7 +6,7 @@ from functools import partial
 import h5py
 import numpy as np
 
-from clapp.rc import UserDefaults
+from clapper.rc import UserDefaults
 from sklearn.preprocessing import FunctionTransformer
 
 from bob.bio.base.database.utils import download_file
