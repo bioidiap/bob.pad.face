@@ -1,6 +1,6 @@
 import logging
 
-from clapp.rc import UserDefaults
+from clapper.rc import UserDefaults
 from sklearn.pipeline import make_pipeline
 
 from bob.bio.base.database.utils import download_file
