@@ -1,6 +1,6 @@
 import logging
 
-from clapp.rc import UserDefaults
+from clapper.rc import UserDefaults
 
 from bob.bio.base.database.utils import download_file
 from bob.pad.base.database import FileListPadDatabase
