@@ -24,20 +24,19 @@
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ]
     dependencies = [
-        "setuptools",
-        "numpy",
-        "clapper",
-        "bob.extension",
-        "bob.bio.base",
+        "bob",
         "bob.io.base",
-        "bob.pad.base",
+        "bob.bio.base",
         "bob.bio.face",
+        "bob.pad.base",
         "bob.bio.video",
+        "clapper",
+        "dask-ml",
+        "imageio-ffmpeg",
+        "numpy",
         "scikit-learn",
         "scikit-image",
-        "imageio-ffmpeg",
         "torch",
-        "dask-ml",
     ]
 
 [project.urls]
