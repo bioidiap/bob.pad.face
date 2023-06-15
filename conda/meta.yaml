@@ -21,34 +21,34 @@ requirements:
     - python {{ python }}
     - setuptools {{ setuptools }}
     - pip {{ pip }}
-    - clapper
-    - bob.extension
+    - bob
     - bob.io.base
     - bob.bio.base
     - bob.bio.face
-    - bob.bio.video
     - bob.pad.base
+    - bob.bio.video
+    - clapper {{ clapper }}
+    - imageio-ffmpeg {{ imageio_ffmpeg }}
     - numpy {{ numpy }}
-    - tensorflow {{ tensorflow }}
+    - pytorch {{ pytorch }}
     - scikit-learn {{ scikit_learn }}
     - scikit-image {{ scikit_image }}
-    - imageio-ffmpeg {{ imageio_ffmpeg }}
-    - pytorch {{ pytorch }}
+    - tensorflow {{ tensorflow }}
   run:
     - python
     - setuptools
-    - clapper
-    - bob.extension
+    - bob
     - bob.io.base
     - bob.bio.base
     - bob.bio.face
-    - bob.bio.video
     - bob.pad.base
+    - bob.bio.video
+    - {{ pin_compatible('clapper') }}
+    - {{ pin_compatible('imageio-ffmpeg') }}
     - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('pytorch') }}
     - {{ pin_compatible('scikit-learn') }}
     - {{ pin_compatible('scikit-image') }}
-    - {{ pin_compatible('imageio-ffmpeg') }}
-    - {{ pin_compatible('pytorch') }}
   run_constrained:
     - {{ pin_compatible('tensorflow') }}  # [linux]
 test:
