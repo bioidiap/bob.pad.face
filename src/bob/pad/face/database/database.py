@@ -43,6 +43,13 @@ def delayed_video_load(
             path = sample.filename
             if not keep_extension_for_annotation:
                 path = os.path.splitext(sample.filename)[0]
+                
+	        # Check if the annotation directory is a local directory or a tar.gz file
+            if os.path.isdir(annotation_directory):
+                file_name = os.path.join(annotation_directory, path + ".json")
+            else:
+                file_name = f"{annotation_directory}:{path}.json"
+
             delayed_annotations = partial(
                 read_annotation_file,
                 file_name=f"{annotation_directory}:{path}.json",
